@@ -1,5 +1,7 @@
 #ignoring .vscode folder but we keep some files for debuging
 /.vscode/chrome
 /.vs/
+/Cadriciel/client/node_modules
+/Cadriciel/server/node_modules
 
 package-lock.json
