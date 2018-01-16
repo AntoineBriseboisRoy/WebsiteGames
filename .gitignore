@@ -1,5 +1,9 @@
 #ignoring .vscode folder but we keep some files for debuging
 /.vscode/chrome
 /.vs/
+/Mots_Croises/client/node_modules
+/Mots_Croises/server/node_modules
+/Course/client/node_modules
+/Course/server/node_modules
 
 package-lock.json
