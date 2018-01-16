@@ -1,0 +1,6 @@
+class BlackSquare {
+
+    
+    constructor() {}
+
+}
