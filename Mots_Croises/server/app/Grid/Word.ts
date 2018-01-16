@@ -4,8 +4,23 @@ enum Orientation {
 }
 
 class Word {
-    constructor(private name : string, private pos : PosXY, private length : number, private orientation : Orientation,
-                    private content : string) {}
 
+    constructor(private position : PosXY, private length : number,
+                private orientation : Orientation, private content : string) { }
 
+    public getPosition() : PosXY {
+        return this.position;
+    }
+
+    public getLength() : number {
+        return this.length;
+    }
+
+    public getOrientation() : Orientation {
+        return this.orientation;
+    }
+
+    public getContent() : string {
+        return this.content;
+    }
 }

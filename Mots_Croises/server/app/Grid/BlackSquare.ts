@@ -1,6 +1,7 @@
 class BlackSquare {
+    constructor(private position : PosXY) {}
 
-    
-    constructor() {}
-
+    public getPosition() : PosXY {
+        return this.position;
+    }
 }
