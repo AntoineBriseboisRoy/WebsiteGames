@@ -46,14 +46,10 @@ class Grid {
         return Math.floor(Math.random() * this.sideSize);
     }
 
+    // No need to verify if there are letters, as they havent been placed yet
     private isOccupiedPosition(position : PosXY) : boolean {
         this.blackSquares.forEach(square => {
             if(square.getPosition().equals(position)){
-                return true;
-            }
-        });
-        this.words.forEach(square => {
-            if(square.getPosition() == position){
                 return true;
             }
         });
