@@ -48,7 +48,7 @@ class Grid {
 
     private isOccupiedPosition(position : PosXY) : boolean {
         this.blackSquares.forEach(square => {
-            if(square.getPosition() == position){
+            if(square.getPosition().equals(position)){
                 return true;
             }
         });

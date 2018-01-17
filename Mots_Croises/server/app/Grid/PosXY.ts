@@ -20,4 +20,8 @@ class PosXY {
     public setY(y: number) : void {
         this.y = Math.floor(y);
     }
+
+    public equals(otherPos : PosXY) {
+        return this.x === otherPos.getX() && this.y === otherPos.getY();
+    }
 }
