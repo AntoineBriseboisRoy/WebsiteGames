@@ -1,27 +1,25 @@
 class PosXY {
 
-    constructor(private x : number, private y : number) { 
-        this.setX(x);
-        this.setY(y);
-    }
+    constructor(private x: number, private y: number) { }
 
-    public getX() : number {
+    public get X(): number {
         return this.x;
     }
 
-    public setX(x: number) : void {
+    public set X(x: number) {
         this.x = Math.floor(x);
     }
 
-    public getY() : number {
+    public get Y(): number {
         return this.x;
     }
 
-    public setY(y: number) : void {
+    public set Y(y: number) {
         this.y = Math.floor(y);
     }
 
-    public equals(otherPos : PosXY) {
-        return this.x === otherPos.getX() && this.y === otherPos.getY();
+    public equals(otherPos: PosXY): boolean {
+        return this.x === otherPos.X && this.y === otherPos.Y;
     }
+
 }
