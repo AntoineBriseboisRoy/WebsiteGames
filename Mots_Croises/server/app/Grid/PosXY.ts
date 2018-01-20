@@ -14,7 +14,7 @@ export class PosXY {
     }
 
     public get Y(): number {
-        return this.x;
+        return this.y;
     }
 
     public set Y(y: number) {
