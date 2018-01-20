@@ -1,4 +1,6 @@
-class GridGeneratorService {
+import { Grid } from "./Grid";
+
+export class GridGeneratorService {
 
     private instance: GridGeneratorService;
     private grid: Grid;

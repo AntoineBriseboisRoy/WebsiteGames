@@ -1,8 +1,12 @@
+import { BlackSquare } from "./BlackSquare";
+import { PosXY } from "./PosXY";
+import { Word } from "./Word";
+
 const BLACKSQUARE_CHARACTER = "*"; // Should be centralized
 
-class Grid {
+export class Grid {
 
-    private gridContent: Array<Array<string>>;
+    private gridContent: string[][];
     private blackSquares: BlackSquare[];
     private words: Word[];
 
@@ -12,7 +16,7 @@ class Grid {
         this.chooseWordsForGrid();
     }
 
-    public getGridContent(): Array<Array<string>> {
+    public getGridContent(): string[][] {
         return this.gridContent;
     }
 

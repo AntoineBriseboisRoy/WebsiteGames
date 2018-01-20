@@ -1,9 +1,11 @@
+import { PosXY } from "./PosXY";
+
 enum Orientation {
     Horizontal = 0,
     Vertical
 }
 
-class Word {
+export class Word {
 
     constructor(private position: PosXY, private length: number,
                 private orientation: Orientation, private content: string) { }

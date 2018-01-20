@@ -1,13 +1,16 @@
-class PosXY {
+export class PosXY {
 
-    constructor(private x: number, private y: number) { }
+    constructor(private x: number, private y: number) {
+        this.x = Math.abs(Math.floor(x));
+        this.y = Math.abs(Math.floor(y));
+    }
 
     public get X(): number {
         return this.x;
     }
 
     public set X(x: number) {
-        this.x = Math.floor(x);
+        this.x = Math.abs(Math.floor(x));
     }
 
     public get Y(): number {
@@ -15,7 +18,7 @@ class PosXY {
     }
 
     public set Y(y: number) {
-        this.y = Math.floor(y);
+        this.y = Math.abs(Math.floor(y));
     }
 
     public equals(otherPos: PosXY): boolean {
