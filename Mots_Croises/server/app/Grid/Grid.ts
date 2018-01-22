@@ -12,26 +12,34 @@ export class Grid {
 
     // Is it an acceptable practice to call functions in the ctor?
     constructor(private sideSize: number, private percentageOfBlackSquares: number) {
+        // this.gridContent = new Array<Array<string>>();
+        this.gridContent = new Array(sideSize).fill(new Array(sideSize));
         this.generateBlackSquares();
         this.chooseWordsForGrid();
     }
 
-    public getGridContent(): string[][] {
+    public get GridContent(): string[][] {
         return this.gridContent;
     }
 
-    public getBlackSquares(): BlackSquare[] {
+    public get BlackSquares(): BlackSquare[] {
         return this.blackSquares;
     }
 
-    public getWords(): Word[] {
+    public get Words(): Word[] {
         return this.words;
+    }
+
+    public get SideSize(): number {
+        return this.sideSize;
     }
 
     // Make sure there are not too many consecutive squares. Modify so that an unequal number of squares per line is possible.
     // blackSquares^T = blackSquares
     private generateBlackSquares(): void {
+        this.blackSquares = new Array<BlackSquare>();
         const numberOfBlackSquaresPerLine: number = this.percentageOfBlackSquares * this.sideSize;
+
         for (let i = 0; i < numberOfBlackSquaresPerLine; i++) {
             for (let j = 0; j < numberOfBlackSquaresPerLine; j++) {
                 const tempPosition: PosXY = this.randomPositionGenerator();
@@ -67,5 +75,9 @@ export class Grid {
         return occupied;
     }
 
-    private chooseWordsForGrid(): void { }
+    private chooseWordsForGrid(): void {
+        this.words = new Array<Word>();
+    }
+
+    private eliminateSpecialChars(word: string): void { }
 }
