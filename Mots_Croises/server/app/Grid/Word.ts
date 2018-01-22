@@ -1,26 +1,31 @@
-enum Orientation {
+import { PosXY } from "./PosXY";
+
+export enum Orientation {
     Horizontal = 0,
     Vertical
 }
 
-class Word {
+export class Word {
 
-    constructor(private position : PosXY, private length : number,
-                private orientation : Orientation, private content : string) { }
+    private length: number;
 
-    public getPosition() : PosXY {
+    constructor(private position: PosXY, private orientation: Orientation, private content: string) {
+        this.length = content.length;
+    }
+
+    public get Position(): PosXY {
         return this.position;
     }
 
-    public getLength() : number {
+    public get Length(): number {
         return this.length;
     }
 
-    public getOrientation() : Orientation {
+    public get Orientation(): Orientation {
         return this.orientation;
     }
 
-    public getContent() : string {
+    public get Content(): string {
         return this.content;
     }
 }

@@ -17,9 +17,10 @@ export class Grid {
     constructor(private sideSize: number, private percentageOfBlackSquares: number) {
         this.initializeEmptyGrid();
         this.generateBlackSquares();
+        this.chooseWordsForGrid();
     }
 
-    public getGridContent(): Array<Array<string>> {
+    public getGridContent(): string[][] {
         return this.gridContent;
     }
 
@@ -43,6 +44,10 @@ export class Grid {
         }
     }
 
+    public get SideSize(): number {
+        return this.sideSize;
+    }
+
     // Make sure there are not too many consecutive squares. Modify so that an unequal number of squares per line is possible.
     // blackSquares^T = blackSquares
     private generateBlackSquares(): void {
@@ -52,7 +57,7 @@ export class Grid {
             for (let j: number = 0; j < numberOfBlackSquaresPerLine; j++) {
                 const tempPosition: PosXY = this.randomPositionGenerator();
                 this.blackSquares.push(new BlackSquare(tempPosition));
-                this.gridContent[tempPosition.getX()][tempPosition.getY()] = BLACKSQUARE_CHARACTER;
+                this.gridContent[tempPosition.X][tempPosition.Y] = BLACKSQUARE_CHARACTER;
             }
         }
 
@@ -82,7 +87,7 @@ export class Grid {
             } else if (nWords > MAX_WORDS_PER_LINE) {
 
             }*/
-        //}
+        // }
     }
 
     /*private fixTooFewWordsOnLine(line: number): void {
@@ -90,20 +95,26 @@ export class Grid {
     }*/
 
     private randomPositionGenerator(): PosXY {
-        let tempPosition: PosXY = new PosXY(this.randomIntGenerator(this.sideSize), this.randomIntGenerator(this.sideSize));
+        let tempPosition: PosXY = new PosXY(this.randomIntGenerator(), this.randomIntGenerator());
 
         while (this.isOccupiedPosition(tempPosition)) {
-            tempPosition = new PosXY(this.randomIntGenerator(this.sideSize), this.randomIntGenerator(this.sideSize));
+            tempPosition = new PosXY(this.randomIntGenerator(), this.randomIntGenerator());
         }
 
         return tempPosition;
     }
 
-    private randomIntGenerator(maxInt: number): number {
-        return Math.floor(Math.random() * maxInt);
+    private isOccupiedPosition(position: PosXY): boolean {
+        return !(this.gridContent[position.X][position.Y] === EMPTY_SQUARE);
     }
 
-    private isOccupiedPosition(position: PosXY): boolean {
-        return !(this.gridContent[position.getX()][position.getY()] === EMPTY_SQUARE);
+    private randomIntGenerator(): number {
+        return Math.floor(Math.random() * this.sideSize);
     }
+
+    private chooseWordsForGrid(): void {
+        this.words = new Array<Word>();
+    }
+
+    private eliminateSpecialChars(word: string): void { }
 }
