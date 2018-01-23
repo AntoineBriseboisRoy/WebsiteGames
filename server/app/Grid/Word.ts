@@ -9,8 +9,7 @@ export class Word {
 
     private length: number;
 
-    constructor(private position: PosXY, private orientation: Orientation,
-                private content: string, private orderOfInsertion: number) {
+    constructor(private position: PosXY, private orientation: Orientation, private content: string) {
         this.length = content.length;
     }
 
