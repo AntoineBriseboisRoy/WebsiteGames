@@ -1,8 +1,10 @@
 import { BlackSquare } from "./BlackSquare";
 import { PosXY } from "./PosXY";
 import { Word } from "./Word";
+import { Dictionary } from "./Dictionary";
 
 const BLACKSQUARE_CHARACTER = "*"; // Should be centralized
+const EMPTY_SQUARE = "V";
 
 export class Grid {
 
@@ -13,7 +15,6 @@ export class Grid {
     // Is it an acceptable practice to call functions in the ctor?
     constructor(private sideSize: number, private percentageOfBlackSquares: number) {
         // this.gridContent = new Array<Array<string>>();
-        this.gridContent = new Array(sideSize).fill(new Array(sideSize));
         this.generateBlackSquares();
         this.chooseWordsForGrid();
     }
@@ -34,6 +35,14 @@ export class Grid {
         return this.sideSize;
     }
 
+    public getGridLine(lineNumber: number): string[] {
+        return this.gridContent[lineNumber];
+    }
+
+    private initializeEmptyGrid(): void {
+        this.gridContent = new Array(this.sideSize).fill(new Array(this.sideSize).fill(EMPTY_SQUARE));
+    }
+
     // Make sure there are not too many consecutive squares. Modify so that an unequal number of squares per line is possible.
     // blackSquares^T = blackSquares
     private generateBlackSquares(): void {
@@ -47,6 +56,33 @@ export class Grid {
                 this.gridContent[tempPosition.X][tempPosition.Y] = BLACKSQUARE_CHARACTER;
             }
         }
+
+         /*let nBlackSquares: number = Math.floor(this.percentageOfBlackSquares * this.sideSize * this.sideSize);
+        while (nBlackSquares-- > 0) {
+            const tmpPosition: PosXY = this.randomPositionGenerator();
+            this.blackSquares.push(new BlackSquare(tmpPosition));
+            this.gridContent[tmpPosition.getX()][tmpPosition.getY()] = BLACKSQUARE_CHARACTER;
+        }
+
+        for (let i: number = 0; i < this.sideSize; ++i) {
+            let nEmptySquares: number = 0;
+            let nWords: number = 0;
+            for (let j: number = 0; j < this.sideSize; ++j) {
+                if (this.gridContent[i][j] === EMPTY_SQUARE) {
+                    ++nEmptySquares;
+                } else if (this.gridContent[i][j] === BLACKSQUARE_CHARACTER) {
+                    if (nEmptySquares >= MIN_LETTERS_FOR_WORD) {
+                        ++nWords;
+                    }
+                    nEmptySquares = 0;
+                }
+            }
+            /*
+            if (nWords < MIN_WORDS_PER_LINE) {
+                this.fixTooFewWordsOnLine(i);
+            } else if (nWords > MAX_WORDS_PER_LINE) {
+
+            }*/
     }
 
     private randomPositionGenerator(): PosXY {
@@ -65,19 +101,41 @@ export class Grid {
 
     // No need to verify if there are letters, as they haven't been placed yet
     private isOccupiedPosition(position: PosXY): boolean {
-        let occupied = false;
-        this.blackSquares.forEach((square: BlackSquare) => {
-            if (square.Position.equals(position)) {
-                occupied = true;
-            }
-        });
-
-        return occupied;
+        return !(this.gridContent[position.X][position.Y] === EMPTY_SQUARE);
     }
 
     private chooseWordsForGrid(): void {
         this.words = new Array<Word>();
+
+        throw new Error("Not Implemented");
     }
 
-    private eliminateSpecialChars(word: string): void { }
+    private findWordsWithConstraints(length: number, requiredLettersPositions: Dictionary<number>): Dictionary<string> {
+        throw new Error("Not Implemented");
+
+        // QUERY word DB
+        // IF word found THEN
+        //    add word to GridContent and to Words
+        // ELSE
+        //    Backtrack
+
+        return new Dictionary<string>();
+    }
+
+    private eliminateSpecialChars(word: string): string {
+        const specialChars: RegExp = /[ !@#$%^&()_+\-=\[\]{};':"\\|,.<>\/?]/;
+
+        return word.replace(specialChars, "");
+    }
+
+    private replaceAccentedChars(word: string): string {
+        const accentedChars: RegExp[] = [/[àÀäÄâÂ]/, /[ÉéêÊèÈëË]/, /[ïÏîÎìÌ]/, /[òÒôÔöÖ]/, /[ùÙüÜûÛ]/, /[çÇ]/];
+        const replacementChars: string[] = ["A", "E", "I", "O", "U", "C"];
+
+        for (let i = 0; i < accentedChars.length; i++) {
+            word = word.replace(accentedChars[i], replacementChars[i]);
+        }
+
+        return word;
+    }
 }

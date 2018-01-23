@@ -54,7 +54,7 @@ describe("Verifying words.", () => {
     it ("There should be no special characters (accents, apostrophes, etc.)", () => {
         const testGrid: Grid = new Grid(10, 0.15);
         let specialCharFound = false;
-        const specialChars: RegExp = /[ !@#$%^&ÉéêÊèÈëËàÀäÄâÂòÒôÔùÙüÜûÛïÏîÎìÌçÇ()_+\-=\[\]{};':"\\|,.<>\/?]/;
+        const specialChars: RegExp = /[ !@#$%^&ÉéêÊèÈëËàÀäÄâÂòÒôÔöÖùÙüÜûÛïÏîÎìÌçÇ()_+\-=\[\]{};':"\\|,.<>\/?]/;
         testGrid.GridContent.forEach((row: string[]) => {
             row.forEach((element: string) => {
                 if (specialChars.test(element)) {
