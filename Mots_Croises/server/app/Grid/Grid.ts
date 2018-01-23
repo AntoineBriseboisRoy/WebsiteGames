@@ -1,10 +1,13 @@
-import { BlackSquare } from "./BlackSquare";
 import { PosXY } from "./PosXY";
+import { BlackSquare } from "./BlackSquare";
 import { Word } from "./Word";
 import { Dictionary } from "./Dictionary";
 
 const BLACKSQUARE_CHARACTER = "*"; // Should be centralized
-const EMPTY_SQUARE = "V";
+const EMPTY_SQUARE: string = "V";
+// const MIN_LETTERS_FOR_WORD: number = 2;
+// const MIN_WORDS_PER_LINE: number = 1;
+// const MAX_WORDS_PER_LINE: number = 2;
 
 export class Grid {
 
@@ -12,31 +15,30 @@ export class Grid {
     private blackSquares: BlackSquare[];
     private words: Word[];
 
-    // Is it an acceptable practice to call functions in the ctor?
     constructor(private sideSize: number, private percentageOfBlackSquares: number) {
-        // this.gridContent = new Array<Array<string>>();
+        this.initializeEmptyGrid();
         this.generateBlackSquares();
         this.chooseWordsForGrid();
     }
 
-    public get GridContent(): string[][] {
+    public getGridContent(): string[][] {
         return this.gridContent;
     }
 
-    public get BlackSquares(): BlackSquare[] {
+    public getGridLine(lineNumber: number): string[] {
+        return this.gridContent[lineNumber];
+    }
+
+    public getBlackSquares(): BlackSquare[] {
         return this.blackSquares;
     }
 
-    public get Words(): Word[] {
+    public getWords(): Word[] {
         return this.words;
     }
 
     public get SideSize(): number {
         return this.sideSize;
-    }
-
-    public getGridLine(lineNumber: number): string[] {
-        return this.gridContent[lineNumber];
     }
 
     private initializeEmptyGrid(): void {
@@ -48,16 +50,15 @@ export class Grid {
     private generateBlackSquares(): void {
         this.blackSquares = new Array<BlackSquare>();
         const numberOfBlackSquaresPerLine: number = this.percentageOfBlackSquares * this.sideSize;
-
-        for (let i = 0; i < numberOfBlackSquaresPerLine; i++) {
-            for (let j = 0; j < numberOfBlackSquaresPerLine; j++) {
+        for (let i: number = 0; i < numberOfBlackSquaresPerLine; i++) {
+            for (let j: number = 0; j < numberOfBlackSquaresPerLine; j++) {
                 const tempPosition: PosXY = this.randomPositionGenerator();
                 this.blackSquares.push(new BlackSquare(tempPosition));
                 this.gridContent[tempPosition.X][tempPosition.Y] = BLACKSQUARE_CHARACTER;
             }
         }
 
-         /*let nBlackSquares: number = Math.floor(this.percentageOfBlackSquares * this.sideSize * this.sideSize);
+        /*let nBlackSquares: number = Math.floor(this.percentageOfBlackSquares * this.sideSize * this.sideSize);
         while (nBlackSquares-- > 0) {
             const tmpPosition: PosXY = this.randomPositionGenerator();
             this.blackSquares.push(new BlackSquare(tmpPosition));
@@ -85,6 +86,10 @@ export class Grid {
             }*/
     }
 
+    /*private fixTooFewWordsOnLine(line: number): void {
+
+    }*/
+
     private randomPositionGenerator(): PosXY {
         let tempPosition: PosXY = new PosXY(this.randomIntGenerator(), this.randomIntGenerator());
 
@@ -95,13 +100,12 @@ export class Grid {
         return tempPosition;
     }
 
-    private randomIntGenerator(): number {
-        return Math.floor(Math.random() * this.sideSize);
-    }
-
-    // No need to verify if there are letters, as they haven't been placed yet
     private isOccupiedPosition(position: PosXY): boolean {
         return !(this.gridContent[position.X][position.Y] === EMPTY_SQUARE);
+    }
+
+    private randomIntGenerator(): number {
+        return Math.floor(Math.random() * this.sideSize);
     }
 
     private chooseWordsForGrid(): void {
