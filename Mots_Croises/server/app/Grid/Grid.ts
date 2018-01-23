@@ -3,7 +3,7 @@ import { BlackSquare } from "./BlackSquare";
 import { Word } from "./Word";
 import { Dictionary } from "./Dictionary";
 
-const BLACKSQUARE_CHARACTER = "*"; // Should be centralized
+const BLACKSQUARE_CHARACTER: string = "*"; // Should be centralized
 const EMPTY_SQUARE: string = "V";
 // const MIN_LETTERS_FOR_WORD: number = 2;
 // const MIN_WORDS_PER_LINE: number = 1;
