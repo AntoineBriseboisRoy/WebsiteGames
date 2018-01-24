@@ -1,0 +1,82 @@
+#top-bar {
+  border-bottom: 1px solid grey;
+  text-align: center;
+  background-color: #F1F1F1;
+}
+
+.player {
+  border: 1px solid black;
+  border-radius: 5px;
+  margin: 5px 0px;
+}
+
+#first-player {
+  border-color: #0796E5;
+}
+
+#second-player {
+  border-color: #F17630;
+}
+
+.title-layout-name {
+  border: 2px solid grey;
+  width: 50%;
+  margin-top: 10px;
+  padding: 0px 5px;
+  text-align: center;
+  color: white;
+}
+
+#horizontal-layout-content {
+  height: 200px;
+}
+
+.word-definition {
+  height: 28vh;
+}
+
+.square {
+  height: 10%;
+  width: 10%;
+  border: 1px solid black;
+  float: left;
+}
+
+.white-square {
+  background-color: white;
+}
+
+.numbered {
+  counter-increment: value;
+}
+
+  .numbered:nth-of-type(n)::before {
+    content: counter(value);
+    font-size: 0.8vw;
+  }
+
+#crossword-layout {
+  margin: 2.5vw 0 0 3vw;
+  padding: 0;
+  background-color: red;
+}
+
+.clear {
+  clear: both;
+}
+
+.answer-char {
+  text-align: center;
+  background-color: red;
+  padding: 0;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+#game-page {
+  background-image: url("../images/background.jpg");
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-size: cover;
+}
