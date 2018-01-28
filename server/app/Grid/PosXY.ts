@@ -1,5 +1,9 @@
 export class PosXY {
 
+    public static invertCoordinates(pos: PosXY): PosXY {
+        return new PosXY(pos.Y, pos.X);
+    }
+
     constructor(private x: number, private y: number) {
         this.x = Math.abs(Math.floor(x));
         this.y = Math.abs(Math.floor(y));

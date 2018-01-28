@@ -9,29 +9,19 @@ describe("Verifying Grid's BlackSquare generation.", () => {
       const testGrid: Grid = new Grid(10, 0.1);
       expect(testGrid.BlackSquares.length).to.equal(10 * 0.1);
     });
+    it ("Should create BlackSquares that are symmetrical with the diagonal.", () => {
+        const testGrid: Grid = new Grid(10, 0.1);
+        let symmetrical: boolean = true;
+        for (let i: number = 0; i < testGrid.SideSize; i++) {
+            for (let j: number = 0; j < testGrid.SideSize; j++) {
+                if (testGrid.GridContent[i][j] !== testGrid.GridContent[j][i]) {
+                    symmetrical = false;
+                }
+            }
+        }
+        expect(symmetrical).to.equal(true);
+      });
 });
-
-// How can we test private functions?
-/*describe("Verifying randomIntGenerator()", () => {
-    it ("Should generate different integer between 0 and sideSize every time.", () => {
-        expect(false).to.equal(true);
-    });
-});
-
-describe("Verifying randomPositionGenerator()", () => {
-    it ("Should generate different position almost every time. Normal distribution?", () => {
-        expect(false).to.equal(true);
-    });
-});
-
-describe("Verifying isOccupiedPosition()", () => {
-    it ("Should return true", () => {
-        expect(false).to.equal(true);
-    });
-    it ("Should return false", () => {
-        expect(false).to.equal(true);
-    });
-});*/
 
 describe("Verifying words.", () => {
     it ("Every word should be valid.", () => {
