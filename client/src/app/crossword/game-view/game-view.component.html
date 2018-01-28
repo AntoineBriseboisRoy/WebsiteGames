@@ -1,148 +1,16 @@
 <div id="game-page">
   <div class="container-fluid">
-    <app-top-bar></app-top-bar>
+    <crossword-top-bar></crossword-top-bar>
     <div id="main-page">
 
       <div class="row">
         <div class="col-sm-1"></div>
 
         <div class="col-sm-4">
-          <div id="horizontal-layout">
-            <div class="title-layout-name">
-              <h4>Horizontal</h4>
-            </div>
-            <form>
-              <div class="form-group">
-                <select multiple class="form-control word-definition">
-                  <option>1</option>
-                  <option>2</option>
-                  <option>3</option>
-                  <option>4</option>
-                  <option>5</option>
-                </select>
-              </div>
-            </form>
-          </div>
-          <div id="vertical-layout">
-            <div class="title-layout-name">
-              <h4>Vertical</h4>
-            </div>
-            <form>
-              <div class="form-group">
-                <select multiple class="form-control word-definition">
-                  <option>1</option>
-                  <option>2</option>
-                  <option>3</option>
-                  <option>4</option>
-                  <option>5</option>
-                </select>
-              </div>
-            </form>
-          </div>
+          <crossword-definition></crossword-definition>
         </div>
         <div class="col-sm-5" id="crossword-layout">
-          <div class="square white-square">
-            <h2 class="answer-char numbered">a</h2>
-          </div>
-          <div class="square white-square numbered"></div>
-          <div class="square white-square numbered"></div>
-          <div class="square white-square numbered"></div>
-          <div class="square white-square numbered"></div>
-          <div class="square white-square numbered"></div>
-          <div class="square white-square numbered"></div>
-          <div class="square white-square numbered"></div>
-          <div class="square white-square numbered"></div>
-          <div class="square white-square numbered"></div>
-          <div class="square white-square numbered clear"></div>
-          <div class="square white-square numbered"></div>
-          <div class="square white-square numbered"></div>
-          <div class="square white-square numbered"></div>
-          <div class="square white-square numbered"></div>
-          <div class="square white-square numbered"></div>
-          <div class="square white-square numbered"></div>
-          <div class="square white-square numbered"></div>
-          <div class="square white-square numbered"></div>
-          <div class="square white-square numbered"></div>
-          <div class="square white-square numbered clear"></div>
-          <div class="square white-square numbered"></div>
-          <div class="square white-square numbered"></div>
-          <div class="square white-square numbered"></div>
-          <div class="square white-square numbered"></div>
-          <div class="square white-square numbered"></div>
-          <div class="square white-square numbered"></div>
-          <div class="square white-square numbered"></div>
-          <div class="square white-square numbered"></div>
-          <div class="square white-square numbered"></div>
-          <div class="square white-square numbered clear"></div>
-          <div class="square white-square numbered"></div>
-          <div class="square white-square numbered"></div>
-          <div class="square white-square numbered"></div>
-          <div class="square white-square numbered"></div>
-          <div class="square white-square numbered"></div>
-          <div class="square white-square numbered"></div>
-          <div class="square white-square numbered"></div>
-          <div class="square white-square numbered"></div>
-          <div class="square white-square numbered"></div>
-          <div class="square white-square numbered clear"></div>
-          <div class="square white-square numbered"></div>
-          <div class="square white-square numbered"></div>
-          <div class="square white-square numbered"></div>
-          <div class="square white-square numbered"></div>
-          <div class="square white-square numbered"></div>
-          <div class="square white-square numbered"></div>
-          <div class="square white-square numbered"></div>
-          <div class="square white-square numbered"></div>
-          <div class="square white-square numbered"></div>
-          <div class="square white-square numbered clear"></div>
-          <div class="square white-square numbered"></div>
-          <div class="square white-square numbered"></div>
-          <div class="square white-square numbered"></div>
-          <div class="square white-square numbered"></div>
-          <div class="square white-square numbered"></div>
-          <div class="square white-square numbered"></div>
-          <div class="square white-square numbered"></div>
-          <div class="square white-square numbered"></div>
-          <div class="square white-square numbered"></div>
-          <div class="square white-square numbered clear"></div>
-          <div class="square white-square numbered"></div>
-          <div class="square white-square numbered"></div>
-          <div class="square white-square numbered"></div>
-          <div class="square white-square numbered"></div>
-          <div class="square white-square numbered"></div>
-          <div class="square white-square numbered"></div>
-          <div class="square white-square numbered"></div>
-          <div class="square white-square numbered"></div>
-          <div class="square white-square numbered"></div>
-          <div class="square white-square numbered clear"></div>
-          <div class="square white-square numbered"></div>
-          <div class="square white-square numbered"></div>
-          <div class="square white-square numbered"></div>
-          <div class="square white-square numbered"></div>
-          <div class="square white-square numbered"></div>
-          <div class="square white-square numbered"></div>
-          <div class="square white-square numbered"></div>
-          <div class="square white-square numbered"></div>
-          <div class="square white-square numbered"></div>
-          <div class="square white-square numbered clear"></div>
-          <div class="square white-square numbered"></div>
-          <div class="square white-square numbered"></div>
-          <div class="square white-square numbered"></div>
-          <div class="square white-square numbered"></div>
-          <div class="square white-square numbered"></div>
-          <div class="square white-square numbered"></div>
-          <div class="square white-square numbered"></div>
-          <div class="square white-square numbered"></div>
-          <div class="square white-square numbered"></div>
-          <div class="square white-square numbered clear"></div>
-          <div class="square white-square numbered"></div>
-          <div class="square white-square numbered"></div>
-          <div class="square white-square numbered"></div>
-          <div class="square white-square numbered"></div>
-          <div class="square white-square numbered"></div>
-          <div class="square white-square numbered"></div>
-          <div class="square white-square numbered"></div>
-          <div class="square white-square numbered"></div>
-          <div class="square white-square numbered"></div>
+          <crossword-grid></crossword-grid>
         </div>
         <div class="col-sm-2"></div>
 

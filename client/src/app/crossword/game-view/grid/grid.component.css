@@ -1,0 +1,17 @@
+.square {
+  height: 4vw;
+  width: 4vw;
+  border: 1px solid black;
+  float: left;
+}
+
+.white-square {
+  background-color: white;
+  height:100%;
+}
+.black-square{
+  background-color:black;
+  height:100%;
+  border:1px solid grey;
+}
+

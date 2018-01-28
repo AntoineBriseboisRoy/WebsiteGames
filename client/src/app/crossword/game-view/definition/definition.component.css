@@ -1,0 +1,16 @@
+#horizontal-layout-content {
+  height: 200px;
+}
+
+.word-definition {
+  height: 28vh;
+}
+
+.title-layout-name {
+  border: 2px solid grey;
+  width: 50%;
+  margin-top: 10px;
+  padding: 0px 5px;
+  text-align: center;
+  color: white;
+}

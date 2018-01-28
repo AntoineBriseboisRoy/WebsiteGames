@@ -1,35 +1,7 @@
-#horizontal-layout-content {
-  height: 200px;
-}
-
-.word-definition {
-  height: 28vh;
-}
-
-.square {
-  height: 10%;
-  width: 10%;
-  border: 1px solid black;
-  float: left;
-}
-
-.white-square {
-  background-color: white;
-}
-
-.numbered {
-  counter-increment: value;
-}
-
-  .numbered:nth-of-type(n)::before {
-    content: counter(value);
-    font-size: 0.8vw;
-  }
 
 #crossword-layout {
   margin: 2.5vw 0 0 3vw;
   padding: 0;
-  background-color: red;
 }
 
 .clear {

@@ -1,0 +1,13 @@
+<div *ngFor="let case of grid" class="square">
+  <div *ngIf="case.getValue()=='*'; then thenBlock else elseBlock"></div>
+  <ng-template #thenBlock>
+    <div class="black-square">
+    </div>
+  </ng-template>
+  <ng-template #elseBlock>
+    <div class="white-square">
+      <crossword-grid-case></crossword-grid-case>
+    </div>
+  </ng-template>
+</div>
+<button (click)="show()">heyyy</button>
