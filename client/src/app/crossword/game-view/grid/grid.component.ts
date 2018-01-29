@@ -10,33 +10,38 @@ import { GridCaseComponent } from './grid-case/grid-case.component'
 
 export class GridComponent implements OnInit {
 
-  private grid: Array<GridCaseComponent> = new Array(GRID_WIDTH * GRID_WIDTH); // = ["a","a","a","a","a","a","a"];
+  //private grid: Array<GridCaseComponent> = new Array(GRID_WIDTH * GRID_WIDTH); // = ["a","a","a","a","a","a","a"];
+  private grid: string[] = new Array(GRID_WIDTH * GRID_WIDTH);
   caseNumber: number = 0;
   constructor() {
-    
-  }
-  
-  setGrid(index: number, value: string) {
-    this.grid[index].value = value;
   }
 
   ngOnInit() {
     for (let i:number = 0; i < GRID_WIDTH * GRID_WIDTH; i++) {
-      this.grid[i] = new GridCaseComponent();// = i == 3 ? '*' : 'a';
+      this.grid[i] = "";//new GridCaseComponent();// = i == 3 ? '*' : 'a';
     }
   
-    //this.grid[0].value = "a";
+    this.grid[0] = "*";
+    this.grid[4] = "A";
+  }
+  
+  isABlackSquare(letter : string) : Boolean {
+    return letter == '*';
+  }
+
+  getCaseType(letter : string) : string {
+    return this.isABlackSquare(letter) ? "black-square" : "white-square";
+  }
+
+  setGrid(index: number, value: string) {
+    this.grid[index] = value;
   }
 
   incrementCaseNumber() {
     this.caseNumber++;
   }
-
-  changesd() {
-    this.grid[50].setValue("a");
-  }
+ 
   show() {
     alert('allo');
-    this.changesd();
   }
 }
