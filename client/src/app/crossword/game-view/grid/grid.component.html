@@ -1,11 +1,6 @@
 <div *ngFor="let case of grid" class="square">
   <div [ngClass]="getCaseType(case)">
-    <div class="numbered">
-      {{caseNumber}}
-    </div>
-    <div class="case-value">
-      {{case}}
-    </div>
+    <crossword-grid-case></crossword-grid-case>
   </div>
 </div>
 <button (click)="show()">heyyy</button>

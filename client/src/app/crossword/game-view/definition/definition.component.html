@@ -5,11 +5,7 @@
   <form>
     <div class="form-group">
       <select multiple class="form-control word-definition">
-        <option>1</option>
-        <option>2</option>
-        <option>3</option>
-        <option>4</option>
-        <option>5</option>
+        <option *ngFor="let definition of def" (click)="jsuisQui($event.currentTarget.value)">{{definition}}</option>
       </select>
     </div>
   </form>
@@ -21,11 +17,7 @@
   <form>
     <div class="form-group">
       <select multiple class="form-control word-definition">
-        <option>1</option>
-        <option>2</option>
-        <option>3</option>
-        <option>4</option>
-        <option>5</option>
+        <option *ngFor="let definition of def" (click)="jsuisQui($event.currentTarget.value)">{{definition}}</option>
       </select>
     </div>
   </form>

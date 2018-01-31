@@ -1,7 +1,7 @@
 import { Component, OnInit} from '@angular/core';
-import { GRID_WIDTH } from '../../../constants';
-import { GridCaseComponent } from './grid-case/grid-case.component'
-
+import { GridCaseComponent } from './grid-case/grid-case.component';
+import {Word} from './word';
+import { Position } from './position';
 @Component({
   selector: 'crossword-grid',
   templateUrl: './grid.component.html',
@@ -10,35 +10,40 @@ import { GridCaseComponent } from './grid-case/grid-case.component'
 
 export class GridComponent implements OnInit {
 
-  //private grid: Array<GridCaseComponent> = new Array(GRID_WIDTH * GRID_WIDTH); // = ["a","a","a","a","a","a","a"];
-  private grid: string[] = new Array(GRID_WIDTH * GRID_WIDTH);
-  caseNumber: number = 0;
-  constructor() {
+  private wordArray: Array<Word>; 
+  private caseNumber: number = 0;
+  private currentPosition: Position=new Position(0,0);
+  private mot:string[]=["aaaaa", "**", "aaa","sadasd", "*", "asd",
+                        "aaaaa", "**", "aaa","sadasd", "*", "asd", 
+                        "aaaaa", "**", "aaa","sadasd", "*", "asd",
+                        "aaaaa", "**", "aaa","sadasd", "*", "asd",
+                        "aaaaa", "**", "aaa","sadasd", "*", "asd"]
+  constructor(private width:number) {
   }
 
   ngOnInit() {
-    for (let i:number = 0; i < GRID_WIDTH * GRID_WIDTH; i++) {
-      this.grid[i] = "";//new GridCaseComponent();// = i == 3 ? '*' : 'a';
+    for(let i : number = 0; i < this.mot.length; ++i){
+      this.wordArray.push(new Word(i, this.currentPosition,this.mot[i]));
+      this.currentPosition.update(this.mot[i].length, this.width);
     }
-  
-    this.grid[0] = "*";
-    this.grid[4] = "A";
+
   }
   
   isABlackSquare(letter : string) : Boolean {
     return letter == '*';
   }
 
-  getCaseType(letter : string) : string {
-    return this.isABlackSquare(letter) ? "black-square" : "white-square";
+  getCaseType(letter: GridCaseComponent): string {
+    return this.isABlackSquare(letter.getValue()) ? "black-square" : "white-square";
   }
 
   setGrid(index: number, value: string) {
-    this.grid[index] = value;
+    this.grid[index].setValue(value);
   }
 
   incrementCaseNumber() {
     this.caseNumber++;
+    return true;
   }
  
   show() {
