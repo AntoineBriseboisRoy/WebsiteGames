@@ -3,6 +3,7 @@
   width: 4vw;
   border: 1px solid black;
   float: left;
+  text-transform: uppercase;
 }
 
 .white-square {
@@ -20,6 +21,6 @@
 
 .case-value {
   text-align: center;
-  text-transform: uppercase;
+  
   font-size: 2vw;
 }

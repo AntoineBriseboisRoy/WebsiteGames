@@ -7,12 +7,12 @@
   <div class="col-sm-1">
   </div>
   <div class="col-sm-2">
-    <h2>Mode:</h2>
-    <h4>Difficulty</h4>
+    <h2>{{"Mode: "+modeToString()}}</h2>
+    <h4>{{"Difficulty: "+this.gameManager.getDifficulty()}}</h4>
   </div>
   <div class="col-sm-1">
   </div>
-  <div *ngIf="multiplayer"class="col-sm-2">
+  <div *ngIf="this.gameManager.isMultiplayer()"class="col-sm-2">
     <crossword-player-information></crossword-player-information>
   </div>
   <div class="col-sm-2">

@@ -12,7 +12,6 @@ import { TopBarComponent } from './crossword/game-view/top-bar/top-bar.component
 import { PlayerInformationComponent } from './crossword/game-view/player-information/player-information.component';
 import { GridComponent } from './crossword/game-view/grid/grid.component';
 import { DefinitionComponent } from './crossword/game-view/definition/definition.component';
-import { GridCaseComponent } from './crossword/game-view/grid/grid-case/grid-case.component';
 import { FormsModule } from '@angular/forms';
 
 @NgModule({
@@ -23,8 +22,7 @@ import { FormsModule } from '@angular/forms';
         TopBarComponent,
         PlayerInformationComponent,
         GridComponent,
-        DefinitionComponent,
-        GridCaseComponent
+        DefinitionComponent
     ],
     imports: [
         BrowserModule,
