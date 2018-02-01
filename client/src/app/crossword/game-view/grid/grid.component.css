@@ -4,16 +4,20 @@
   border: 1px solid black;
   float: left;
   text-transform: uppercase;
+  display: block;
 }
 
 .white-square {
   background-color: white;
   height:100%;
+  text-align: center;
+  font-size: 3vw;
 }
 .black-square{
   background-color:black;
   height:100%;
   border:1px solid grey;
+  
 }
 /**/
 .numbered {
