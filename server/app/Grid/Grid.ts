@@ -1,7 +1,6 @@
 import { BlackSquare } from "./BlackSquare";
-import { PosXY } from './PosXY';
-import { Word, Orientation } from './Word';
-import { Dictionary } from './Dictionary';
+import { PosXY } from "./PosXY";
+import { Word, Orientation } from "./Word";
 
 // Should be centralized
 const BLACKSQUARE_CHARACTER: string = "*";
@@ -10,8 +9,8 @@ const MIN_LETTERS_FOR_WORD: number = 2;
 const MIN_WORDS_PER_LINE: number = 1;
 const MAX_WORDS_PER_LINE: number = 3;
 const MAX_BLACKSQUARE_RATIO: number = 0.4;
-
-type WordDefinitionTuple = [string, string];
+const NOT_FOUND: string = "NOT_FOUND_ERR";
+const MAX_BACKTRACK_ATTEMPS: number = 5;
 
 interface DictionaryEntry {
     word: string;
@@ -30,10 +29,10 @@ export class Grid {
     private words: Word[];
     private wordLengths: Word[];
 
-    constructor(private sideSize: number, private percentageOfBlackSquares: number) {
+    constructor(private sideSize: number, private percentageOfBlackSquares: number, private difficultyLevel: number) {
         this.initializeEmptyGrid();
         this.generateBlackSquares();
-        this.chooseWordsForGrid();
+        this.fillGridWithWords();
     }
 
     public get GridContent(): string[][] {
@@ -156,14 +155,59 @@ export class Grid {
         return !(this.gridContent[position.X][position.Y] === EMPTY_SQUARE);
     }
 
-    private chooseWordsForGrid(): void {
-        this.words = new Array<Word>();
+    private fillGridWithWords(): void {
+        const NOT_SET_BT_DEPTH: number = -1;
 
-        // WHILE Grid is not filled
-        //       findLongestFreeSpace
-        //       establishConstraints
-        //       findWordWithConstraints
-        //       addWordToGrid
+        this.words = new Array<Word>();
+        this.establishWordLengths();
+
+        const nBacktrackAttempts: number[] = new Array<number>(this.wordLengths.length).fill(0);
+        let i: number = 0, backtrackDepth: number = NOT_SET_BT_DEPTH;
+
+        while (this.words.length < this.wordLengths.length) {
+           while (i > 0) {
+                if (i + 1 < this.wordLengths.length) {
+                    if (nBacktrackAttempts[i + 1] >= MAX_BACKTRACK_ATTEMPS) {
+                        this.backtrack();
+                        ++nBacktrackAttempts[i];
+                        nBacktrackAttempts[i + 1] = 0;
+                        i--;
+                    }
+                }
+            }
+
+            // let longestFreeSpace: Word = this.wordLengths[i];
+            // let constraints: Array<Constraint> = this.establishConstraints(this.wordLengths[i]);
+           const entry: DictionaryEntry = this.findWordsWithConstraints(this.wordLengths[i].Length,
+                                                                        this.establishConstraints(this.wordLengths[i]));
+
+           if (entry.word === NOT_FOUND) {
+                if (backtrackDepth === NOT_SET_BT_DEPTH) {
+                    backtrackDepth = i;
+                }
+                this.backtrack();
+                ++nBacktrackAttempts[i];
+                i--;
+            } else {
+                this.addNewWord(new Word(this.wordLengths[i].Position, this.wordLengths[i].Orientation, entry.word, entry.definition));
+                if (i === backtrackDepth) {
+                    nBacktrackAttempts.fill(0);
+                    backtrackDepth = NOT_SET_BT_DEPTH;
+                }
+                i++;
+            }
+        }
+    }
+
+    private addNewWord (newWord: Word): void {
+        this.words.push(newWord);
+        for (let i: number = 0; i < newWord.Length; i++) {
+            if (newWord.Orientation === Orientation.Horizontal) {
+                this.gridContent[newWord.Position.X + i][newWord.Position.Y] = newWord[i];
+            } else {
+                this.gridContent[newWord.Position.X][newWord.Position.Y + i] = newWord[i];
+            }
+        }
     }
 
     // Refactor?
@@ -173,28 +217,26 @@ export class Grid {
             for (let j: number = 0; j < this.sideSize; j++) {
                 if (this.gridContent[i][j] === EMPTY_SQUARE) {
                     ++nLettersCol;
-                }
-                else {
-                    if (nLettersCol >= MIN_LETTERS_FOR_WORD){
-                        this.wordLengths.push(new Word(new PosXY(i, j), Orientation.Vertical, this.generateString(nLettersCol)));
+                } else {
+                    if (nLettersCol >= MIN_LETTERS_FOR_WORD) {
+                        this.wordLengths.push(new Word(new PosXY(i, j), Orientation.Vertical, this.generateString(nLettersCol), ""));
                         nLettersCol = 0;
                     }
                 }
-                if (this.gridContent[j][i] === EMPTY_SQUARE){
+                if (this.gridContent[j][i] === EMPTY_SQUARE) {
                     ++nLettersRow;
-                }
-                else {
-                    if (nLettersRow >= MIN_LETTERS_FOR_WORD){
-                        this.wordLengths.push(new Word(new PosXY(i, j), Orientation.Vertical, this.generateString(nLettersRow)));
+                } else {
+                    if (nLettersRow >= MIN_LETTERS_FOR_WORD) {
+                        this.wordLengths.push(new Word(new PosXY(i, j), Orientation.Vertical, this.generateString(nLettersRow), ""));
                         nLettersRow = 0;
                     }
                 }
 
                 if (nLettersCol >= MIN_LETTERS_FOR_WORD) {
-                    this.wordLengths.push(new Word(new PosXY(i, j), Orientation.Vertical, this.generateString(nLettersCol)));
+                    this.wordLengths.push(new Word(new PosXY(i, j), Orientation.Vertical, this.generateString(nLettersCol), ""));
                 }
                 if (nLettersRow >= MIN_LETTERS_FOR_WORD) {
-                    this.wordLengths.push(new Word(new PosXY(i, j), Orientation.Vertical, this.generateString(nLettersRow)));
+                    this.wordLengths.push(new Word(new PosXY(i, j), Orientation.Vertical, this.generateString(nLettersRow), ""));
                 }
             }
         }
@@ -202,82 +244,89 @@ export class Grid {
 
     private sortWordLengths(): void {
         this.wordLengths.sort((left: Word, right: Word): number => {
-            if (left.Length < right.Length){
+            if (left.Length < right.Length) {
                 return -1;
             }
-            if (left.Length > right.Length){
+            if (left.Length > right.Length) {
                 return 1;
-            }
-            else {
+            } else {
                 return 0;
             }
         });
     }
 
-    private establishConstraints(nextWord: Word): Dictionary<string> {
-        let constraints: Dictionary<string> = new Dictionary<string>()
+    private establishConstraints(nextWord: Word): Array<Constraint> {
+        const constraints: Constraint[] = new Array<Constraint>();
 
-        for (let i = 0; i < nextWord.Length; i++) {
-            if (nextWord.Orientation === Orientation.Horizontal) {
-                let currentChar: string = this.gridContent[nextWord.Position.X][i + nextWord.Position.Y];
-                if (currentChar !== EMPTY_SQUARE) {
-                    constraints.add(i, currentChar)
-                }
-            }
-            else {
-                this.gridContent[i + nextWord.Position.X][nextWord.Position.Y];
+        for (let i: number = 0; i < nextWord.Length; i++) {
+            const currentChar: string = (nextWord.Orientation === Orientation.Horizontal) ?
+                this.gridContent[nextWord.Position.X][i + nextWord.Position.Y] :
+                this.gridContent[nextWord.Position.X + i][nextWord.Position.Y];
+            if (currentChar !== EMPTY_SQUARE) {
+                constraints.push({position: i, letter: currentChar});
             }
         }
 
         return constraints;
     }
 
-    private findWordsWithConstraints(length: number, requiredLettersPositions: Constraint[]): WordDefinitionTuple {
+    private findWordsWithConstraints(length: number, requiredLettersPositions: Constraint[]): DictionaryEntry {
 
         // QUERY word DB
         // IF no word found THEN
         //    Backtrack
 
-        let word: WordDefinitionTuple = this.searchWordsTemporaryDB(length, requiredLettersPositions);
-        if (word === null){
-            this.backtrack()
-        }
+        let word: DictionaryEntry;
+        do {
+            word = this.searchWordsTemporaryDB(length, requiredLettersPositions, this.difficultyLevel);
+            if (word === null) {
+                return { word: NOT_FOUND, definition: "" };
+            }
+        } while (this.verifyAlreadyUsedWord(word.word));
 
         return word;
     }
 
-    //Temporary, to be replaced when we have a lexical service
-    private searchWordsTemporaryDB(length: number, requiredLettersPositions: Constraint[]): WordDefinitionTuple {
-        let data: DictionaryEntry[] = require("./dbWords.json");
-        let searchResults: DictionaryEntry[] = data.filter(entry => this.constraintFilter(entry, length, requiredLettersPositions));
-        return searchResults.length === 0 ? null : [searchResults[0].word, searchResults[0].definition];
+    private verifyAlreadyUsedWord(wordToCheck: string): boolean {
+        return this.words.filter((word: Word) => word.Content === wordToCheck).length > 0;
     }
 
-    private constraintFilter(entry: DictionaryEntry, length: number, requiredLettersPositions: Constraint[]){
+    // Temporary, to be replaced when we have a lexical service
+    private searchWordsTemporaryDB(length: number, requiredLettersPositions: Constraint[],
+                                   difficultyLevel: number /*dead parameter, we'll need eventually'*/): DictionaryEntry {
+        const data: DictionaryEntry[] = require("./dbWords.json");
+        const searchResults: DictionaryEntry[] = data.filter((entry: DictionaryEntry) => {
+            this.constraintFilter(entry, length, requiredLettersPositions); }
+        );
+
+        return searchResults.length === 0 ? null : {word: searchResults[0].word, definition: searchResults[0].definition};
+    }
+
+    private constraintFilter(entry: DictionaryEntry, length: number, requiredLettersPositions: Constraint[]): boolean {
         let passesFilter: boolean = true;
-        if (entry.word.length != length){
+        if (entry.word.length !== length) {
             passesFilter = false;
         }
-        requiredLettersPositions.forEach(constraint => {
-            if (entry.word[constraint.position] != constraint.letter) {
+        requiredLettersPositions.forEach((constraint: Constraint) => {
+            if (entry.word[constraint.position] !== constraint.letter) {
                 passesFilter = false;
             }
         });
+
         return passesFilter;
     }
 
     // Should we instead consider removing only words that are connected to the "impossible" one? (And still use reverse order)
     private backtrack(): void {
-        let lastWord: Word = this.removeLastWordFromWordArray();
+        const lastWord: Word = this.removeLastWordFromWordArray();
         this.removeLastWordFromGrid(lastWord);
     }
 
     private removeLastWordFromGrid(lastWord: Word): void {
-        for (let i = 0; i < lastWord.Length; i++) {
+        for (let i: number = 0; i < lastWord.Length; i++) {
             if (lastWord.Orientation === Orientation.Horizontal) {
                 this.gridContent[lastWord.Position.X][i + lastWord.Position.Y] = EMPTY_SQUARE;
-            }
-            else {
+            } else {
                 this.gridContent[i + lastWord.Position.X][lastWord.Position.Y] = EMPTY_SQUARE;
             }
         }
@@ -305,10 +354,11 @@ export class Grid {
     }
 
     private generateString(length: number): string {
-        let newStr: string = "";
-        for (let i = 0; i < length; i++) {
+        const newStr: string = "";
+        for (let i: number = 0; i < length; i++) {
             newStr.concat(EMPTY_SQUARE);
         }
+
         return newStr;
     }
 }
