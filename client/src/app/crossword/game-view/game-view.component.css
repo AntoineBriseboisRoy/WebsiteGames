@@ -4,22 +4,12 @@
   padding: 0;
 }
 
-.clear {
-  clear: both;
-}
-
-.answer-char {
-  text-align: center;
-  background-color: red;
-  padding: 0;
-  margin: 0;
-  text-transform: uppercase;
-}
-
 #game-page {
   background-image: url("../images/background.jpg");
+  height: 100%;
+  width: 100%;
   background-position: center center;
   background-repeat: no-repeat;
   background-attachment: fixed;
-  background-size: cover;
+  background-size: cover; 
 }

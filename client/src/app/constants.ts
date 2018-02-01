@@ -7,7 +7,7 @@ export const RAD_TO_DEG: number = STRAIGHT_ANGLE_DEG / Math.PI;
 export const GRID_WIDTH: number = 10;
 // tslint:disable-next-line:no-magic-numbers
 export const PI_OVER_2: number = Math.PI / 2;
-
+export const BLACK_CHAR: string = "*";
 export const enum Difficulty {
     Easy = "Easy",
     Normal = "Normal",

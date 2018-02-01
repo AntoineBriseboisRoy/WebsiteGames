@@ -8,9 +8,13 @@ import { Player } from "../../player"
 })
 export class PlayerInformationComponent implements OnInit {
 
-  player: Player = {
+  playerOne: Player = {
     name: "Claudia",
     point: 0
+  };
+  playerTwo: Player = {
+    name: "Antoine",
+    point: 100
   };
   multiplayer: boolean = false;
   constructor() { }

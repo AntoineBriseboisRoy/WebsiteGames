@@ -1,9 +1,20 @@
-<div *ngFor="let word of wordArray">
+<!-- <div *ngFor="let word of wordArray">
   <div *ngFor="let case of word.getValue()" class="square">
     <div [ngClass]="getCaseType(case)">
-      <div *ngIf="!isABlackSquare(case)">   <!-- remove the "*" in all black square -->
+      <div *ngIf="!isABlackSquare(case)">   remove the "*" in all black square
         <p>{{case}}</p>
       </div>
+    </div>
+  </div>
+</div> -->
+
+<div *ngFor="let case of cellArray" class="square">
+  <div [ngClass]="getCaseType(case.isBlackSquare())">
+    <div *ngIf="!case.isBlackSquare()"> <!-- remove the "*" in all black square -->
+      <div *ngIf="case.hasAnIndex()" class="case-index">
+        {{case.getIndex()}}
+      </div>
+      <p class="case-main-content">{{case.getContent()}}</p>
     </div>
   </div>
 </div>

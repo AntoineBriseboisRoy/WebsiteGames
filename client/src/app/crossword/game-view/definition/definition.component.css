@@ -1,8 +1,8 @@
-#horizontal-layout-content {
-  height: 200px;
-}
+
 
 .word-definition {
+  font-family: 'Times New Roman', Times, serif;
+  font-size: 125%;
   height: 28vh;
 }
 

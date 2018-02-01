@@ -10,21 +10,23 @@
 .white-square {
   background-color: white;
   height:100%;
-  text-align: center;
-  font-size: 3vw;
 }
+
+
+.case-main-content{
+  font-size: 3vw;
+  text-align: right;
+  padding-right: 0.8vw;
+}
+
 .black-square{
   background-color:black;
   height:100%;
   border:1px solid grey;
   
 }
-/**/
-.numbered {
-}
 
-.case-value {
-  text-align: center;
-  
-  font-size: 2vw;
+.case-index {
+  float:left;
+  font-size: 1vw;
 }

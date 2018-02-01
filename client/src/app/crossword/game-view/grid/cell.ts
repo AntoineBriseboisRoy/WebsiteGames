@@ -1,15 +1,25 @@
 import {OnInit } from '@angular/core';
 
 export class Cell implements OnInit {
-    constructor(private id : number, private hasId : boolean, private content : string) {
+    constructor(private index : number, private hasIndex : boolean, private content : string, private isBlack:boolean) {
     }
   
     ngOnInit() {
     }
 
-    public getValue() : Array<string> {
-      console.log(this.id);
-      return this.content.split("");
+    public getIndex() : number {
+        return this.index;
     }
 
+    public hasAnIndex() : boolean {
+        return this.hasIndex;
+    }
+
+    public getContent() : string {
+        return this.content;
+    }
+
+    public isBlackSquare() : boolean {
+        return this.isBlack;
+    }
 }

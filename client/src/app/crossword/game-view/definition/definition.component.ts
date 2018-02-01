@@ -6,11 +6,11 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./definition.component.css']
 })
 export class DefinitionComponent implements OnInit {
-  private def: string[] = ["allo", "fuck", "ca suffit", "vive angular"];
+  private horizontalDefs: string[] = ["1. Lorem ipsum dolor sit amet, et", "2.  sea. Cu harum dolor fabellas", "3. Ea decore copiosae recusabo quo.", "666. vive angular"];
+  private verticalDefs: string[] = ["1.  sea. Cu harum dolor fabellas", "2. Ea decore copiosae recusabo quo. ", "3. Lorem ipsum dolor sit amet, et", "666. vive angular"];
   constructor() { }
 
   ngOnInit() {
-    this.def[2] = "heyyy";
   }
  
   jsuisQui(value:any) {
