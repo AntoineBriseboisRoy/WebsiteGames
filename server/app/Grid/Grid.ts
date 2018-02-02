@@ -1,26 +1,8 @@
 import { BlackSquare } from "./BlackSquare";
 import { PosXY } from "./PosXY";
 import { Word, Orientation } from "./Word";
-
-// Should be centralized
-const BLACKSQUARE_CHARACTER: string = "*";
-const EMPTY_SQUARE: string = "#";
-const MIN_LETTERS_FOR_WORD: number = 2;
-const MIN_WORDS_PER_LINE: number = 1;
-const MAX_WORDS_PER_LINE: number = 3;
-const MAX_BLACKSQUARE_RATIO: number = 0.4;
-const NOT_FOUND: string = "NOT_FOUND_ERR";
-const MAX_BACKTRACK_ATTEMPS: number = 5;
-
-export interface DictionaryEntry {
-    word: string;
-    definition: string;
-}
-
-export interface Constraint {
-    letter: string;
-    position: number;
-}
+import { DictionaryEntry, Constraint } from "./Interfaces";
+import "./Constants";
 
 export class Grid {
 
@@ -30,9 +12,11 @@ export class Grid {
     private wordLengths: Word[];
 
     constructor(private sideSize: number, private percentageOfBlackSquares: number, private difficultyLevel: number) {
-        this.initializeEmptyGrid();
-        this.generateBlackSquares();
-        this.fillGridWithWords();
+        do {
+            this.initializeEmptyGrid();
+            this.generateBlackSquares();
+        } while (!this.verifyBlackSquareGrid());
+        this.startFillingGrid();
     }
 
     public get GridContent(): string[][] {
@@ -49,10 +33,6 @@ export class Grid {
 
     public get SideSize(): number {
         return this.sideSize;
-    }
-
-    public getGridLine(lineNumber: number): string[] {
-        return this.gridContent[lineNumber];
     }
 
     private initializeEmptyGrid(): void {
@@ -72,13 +52,6 @@ export class Grid {
                 this.gridContent[tempPosition.Y][tempPosition.X] = BLACKSQUARE_CHARACTER;
             }
         }
-
-        /*let nBlackSquares: number = Math.floor(this.percentageOfBlackSquares * this.sideSize * this.sideSize);
-        while (nBlackSquares-- > 0) {
-            const tmpPosition: PosXY = this.randomPositionGenerator();
-            this.blackSquares.push(new BlackSquare(tmpPosition));
-            this.gridContent[tmpPosition.getX()][tmpPosition.getY()] = BLACKSQUARE_CHARACTER;
-        }*/
     }
 
     private verifyBlackSquareGrid(): boolean {
@@ -105,8 +78,6 @@ export class Grid {
         return true;
     }
 
-    // To refactor
-    // What happens if no BS is hit?
     private correctNumberWords(): boolean {
         for (let i: number = 0; i < this.sideSize; ++i) {
             let nEmptySquaresRow: number = 0, nWordsRow: number = 0, nEmptySquaresCol: number, nWordsCol: number = 0;
@@ -155,47 +126,42 @@ export class Grid {
         return !(this.gridContent[position.X][position.Y] === EMPTY_SQUARE);
     }
 
-    private fillGridWithWords(): void {
-        const NOT_SET_BT_DEPTH: number = -1;
-
-        this.words = new Array<Word>();
+    private startFillingGrid(): void {
         this.establishWordLengths();
+        this.sortWordLengths();
 
-        const nBacktrackAttempts: number[] = new Array<number>(this.wordLengths.length).fill(0);
-        let i: number = 0, backtrackDepth: number = NOT_SET_BT_DEPTH;
+        while (this.fillGridWithWords()) {
+            // Do nothing
+        }
+    }
 
-        while (this.words.length < this.wordLengths.length) {
-           while (i > 0) {
-                if (i + 1 < this.wordLengths.length) {
-                    if (nBacktrackAttempts[i + 1] >= MAX_BACKTRACK_ATTEMPS) {
-                        this.backtrack();
-                        ++nBacktrackAttempts[i];
-                        nBacktrackAttempts[i + 1] = 0;
-                        i--;
-                    }
-                }
-            }
+    private fillGridWithWords(): boolean {
+        if (this.wordLengths.length === 0) {
+            return true;
+        }
+        const longestFreeSpace: Word = this.wordLengths.pop();
+        const entry: DictionaryEntry = this.findWordsWithConstraints(longestFreeSpace.Length,
+                                                                     this.establishConstraints(longestFreeSpace));
 
-            // let longestFreeSpace: Word = this.wordLengths[i];
-            // let constraints: Array<Constraint> = this.establishConstraints(this.wordLengths[i]);
-           const entry: DictionaryEntry = this.findWordsWithConstraints(this.wordLengths[i].Length,
-                                                                        this.establishConstraints(this.wordLengths[i]));
+        if (entry.word === NOT_FOUND) {
+            this.wordLengths.push(longestFreeSpace);
 
-           if (entry.word === NOT_FOUND) {
-                if (backtrackDepth === NOT_SET_BT_DEPTH) {
-                    backtrackDepth = i;
-                }
+            return false;
+        }
+        this.addNewWord(new Word(longestFreeSpace.Position, longestFreeSpace.Orientation, entry.word, entry.definition));
+
+        if (!this.fillGridWithWords()) {
+            this.wordLengths.push(longestFreeSpace);
+            if (!this.fillGridWithWords()) {
+                this.wordLengths.push(longestFreeSpace);
                 this.backtrack();
-                ++nBacktrackAttempts[i];
-                i--;
+
+                return false;
             } else {
-                this.addNewWord(new Word(this.wordLengths[i].Position, this.wordLengths[i].Orientation, entry.word, entry.definition));
-                if (i === backtrackDepth) {
-                    nBacktrackAttempts.fill(0);
-                    backtrackDepth = NOT_SET_BT_DEPTH;
-                }
-                i++;
+                return true;
             }
+        } else {
+            return true;
         }
     }
 
@@ -210,7 +176,6 @@ export class Grid {
         }
     }
 
-    // Refactor?
     private establishWordLengths(): void {
         for (let i: number = 0; i < this.sideSize; i++) {
             let nLettersCol: number = 0, nLettersRow: number = 0;
@@ -316,7 +281,6 @@ export class Grid {
         return passesFilter;
     }
 
-    // Should we instead consider removing only words that are connected to the "impossible" one? (And still use reverse order)
     private backtrack(): void {
         const lastWord: Word = this.removeLastWordFromWordArray();
         this.removeLastWordFromGrid(lastWord);
