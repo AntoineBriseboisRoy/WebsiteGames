@@ -32,7 +32,7 @@ export class Grid {
     constructor(private sideSize: number, private percentageOfBlackSquares: number, private difficultyLevel: number) {
         this.initializeEmptyGrid();
         this.generateBlackSquares();
-        this.fillGridWithWords();
+        this.startFillingGrid();
     }
 
     public get GridContent(): string[][] {
@@ -155,47 +155,41 @@ export class Grid {
         return !(this.gridContent[position.X][position.Y] === EMPTY_SQUARE);
     }
 
-    private fillGridWithWords(): void {
-        const NOT_SET_BT_DEPTH: number = -1;
-
-        this.words = new Array<Word>();
+    private startFillingGrid(): void {
         this.establishWordLengths();
+        this.sortWordLengths();
 
-        const nBacktrackAttempts: number[] = new Array<number>(this.wordLengths.length).fill(0);
-        let i: number = 0, backtrackDepth: number = NOT_SET_BT_DEPTH;
+        while(this.fillGridWithWords()) {
+            // Do nothing
+        }
+    }
 
-        while (this.words.length < this.wordLengths.length) {
-           while (i > 0) {
-                if (i + 1 < this.wordLengths.length) {
-                    if (nBacktrackAttempts[i + 1] >= MAX_BACKTRACK_ATTEMPS) {
-                        this.backtrack();
-                        ++nBacktrackAttempts[i];
-                        nBacktrackAttempts[i + 1] = 0;
-                        i--;
-                    }
-                }
-            }
+    private fillGridWithWords(): boolean {
+        if(this.wordLengths.length === 0) {
+            return true;
+        }
+        let longestFreeSpace: Word = this.wordLengths.pop();
+        // let constraints: Array<Constraint> = this.establishConstraints(this.wordLengths[i]);
+        const entry: DictionaryEntry = this.findWordsWithConstraints(longestFreeSpace.Length,
+                                                            this.establishConstraints(longestFreeSpace));
 
-            // let longestFreeSpace: Word = this.wordLengths[i];
-            // let constraints: Array<Constraint> = this.establishConstraints(this.wordLengths[i]);
-           const entry: DictionaryEntry = this.findWordsWithConstraints(this.wordLengths[i].Length,
-                                                                        this.establishConstraints(this.wordLengths[i]));
-
-           if (entry.word === NOT_FOUND) {
-                if (backtrackDepth === NOT_SET_BT_DEPTH) {
-                    backtrackDepth = i;
-                }
+        if(entry.word === NOT_FOUND) {
+            this.wordLengths.push(longestFreeSpace);
+            return false;
+        }
+        this.addNewWord(new Word(longestFreeSpace.Position, longestFreeSpace.Orientation, entry.word, entry.definition));
+        
+        if(!this.fillGridWithWords()) {
+            this.wordLengths.push(longestFreeSpace);
+            if(!this.fillGridWithWords()) {
+                this.wordLengths.push(longestFreeSpace);
                 this.backtrack();
-                ++nBacktrackAttempts[i];
-                i--;
+                return false;
             } else {
-                this.addNewWord(new Word(this.wordLengths[i].Position, this.wordLengths[i].Orientation, entry.word, entry.definition));
-                if (i === backtrackDepth) {
-                    nBacktrackAttempts.fill(0);
-                    backtrackDepth = NOT_SET_BT_DEPTH;
-                }
-                i++;
+                return true;
             }
+        } else {
+            return true;
         }
     }
 
