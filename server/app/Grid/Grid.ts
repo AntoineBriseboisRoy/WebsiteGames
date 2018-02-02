@@ -1,27 +1,7 @@
 import { BlackSquare } from "./BlackSquare";
 import { PosXY } from "./PosXY";
 import { Word, Orientation } from "./Word";
-
-// Should be centralized
-const BLACKSQUARE_CHARACTER: string = "*";
-const EMPTY_SQUARE: string = "#";
-const MIN_LETTERS_FOR_WORD: number = 2;
-const MIN_WORDS_PER_LINE: number = 1;
-const MAX_WORDS_PER_LINE: number = 3;
-const MAX_BLACKSQUARE_RATIO: number = 0.4;
-const NOT_FOUND: string = "NOT_FOUND_ERR";
-const MAX_BACKTRACK_ATTEMPS: number = 5;
-
-interface DictionaryEntry {
-    word: string;
-    definition: string;
-}
-
-interface Constraint {
-    letter: string;
-    position: number;
-}
-
+import { DictionaryEntry, Constraint } from "./Interfaces";
 export class Grid {
 
     private gridContent: string[][];
@@ -51,10 +31,6 @@ export class Grid {
 
     public get SideSize(): number {
         return this.sideSize;
-    }
-
-    public getGridLine(lineNumber: number): string[] {
-        return this.gridContent[lineNumber];
     }
 
     private initializeEmptyGrid(): void {
