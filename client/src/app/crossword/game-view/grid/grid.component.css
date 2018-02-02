@@ -1,10 +1,12 @@
 .square {
-  height: 4vw;
-  width: 4vw;
+  height: 3.8vw;
+  width: 3.8vw;
   border: 1px solid black;
   float: left;
   text-transform: uppercase;
   display: block;
+  min-height: 3vh;
+  min-width: 3vh;
 }
 
 .white-square {
@@ -12,11 +14,14 @@
   height:100%;
 }
 
+.clear {
+  clear: both;
+}
 
 .case-main-content{
-  font-size: 3vw;
-  text-align: right;
-  padding-right: 0.8vw;
+  font-size: 2.7vw;
+  text-align: center;
+  /* padding-right: 0.5vw; */
 }
 
 .black-square{

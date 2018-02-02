@@ -1,10 +1,7 @@
 import {OnInit } from '@angular/core';
 import {Position} from './position';
-import {Cell} from './cell';
 
 export class Word implements OnInit {
-    private cell: Array<Cell>;
-    private cellHasId:boolean=true;
     constructor(private id : number, private startPos : Position, private content : string) {
       }
 

@@ -13,6 +13,7 @@ export class TopBarComponent implements OnInit {
   private player: PlayerInformationComponent = new PlayerInformationComponent();
   constructor() { }
   ngOnInit() {
+    console.log(this.player);
   }
   modeToString():string{
     return this.gameManager.isMultiplayer()?"Two Players":"Single Player";

@@ -56,16 +56,13 @@ export class GridComponent implements OnInit {
   }
 
   lineJump(index:number) :string{
-    return (index%5) == 0?"clear":"";
+    return (index%this.width) == 0?"square clear":"square";
   }
+
   isABlackSquare(letter : string) : boolean {
     return letter == BLACK_CHAR;
   }
  
-  // getCaseType(letter: string): string {
-  //   return this.isABlackSquare(letter) ? "black-square" : "white-square";
-  // }
-
   getCaseType(isBlack: boolean): string {
     return isBlack ? "black-square" : "white-square";
   }

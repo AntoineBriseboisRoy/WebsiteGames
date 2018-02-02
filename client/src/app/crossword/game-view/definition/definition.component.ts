@@ -11,6 +11,8 @@ export class DefinitionComponent implements OnInit {
   constructor() { }
 
   ngOnInit() {
+    console.log(this.horizontalDefs);
+    console.log(this.verticalDefs);
   }
  
   jsuisQui(value:any) {
