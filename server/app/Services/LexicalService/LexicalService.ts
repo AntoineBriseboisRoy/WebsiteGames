@@ -79,14 +79,3 @@ export class LexicalService {
         return this.filterWords(difficulty);
     }
 }
-
-
-//Main Shizzle: 
-let service: LexicalService = new LexicalService();
-let result: Array<WordAndDefinition> = new Array<WordAndDefinition>();
-
-async function pomme() {
-    let x;
-    console.log(await service.searchWord("a?d?????", HARD));
-}
-pomme();
