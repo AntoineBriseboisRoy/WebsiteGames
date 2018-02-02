@@ -1,0 +1,24 @@
+<div id="horizontal-layout">
+  <div class="title-layout-name">
+    <h4>Horizontal</h4>
+  </div>
+  <form>
+    <div class="form-group">
+      <select multiple class="form-control word-definition">
+        <option *ngFor="let definition of horizontalDefs" (click)="jsuisQui($event.currentTarget.value)">{{definition}}</option>
+      </select>
+    </div>
+  </form>
+</div>
+<div id="vertical-layout">
+  <div class="title-layout-name">
+    <h4>Vertical</h4>
+  </div>
+  <form>
+    <div class="form-group">
+      <select multiple class="form-control word-definition">
+        <option *ngFor="let definition of verticalDefs" (click)="jsuisQui($event.currentTarget.value)">{{definition}}</option>
+      </select>
+    </div>
+  </form>
+</div>

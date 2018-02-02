@@ -1,0 +1,15 @@
+
+#crossword-layout {
+  margin: 2.5vw 0 0 3vw;
+  padding: 0;
+}
+
+#game-page {
+  background-image: url("../images/backgroundXP.jpg");
+  height: 100%;
+  width: 100%;
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-size: cover; 
+}
