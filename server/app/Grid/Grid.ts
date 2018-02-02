@@ -30,8 +30,10 @@ export class Grid {
     private wordLengths: Word[];
 
     constructor(private sideSize: number, private percentageOfBlackSquares: number, private difficultyLevel: number) {
-        this.initializeEmptyGrid();
-        this.generateBlackSquares();
+        do {
+            this.initializeEmptyGrid();
+            this.generateBlackSquares();
+        } while(!this.verifyBlackSquareGrid());
         this.startFillingGrid();
     }
 
