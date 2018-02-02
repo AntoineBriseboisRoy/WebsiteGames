@@ -12,12 +12,12 @@ const MAX_BLACKSQUARE_RATIO: number = 0.4;
 const NOT_FOUND: string = "NOT_FOUND_ERR";
 const MAX_BACKTRACK_ATTEMPS: number = 5;
 
-interface DictionaryEntry {
+export interface DictionaryEntry {
     word: string;
     definition: string;
 }
 
-interface Constraint {
+export interface Constraint {
     letter: string;
     position: number;
 }

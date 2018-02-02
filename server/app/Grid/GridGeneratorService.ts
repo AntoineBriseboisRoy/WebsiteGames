@@ -19,9 +19,11 @@ export class GridGeneratorService {
         return this.grid;
     }
 
-    public generateNewGrid(size: number, percentageBlackSquares: number): Grid {
-        this.grid = new Grid(size, percentageBlackSquares);
+    public generateNewGrid(size: number, percentageBlackSquares: number, difficulty: number): Grid {
+        this.grid = new Grid(size, percentageBlackSquares, difficulty);
 
         return this.grid;
     }
+
+    // TODO: Add a socket system
 }
