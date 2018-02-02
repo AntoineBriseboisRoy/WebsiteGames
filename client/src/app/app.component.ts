@@ -12,7 +12,6 @@ export class AppComponent implements OnInit {
 
     public constructor(private basicService: BasicService) { }
 
-    public readonly title: string = "SCAMOW";
     public message: string;
 
     public ngOnInit(): void {
