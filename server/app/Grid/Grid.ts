@@ -72,13 +72,6 @@ export class Grid {
                 this.gridContent[tempPosition.Y][tempPosition.X] = BLACKSQUARE_CHARACTER;
             }
         }
-
-        /*let nBlackSquares: number = Math.floor(this.percentageOfBlackSquares * this.sideSize * this.sideSize);
-        while (nBlackSquares-- > 0) {
-            const tmpPosition: PosXY = this.randomPositionGenerator();
-            this.blackSquares.push(new BlackSquare(tmpPosition));
-            this.gridContent[tmpPosition.getX()][tmpPosition.getY()] = BLACKSQUARE_CHARACTER;
-        }*/
     }
 
     private verifyBlackSquareGrid(): boolean {
@@ -105,8 +98,6 @@ export class Grid {
         return true;
     }
 
-    // To refactor
-    // What happens if no BS is hit?
     private correctNumberWords(): boolean {
         for (let i: number = 0; i < this.sideSize; ++i) {
             let nEmptySquaresRow: number = 0, nWordsRow: number = 0, nEmptySquaresCol: number, nWordsCol: number = 0;
@@ -169,7 +160,6 @@ export class Grid {
             return true;
         }
         let longestFreeSpace: Word = this.wordLengths.pop();
-        // let constraints: Array<Constraint> = this.establishConstraints(this.wordLengths[i]);
         const entry: DictionaryEntry = this.findWordsWithConstraints(longestFreeSpace.Length,
                                                             this.establishConstraints(longestFreeSpace));
 
@@ -204,7 +194,6 @@ export class Grid {
         }
     }
 
-    // Refactor?
     private establishWordLengths(): void {
         for (let i: number = 0; i < this.sideSize; i++) {
             let nLettersCol: number = 0, nLettersRow: number = 0;
@@ -310,7 +299,6 @@ export class Grid {
         return passesFilter;
     }
 
-    // Should we instead consider removing only words that are connected to the "impossible" one? (And still use reverse order)
     private backtrack(): void {
         const lastWord: Word = this.removeLastWordFromWordArray();
         this.removeLastWordFromGrid(lastWord);
