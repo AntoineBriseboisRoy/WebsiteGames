@@ -154,6 +154,7 @@ describe("Verifying 4x4 Grid (with black squares)", () => {
     it("Should be full", () => {
         let nLetters: number = 0;
         const SIDE_SIZE: number = 4;
+        const expectedNBlackSquares: number = SIDE_SIZE * SIDE_SIZE * cst.PERCENTAGE_BLACK_SQUARES;
         const testGrid: Grid = new Grid(SIDE_SIZE, 0, 1);
         testGrid.GridContent.forEach((row: string[]) => {
             row.forEach((letter: string) => {
@@ -162,7 +163,7 @@ describe("Verifying 4x4 Grid (with black squares)", () => {
                 }
             });
         });
-        expect(nLetters).to.equal(Math.pow(SIDE_SIZE, 2) - testGrid.BlackSquares.length);
+        expect(nLetters).to.equal(Math.pow(SIDE_SIZE, 2) - expectedNBlackSquares);
     });
     // tslint:disable-next-line:max-func-body-length
     it("Should have at least 1 valid word per row/column", () => {
@@ -219,10 +220,6 @@ describe("Verifying 4x4 Grid (with black squares)", () => {
 });
 
 describe("Verifying Grid's BlackSquare generation.", () => {
-    it ("Should have the correct percentage of BlackSquares.", () => {
-      const testGrid: Grid = new Grid(10, cst.PERCENTAGE_BLACK_SQUARES, 1);
-      expect(testGrid.BlackSquares.length).to.equal(cst.PERCENTAGE_BLACK_SQUARES * 10);
-    });
     it ("Should create BlackSquares that are symmetrical with the diagonal.", () => {
         const testGrid: Grid = new Grid(10, cst.PERCENTAGE_BLACK_SQUARES, 1);
         let symmetrical: boolean = true;
