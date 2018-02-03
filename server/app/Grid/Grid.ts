@@ -3,8 +3,6 @@ import { PosXY } from "./PosXY";
 import { Word, Orientation } from "./Word";
 import { DictionaryEntry, Constraint } from "./Interfaces";
 import * as cst from "./Constants";
-
-import { Printer } from "./Grid.spec";
 export class Grid {
 
     private gridContent: string[][];
@@ -44,7 +42,7 @@ export class Grid {
                 this.gridContent[i][j] = cst.EMPTY_SQUARE;
             }
         }
-        this.gridContent.fill(new Array(this.sideSize).fill(cst.EMPTY_SQUARE));
+        // this.gridContent.fill(new Array(this.sideSize).fill(cst.EMPTY_SQUARE));
 
         this.blackSquares = new Array<BlackSquare>();
         this.words = new Array<Word>();
@@ -154,7 +152,6 @@ export class Grid {
         const longestFreeSpace: Word = this.wordLengths.pop();
         const entry: DictionaryEntry = this.findWordsWithConstraints(longestFreeSpace.Length,
                                                                      this.establishConstraints(longestFreeSpace));
-
         if (entry.word === cst.NOT_FOUND) {
             this.wordLengths.push(longestFreeSpace);
 
@@ -179,11 +176,12 @@ export class Grid {
 
     private addNewWord (newWord: Word): void {
         this.words.push(newWord);
+
         for (let i: number = 0; i < newWord.Length; i++) {
-            if (newWord.Orientation === Orientation.Horizontal) {
-                this.gridContent[newWord.Position.X + i][newWord.Position.Y] = newWord[i];
+            if (newWord.Orientation === Orientation.Vertical) {
+                this.gridContent[newWord.Position.X + i][newWord.Position.Y] = newWord.Content[i];
             } else {
-                this.gridContent[newWord.Position.X][newWord.Position.Y + i] = newWord[i];
+                this.gridContent[newWord.Position.X][newWord.Position.Y + i] = newWord.Content[i];
             }
         }
     }
@@ -235,7 +233,6 @@ export class Grid {
 
     private establishConstraints(nextWord: Word): Array<Constraint> {
         const constraints: Constraint[] = new Array<Constraint>();
-
         for (let i: number = 0; i < nextWord.Length; i++) {
             const currentChar: string = (nextWord.Orientation === Orientation.Horizontal) ?
                 this.gridContent[nextWord.Position.X][i + nextWord.Position.Y] :
