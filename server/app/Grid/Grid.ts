@@ -4,6 +4,7 @@ import { Word, Orientation } from "./Word";
 import { DictionaryEntry, Constraint } from "./Interfaces";
 import * as cst from "./Constants";
 
+import { Printer } from "./Grid.spec";
 export class Grid {
 
     private gridContent: string[][];
@@ -141,7 +142,7 @@ export class Grid {
         this.establishWordLengths();
         this.sortWordLengths();
 
-        while (this.fillGridWithWords()) {
+        while (!this.fillGridWithWords()) {
             // Do nothing
         }
     }
@@ -189,13 +190,14 @@ export class Grid {
 
     private establishWordLengths(): void {
         for (let i: number = 0; i < this.sideSize; i++) {
-            let nLettersCol: number = 0, nLettersRow: number = 0;
+            let nLettersCol: number = 0, nLettersRow: number = 0, lastBlacksquarePosRow: number = 0, lastBlacksquarePosCol: number = 0;
             for (let j: number = 0; j < this.sideSize; j++) {
                 if (this.gridContent[i][j] === cst.EMPTY_SQUARE) {
                     ++nLettersCol;
                 } else {
                     if (nLettersCol >= cst.MIN_LETTERS_FOR_WORD) {
                         this.wordLengths.push(new Word(new PosXY(i, j), Orientation.Vertical, this.generateString(nLettersCol), ""));
+                        lastBlacksquarePosCol = j;
                         nLettersCol = 0;
                     }
                 }
@@ -203,17 +205,17 @@ export class Grid {
                     ++nLettersRow;
                 } else {
                     if (nLettersRow >= cst.MIN_LETTERS_FOR_WORD) {
-                        this.wordLengths.push(new Word(new PosXY(i, j), Orientation.Vertical, this.generateString(nLettersRow), ""));
+                        this.wordLengths.push(new Word(new PosXY(j, i), Orientation.Vertical, this.generateString(nLettersRow), ""));
+                        lastBlacksquarePosRow = i;
                         nLettersRow = 0;
                     }
                 }
-
-                if (nLettersCol >= cst.MIN_LETTERS_FOR_WORD) {
-                    this.wordLengths.push(new Word(new PosXY(i, j), Orientation.Vertical, this.generateString(nLettersCol), ""));
-                }
-                if (nLettersRow >= cst.MIN_LETTERS_FOR_WORD) {
-                    this.wordLengths.push(new Word(new PosXY(i, j), Orientation.Vertical, this.generateString(nLettersRow), ""));
-                }
+            }
+            if (nLettersCol >= cst.MIN_LETTERS_FOR_WORD) {
+                this.wordLengths.push(new Word(new PosXY(i, lastBlacksquarePosCol), Orientation.Vertical, this.generateString(nLettersCol), ""));
+            }
+            if (nLettersRow >= cst.MIN_LETTERS_FOR_WORD) {
+                this.wordLengths.push(new Word(new PosXY(lastBlacksquarePosRow, i), Orientation.Vertical, this.generateString(nLettersRow), ""));
             }
         }
     }
@@ -274,8 +276,10 @@ export class Grid {
         const searchResults: DictionaryEntry[] = data.filter((entry: DictionaryEntry) => {
             this.constraintFilter(entry, length, requiredLettersPositions); }
         );
+        const randomInt: number =  Math.floor(Math.random() * searchResults.length);
 
-        return searchResults.length === 0 ? null : {word: searchResults[0].word, definition: searchResults[0].definition};
+        return searchResults.length === 0 ? { word: cst.NOT_FOUND, definition: "" } :
+            {word: searchResults[randomInt].word, definition: searchResults[randomInt].definition};
     }
 
     private constraintFilter(entry: DictionaryEntry, length: number, requiredLettersPositions: Constraint[]): boolean {
@@ -329,9 +333,9 @@ export class Grid {
     }
 
     private generateString(length: number): string {
-        const newStr: string = "";
+        let newStr: string = "";
         for (let i: number = 0; i < length; i++) {
-            newStr.concat(cst.EMPTY_SQUARE);
+            newStr += (cst.EMPTY_SQUARE);
         }
 
         return newStr;
