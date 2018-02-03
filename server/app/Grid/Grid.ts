@@ -311,30 +311,4 @@ export class Grid {
     private removeLastWordFromWordArray(): Word {
         return this.words.pop();
     }
-
-    private eliminateSpecialChars(word: string): string {
-        const specialChars: RegExp = /[ !@#$%^&()_+\-=\[\]{};':"\\|,.<>\/?]/;
-
-        return word.replace(specialChars, "");
-    }
-
-    private replaceAccentedChars(word: string): string {
-        const accentedChars: RegExp[] = [/[àÀäÄâÂ]/, /[ÉéêÊèÈëË]/, /[ïÏîÎìÌ]/, /[òÒôÔöÖ]/, /[ùÙüÜûÛ]/, /[çÇ]/];
-        const replacementChars: string[] = ["A", "E", "I", "O", "U", "C"];
-
-        for (let i: number = 0; i < accentedChars.length; i++) {
-            word = word.replace(accentedChars[i], replacementChars[i]);
-        }
-
-        return word;
-    }
-
-    private generateString(length: number): string {
-        let newStr: string = "";
-        for (let i: number = 0; i < length; i++) {
-            newStr += (cst.EMPTY_SQUARE);
-        }
-
-        return newStr;
-    }
 }
