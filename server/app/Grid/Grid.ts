@@ -203,7 +203,7 @@ export class Grid {
                     ++nLettersRow;
                 } else {
                     if (nLettersRow >= cst.MIN_LETTERS_FOR_WORD) {
-                        this.wordLengths.push(new Word(new PosXY(j, i), Orientation.Vertical, this.generateString(nLettersRow), ""));
+                        this.wordLengths.push(new Word(new PosXY(j, i), Orientation.Horizontal, this.generateString(nLettersRow), ""));
                         lastBlacksquarePosRow = i;
                         nLettersRow = 0;
                     }
@@ -213,7 +213,7 @@ export class Grid {
                 this.wordLengths.push(new Word(new PosXY(i, lastBlacksquarePosCol), Orientation.Vertical, this.generateString(nLettersCol), ""));
             }
             if (nLettersRow >= cst.MIN_LETTERS_FOR_WORD) {
-                this.wordLengths.push(new Word(new PosXY(lastBlacksquarePosRow, i), Orientation.Vertical, this.generateString(nLettersRow), ""));
+                this.wordLengths.push(new Word(new PosXY(lastBlacksquarePosRow, i), Orientation.Horizontal, this.generateString(nLettersRow), ""));
             }
         }
     }
@@ -234,7 +234,7 @@ export class Grid {
     private establishConstraints(nextWord: Word): Array<Constraint> {
         const constraints: Constraint[] = new Array<Constraint>();
         for (let i: number = 0; i < nextWord.Length; i++) {
-            const currentChar: string = (nextWord.Orientation === Orientation.Horizontal) ?
+            const currentChar: string = (nextWord.Orientation === Orientation.Vertical) ?
                 this.gridContent[nextWord.Position.X][i + nextWord.Position.Y] :
                 this.gridContent[nextWord.Position.X + i][nextWord.Position.Y];
             if (currentChar !== cst.EMPTY_SQUARE) {
