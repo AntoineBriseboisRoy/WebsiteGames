@@ -274,7 +274,7 @@ export class Grid {
                                    difficultyLevel: number /*dead parameter, we'll need eventually'*/): DictionaryEntry {
         const data: DictionaryEntry[] = require("../../../dbWords.json");
         const searchResults: DictionaryEntry[] = data.filter((entry: DictionaryEntry) => {
-            this.constraintFilter(entry, length, requiredLettersPositions); }
+            return this.constraintFilter(entry, length, requiredLettersPositions); }
         );
         const randomInt: number =  Math.floor(Math.random() * searchResults.length);
 
