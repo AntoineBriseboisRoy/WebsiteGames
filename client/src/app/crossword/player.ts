@@ -1,11 +1,9 @@
 export class Player {
+  public name: string = "";
+  public point: number = 0;
 
-  name: string = "";
-  point: number = 0;
-
-  constructor(name: string) {
+  public constructor(name: string) {
     this.name = name;
     this.point = 0;
   }
-  
 }

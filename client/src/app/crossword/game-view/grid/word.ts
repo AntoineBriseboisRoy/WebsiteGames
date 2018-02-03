@@ -1,18 +1,16 @@
-import {OnInit } from '@angular/core';
-import {Position} from './position';
+import { OnInit } from "@angular/core";
+import { Position } from "./position";
 
 export class Word implements OnInit {
-    constructor(private id : number, private startPos : Position, private content : string) {
-      }
-
-    
-  
-    ngOnInit() {
+    public constructor(private readonly id: number,
+                       private readonly startPos: Position,
+                       private readonly content: string) {
     }
 
-    public getValue() : Array<string> {
-      console.log(this.id);
-      console.log(this.startPos);
+    public ngOnInit(): void {
+    }
+
+    public getValue(): Array<string> {
       return this.content.split("");
     }
 

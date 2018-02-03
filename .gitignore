@@ -2,6 +2,8 @@
 /.vscode/chrome
 /.vs/
 /client/node_modules
+/client/src/app/.vs
+/client/src/app/.vscode
 /server/node_modules
 /server/out
 

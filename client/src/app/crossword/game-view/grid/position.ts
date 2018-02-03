@@ -1,19 +1,18 @@
-export class Position{
-    
-    constructor(private x:number, private y:number){
+export class Position {
+    public constructor(private x: number, private y: number) {
     }
 
-    getX(){
+    public getX(): number {
         return this.x;
     }
 
-    getY(){
+    public getY(): number {
         return this.y;
     }
 
-    update(lenght:number,width:number){
+    public update(lenght: number, width: number) {
         this.x += lenght;
-        if(this.x >= width) { 
+        if (this.x >= width) {
             this.x %= width;
             this.y++;
         }

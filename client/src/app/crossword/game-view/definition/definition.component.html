@@ -5,7 +5,7 @@
   <form>
     <div class="form-group">
       <select multiple class="form-control word-definition">
-        <option *ngFor="let definition of horizontalDefs" (click)="jsuisQui($event.currentTarget.value)">{{definition}}</option>
+        <option *ngFor="let definition of horizontalDefs">{{definition}}</option>
       </select>
     </div>
   </form>
@@ -17,7 +17,7 @@
   <form>
     <div class="form-group">
       <select multiple class="form-control word-definition">
-        <option *ngFor="let definition of verticalDefs" (click)="jsuisQui($event.currentTarget.value)">{{definition}}</option>
+        <option *ngFor="let definition of verticalDefs">{{definition}}</option>
       </select>
     </div>
   </form>
