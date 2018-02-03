@@ -2,7 +2,7 @@ import { BlackSquare } from "./BlackSquare";
 import { PosXY } from "./PosXY";
 import { Word, Orientation } from "./Word";
 import { DictionaryEntry, Constraint } from "./Interfaces";
-import "./Constants";
+import * as cst from "./Constants";
 
 export class Grid {
 
@@ -12,11 +12,11 @@ export class Grid {
     private wordLengths: Word[];
 
     constructor(private sideSize: number, private percentageOfBlackSquares: number, private difficultyLevel: number) {
-        do {
+        // do {
             this.initializeEmptyGrid();
             this.generateBlackSquares();
-        } while (!this.verifyBlackSquareGrid());
-        this.startFillingGrid();
+        // } while (!this.verifyBlackSquareGrid());
+            this.startFillingGrid();
     }
 
     public get GridContent(): string[][] {
@@ -36,11 +36,21 @@ export class Grid {
     }
 
     private initializeEmptyGrid(): void {
-        this.gridContent = new Array(this.sideSize).fill(new Array(this.sideSize).fill(EMPTY_SQUARE));
+        this.gridContent = new Array();
+        for (let i: number = 0; i < this.SideSize; i++) {
+            this.gridContent[i] = new Array<string>();
+            for (let j: number = 0; j < this.sideSize; j++) {
+                this.gridContent[i][j] = cst.EMPTY_SQUARE;
+            }
+        }
+        this.gridContent.fill(new Array(this.sideSize).fill(cst.EMPTY_SQUARE));
+
+        this.blackSquares = new Array<BlackSquare>();
+        this.words = new Array<Word>();
+        this.wordLengths = new Array<Word>();
     }
 
     private generateBlackSquares(): void {
-        this.blackSquares = new Array<BlackSquare>();
         const numberOfBlackSquaresPerLine: number = this.percentageOfBlackSquares * this.sideSize;
 
         for (let i: number = 0; i < numberOfBlackSquaresPerLine; i++) {
@@ -48,8 +58,8 @@ export class Grid {
                 const tempPosition: PosXY = this.randomPositionGenerator();
                 this.blackSquares.push(new BlackSquare(tempPosition));
                 this.blackSquares.push(new BlackSquare(PosXY.invertCoordinates(tempPosition)));
-                this.gridContent[tempPosition.X][tempPosition.Y] = BLACKSQUARE_CHARACTER;
-                this.gridContent[tempPosition.Y][tempPosition.X] = BLACKSQUARE_CHARACTER;
+                this.gridContent[tempPosition.X][tempPosition.Y] = cst.BLACKSQUARE_CHARACTER;
+                this.gridContent[tempPosition.Y][tempPosition.X] = cst.BLACKSQUARE_CHARACTER;
             }
         }
     }
@@ -63,14 +73,15 @@ export class Grid {
         for (let i: number = 0; i < this.sideSize; i++) {
             let nBlackSquaresRow: number = 0, nBlackSquaresCol: number = 0;
             for (let j: number = 0; j < this.sideSize; j++) {
-                if (this.gridContent[i][j] === BLACKSQUARE_CHARACTER) {
+                if (this.gridContent[i][j] === cst.BLACKSQUARE_CHARACTER) {
                     ++nBlackSquaresRow;
                 }
-                if (this.gridContent[j][i] === BLACKSQUARE_CHARACTER) {
+                if (this.gridContent[j][i] === cst.BLACKSQUARE_CHARACTER) {
                     ++nBlackSquaresCol;
                 }
             }
-            if (nBlackSquaresCol / this.sideSize > MAX_BLACKSQUARE_RATIO || nBlackSquaresRow / this.sideSize > MAX_BLACKSQUARE_RATIO) {
+            if (nBlackSquaresCol / this.sideSize > cst.MAX_BLACKSQUARE_RATIO ||
+                nBlackSquaresRow / this.sideSize > cst.MAX_BLACKSQUARE_RATIO) {
                 return false;
             }
         }
@@ -82,25 +93,25 @@ export class Grid {
         for (let i: number = 0; i < this.sideSize; ++i) {
             let nEmptySquaresRow: number = 0, nWordsRow: number = 0, nEmptySquaresCol: number, nWordsCol: number = 0;
             for (let j: number = 0; j < this.sideSize; ++j) {
-                if (this.gridContent[i][j] === EMPTY_SQUARE) {
+                if (this.gridContent[i][j] === cst.EMPTY_SQUARE) {
                     ++nEmptySquaresRow;
-                } else if (this.gridContent[i][j] === BLACKSQUARE_CHARACTER) {
-                    if (nEmptySquaresRow >= MIN_LETTERS_FOR_WORD) {
+                } else if (this.gridContent[i][j] === cst.BLACKSQUARE_CHARACTER) {
+                    if (nEmptySquaresRow >= cst.MIN_LETTERS_FOR_WORD) {
                         ++nWordsRow;
                     }
                     nEmptySquaresRow = 0;
                 }
-                if (this.gridContent[j][i] === EMPTY_SQUARE) {
+                if (this.gridContent[j][i] === cst.EMPTY_SQUARE) {
                     ++nEmptySquaresCol;
-                } else if (this.gridContent[j][i] === BLACKSQUARE_CHARACTER) {
-                    if (nEmptySquaresCol >= MIN_LETTERS_FOR_WORD) {
+                } else if (this.gridContent[j][i] === cst.BLACKSQUARE_CHARACTER) {
+                    if (nEmptySquaresCol >= cst.MIN_LETTERS_FOR_WORD) {
                         ++nWordsCol;
                     }
                     nEmptySquaresCol = 0;
                 }
             }
-            if ((nWordsRow < MIN_WORDS_PER_LINE || nWordsRow > MAX_WORDS_PER_LINE)
-                || (nWordsCol < MIN_WORDS_PER_LINE || nWordsCol > MAX_WORDS_PER_LINE)) {
+            if ((nWordsRow < cst.MIN_WORDS_PER_LINE || nWordsRow > cst.MAX_WORDS_PER_LINE)
+                || (nWordsCol < cst.MIN_WORDS_PER_LINE || nWordsCol > cst.MAX_WORDS_PER_LINE)) {
                 return false;
             }
         }
@@ -123,7 +134,7 @@ export class Grid {
     }
 
     private isOccupiedPosition(position: PosXY): boolean {
-        return !(this.gridContent[position.X][position.Y] === EMPTY_SQUARE);
+        return !(this.gridContent[position.X][position.Y] === cst.EMPTY_SQUARE);
     }
 
     private startFillingGrid(): void {
@@ -143,7 +154,7 @@ export class Grid {
         const entry: DictionaryEntry = this.findWordsWithConstraints(longestFreeSpace.Length,
                                                                      this.establishConstraints(longestFreeSpace));
 
-        if (entry.word === NOT_FOUND) {
+        if (entry.word === cst.NOT_FOUND) {
             this.wordLengths.push(longestFreeSpace);
 
             return false;
@@ -180,27 +191,27 @@ export class Grid {
         for (let i: number = 0; i < this.sideSize; i++) {
             let nLettersCol: number = 0, nLettersRow: number = 0;
             for (let j: number = 0; j < this.sideSize; j++) {
-                if (this.gridContent[i][j] === EMPTY_SQUARE) {
+                if (this.gridContent[i][j] === cst.EMPTY_SQUARE) {
                     ++nLettersCol;
                 } else {
-                    if (nLettersCol >= MIN_LETTERS_FOR_WORD) {
+                    if (nLettersCol >= cst.MIN_LETTERS_FOR_WORD) {
                         this.wordLengths.push(new Word(new PosXY(i, j), Orientation.Vertical, this.generateString(nLettersCol), ""));
                         nLettersCol = 0;
                     }
                 }
-                if (this.gridContent[j][i] === EMPTY_SQUARE) {
+                if (this.gridContent[j][i] === cst.EMPTY_SQUARE) {
                     ++nLettersRow;
                 } else {
-                    if (nLettersRow >= MIN_LETTERS_FOR_WORD) {
+                    if (nLettersRow >= cst.MIN_LETTERS_FOR_WORD) {
                         this.wordLengths.push(new Word(new PosXY(i, j), Orientation.Vertical, this.generateString(nLettersRow), ""));
                         nLettersRow = 0;
                     }
                 }
 
-                if (nLettersCol >= MIN_LETTERS_FOR_WORD) {
+                if (nLettersCol >= cst.MIN_LETTERS_FOR_WORD) {
                     this.wordLengths.push(new Word(new PosXY(i, j), Orientation.Vertical, this.generateString(nLettersCol), ""));
                 }
-                if (nLettersRow >= MIN_LETTERS_FOR_WORD) {
+                if (nLettersRow >= cst.MIN_LETTERS_FOR_WORD) {
                     this.wordLengths.push(new Word(new PosXY(i, j), Orientation.Vertical, this.generateString(nLettersRow), ""));
                 }
             }
@@ -227,7 +238,7 @@ export class Grid {
             const currentChar: string = (nextWord.Orientation === Orientation.Horizontal) ?
                 this.gridContent[nextWord.Position.X][i + nextWord.Position.Y] :
                 this.gridContent[nextWord.Position.X + i][nextWord.Position.Y];
-            if (currentChar !== EMPTY_SQUARE) {
+            if (currentChar !== cst.EMPTY_SQUARE) {
                 constraints.push({position: i, letter: currentChar});
             }
         }
@@ -245,7 +256,7 @@ export class Grid {
         do {
             word = this.searchWordsTemporaryDB(length, requiredLettersPositions, this.difficultyLevel);
             if (word === null) {
-                return { word: NOT_FOUND, definition: "" };
+                return { word: cst.NOT_FOUND, definition: "" };
             }
         } while (this.verifyAlreadyUsedWord(word.word));
 
@@ -259,7 +270,7 @@ export class Grid {
     // Temporary, to be replaced when we have a lexical service
     private searchWordsTemporaryDB(length: number, requiredLettersPositions: Constraint[],
                                    difficultyLevel: number /*dead parameter, we'll need eventually'*/): DictionaryEntry {
-        const data: DictionaryEntry[] = require("./dbWords.json");
+        const data: DictionaryEntry[] = require("../../../dbWords.json");
         const searchResults: DictionaryEntry[] = data.filter((entry: DictionaryEntry) => {
             this.constraintFilter(entry, length, requiredLettersPositions); }
         );
@@ -289,9 +300,9 @@ export class Grid {
     private removeLastWordFromGrid(lastWord: Word): void {
         for (let i: number = 0; i < lastWord.Length; i++) {
             if (lastWord.Orientation === Orientation.Horizontal) {
-                this.gridContent[lastWord.Position.X][i + lastWord.Position.Y] = EMPTY_SQUARE;
+                this.gridContent[lastWord.Position.X][i + lastWord.Position.Y] = cst.EMPTY_SQUARE;
             } else {
-                this.gridContent[i + lastWord.Position.X][lastWord.Position.Y] = EMPTY_SQUARE;
+                this.gridContent[i + lastWord.Position.X][lastWord.Position.Y] = cst.EMPTY_SQUARE;
             }
         }
     }
@@ -320,7 +331,7 @@ export class Grid {
     private generateString(length: number): string {
         const newStr: string = "";
         for (let i: number = 0; i < length; i++) {
-            newStr.concat(EMPTY_SQUARE);
+            newStr.concat(cst.EMPTY_SQUARE);
         }
 
         return newStr;
