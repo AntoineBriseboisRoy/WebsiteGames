@@ -3,7 +3,7 @@ import * as cst from "./Constants";
 export class StringService {
 
     public static eliminateSpecialChars(word: string): string {
-        const specialChars: RegExp = /[ !@#$%^&()_+\-=\[\]{};':"\\|,.<>\/?]/;
+        const specialChars: RegExp = /[ !@$%^&()_+\-=\[\]{};':"\\|,.<>\/?]/;
 
         return word.replace(specialChars, "");
     }
