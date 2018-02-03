@@ -3,6 +3,7 @@ import { PosXY } from "./PosXY";
 import { Word, Orientation } from "./Word";
 import { DictionaryEntry, Constraint } from "./Interfaces";
 import * as cst from "./Constants";
+import { StringService } from "./StringService";
 export class Grid {
 
     private gridContent: string[][];
@@ -149,9 +150,13 @@ export class Grid {
         if (this.wordLengths.length === 0) {
             return true;
         }
+        //console.log("Beggining of loop. Status of words: " + this.words.length);
+        //console.log("Status of wordLengths: " + this.wordLengths.length);
+        //console.log("Status of gridcontent: " + this.gridContent + "\n");
         const longestFreeSpace: Word = this.wordLengths.pop();
         const entry: DictionaryEntry = this.findWordsWithConstraints(longestFreeSpace.Length,
                                                                      this.establishConstraints(longestFreeSpace));
+        //console.log("Word found: " + entry.word);
         if (entry.word === cst.NOT_FOUND) {
             this.wordLengths.push(longestFreeSpace);
 
@@ -160,11 +165,11 @@ export class Grid {
         this.addNewWord(new Word(longestFreeSpace.Position, longestFreeSpace.Orientation, entry.word, entry.definition));
 
         if (!this.fillGridWithWords()) {
+            this.backtrack();
             this.wordLengths.push(longestFreeSpace);
             if (!this.fillGridWithWords()) {
                 this.wordLengths.push(longestFreeSpace);
                 this.backtrack();
-
                 return false;
             } else {
                 return true;
@@ -177,13 +182,15 @@ export class Grid {
     private addNewWord (newWord: Word): void {
         this.words.push(newWord);
 
+        //console.log("Entrer dans addNewWord");
         for (let i: number = 0; i < newWord.Length; i++) {
-            if (newWord.Orientation === Orientation.Vertical) {
+            if (newWord.Orientation === Orientation.Horizontal) {
                 this.gridContent[newWord.Position.X + i][newWord.Position.Y] = newWord.Content[i];
             } else {
                 this.gridContent[newWord.Position.X][newWord.Position.Y + i] = newWord.Content[i];
             }
         }
+        //console.log("Sorti de addNewWord\n");
     }
 
     private establishWordLengths(): void {
@@ -194,7 +201,7 @@ export class Grid {
                     ++nLettersCol;
                 } else {
                     if (nLettersCol >= cst.MIN_LETTERS_FOR_WORD) {
-                        this.wordLengths.push(new Word(new PosXY(i, j), Orientation.Vertical, this.generateString(nLettersCol), ""));
+                        this.wordLengths.push(new Word(new PosXY(i, j), Orientation.Vertical, StringService.generateString(nLettersCol), ""));
                         lastBlacksquarePosCol = j;
                         nLettersCol = 0;
                     }
@@ -203,17 +210,17 @@ export class Grid {
                     ++nLettersRow;
                 } else {
                     if (nLettersRow >= cst.MIN_LETTERS_FOR_WORD) {
-                        this.wordLengths.push(new Word(new PosXY(j, i), Orientation.Horizontal, this.generateString(nLettersRow), ""));
+                        this.wordLengths.push(new Word(new PosXY(j, i), Orientation.Horizontal, StringService.generateString(nLettersRow), ""));
                         lastBlacksquarePosRow = i;
                         nLettersRow = 0;
                     }
                 }
             }
             if (nLettersCol >= cst.MIN_LETTERS_FOR_WORD) {
-                this.wordLengths.push(new Word(new PosXY(i, lastBlacksquarePosCol), Orientation.Vertical, this.generateString(nLettersCol), ""));
+                this.wordLengths.push(new Word(new PosXY(i, lastBlacksquarePosCol), Orientation.Vertical, StringService.generateString(nLettersCol), ""));
             }
             if (nLettersRow >= cst.MIN_LETTERS_FOR_WORD) {
-                this.wordLengths.push(new Word(new PosXY(lastBlacksquarePosRow, i), Orientation.Horizontal, this.generateString(nLettersRow), ""));
+                this.wordLengths.push(new Word(new PosXY(lastBlacksquarePosRow, i), Orientation.Horizontal, StringService.generateString(nLettersRow), ""));
             }
         }
     }
@@ -252,12 +259,14 @@ export class Grid {
         //    Backtrack
 
         let word: DictionaryEntry;
+        let iAttempts: number = 0;
         do {
             word = this.searchWordsTemporaryDB(length, requiredLettersPositions, this.difficultyLevel);
-            if (word === null) {
-                return { word: cst.NOT_FOUND, definition: "" };
+            if (word.word === cst.NOT_FOUND) {
+                return word;
             }
-        } while (this.verifyAlreadyUsedWord(word.word));
+            ++iAttempts;
+        } while (this.verifyAlreadyUsedWord(word.word) && iAttempts < cst.MAX_WORD_QUERY_ATTEMPS);
 
         return word;
     }
@@ -269,12 +278,14 @@ export class Grid {
     // Temporary, to be replaced when we have a lexical service
     private searchWordsTemporaryDB(length: number, requiredLettersPositions: Constraint[],
                                    difficultyLevel: number /*dead parameter, we'll need eventually'*/): DictionaryEntry {
+        //console.log("Entre dans searchWords");
         const data: DictionaryEntry[] = require("../../../dbWords.json");
         const searchResults: DictionaryEntry[] = data.filter((entry: DictionaryEntry) => {
             return this.constraintFilter(entry, length, requiredLettersPositions); }
         );
         const randomInt: number =  Math.floor(Math.random() * searchResults.length);
 
+        //console.log("Sort de searchWords avec searchResults.length = " + searchResults.length);
         return searchResults.length === 0 ? { word: cst.NOT_FOUND, definition: "" } :
             {word: searchResults[randomInt].word, definition: searchResults[randomInt].definition};
     }
@@ -301,11 +312,35 @@ export class Grid {
     private removeLastWordFromGrid(lastWord: Word): void {
         for (let i: number = 0; i < lastWord.Length; i++) {
             if (lastWord.Orientation === Orientation.Horizontal) {
-                this.gridContent[lastWord.Position.X][i + lastWord.Position.Y] = cst.EMPTY_SQUARE;
+                if (!this.letterBelongsToAnotherWord(new PosXY(lastWord.Position.X + i, lastWord.Position.Y))) {
+                    this.gridContent[lastWord.Position.X + i][lastWord.Position.Y] = cst.EMPTY_SQUARE;
+                }
             } else {
-                this.gridContent[i + lastWord.Position.X][lastWord.Position.Y] = cst.EMPTY_SQUARE;
+                if (!this.letterBelongsToAnotherWord(new PosXY(lastWord.Position.X, lastWord.Position.Y + i))) {
+                    this.gridContent[lastWord.Position.X][lastWord.Position.Y + i] = cst.EMPTY_SQUARE;
+                }
             }
         }
+    }
+
+    private letterBelongsToAnotherWord(position: PosXY): boolean {
+        this.words.forEach((word: Word) => {
+            if (word.Orientation === Orientation.Horizontal) {
+                if (word.Position.Y === position.Y) {
+                    if (word.Position.X <= position.X && word.Position.X + word.Length >= position.X) {
+                        return true;
+                    }
+                }
+            } else {
+                if (word.Position.X === position.X) {
+                    if (word.Position.Y <= position.Y && word.Position.Y + word.Length >= position.Y) {
+                        return true;
+                    }
+                }
+            }
+        });
+
+        return false;
     }
 
     private removeLastWordFromWordArray(): Word {
