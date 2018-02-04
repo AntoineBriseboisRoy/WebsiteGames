@@ -11,7 +11,8 @@ export class BlackSquareGenerator {
     private constructor(private sideSize: number, private percentageOfBlackSquares: number) { }
 
     public static getInstance(sideSize: number, percentageOfBlackSquares: number): BlackSquareGenerator {
-        if (this.instance === null || this.instance.sideSize !== sideSize ||
+        if (this.instance === null || this.instance === undefined ||
+            this.instance.sideSize !== sideSize ||
             this.instance.percentageOfBlackSquares !== percentageOfBlackSquares) {
             this.instance = new BlackSquareGenerator(sideSize, percentageOfBlackSquares);
         }
@@ -19,20 +20,23 @@ export class BlackSquareGenerator {
         return this.instance;
     }
 
-    public Generate(): string[][] {
+    public generate(): string[][] {
         const numberOfBlackSquaresPerLine: number = this.percentageOfBlackSquares * this.sideSize;
         this.blackSquares = new Array<BlackSquare>();
-        this.initializeEmptyGrid();
 
-        for (let i: number = 0; i < numberOfBlackSquaresPerLine; i++) {
-            for (let j: number = 0; j < i; j++) {
-                const tempPosition: PosXY = this.randomPositionGenerator();
-                this.blackSquares.push(new BlackSquare(tempPosition));
-                this.blackSquares.push(new BlackSquare(PosXY.invertCoordinates(tempPosition)));
-                this.grid[tempPosition.X][tempPosition.Y] = cst.BLACKSQUARE_CHARACTER;
-                this.grid[tempPosition.Y][tempPosition.X] = cst.BLACKSQUARE_CHARACTER;
+        do {
+            this.initializeEmptyGrid();
+            for (let i: number = 0; i < this.sideSize; i++) {
+                for (let j: number = 0; j < numberOfBlackSquaresPerLine; j++) {
+                    const tempPosition: PosXY = this.randomPositionGenerator();
+                    this.blackSquares.push(new BlackSquare(tempPosition));
+                    // this.blackSquares.push(new BlackSquare(PosXY.invertCoordinates(tempPosition)));
+                    this.grid[tempPosition.X][tempPosition.Y] = cst.BLACKSQUARE_CHARACTER;
+                    // this.grid[tempPosition.Y][tempPosition.X] = cst.BLACKSQUARE_CHARACTER;
+                }
             }
-        }
+            console.log(this.grid);
+        } while (!this.verifyBlackSquareGrid());
 
         return this.grid;
     }
@@ -57,9 +61,10 @@ export class BlackSquareGenerator {
         return true;
     }
 
+    // tslint:disable-next-line:max-func-body-length
     private correctNumberWords(): boolean {
         for (let i: number = 0; i < this.sideSize; ++i) {
-            let nEmptySquaresRow: number = 0, nWordsRow: number = 0, nEmptySquaresCol: number, nWordsCol: number = 0;
+            let nEmptySquaresRow: number = 0, nWordsRow: number = 0, nEmptySquaresCol: number = 0, nWordsCol: number = 0;
             for (let j: number = 0; j < this.sideSize; ++j) {
                 if (this.grid[i][j] === cst.EMPTY_SQUARE) {
                     ++nEmptySquaresRow;
@@ -77,6 +82,12 @@ export class BlackSquareGenerator {
                     }
                     nEmptySquaresCol = 0;
                 }
+            }
+            if (nEmptySquaresCol >= cst.MIN_LETTERS_FOR_WORD) {
+                ++nWordsCol;
+            }
+            if (nEmptySquaresRow >= cst.MIN_LETTERS_FOR_WORD) {
+                ++nWordsRow;
             }
             if ((nWordsRow < cst.MIN_WORDS_PER_LINE || nWordsRow > cst.MAX_WORDS_PER_LINE)
                 || (nWordsCol < cst.MIN_WORDS_PER_LINE || nWordsCol > cst.MAX_WORDS_PER_LINE)) {

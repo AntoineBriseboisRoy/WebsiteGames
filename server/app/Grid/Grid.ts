@@ -2,23 +2,21 @@ import { Word } from "./Word";
 import { BlackSquareGenerator } from "./BlackSquareGenerator";
 import { StringService } from "./StringService";
 import { GridFiller } from "./GridFiller";
-import * as cst from "./Constants";
 
 export class Grid {
 
     private gridContent: string[][];
     private words: Word[];
-    private wordLengths: Word[];
 
-    constructor(private sideSize: number, private percentageOfBlackSquares: number, private difficultyLevel: number) { }
+    constructor(private sideSize: number, private percentageOfBlackSquares: number, private difficultyLevel: number) {
+        this.initialize();
+     }
 
     public initialize(): void {
-         // do {
-            this.gridContent = BlackSquareGenerator.getInstance(this.sideSize, this.percentageOfBlackSquares).Generate();
-        // } while (!this.verifyBlackSquareGrid());
-            this.gridContent = GridFiller.Instance.fill(this.gridContent, this.difficultyLevel, this.sideSize);
-            this.words = GridFiller.Instance.Words;
-            this.cleanGrid();
+        this.gridContent = BlackSquareGenerator.getInstance(this.sideSize, this.percentageOfBlackSquares).generate();
+        this.gridContent = GridFiller.Instance.fill(this.gridContent, this.difficultyLevel, this.sideSize);
+        this.words = GridFiller.Instance.Words;
+        this.cleanGrid();
     }
 
     public get GridContent(): string[][] {
