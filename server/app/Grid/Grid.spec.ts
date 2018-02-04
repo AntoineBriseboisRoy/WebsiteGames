@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { PosXY } from "./PosXY";
+import { CoordXY } from "./CoordXY";
 import { Grid } from "./Grid";
 import { BlackSquare } from "./BlackSquare";
 import { Word } from "./Word";

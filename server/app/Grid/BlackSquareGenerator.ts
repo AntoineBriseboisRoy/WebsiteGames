@@ -1,5 +1,5 @@
 import { BlackSquare } from "./BlackSquare";
-import { PosXY } from "./PosXY";
+import { CoordXY } from "./CoordXY";
 import * as cst from "./Constants";
 
 export class BlackSquareGenerator {
@@ -8,7 +8,10 @@ export class BlackSquareGenerator {
     private blackSquares: BlackSquare[];
     private grid: string[][];
 
-    private constructor(private sideSize: number, private percentageOfBlackSquares: number) { }
+    private constructor(private sideSize: number, private percentageOfBlackSquares: number) {
+        this.blackSquares = new Array<BlackSquare>();
+        this.grid = this.initializeEmptyGrid();
+    }
 
     public static getInstance(sideSize: number, percentageOfBlackSquares: number): BlackSquareGenerator {
         if (this.instance === null || this.instance === undefined ||
@@ -22,20 +25,17 @@ export class BlackSquareGenerator {
 
     public generate(): string[][] {
         const numberOfBlackSquaresPerLine: number = this.percentageOfBlackSquares * this.sideSize;
-        this.blackSquares = new Array<BlackSquare>();
 
         do {
-            this.initializeEmptyGrid();
             for (let i: number = 0; i < this.sideSize; i++) {
                 for (let j: number = 0; j < numberOfBlackSquaresPerLine; j++) {
-                    const tempPosition: PosXY = this.randomPositionGenerator();
+                    const tempPosition: CoordXY = this.randomPositionGenerator();
                     this.blackSquares.push(new BlackSquare(tempPosition));
                     // this.blackSquares.push(new BlackSquare(PosXY.invertCoordinates(tempPosition)));
                     this.grid[tempPosition.X][tempPosition.Y] = cst.BLACKSQUARE_CHARACTER;
                     // this.grid[tempPosition.Y][tempPosition.X] = cst.BLACKSQUARE_CHARACTER;
                 }
             }
-            console.log(this.grid);
         } while (!this.verifyBlackSquareGrid());
 
         return this.grid;
@@ -98,17 +98,19 @@ export class BlackSquareGenerator {
         return true;
     }
 
-    private initializeEmptyGrid(): void {
-        this.grid = new Array();
+    private initializeEmptyGrid(): string[][] {
+        const emptyGrid: string[][] = new Array();
         for (let i: number = 0; i < this.sideSize; i++) {
             this.grid[i] = new Array<string>();
             for (let j: number = 0; j < this.sideSize; j++) {
                 this.grid[i][j] = cst.EMPTY_SQUARE;
             }
         }
+
+        return emptyGrid;
     }
 
-    private isOccupiedPosition(position: PosXY): boolean {
+    private isOccupiedPosition(position: CoordXY): boolean {
         return !(this.grid[position.X][position.Y] === cst.EMPTY_SQUARE);
     }
 
@@ -116,11 +118,11 @@ export class BlackSquareGenerator {
         return Math.floor(Math.random() * this.sideSize);
     }
 
-    private randomPositionGenerator(): PosXY {
-        let tempPosition: PosXY = new PosXY(this.randomIntGenerator(), this.randomIntGenerator());
+    private randomPositionGenerator(): CoordXY {
+        let tempPosition: CoordXY = new CoordXY(this.randomIntGenerator(), this.randomIntGenerator());
 
         while (this.isOccupiedPosition(tempPosition)) {
-            tempPosition = new PosXY(this.randomIntGenerator(), this.randomIntGenerator());
+            tempPosition = new CoordXY(this.randomIntGenerator(), this.randomIntGenerator());
         }
 
         return tempPosition;

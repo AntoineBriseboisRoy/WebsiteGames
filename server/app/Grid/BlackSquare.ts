@@ -1,9 +1,9 @@
-import { PosXY } from "./PosXY";
+import { CoordXY } from "./CoordXY";
 
 export class BlackSquare {
-    constructor(private position: PosXY) {}
+    constructor(private position: CoordXY) {}
 
-    public get Position(): PosXY {
+    public get Position(): CoordXY {
         return this.position;
     }
 }

@@ -2,12 +2,14 @@ import { Grid } from "./Grid";
 
 export class GridGeneratorService {
 
-    private instance: GridGeneratorService;
+    private static instance: GridGeneratorService;
     private grid: Grid;
 
-    private constructor() { }
+    private constructor() {
+        this.grid = new Grid(0, 0, 0);
+    }
 
-    public getInstance(): GridGeneratorService {
+    public static get Instance(): GridGeneratorService {
         if (this.instance == null) {
             this.instance = new GridGeneratorService();
         }
@@ -24,6 +26,4 @@ export class GridGeneratorService {
 
         return this.grid;
     }
-
-    // TODO: Add a socket system
 }

@@ -1,4 +1,4 @@
-import { PosXY } from "./PosXY";
+import { CoordXY } from "./CoordXY";
 import * as cst from "./Constants";
 import { Word, Orientation } from "./Word";
 import { DictionaryEntry, Constraint } from "./Interfaces";
@@ -13,7 +13,13 @@ export class GridFiller {
     private difficultyLevel: number;
     private sideSize: number;
 
-    private constructor() { }
+    private constructor() {
+        this.difficultyLevel = 0;
+        this.sideSize = 0;
+        this.grid = new Array<Array<string>>();
+        this.words = new Array<Word>();
+        this.wordLengths = new Array<Word>();
+    }
 
     public static get Instance(): GridFiller {
         if (this.instance === null || this.instance === undefined) {
@@ -31,8 +37,7 @@ export class GridFiller {
         this.difficultyLevel = difficultyLevel;
         this.sideSize = sideSize;
         this.grid = grid;
-        this.words = new Array<Word>();
-        this.wordLengths = new Array<Word>();
+
         this.establishWordLengths();
         this.sortWordLengths();
 
@@ -123,7 +128,7 @@ export class GridFiller {
                     ++nLettersCol;
                 } else {
                     if (nLettersCol >= cst.MIN_LETTERS_FOR_WORD) {
-                        this.wordLengths.push(new Word(new PosXY(j - nLettersCol, i), Orientation.Horizontal, StringService.generateString(nLettersCol), ""));
+                        this.wordLengths.push(new Word(new CoordXY(j - nLettersCol, i), Orientation.Horizontal, StringService.generateString(nLettersCol), ""));
                     }
                     lastBlacksquarePosCol = j;
                     nLettersCol = 0;
@@ -132,17 +137,17 @@ export class GridFiller {
                     ++nLettersRow;
                 } else {
                     if (nLettersRow >= cst.MIN_LETTERS_FOR_WORD) {
-                        this.wordLengths.push(new Word(new PosXY(i, j - nLettersRow), Orientation.Vertical, StringService.generateString(nLettersRow), ""));
+                        this.wordLengths.push(new Word(new CoordXY(i, j - nLettersRow), Orientation.Vertical, StringService.generateString(nLettersRow), ""));
                     }
                     lastBlacksquarePosRow = i;
                     nLettersRow = 0;
                 }
             }
             if (nLettersCol >= cst.MIN_LETTERS_FOR_WORD) {
-                this.wordLengths.push(new Word(new PosXY(lastBlacksquarePosCol + 1, i), Orientation.Horizontal, StringService.generateString(nLettersCol), ""));
+                this.wordLengths.push(new Word(new CoordXY(lastBlacksquarePosCol + 1, i), Orientation.Horizontal, StringService.generateString(nLettersCol), ""));
             }
             if (nLettersRow >= cst.MIN_LETTERS_FOR_WORD) {
-                this.wordLengths.push(new Word(new PosXY(i, lastBlacksquarePosRow + 1), Orientation.Vertical, StringService.generateString(nLettersRow), ""));
+                this.wordLengths.push(new Word(new CoordXY(i, lastBlacksquarePosRow + 1), Orientation.Vertical, StringService.generateString(nLettersRow), ""));
             }
         }
     }
@@ -182,11 +187,11 @@ export class GridFiller {
         let nCommonLetters: number = 0;
         for (let i: number = 0; i < word.Content.length; i++) {
             if (word.Orientation === Orientation.Horizontal) {
-                if (this.letterBelongsToAnotherWord(new PosXY(word.Position.X + i, word.Position.Y))) {
+                if (this.letterBelongsToAnotherWord(new CoordXY(word.Position.X + i, word.Position.Y))) {
                     ++nCommonLetters;
                 }
             } else {
-                if (this.letterBelongsToAnotherWord(new PosXY(word.Position.X, word.Position.Y + i))) {
+                if (this.letterBelongsToAnotherWord(new CoordXY(word.Position.X, word.Position.Y + i))) {
                     ++nCommonLetters;
                 }
             }
@@ -264,18 +269,18 @@ export class GridFiller {
     private removeLastWordFromGrid(lastWord: Word): void {
         for (let i: number = 0; i < lastWord.Length; i++) {
             if (lastWord.Orientation === Orientation.Horizontal) {
-                if (!this.letterBelongsToAnotherWord(new PosXY(lastWord.Position.X + i, lastWord.Position.Y))) {
+                if (!this.letterBelongsToAnotherWord(new CoordXY(lastWord.Position.X + i, lastWord.Position.Y))) {
                     this.grid[lastWord.Position.X + i][lastWord.Position.Y] = cst.EMPTY_SQUARE;
                 }
             } else {
-                if (!this.letterBelongsToAnotherWord(new PosXY(lastWord.Position.X, lastWord.Position.Y + i))) {
+                if (!this.letterBelongsToAnotherWord(new CoordXY(lastWord.Position.X, lastWord.Position.Y + i))) {
                     this.grid[lastWord.Position.X][lastWord.Position.Y + i] = cst.EMPTY_SQUARE;
                 }
             }
         }
     }
 
-    private letterBelongsToAnotherWord(position: PosXY): boolean {
+    private letterBelongsToAnotherWord(position: CoordXY): boolean {
         let belongs: boolean = false;
         this.words.forEach((word: Word) => {
             if (word.Orientation === Orientation.Horizontal) {
