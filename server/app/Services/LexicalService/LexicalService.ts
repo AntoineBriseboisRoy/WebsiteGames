@@ -1,6 +1,6 @@
 import * as requestPromise from "request-promise-native";
 import * as fs from "file-system";
-import { DictionaryEntry } from "./Interfaces";
+import { DictionaryEntry, RequestOptions } from "./Interfaces";
 
 const EASY: number = 5;
 const MEDIUM: number = 1;
@@ -8,7 +8,8 @@ const HARD: number = 0;
 
 export class LexicalService {
     private requestResult: JSON;
-    private options = {
+    private options: RequestOptions =
+     {
         method: "GET",
         uri: "https://api.datamuse.com/words",
         qs: {
@@ -18,7 +19,6 @@ export class LexicalService {
         json: true,  // automatically parse data to JSON format
         simple: true // should request promise for status code other than 2xx
     };
-
     private sendGetRequest(searchedTemplate: string): Promise<JSON> {
         this.options.qs.sp = searchedTemplate;
 
@@ -47,9 +47,9 @@ export class LexicalService {
             case EASY:
                 return wordFrequency >= EASY;
             case MEDIUM:
-                return (wordFrequency < EASY) && (wordFrequency >= MEDIUM);
+                return wordFrequency >= EASY;
             case HARD:
-                return (wordFrequency < MEDIUM) && (wordFrequency >= HARD);
+                return (wordFrequency < EASY) && (wordFrequency >= HARD);
             default:
                 throw new Error("Invalid difficulty");
         }
@@ -64,16 +64,34 @@ export class LexicalService {
         } catch (err) { throw err; }
     }
 
+    private createDictionnaryEntry(index: number, difficulty: number): DictionaryEntry {
+        const NB_DEFS: number = this.requestResult[index].defs.length;
+        let randomDef: number = 0;
+        if (NB_DEFS !== 1) {
+            randomDef = Math.floor((Math.random() * (NB_DEFS - 1)) + 1);
+        }
+        switch (difficulty) {
+            case EASY:
+                return {word: this.requestResult[index].word, definition: this.requestResult[index].defs[0]};
+            case MEDIUM:
+                return {word: this.requestResult[index].word, definition: this.requestResult[index].defs[randomDef]};
+            case HARD:
+                return {word: this.requestResult[index].word, definition: this.requestResult[index].defs[randomDef]};
+            default:
+                throw new Error("Invalid Difficulty");
+        }
+    }
+
     private filterWords (difficulty: number): Array<DictionaryEntry> {
         const result: Array<DictionaryEntry> = new Array<DictionaryEntry>();
         const LENGTH: number = Object.keys(this.requestResult).length;
         try {
             for ( let i: number = 0; i < LENGTH; i++) {
                 if (this.hasDefinition(i) && this.isValidDifficulty(i, difficulty)){
-                    result.push({word: this.requestResult[i].word, definition: this.requestResult[i].defs});
+                    result.push(this.createDictionnaryEntry(i, difficulty));
                 }
             }
-        } catch (err) { console.log(err.message); throw err; }
+        } catch (err) { throw err; }
 
         return result;
     }
@@ -88,5 +106,5 @@ export class LexicalService {
 
 const service: LexicalService = new LexicalService();
 service.searchWord("a?p??", HARD).then((result: Array<DictionaryEntry>) => {
-    console.log(result[4].definition[0]);
+    console.log(result);
 });
