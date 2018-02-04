@@ -1,4 +1,4 @@
-export interface DictionaryEntry {
+export interface WordAndDefinition {
     word: string;
     definition: string;
  }
