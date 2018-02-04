@@ -1,6 +1,5 @@
 import { Component, OnInit } from "@angular/core";
 import { GameManager } from "../../game-manager";
-import { PlayerInformationComponent } from "../player-information/player-information.component";
 
 @Component({
   selector: "app-crossword-top-bar",
@@ -9,7 +8,6 @@ import { PlayerInformationComponent } from "../player-information/player-informa
 })
 export class TopBarComponent implements OnInit {
   private gameManager: GameManager = GameManager.getInstance();
-  private player: PlayerInformationComponent = new PlayerInformationComponent();
 
   public constructor() { }
 
