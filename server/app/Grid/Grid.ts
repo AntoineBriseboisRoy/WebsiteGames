@@ -8,11 +8,14 @@ export class Grid {
     private gridContent: string[][];
     private words: Word[];
 
-    constructor(private sideSize: number, private percentageOfBlackSquares: number, private difficultyLevel: number) {
+    public constructor(private sideSize: number, private percentageOfBlackSquares: number, private difficultyLevel: number) {
         this.gridContent = BlackSquareGenerator.getInstance(this.sideSize, this.percentageOfBlackSquares).generateBlackSquares();
-        this.gridContent = GridFiller.Instance.fillWords(this.gridContent, this.difficultyLevel, this.sideSize);
-        this.words = GridFiller.Instance.Words;
-        this.cleanGrid();
+        GridFiller.Instance.fillWords(this.gridContent, this.difficultyLevel, this.sideSize)
+        .then((grid: string[][]) => {
+            this.words = GridFiller.Instance.Words;
+            this.cleanGrid();
+            return this;
+        });
      }
 
     public get GridContent(): string[][] {

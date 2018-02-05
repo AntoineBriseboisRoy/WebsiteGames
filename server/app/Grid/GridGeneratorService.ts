@@ -21,8 +21,8 @@ export class GridGeneratorService {
         return this.grid;
     }
 
-    public generateNewGrid(size: number, percentageBlackSquares: number, difficulty: number): Grid {
-        this.grid = new Grid(size, percentageBlackSquares, difficulty);
+    public async generateNewGrid(size: number, percentageBlackSquares: number, difficulty: number): Promise<Grid> {
+        this.grid = await new Grid(size, percentageBlackSquares, difficulty);
 
         return this.grid;
     }

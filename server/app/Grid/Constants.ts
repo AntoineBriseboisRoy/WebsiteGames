@@ -8,3 +8,4 @@ export const MAX_BLACKSQUARE_RATIO: number = 0.67;
 export const NOT_FOUND: string = "NOT_FOUND_ERR";
 export const PERCENTAGE_BLACK_SQUARES: number = 0.25;
 export const MAX_WORD_QUERY_ATTEMPS: number = 5;
+export const EMPTY_CHAR_FOR_QUERY: string = "?";
