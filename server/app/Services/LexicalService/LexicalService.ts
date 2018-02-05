@@ -62,7 +62,7 @@ export class LexicalService {
             const wordFrequency: number = parseFloat(this.requestResult[index].tags[0].substr(BEG_FRQ_STR, END_FRQ_STR));
 
             return (this.isInFrequencyInterval(difficulty, wordFrequency));
-        } catch (err) { throw err; }
+        } catch (err) { console.log(err.message); }
     }
 
     private getWordAndDefinition(index: number, difficulty: number): WordAndDefinition {
@@ -91,19 +91,20 @@ export class LexicalService {
                     result.push(this.getWordAndDefinition(i, difficulty));
                 }
             }
-        } catch (err) { throw err; }
+        } catch (err) { console.log(err.message); }
 
         return result;
     }
 
     public async searchWords(searchedTemplate: string, difficulty: number): Promise<Array<WordAndDefinition>> {
         await this.sendGetRequest(searchedTemplate);
-
         return this.filterWords(difficulty);
     }
 }
 
-const service: LexicalService = new LexicalService();
-service.searchWords("p?e???t", Difficulty.MEDIUM).then((result: Array<WordAndDefinition>) => {
+/*
+const service = new LexicalService;
+service.searchWords("aspen", Difficulty.MEDIUM).then((result) => {
     console.log(result);
 });
+*/
