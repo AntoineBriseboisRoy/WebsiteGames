@@ -9,7 +9,7 @@ export class GridFiller {
     private static instance: GridFiller;
     private grid: string[][];
     private words: Word[];
-    private wordLengths: Word[];
+    private wordsLengths: Word[];
     private difficultyLevel: number;
     private sideSize: number;
 
@@ -18,7 +18,7 @@ export class GridFiller {
         this.sideSize = 0;
         this.grid = new Array<Array<string>>();
         this.words = new Array<Word>();
-        this.wordLengths = new Array<Word>();
+        this.wordsLengths = new Array<Word>();
     }
 
     public static get Instance(): GridFiller {
@@ -49,15 +49,15 @@ export class GridFiller {
     }
 
     private fillGridWithWords(): boolean {
-        if (this.wordLengths.length === 0) {
+        if (this.wordsLengths.length === 0) {
             return true;
         }
-        console.log("Words array: " + this.words.length + "\t Wordlengths array: " + this.wordLengths.length);
-        const longestFreeSpace: Word = this.wordLengths.pop();
+        console.log("Words array: " + this.words.length + "\t Wordlengths array: " + this.wordsLengths.length);
+        const longestFreeSpace: Word = this.wordsLengths.pop();
         const entry: DictionaryEntry = this.findWordsWithConstraints(longestFreeSpace.Length,
                                                                      this.establishConstraints(longestFreeSpace));
         if (entry.word === cst.NOT_FOUND) {
-            this.wordLengths.push(longestFreeSpace);
+            this.wordsLengths.push(longestFreeSpace);
 
             return false;
         }
@@ -67,7 +67,7 @@ export class GridFiller {
         if (!this.fillGridWithWords()) {
             console.log("Words status before backtrack(1): " + this.words.length);
             this.backtrack();
-            this.wordLengths.push(longestFreeSpace);
+            this.wordsLengths.push(longestFreeSpace);
             if (!this.fillGridWithWordsNextTry()) {
                 return false;
             } else {
@@ -79,14 +79,14 @@ export class GridFiller {
     }
 
     private fillGridWithWordsNextTry(): boolean {
-        if (this.wordLengths.length === 0) {
+        if (this.wordsLengths.length === 0) {
             return true;
         }
-        const longestFreeSpace: Word = this.wordLengths.pop();
+        const longestFreeSpace: Word = this.wordsLengths.pop();
         const entry: DictionaryEntry = this.findWordsWithConstraints(longestFreeSpace.Length,
                                                                      this.establishConstraints(longestFreeSpace));
         if (entry.word === cst.NOT_FOUND) {
-            this.wordLengths.push(longestFreeSpace);
+            this.wordsLengths.push(longestFreeSpace);
 
             return false;
         }
@@ -96,7 +96,7 @@ export class GridFiller {
         if (!this.fillGridWithWords()) {
             console.log("Words status before backtrack(2): " + this.words.length);
             this.backtrack();
-            this.wordLengths.push(longestFreeSpace);
+            this.wordsLengths.push(longestFreeSpace);
 
             return false;
         } else {
@@ -124,7 +124,7 @@ export class GridFiller {
                     ++nLettersCol;
                 } else {
                     if (nLettersCol >= cst.MIN_LETTERS_FOR_WORD) {
-                        this.wordLengths.push(new Word(new CoordXY(j - nLettersCol, i), Orientation.Horizontal, StringService.generateDefaultString(nLettersCol), ""));
+                        this.wordsLengths.push(new Word(new CoordXY(j - nLettersCol, i), Orientation.Horizontal, StringService.generateDefaultString(nLettersCol), ""));
                     }
                     lastBlacksquarePosCol = j;
                     nLettersCol = 0;
@@ -133,23 +133,23 @@ export class GridFiller {
                     ++nLettersRow;
                 } else {
                     if (nLettersRow >= cst.MIN_LETTERS_FOR_WORD) {
-                        this.wordLengths.push(new Word(new CoordXY(i, j - nLettersRow), Orientation.Vertical, StringService.generateDefaultString(nLettersRow), ""));
+                        this.wordsLengths.push(new Word(new CoordXY(i, j - nLettersRow), Orientation.Vertical, StringService.generateDefaultString(nLettersRow), ""));
                     }
                     lastBlacksquarePosRow = i;
                     nLettersRow = 0;
                 }
             }
             if (nLettersCol >= cst.MIN_LETTERS_FOR_WORD) {
-                this.wordLengths.push(new Word(new CoordXY(lastBlacksquarePosCol + 1, i), Orientation.Horizontal, StringService.generateDefaultString(nLettersCol), ""));
+                this.wordsLengths.push(new Word(new CoordXY(lastBlacksquarePosCol + 1, i), Orientation.Horizontal, StringService.generateDefaultString(nLettersCol), ""));
             }
             if (nLettersRow >= cst.MIN_LETTERS_FOR_WORD) {
-                this.wordLengths.push(new Word(new CoordXY(i, lastBlacksquarePosRow + 1), Orientation.Vertical, StringService.generateDefaultString(nLettersRow), ""));
+                this.wordsLengths.push(new Word(new CoordXY(i, lastBlacksquarePosRow + 1), Orientation.Vertical, StringService.generateDefaultString(nLettersRow), ""));
             }
         }
     }
 
     private sortWordLengths(): void {
-        this.wordLengths.sort((left: Word, right: Word): number => {
+        this.wordsLengths.sort((left: Word, right: Word): number => {
             if (left.Length < right.Length) {
                 return -1;
             }
@@ -162,7 +162,7 @@ export class GridFiller {
     }
 
     private sortWordLengthsByCommonLetters(): void {
-        this.wordLengths.sort((left: Word, right: Word): number => {
+        this.wordsLengths.sort((left: Word, right: Word): number => {
             const nCommonLettersLeft: number = this.countLettersBelongingOtherWords(left);
             const nCommonLettersRight: number = this.countLettersBelongingOtherWords(right);
 
@@ -210,14 +210,14 @@ export class GridFiller {
 
     private findWordsWithConstraints(length: number, requiredLettersPositions: Constraint[]): DictionaryEntry {
         let word: DictionaryEntry;
-        let iAttempts: number = 0;
+        let nAttempts: number = 0;
         do {
             word = this.searchWordsTemporaryDB(length, requiredLettersPositions);
             if (word.word === cst.NOT_FOUND) {
                 return word;
             }
-            ++iAttempts;
-        } while (this.verifyAlreadyUsedWord(word.word) && iAttempts < cst.MAX_WORD_QUERY_ATTEMPS);
+            ++nAttempts;
+        } while (this.verifyAlreadyUsedWord(word.word) && nAttempts < cst.MAX_WORD_QUERY_ATTEMPS);
 
         return word;
     }
@@ -228,8 +228,8 @@ export class GridFiller {
 
     // Temporary, to be replaced when we have a lexical service
     private searchWordsTemporaryDB(length: number, requiredLettersPositions: Constraint[]): DictionaryEntry {
-        const data: DictionaryEntry[] = require("../../../dbWords.json");
-        const searchResults: DictionaryEntry[] = data.filter((entry: DictionaryEntry) => {
+        const entries: DictionaryEntry[] = require("../../../dbWords.json");
+        const searchResults: DictionaryEntry[] = entries.filter((entry: DictionaryEntry) => {
             return this.constraintFilter(entry, length, requiredLettersPositions); }
         );
         const randomInt: number =  Math.floor(Math.random() * searchResults.length);
