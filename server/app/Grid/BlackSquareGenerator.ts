@@ -14,13 +14,16 @@ export class BlackSquareGenerator {
     }
 
     public static getInstance(sideSize: number, percentageOfBlackSquares: number): BlackSquareGenerator {
-        if (this.instance === null || this.instance === undefined ||
-            this.instance.sideSize !== sideSize ||
-            this.instance.percentageOfBlackSquares !== percentageOfBlackSquares) {
+        if (this.mustCreateNewInstance(sideSize, percentageOfBlackSquares)) {
             this.instance = new BlackSquareGenerator(sideSize, percentageOfBlackSquares);
         }
 
         return this.instance;
+    }
+
+    private static mustCreateNewInstance(sideSize: number, percentageOfBlackSquares: number): boolean {
+        return this.instance === null || this.instance === undefined || this.instance.sideSize !== sideSize ||
+               this.instance.percentageOfBlackSquares !== percentageOfBlackSquares;
     }
 
     public generateBlackSquares(): string[][] {
@@ -50,13 +53,16 @@ export class BlackSquareGenerator {
                     ++nBlackSquaresCol;
                 }
             }
-            if (nBlackSquaresCol / this.sideSize > cst.MAX_BLACKSQUARE_RATIO ||
-                nBlackSquaresRow / this.sideSize > cst.MAX_BLACKSQUARE_RATIO) {
+            if (this.tooManyBlackSquares(nBlackSquaresCol, nBlackSquaresRow)) {
                 return false;
             }
         }
 
         return true;
+    }
+
+    private tooManyBlackSquares(nBlackSquaresCol: number, nBlackSquaresRow: number): boolean {
+        return nBlackSquaresCol / this.sideSize > cst.MAX_BLACKSQUARE_RATIO || nBlackSquaresRow / this.sideSize > cst.MAX_BLACKSQUARE_RATIO;
     }
 
     // tslint:disable-next-line:max-func-body-length
@@ -87,13 +93,16 @@ export class BlackSquareGenerator {
             if (nEmptySquaresRow >= cst.MIN_LETTERS_FOR_WORD) {
                 ++nWordsRow;
             }
-            if ((nWordsRow < cst.MIN_WORDS_PER_LINE || nWordsRow > cst.MAX_WORDS_PER_LINE)
-                || (nWordsCol < cst.MIN_WORDS_PER_LINE || nWordsCol > cst.MAX_WORDS_PER_LINE)) {
+            if (this.acceptableWordLine(nWordsRow) || this.acceptableWordLine(nWordsCol)) {
                 return false;
             }
         }
 
         return true;
+    }
+
+    private acceptableWordLine(nWordsLine: number): boolean {
+        return nWordsLine < cst.MIN_WORDS_PER_LINE || nWordsLine > cst.MAX_WORDS_PER_LINE;
     }
 
     private initializeEmptyGrid(): string[][] {
