@@ -23,7 +23,7 @@ const AMBIENT_LIGHT_OPACITY: number = 0.5;
 
 @Injectable()
 export class RenderService {
-    //private camera: ThirdPersonCamera;
+    // private camera: ThirdPersonCamera;
     private camera: OrthoganalCamera;
     private container: HTMLDivElement;
     private _car: Car;
