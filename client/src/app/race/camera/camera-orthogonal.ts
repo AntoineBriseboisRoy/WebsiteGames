@@ -2,7 +2,7 @@ import { OrthographicCamera, Vector3 } from "three";
 import { Car } from "../car/car";
 import { INITIAL_CAMERA_POSITION_Y, FRUSTUM_RATIO } from "../../constants";
 
-export class OrthoganalCamera extends OrthographicCamera {
+export class TopViewCamera extends OrthographicCamera {
 
     public constructor(left: number, right: number, top: number,
                        bottom: number, near: number, far: number) {

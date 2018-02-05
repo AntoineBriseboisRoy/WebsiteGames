@@ -1,6 +1,5 @@
 import { PerspectiveCamera, Vector3 } from "three";
 import { Car } from "../car/car";
-import { INITIAL_CAMERA_POSITION_Y } from "../../constants";
 
 const RELATIVE_CAMERA_OFFSET_X: number = 0;
 const RELATIVE_CAMERA_OFFSET_Y: number = 2;
@@ -19,7 +18,9 @@ export class ThirdPersonCamera extends PerspectiveCamera {
     }
 
     public init(lookAt: Vector3): void {
-        this.position.set(0, INITIAL_CAMERA_POSITION_Y, 0);
+        this.position.set(RELATIVE_CAMERA_OFFSET_X + lookAt.x,
+                          RELATIVE_CAMERA_OFFSET_Y + lookAt.x,
+                          RELATIVE_CAMERA_OFFSET_Z + lookAt.x);
         this.lookAt(lookAt);
     }
 
