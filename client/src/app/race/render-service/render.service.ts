@@ -4,6 +4,7 @@ import { PerspectiveCamera, WebGLRenderer, Scene, AmbientLight,
          AxisHelper, Mesh, PlaneBufferGeometry, MeshBasicMaterial,
          DoubleSide, Math, Vector3, Texture, RepeatWrapping, TextureLoader } from "three";
 import { Car } from "../car/car";
+import {ThirdPersonCamera} from "../camera/camera-perspective";
 
 const FAR_CLIPPING_PLANE: number = 1000;
 const NEAR_CLIPPING_PLANE: number = 1;
@@ -21,7 +22,7 @@ const AMBIENT_LIGHT_OPACITY: number = 0.5;
 
 @Injectable()
 export class RenderService {
-    private camera: PerspectiveCamera;
+    private camera: ThirdPersonCamera;
     private container: HTMLDivElement;
     private _car: Car;
     private renderer: WebGLRenderer;
@@ -56,21 +57,14 @@ export class RenderService {
     private update(): void {
         const timeSinceLastFrame: number = Date.now() - this.lastDate;
         this._car.update(timeSinceLastFrame);
-
-        const RELATIVE_CAMERA_OFFSET: Vector3 = new Vector3(0, 2, 5);
-        let absoluteCarPosition: Vector3 = RELATIVE_CAMERA_OFFSET.applyMatrix4(this._car.getWorldMatrix());
-        this.camera.position.x = absoluteCarPosition.x;
-        this.camera.position.y = absoluteCarPosition.y;
-        this.camera.position.z = absoluteCarPosition.z;
-
-        this.camera.lookAt(this._car.getPosition());
+        this.camera.update(this._car);
         this.lastDate = Date.now();
     }
 
     private async createScene(): Promise<void> {
         this.scene = new Scene();
 
-        this.camera = new PerspectiveCamera(
+        this.camera = new ThirdPersonCamera(
             FIELD_OF_VIEW,
             this.getAspectRatio(),
             NEAR_CLIPPING_PLANE,
@@ -83,7 +77,7 @@ export class RenderService {
         this.scene.add(this._car);
         this.scene.add(new AmbientLight(WHITE, AMBIENT_LIGHT_OPACITY));
 
-        // Ajout
+        // Addon for the floor and axis for future parts
         const axesHelper: AxisHelper = new AxisHelper(5);
         this.scene.add( axesHelper );
 
