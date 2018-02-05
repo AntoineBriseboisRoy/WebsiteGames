@@ -5,24 +5,26 @@ import { PerspectiveCamera, WebGLRenderer, Scene, AmbientLight,
          DoubleSide, Math, Vector3, Texture, RepeatWrapping, TextureLoader } from "three";
 import { Car } from "../car/car";
 import {ThirdPersonCamera} from "../camera/camera-perspective";
+import { OrthoganalCamera } from "../camera/camera-orthogonal";
+import {INITIAL_CAMERA_POSITION_Y} from "../../constants";
 
 const FAR_CLIPPING_PLANE: number = 1000;
 const NEAR_CLIPPING_PLANE: number = 1;
 const FIELD_OF_VIEW: number = 70;
+const FRUSTUM_RATIO: number = 100;
 
 const ACCELERATE_KEYCODE: number = 87;  // w
 const LEFT_KEYCODE: number = 65;        // a
 const BRAKE_KEYCODE: number = 83;       // s
 const RIGHT_KEYCODE: number = 68;       // d
 
-const INITIAL_CAMERA_POSITION_Y: number = 25;
-
 const WHITE: number = 0xFFFFFF;
 const AMBIENT_LIGHT_OPACITY: number = 0.5;
 
 @Injectable()
 export class RenderService {
-    private camera: ThirdPersonCamera;
+    //private camera: ThirdPersonCamera;
+    private camera: OrthoganalCamera;
     private container: HTMLDivElement;
     private _car: Car;
     private renderer: WebGLRenderer;
@@ -63,13 +65,20 @@ export class RenderService {
 
     private async createScene(): Promise<void> {
         this.scene = new Scene();
+        // Decomment to view the third person camera and comment the orthogonal camera below
+        //
+        // this.camera = new ThirdPersonCamera(
+        //     FIELD_OF_VIEW,
+        //     this.getAspectRatio(),
+        //     NEAR_CLIPPING_PLANE,
+        //     FAR_CLIPPING_PLANE
+        // );
 
-        this.camera = new ThirdPersonCamera(
-            FIELD_OF_VIEW,
-            this.getAspectRatio(),
-            NEAR_CLIPPING_PLANE,
-            FAR_CLIPPING_PLANE
-        );
+        this.camera = new OrthoganalCamera(-this.container.clientWidth / FRUSTUM_RATIO,
+                                           this.container.clientWidth / FRUSTUM_RATIO,
+                                           this.container.clientHeight / FRUSTUM_RATIO,
+                                           -this.container.clientHeight / FRUSTUM_RATIO,
+                                           1, INITIAL_CAMERA_POSITION_Y + 1); // Add 1 to see the floor
 
         await this._car.init();
         this.camera.position.set(0, INITIAL_CAMERA_POSITION_Y, 0);
@@ -77,7 +86,7 @@ export class RenderService {
         this.scene.add(this._car);
         this.scene.add(new AmbientLight(WHITE, AMBIENT_LIGHT_OPACITY));
 
-        // Addon for the floor and axis for future parts
+        // Addon for the floor and axis for future parts (Will be deleted in future fonctionalities)
         const axesHelper: AxisHelper = new AxisHelper(5);
         this.scene.add( axesHelper );
 
@@ -87,7 +96,6 @@ export class RenderService {
         const geometry: PlaneBufferGeometry = new PlaneBufferGeometry( 100, 100, 8, 8 );
         const material: MeshBasicMaterial = new MeshBasicMaterial( { map: floorTexture, side: DoubleSide } );
         const mesh: Mesh = new Mesh( geometry, material );
-        mesh.position.y = -0.5;
         mesh.rotation.x = Math.degToRad(90);
         this.scene.add( mesh );
     }
@@ -114,7 +122,9 @@ export class RenderService {
     }
 
     public onResize(): void {
-        this.camera.aspect = this.getAspectRatio();
+        if (this.camera.type === ThirdPersonCamera.toString()) {
+          this.camera.aspect = this.getAspectRatio();
+        }
         this.camera.updateProjectionMatrix();
         this.renderer.setSize(this.container.clientWidth, this.container.clientHeight);
     }

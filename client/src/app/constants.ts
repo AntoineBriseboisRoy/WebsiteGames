@@ -13,3 +13,4 @@ export const enum Difficulty {
     Normal = "Normal",
     Hard = "Hard"
 }
+export const INITIAL_CAMERA_POSITION_Y: number = 25;
