@@ -23,7 +23,7 @@ export class BlackSquareGenerator {
         return this.instance;
     }
 
-    public generate(): string[][] {
+    public generateBlackSquares(): string[][] {
         const numberOfBlackSquaresPerLine: number = this.percentageOfBlackSquares * this.sideSize;
 
         do {
@@ -31,9 +31,7 @@ export class BlackSquareGenerator {
                 for (let j: number = 0; j < numberOfBlackSquaresPerLine; j++) {
                     const tempPosition: CoordXY = this.randomPositionGenerator();
                     this.blackSquares.push(new BlackSquare(tempPosition));
-                    // this.blackSquares.push(new BlackSquare(PosXY.invertCoordinates(tempPosition)));
                     this.grid[tempPosition.X][tempPosition.Y] = cst.BLACKSQUARE_CHARACTER;
-                    // this.grid[tempPosition.Y][tempPosition.X] = cst.BLACKSQUARE_CHARACTER;
                 }
             }
         } while (!this.verifyBlackSquareGrid());
@@ -101,9 +99,9 @@ export class BlackSquareGenerator {
     private initializeEmptyGrid(): string[][] {
         const emptyGrid: string[][] = new Array();
         for (let i: number = 0; i < this.sideSize; i++) {
-            this.grid[i] = new Array<string>();
+            emptyGrid[i] = new Array<string>();
             for (let j: number = 0; j < this.sideSize; j++) {
-                this.grid[i][j] = cst.EMPTY_SQUARE;
+                emptyGrid[i][j] = cst.EMPTY_SQUARE;
             }
         }
 

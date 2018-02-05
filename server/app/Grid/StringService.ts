@@ -19,7 +19,7 @@ export class StringService {
         return word;
     }
 
-    public static generateString(length: number): string {
+    public static generateDefaultString(length: number): string {
         let newStr: string = "";
         for (let i: number = 0; i < length; i++) {
             newStr += (cst.EMPTY_SQUARE);

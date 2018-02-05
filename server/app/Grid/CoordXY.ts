@@ -1,7 +1,7 @@
 export class CoordXY {
 
-    public static invertCoordinates(pos: CoordXY): CoordXY {
-        return new CoordXY(pos.Y, pos.X);
+    public static invertCoordinates(coord: CoordXY): CoordXY {
+        return new CoordXY(coord.Y, coord.X);
     }
 
     constructor(private x: number, private y: number) {
@@ -17,8 +17,7 @@ export class CoordXY {
         return this.y;
     }
 
-    public equals(otherPos: CoordXY): boolean {
-        return this.x === otherPos.X && this.y === otherPos.Y;
+    public equals(otherCoord: CoordXY): boolean {
+        return this.x === otherCoord.X && this.y === otherCoord.Y;
     }
-
 }
