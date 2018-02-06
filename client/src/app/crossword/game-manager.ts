@@ -8,12 +8,12 @@ export class GameManager implements OnInit {
     private difficulty: Difficulty;
     private twoPlayer: boolean;
     public playerOne: Player = {
-      name: "Claudia",
-      point: 0
+        name: "Claudia",
+        point: 0
     };
     public playerTwo: Player = {
-      name: "Antoine",
-      point: 100
+        name: "Antoine",
+        point: 100
     };
 
     public static getInstance(): GameManager {
@@ -23,7 +23,7 @@ export class GameManager implements OnInit {
     private constructor() {
         this.difficulty = Difficulty.Easy;
         this.twoPlayer = true;
-     }
+    }
 
     public ngOnInit(): void {
         this.difficulty = Difficulty.Easy;

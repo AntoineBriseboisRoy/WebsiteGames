@@ -11,7 +11,7 @@ export class Word implements OnInit {
     }
 
     public getValue(): Array<string> {
-       return this.content.split("");
+        return this.content.split("");
     }
 
 }
