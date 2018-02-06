@@ -282,18 +282,20 @@ export class GridFiller {
         const randomInt: number =  Math.floor(Math.random() * searchResults.length);
 
         return searchResults.length === 0 ? { word: cst.NOT_FOUND, definition: "", field3: "" } :
-            {word: searchResults[randomInt].word, definition: searchResults[randomInt].definition, field3: ""};
+            {word: StringService.eliminateSpecialChars(StringService.replaceAccentedChars(searchResults[randomInt].word)).toUpperCase(),
+             definition: searchResults[randomInt].definition, field3: ""};
     }
 
     private constraintFilter(entry: DictionaryEntry, length: number, requiredLettersPositions: Constraint[]): boolean {
         let passesFilter: boolean = true;
-        if (entry.word.length !== length) {
+        const cleanWord: string = StringService.eliminateSpecialChars(StringService.replaceAccentedChars(entry.word));
+        if (cleanWord.length !== length) {
             passesFilter = false;
         }
         requiredLettersPositions.forEach((constraint: Constraint) => {
-            if (entry.word[constraint.position] === undefined) {
+            if (cleanWord[constraint.position] === undefined) {
                 passesFilter = false;
-            } else if (entry.word[constraint.position].toUpperCase() !== constraint.letter.toUpperCase()) {
+            } else if (cleanWord[constraint.position].toUpperCase() !== constraint.letter.toUpperCase()) {
                 passesFilter = false;
             }
         });
