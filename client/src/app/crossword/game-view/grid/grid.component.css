@@ -18,7 +18,7 @@
     clear: both;
 }
 
-.case-main-content {
+.cell-main-content {
     font-size: 2.7vw;
     text-align: center;
     /* padding-right: 0.5vw; */
@@ -30,7 +30,7 @@
     border: 1px solid grey;
 }
 
-.case-index {
+.cell-index {
     float: left;
     font-size: 1vw;
 }

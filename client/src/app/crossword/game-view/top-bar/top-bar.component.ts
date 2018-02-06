@@ -7,14 +7,16 @@ import { GameManager } from "../../game-manager";
     styleUrls: ["./top-bar.component.css"]
 })
 export class TopBarComponent implements OnInit {
-    private gameManager: GameManager = GameManager.getInstance();
+    private gameManager: GameManager;
 
-    public constructor() { }
+    public constructor() {
+        this.gameManager = GameManager.getInstance();
+    }
 
     public ngOnInit(): void {
     }
 
     public modeToString(): string {
-        return this.gameManager.isMultiplayer() ? "Two Players" : "Single Player";
+        return this.gameManager.IsMultiplayer ? "Two Players" : "Single Player";
     }
 }

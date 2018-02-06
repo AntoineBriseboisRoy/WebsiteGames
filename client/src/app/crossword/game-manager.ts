@@ -6,35 +6,38 @@ import { Player } from "./player";
 export class GameManager implements OnInit {
     private static instance: GameManager;
     private difficulty: Difficulty;
-    private twoPlayer: boolean;
-    public playerOne: Player = {
-        name: "Claudia",
-        point: 0
-    };
-    public playerTwo: Player = {
-        name: "Antoine",
-        point: 100
-    };
+    private isMultiplayer: boolean;
+
+    public playerOne: Player;
+    public playerTwo: Player;
 
     public static getInstance(): GameManager {
         return this.instance || (this.instance = new this());
     }
 
     private constructor() {
+        this.playerOne = {
+            name: "Claudia",
+            point: 0
+        };
+        this.playerTwo = {
+            name: "Antoine",
+            point: 100
+        };
         this.difficulty = Difficulty.Easy;
-        this.twoPlayer = true;
+        this.isMultiplayer = true;
     }
 
     public ngOnInit(): void {
         this.difficulty = Difficulty.Easy;
-        this.twoPlayer = true;
+        this.isMultiplayer = true;
     }
 
     public getDifficulty(): string {
         return this.difficulty;
     }
 
-    public isMultiplayer(): boolean {
-        return this.twoPlayer;
+    public get IsMultiplayer(): boolean {
+        return this.isMultiplayer;
     }
 }

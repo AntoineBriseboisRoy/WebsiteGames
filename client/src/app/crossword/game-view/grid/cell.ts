@@ -1,10 +1,5 @@
-import { OnInit } from "@angular/core";
-
-export class Cell implements OnInit {
+export class Cell {
     public constructor(private index: number, private hasIndex: boolean, private content: string, private isBlack: boolean) {
-    }
-
-    public ngOnInit(): void {
     }
 
     public getIndex(): number {
