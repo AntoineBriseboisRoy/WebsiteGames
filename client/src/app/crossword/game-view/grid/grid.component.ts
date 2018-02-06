@@ -1,6 +1,4 @@
 import { Component, OnInit } from "@angular/core";
-import { Word } from "./word";
-import { Position } from "./position";
 import { Cell } from "./cell";
 import { BLACK_CHAR, GRID_WIDTH } from "../../../constants";
 
@@ -12,8 +10,6 @@ import { BLACK_CHAR, GRID_WIDTH } from "../../../constants";
 
 export class GridComponent implements OnInit {
 
-    // private words: Array<Word> = new Array();
-    // private currentPosition: Position = new Position(0, 0);
     private indexPosition: number[];
     private cells: Array<Cell>;
     // Mock list that we will receive from crossword generator
@@ -87,22 +83,4 @@ export class GridComponent implements OnInit {
     private getCellType(isBlack: boolean): string {
         return isBlack ? "black-square" : "white-square";
     }
-    // Will be usefull for future features
-    //
-    /*// if we receive one big string
-    private createconvertedMockWords(): void {
-        for (let i: number = 0; i < this.convertedMockWords.length; ++i) {
-            if (this.isABlackSquare(this.convertedMockWords[i])) {
-                this.words.push(new Word(i, this.currentPosition, this.mockWords[i]));
-                this.currentPosition.update(this.mockWords[i].length, GRID_WIDTH);
-            }
-        }
-    }
-    // if we receive an array of string
-    private createWord(): void {
-        for (let i: number = 0; i < this.mockWords.length; ++i) {
-            this.words.push(new Word(i, this.currentPosition, this.mockWords[i]));
-            this.currentPosition.update(this.mockWords[i].length, GRID_WIDTH);
-        }
-    }*/
 }
