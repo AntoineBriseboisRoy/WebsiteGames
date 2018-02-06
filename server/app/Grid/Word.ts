@@ -28,4 +28,8 @@ export class Word {
     public get Content(): string {
         return this.content;
     }
+
+    public get Definition(): string {
+        return this.definition;
+    }
 }

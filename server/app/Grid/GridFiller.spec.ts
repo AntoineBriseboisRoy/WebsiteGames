@@ -1,7 +1,5 @@
 import { expect } from "chai";
-import { CoordXY } from "./CoordXY";
 import { Grid } from "./Grid";
-import { BlackSquare } from "./BlackSquare";
 import { Word } from "./Word";
 import { DictionaryEntry, Constraint } from "./Interfaces";
 import * as cst from "./Constants";
@@ -134,7 +132,6 @@ describe.skip("Verifying 10x10 Grid (no black squares)", () => {
     // tslint:disable-next-line:max-func-body-length
     it("Should have at least 1 valid word per row/column", () => {
         const testGrid: Grid = new Grid(cst.STANDARD_SIDE_SIZE, cst.PERCENTAGE_BLACK_SQUARES);
-        const nValidWords: number = 0;
         const data: DictionaryEntry[] = require("../../../bigDB.json");
         let valid: boolean = true;
 
