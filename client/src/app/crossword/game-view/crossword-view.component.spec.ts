@@ -1,5 +1,7 @@
 import { async, ComponentFixture, TestBed } from "@angular/core/testing";
-
+import {TopBarComponent} from "./top-bar/top-bar.component";
+import {GridComponent} from "./grid/grid.component";
+import {DefinitionComponent} from "./definition/definition.component";
 import { CrosswordViewComponent } from "./crossword-view.component";
 
 describe("CrosswordViewComponent", () => {
@@ -8,7 +10,7 @@ describe("CrosswordViewComponent", () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ CrosswordViewComponent ]
+      declarations: [ CrosswordViewComponent, TopBarComponent, GridComponent, DefinitionComponent ]
     })
     .compileComponents();
   }));
