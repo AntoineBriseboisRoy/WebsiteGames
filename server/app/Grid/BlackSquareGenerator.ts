@@ -1,6 +1,7 @@
 import { BlackSquare } from "./BlackSquare";
 import { CoordXY } from "./CoordXY";
 import * as cst from "./Constants";
+import { MIN_WORDS_PER_LINE } from "./Constants";
 
 export class BlackSquareGenerator {
 
@@ -49,6 +50,7 @@ export class BlackSquareGenerator {
                     this.grid[tempPosition.X][tempPosition.Y] = cst.BLACKSQUARE_CHARACTER;
                 }
             }
+            console.log(this.grid);
         } while (!this.verifyBlackSquareGrid());
 
         return this.grid;
@@ -73,7 +75,45 @@ export class BlackSquareGenerator {
     }
 
     private verifyBlackSquareGrid(): boolean {
-        return this.correctBlackSquareRatio();
+        return this.correctBlackSquareRatio() && this.correctNumberWords();
+    }
+
+    // tslint:disable-next-line:max-func-body-length
+    private correctNumberWords(): boolean {
+        let correctRatio: boolean = true;
+        for (let i: number = 0; i < this.sideSize; ++i) {
+            let nLettersRow: number = 0, nLettersCol: number = 0, nWordsCol: number = 0, nWordsRow: number = 0;
+            for (let j: number = 0; j < this.sideSize; ++j) {
+                if (this.grid[i][j] === cst.EMPTY_SQUARE) {
+                    ++nLettersCol;
+                } else {
+                    if (nLettersCol >= cst.MIN_LETTERS_FOR_WORD) {
+                        ++nWordsCol;
+                    }
+                    nLettersCol = 0;
+                }
+                if (this.grid[j][i] === cst.EMPTY_SQUARE) {
+                    ++nLettersRow;
+                } else {
+                    if (nLettersRow >= cst.MIN_LETTERS_FOR_WORD) {
+                        ++nWordsRow;
+                    }
+                    nLettersRow = 0;
+                }
+            }
+            if (nLettersCol >= cst.MIN_LETTERS_FOR_WORD) {
+                ++nWordsCol;
+            }
+            if (nLettersRow >= cst.MIN_LETTERS_FOR_WORD) {
+                ++nWordsRow;
+            }
+            if (!(nWordsRow >= cst.MIN_WORDS_PER_LINE && nWordsRow <= cst.MAX_WORDS_PER_LINE
+                && nWordsCol >= cst.MIN_WORDS_PER_LINE && nWordsCol <= cst.MAX_WORDS_PER_LINE)) {
+                    correctRatio = false;
+            }
+        }
+
+        return correctRatio;
     }
 
     private correctBlackSquareRatio(): boolean {

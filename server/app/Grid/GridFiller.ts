@@ -39,6 +39,8 @@ export class GridFiller {
         this.sortWordLengths();
         while (!this.fillGridWithWords()) { /* Do nothing */ }
         this.fillRemainingSpacesWithBlacksquares();
+        console.log(this.grid);
+        console.log(this.Words);
 
         return this.grid;
     }
@@ -105,6 +107,8 @@ export class GridFiller {
     }
 
     private fillGridWithWords(): boolean {
+        console.log(this.grid);
+        console.log("Words: " + this.words.length + "   WordsLength: " + this.wordsLengths.length);
         if (this.gridFilled()) {
             return true;
         }
@@ -116,17 +120,14 @@ export class GridFiller {
 
             return false;
         }
-        this.addNewWord(new Word(longestFreeSpace.Position, longestFreeSpace.Orientation, entry.word, entry.definition));
+        const wordAdded: Word = new Word(longestFreeSpace.Position, longestFreeSpace.Orientation, entry.word, entry.definition);
+        this.addNewWord(wordAdded);
         this.sortWordLengthsByCommonLetters();
 
         if (!this.fillGridWithWords()) {
-            this.backtrack();
-            this.wordsLengths.push(longestFreeSpace);
-            if (!this.fillGridWithWordsNextTry()) {
-                return false;
-            } else {
-                return true;
-            }
+            this.backtrack(this.findWordWithCommonLetters(wordAdded));
+
+            return (this.fillGridWithWordsNextTry());
         } else {
             return true;
         }
@@ -140,6 +141,9 @@ export class GridFiller {
         if (this.gridFilled()) {
             return true;
         }
+        console.log(this.grid);
+        console.log("Words: " + this.words.length + "   WordsLength: " + this.wordsLengths.length);
+
         const longestFreeSpace: Word = this.wordsLengths.pop();
         const entry: DictionaryEntry = this.findWordsWithConstraints(longestFreeSpace.Length,
                                                                      this.establishConstraints(longestFreeSpace));
@@ -148,12 +152,12 @@ export class GridFiller {
 
             return false;
         }
-        this.addNewWord(new Word(longestFreeSpace.Position, longestFreeSpace.Orientation, entry.word, entry.definition));
+        const wordAdded: Word = new Word(longestFreeSpace.Position, longestFreeSpace.Orientation, entry.word, entry.definition);
+        this.addNewWord(wordAdded);
         this.sortWordLengthsByCommonLetters();
 
         if (!this.fillGridWithWords()) {
-            this.backtrack();
-            this.wordsLengths.push(longestFreeSpace);
+            this.backtrack(this.findWordWithCommonLetters(wordAdded));
 
             return false;
         } else {
@@ -197,6 +201,23 @@ export class GridFiller {
         }
 
         return nCommonLetters;
+    }
+
+    private haveCommonLetter(leftWord: Word, rightWord: Word): boolean {
+        if (leftWord.Orientation === rightWord.Orientation) {
+            return false;
+        }
+        if (leftWord.Orientation === Orientation.Horizontal) {
+            if (leftWord.Position.X <= rightWord.Position.X && leftWord.Position.X + leftWord.Length >= rightWord.Position.X) {
+                return true;
+            }
+        } else {
+            if (leftWord.Position.Y <= rightWord.Position.Y && leftWord.Position.Y + leftWord.Length >= rightWord.Position.Y) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private letterBelongsOtherWord(position: CoordXY): boolean {
@@ -280,13 +301,21 @@ export class GridFiller {
         return passesFilter;
     }
 
-    private backtrack(): void {
-        const lastWord: Word = this.removeLastWordFromWordArray();
-        this.removeLastWordFromGrid(lastWord);
+    private findWordWithCommonLetters(wordCompared: Word): Word {
+        let wordFound: Word = this.words[0];
+        this.words.forEach((word: Word) => {
+            if (this.haveCommonLetter(word, wordCompared)) {
+                wordFound = word;
+            }
+        });
+
+        return wordFound;
     }
 
-    private removeLastWordFromWordArray(): Word {
-        return this.words.pop();
+    private backtrack(wordToErase: Word): void {
+        this.words = this.words.filter((word: Word) => word !== wordToErase);
+        this.wordsLengths.push(wordToErase);
+        this.removeLastWordFromGrid(wordToErase);
     }
 
     private removeLastWordFromGrid(lastWord: Word): void {
