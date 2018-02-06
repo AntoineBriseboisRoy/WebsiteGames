@@ -7,15 +7,14 @@ import { GameComponent } from "./race/game-component/game.component";
 
 import { RenderService } from "./race/render-service/render.service";
 import { BasicService } from "./basic.service";
-import { CrosswordViewComponent } from './crossword/game-view/crossword-view.component';
-import { TopBarComponent } from './crossword/game-view/top-bar/top-bar.component';
-import { PlayerInformationComponent } from './crossword/game-view/player-information/player-information.component';
-import { GridComponent } from './crossword/game-view/grid/grid.component';
-import { DefinitionComponent } from './crossword/game-view/definition/definition.component';
-import { FormsModule } from '@angular/forms';
+import { CrosswordViewComponent } from "./crossword/game-view/crossword-view.component";
+import { TopBarComponent } from "./crossword/game-view/top-bar/top-bar.component";
+import { GridComponent } from "./crossword/game-view/grid/grid.component";
+import { DefinitionComponent } from "./crossword/game-view/definition/definition.component";
+import { FormsModule } from "@angular/forms";
 
-import { AppRoutingModule } from './/app-routing.module';
-import { DashboardComponent } from './dashboard/dashboard.component';
+import { AppRoutingModule } from ".//app-routing.module";
+import { DashboardComponent } from "./dashboard/dashboard.component";
 
 @NgModule({
     declarations: [
@@ -23,7 +22,6 @@ import { DashboardComponent } from './dashboard/dashboard.component';
         GameComponent,
         CrosswordViewComponent,
         TopBarComponent,
-        PlayerInformationComponent,
         GridComponent,
         DefinitionComponent,
         DashboardComponent

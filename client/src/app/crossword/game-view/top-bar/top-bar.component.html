@@ -2,24 +2,24 @@
   <div class="col-sm-2">
   </div>
   <div class="col-sm-2">
-      <div id="first-player"class="player">
-          <h2>{{player.playerOne.name}}</h2>
-          <h4>{{player.playerOne.point}}</h4>
-        </div>
+    <div id="first-player" class="player">
+      <h2>{{this.gameManager.playerOne.name}}</h2>
+      <h4>{{this.gameManager.playerOne.point}}</h4>
+    </div>
   </div>
   <div class="col-sm-1">
   </div>
   <div class="col-sm-2">
     <h2>{{"Mode: "+modeToString()}}</h2>
-    <h4>{{"Difficulty: "+this.gameManager.getDifficulty()}}</h4>
+    <h4>{{"Difficulty: " + this.gameManager.getDifficulty()}}</h4>
   </div>
   <div class="col-sm-1">
   </div>
-  <div *ngIf="this.gameManager.isMultiplayer()"class="col-sm-2">
-      <div id="second-player" class="player">
-          <h2>{{player.playerTwo.name}}</h2>
-          <h4>{{player.playerTwo.point}}</h4>
-        </div>
+  <div *ngIf="this.gameManager.IsMultiplayer" class="col-sm-2">
+    <div id="second-player" class="player">
+      <h2>{{this.gameManager.playerTwo.name}}</h2>
+      <h4>{{this.gameManager.playerTwo.point}}</h4>
+    </div>
   </div>
   <div class="col-sm-2">
   </div>
