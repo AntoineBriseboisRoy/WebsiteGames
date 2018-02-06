@@ -106,7 +106,7 @@ export class GridFiller {
         this.addNewWord(new Word(longestFreeSpace.Position, longestFreeSpace.Orientation, entry.word, entry.definition));
         this.sortWordLengthsByCommonLetters();
 
-        if (!this.fillGridWithWords()) {
+        if (await !this.fillGridWithWords()) {
             console.log("Words status before backtrack(2): " + this.words.length);
             this.backtrack();
             this.wordLengths.push(longestFreeSpace);
