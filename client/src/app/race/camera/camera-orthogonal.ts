@@ -10,20 +10,20 @@ export class OrthoganalCamera extends OrthographicCamera {
     }
 
     public init(lookAt: Vector3): void {
-      this.position.set(0, INITIAL_CAMERA_POSITION_Y, 0);
-      this.lookAt(lookAt);
+        this.position.set(0, INITIAL_CAMERA_POSITION_Y, 0);
+        this.lookAt(lookAt);
     }
 
     public update(_car: Car): void {
-      this.position.set(_car.getPosition().x, INITIAL_CAMERA_POSITION_Y, _car.getPosition().z);
-      this.lookAt(_car.getPosition());
+        this.position.set(_car.getPosition().x, INITIAL_CAMERA_POSITION_Y, _car.getPosition().z);
+        this.lookAt(_car.getPosition());
     }
 
     public onResize(clientWidth: number, clientHeight: number): void {
-      this.left = -clientWidth / FRUSTUM_RATIO;
-      this.right = clientWidth / FRUSTUM_RATIO;
-      this.top = clientHeight / FRUSTUM_RATIO;
-      this.bottom = -clientHeight / FRUSTUM_RATIO;
-      this.updateProjectionMatrix();
+        this.left = -clientWidth / FRUSTUM_RATIO;
+        this.right = clientWidth / FRUSTUM_RATIO;
+        this.top = clientHeight / FRUSTUM_RATIO;
+        this.bottom = -clientHeight / FRUSTUM_RATIO;
+        this.updateProjectionMatrix();
     }
 }
