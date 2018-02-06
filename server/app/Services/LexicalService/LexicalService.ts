@@ -9,18 +9,24 @@ export enum Difficulty {
 }
 
 export class LexicalService {
+    private difficulty: number;
     private requestResult: JSON;
-    private options: RequestOptions =
-     {
-        method: "GET",
-        uri: "https://api.datamuse.com/words",
-        qs: {
-            sp: "", // -> uri + "?sp=word"
-            md: "df"
-        },
-        json: true,  // automatically parse data to JSON format
-        simple: true // should request promise for status code other than 2xx
-    };
+    private options: RequestOptions;
+
+    constructor() {
+        this.difficulty = null;
+        this.requestResult = null;
+        this.options = {
+            method: "GET",
+            uri: "https://api.datamuse.com/words",
+            qs: {
+                sp: "", // -> uri + "?sp=word"
+                md: "df"
+            },
+            json: true,  // automatically parse data to JSON format
+            simple: true // should request promise for status code other than 2xx
+        };
+    }
     private sendGetRequest(searchedTemplate: string): Promise<void|JSON> {
         this.options.qs.sp = searchedTemplate;
 
@@ -36,16 +42,18 @@ export class LexicalService {
                 throw reject;
             })
             .catch((error: Error) => {
-                //Gérer les erreurs ici. (Erreur http et erreur Datamuse return nothing).
+                // Gérer les erreurs ici. (Erreur http et erreur Datamuse return nothing).
         });
     }
 
     private hasDefinition(index: number): boolean {
-        return this.requestResult[index].hasOwnProperty("defs");
+        const DEFINITION_PROPERTY: string = "defs";
+
+        return this.requestResult[index].hasOwnProperty(DEFINITION_PROPERTY);
     }
 
-    private isInFrequencyInterval(difficulty: number, wordFrequency: number): boolean {
-        switch (difficulty) {
+    private isInFrequencyInterval(wordFrequency: number): boolean {
+        switch (this.difficulty) {
             case Difficulty.EASY: // Fallthrough
             case Difficulty.MEDIUM:
                 return wordFrequency >= Difficulty.EASY;
@@ -56,49 +64,50 @@ export class LexicalService {
         }
     }
 
-    private isValidDifficulty(index: number, difficulty: number): boolean{
-        const BEG_FRQ_STR: number = 2, END_FRQ_STR: number = 6;
+    private isValidDifficulty(index: number): boolean {
+        const BEG_FREQUENCY_STR: number = 2, END_FREQUENCY_STR: number = 6;
         try {
-            const wordFrequency: number = parseFloat(this.requestResult[index].tags[0].substr(BEG_FRQ_STR, END_FRQ_STR));
+            const wordFrequency: number = parseFloat(this.requestResult[index].tags[0].substr(BEG_FREQUENCY_STR, END_FREQUENCY_STR));
 
-            return (this.isInFrequencyInterval(difficulty, wordFrequency));
+            return (this.isInFrequencyInterval(wordFrequency));
         } catch (err) { /*Gérer l'erreur ici.*/ }
     }
 
-    private getWordAndDefinition(index: number, difficulty: number): WordAndDefinition {
+    private getWordAndDefinition(index: number): WordAndDefinition {
         const NB_DEFS: number = this.requestResult[index].defs.length;
-        let randomDef: number = 0;
+        let randomDefinition: number = 0;
         if (NB_DEFS !== 1) {
-            randomDef = Math.floor((Math.random() * (NB_DEFS - 1)) + 1);
+            randomDefinition = Math.floor((Math.random() * (NB_DEFS - 1)) + 1);
         }
-        switch (difficulty) {
+        switch (this.difficulty) {
             case Difficulty.EASY:
                 return {word: this.requestResult[index].word, definition: this.requestResult[index].defs[0]};
             case Difficulty.MEDIUM: // Fallthrough
             case Difficulty.HARD:
-                return {word: this.requestResult[index].word, definition: this.requestResult[index].defs[randomDef]};
+                return {word: this.requestResult[index].word, definition: this.requestResult[index].defs[randomDefinition]};
             default:
                 throw new Error("Invalid Difficulty");
         }
     }
 
-    private filterWords (difficulty: number): Array<WordAndDefinition> {
-        const result: Array<WordAndDefinition> = new Array<WordAndDefinition>();
+    private filterWords (): Array<WordAndDefinition> {
+        const filteredWords: Array<WordAndDefinition> = new Array<WordAndDefinition>();
         const LENGTH: number = Object.keys(this.requestResult).length;
         try {
             for ( let i: number = 0; i < LENGTH; i++) {
-                if (this.hasDefinition(i) && this.isValidDifficulty(i, difficulty)) {
-                    result.push(this.getWordAndDefinition(i, difficulty));
+                if (this.hasDefinition(i) && this.isValidDifficulty(i)) {
+                    filteredWords.push(this.getWordAndDefinition(i));
                 }
             }
         } catch (err) { /*Gérer l'erreur ici*/ }
 
-        return result;
+        return filteredWords;
     }
 
     public async searchWords(searchedTemplate: string, difficulty: number): Promise<Array<WordAndDefinition>> {
+        this.difficulty = difficulty;
         await this.sendGetRequest(searchedTemplate);
 
-        return this.filterWords(difficulty);
+        return this.filterWords();
     }
 }
