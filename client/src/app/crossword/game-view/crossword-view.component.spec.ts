@@ -1,8 +1,8 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed } from "@angular/core/testing";
 
-import { CrosswordViewComponent } from './crossword-view.component';
+import { CrosswordViewComponent } from "./crossword-view.component";
 
-describe('CrosswordViewComponent', () => {
+describe("CrosswordViewComponent", () => {
   let component: CrosswordViewComponent;
   let fixture: ComponentFixture<CrosswordViewComponent>;
 
@@ -19,7 +19,7 @@ describe('CrosswordViewComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it("should create", () => {
     expect(component).toBeTruthy();
   });
 });

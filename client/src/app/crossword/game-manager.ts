@@ -1,20 +1,43 @@
-import { OnInit } from '@angular/core';
-import {Difficulty} from '../constants'
+import { OnInit } from "@angular/core";
+import { Difficulty } from "../constants";
+import { Player } from "./player";
 
-
-//it would be a great idea to make this class a singleton
+// Singleton class
 export class GameManager implements OnInit {
-    constructor(private difficulty:Difficulty, private twoPlayer: boolean) { }
+    private static instance: GameManager;
+    private difficulty: Difficulty;
+    private isMultiplayer: boolean;
 
-    ngOnInit() {
-        
+    public playerOne: Player;
+    public playerTwo: Player;
+
+    public static getInstance(): GameManager {
+        return this.instance || (this.instance = new this());
     }
 
-    getDifficulty() : string{
+    private constructor() {
+        this.playerOne = {
+            name: "Claudia",
+            point: 0
+        };
+        this.playerTwo = {
+            name: "Antoine",
+            point: 100
+        };
+        this.difficulty = Difficulty.Easy;
+        this.isMultiplayer = true;
+    }
+
+    public ngOnInit(): void {
+        this.difficulty = Difficulty.Easy;
+        this.isMultiplayer = true;
+    }
+
+    public getDifficulty(): string {
         return this.difficulty;
     }
 
-    isMultiplayer(){
-        return this.twoPlayer;
+    public get IsMultiplayer(): boolean {
+        return this.isMultiplayer;
     }
 }
