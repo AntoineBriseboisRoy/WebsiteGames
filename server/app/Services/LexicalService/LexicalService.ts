@@ -1,6 +1,5 @@
 import * as requestPromise from "request-promise-native";
 import { RequestOptions, WordAndDefinition } from "./Interfaces";
-import { STATUS_CODES } from "http";
 
 export enum Difficulty {
     EASY = 5,
@@ -70,7 +69,7 @@ export class LexicalService {
             const wordFrequency: number = parseFloat(this.requestResult[index].tags[0].substr(BEG_FREQUENCY_STR, END_FREQUENCY_STR));
 
             return (this.isInFrequencyInterval(wordFrequency));
-        } catch (err) { /*Gérer l'erreur ici.*/ }
+        } catch (err) { return false; }
     }
 
     private getWordAndDefinition(index: number): WordAndDefinition {
