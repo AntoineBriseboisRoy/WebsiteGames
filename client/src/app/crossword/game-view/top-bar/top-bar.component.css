@@ -1,0 +1,21 @@
+#top-bar {
+  border-bottom: 1px solid grey;
+  text-align: center;
+  background-color: #F1F1F1;
+}
+
+#first-player {
+  border-color: #0796E5;
+}
+
+#second-player {
+  border-color: #F17630;
+}
+
+.player {
+  border: 1px solid black;
+  border-radius: 5px;
+  margin: 5px 0px;
+}
+
+

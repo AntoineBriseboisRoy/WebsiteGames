@@ -1,0 +1,10 @@
+<div *ngFor="let case of cellArray; index as i" multiple [ngClass]="lineJump(i)">
+  <div [ngClass]="getCaseType(case.isBlackSquare())">
+    <div *ngIf="!case.isBlackSquare()"> <!-- remove the "*" in all black square -->
+      <div *ngIf="case.hasAnIndex()" class="case-index">
+        {{case.getIndex()}}
+      </div>
+      <p class="case-main-content">{{case.getContent()}}</p>
+    </div>
+  </div>
+</div>
