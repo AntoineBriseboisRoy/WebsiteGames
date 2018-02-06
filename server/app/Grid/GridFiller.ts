@@ -11,7 +11,7 @@ export class GridFiller {
     private static instance: GridFiller;
     private grid: string[][];
     private words: Word[];
-    private wordsLengths: Word[];
+    private wordLengths: Word[];
     private difficultyLevel: number;
     private sideSize: number;
     private nAttempts: number = 0;
@@ -21,7 +21,7 @@ export class GridFiller {
         this.sideSize = 0;
         this.grid = new Array<Array<string>>();
         this.words = new Array<Word>();
-        this.wordsLengths = new Array<Word>();
+        this.wordLengths = new Array<Word>();
     }
 
     public static get Instance(): GridFiller {
@@ -60,41 +60,28 @@ export class GridFiller {
         return this.grid;
     }
 
-    private async fillGridWithWords(): Promise<boolean> {
-        if (this.wordsLengths.length === 0) {
+    private fillGridWithWords(): boolean {
+        if (this.wordLengths.length === 0) {
             return true;
         }
-        console.log(this.grid); console.log(this.nAttempts);
-        console.log("Words array: " + this.words.length + "\t Wordlengths array: " + this.wordsLengths.length);
-        const longestFreeSpace: Word = this.wordsLengths.pop();
-<<<<<<< HEAD
-        console.log(longestFreeSpace);
-
+        console.log("Words array: " + this.words.length + "\t Wordlengths array: " + this.wordLengths.length);
+        const longestFreeSpace: Word = this.wordLengths.pop();
         const entry: DictionaryEntry = this.findWordsWithConstraints(longestFreeSpace.Length,
                                                                      this.establishConstraints(longestFreeSpace));
         ++this.nAttempts;
 
-=======
-        const entry: DictionaryEntry = await this.findWordsWithConstraints(this.establishConstraints(longestFreeSpace));
->>>>>>> afee5954c0b31783ce65a9080b66b631a405c7e2
         if (entry.word === cst.NOT_FOUND) {
-            this.wordsLengths.push(longestFreeSpace);
+            this.wordLengths.push(longestFreeSpace);
 
             return false;
         }
         this.addNewWord(new Word(longestFreeSpace.Position, longestFreeSpace.Orientation, entry.word, entry.definition));
         this.sortWordLengthsByCommonLetters();
 
-<<<<<<< HEAD
         if (!this.fillGridWithWords()) {
-
-=======
-        if (await !this.fillGridWithWords()) {
-            console.log("Words status before backtrack(1): " + this.words.length);
->>>>>>> afee5954c0b31783ce65a9080b66b631a405c7e2
             this.backtrack();
-            this.wordsLengths.push(longestFreeSpace);
-            if (await !this.fillGridWithWordsNextTry()) {
+            this.wordLengths.push(longestFreeSpace);
+            if (!this.fillGridWithWordsNextTry()) {
                 return false;
             } else {
                 return true;
@@ -104,24 +91,25 @@ export class GridFiller {
         }
     }
 
-    private async fillGridWithWordsNextTry(): Promise<boolean> {
-        if (this.wordsLengths.length === 0) {
+    private fillGridWithWordsNextTry(): boolean {
+        if (this.wordLengths.length === 0) {
             return true;
         }
-        const longestFreeSpace: Word = this.wordsLengths.pop();
-        const entry: DictionaryEntry = await this.findWordsWithConstraints(this.establishConstraints(longestFreeSpace));
+        const longestFreeSpace: Word = this.wordLengths.pop();
+        const entry: DictionaryEntry = this.findWordsWithConstraints(longestFreeSpace.Length,
+                                                                     this.establishConstraints(longestFreeSpace));
         if (entry.word === cst.NOT_FOUND) {
-            this.wordsLengths.push(longestFreeSpace);
+            this.wordLengths.push(longestFreeSpace);
 
             return false;
         }
         this.addNewWord(new Word(longestFreeSpace.Position, longestFreeSpace.Orientation, entry.word, entry.definition));
         this.sortWordLengthsByCommonLetters();
 
-        if (await !this.fillGridWithWords()) {
+        if (!this.fillGridWithWords()) {
             console.log("Words status before backtrack(2): " + this.words.length);
             this.backtrack();
-            this.wordsLengths.push(longestFreeSpace);
+            this.wordLengths.push(longestFreeSpace);
 
             return false;
         } else {
@@ -149,7 +137,7 @@ export class GridFiller {
                     ++nLettersCol;
                 } else {
                     if (nLettersCol >= cst.MIN_LETTERS_FOR_WORD) {
-                        this.wordsLengths.push(new Word(new CoordXY(j - nLettersCol, i), Orientation.Horizontal, StringService.generateDefaultString(nLettersCol), ""));
+                        this.wordLengths.push(new Word(new CoordXY(j - nLettersCol, i), Orientation.Horizontal, StringService.generateDefaultString(nLettersCol), ""));
                     }
                     lastBlacksquarePosCol = j;
                     nLettersCol = 0;
@@ -158,7 +146,7 @@ export class GridFiller {
                     ++nLettersRow;
                 } else {
                     if (nLettersRow >= cst.MIN_LETTERS_FOR_WORD) {
-                        this.wordsLengths.push(new Word(new CoordXY(i, j - nLettersRow), Orientation.Vertical, StringService.generateDefaultString(nLettersRow), ""));
+                        this.wordLengths.push(new Word(new CoordXY(i, j - nLettersRow), Orientation.Vertical, StringService.generateDefaultString(nLettersRow), ""));
                     }
                     lastBlacksquarePosRow = i;
                     nLettersRow = 0;
@@ -174,7 +162,7 @@ export class GridFiller {
     }
 
     private sortWordLengths(): void {
-        this.wordsLengths.sort((left: Word, right: Word): number => {
+        this.wordLengths.sort((left: Word, right: Word): number => {
             if (left.Length < right.Length) {
                 return -1;
             }
@@ -187,7 +175,7 @@ export class GridFiller {
     }
 
     private sortWordLengthsByCommonLetters(): void {
-        this.wordsLengths.sort((left: Word, right: Word): number => {
+        this.wordLengths.sort((left: Word, right: Word): number => {
             const nCommonLettersLeft: number = this.countLettersBelongingOtherWords(left);
             const nCommonLettersRight: number = this.countLettersBelongingOtherWords(right);
 
@@ -236,21 +224,15 @@ export class GridFiller {
         return constraints;
     }
 
-    private async findWordsWithConstraints(constraints: string): Promise<DictionaryEntry> {
-        let lexicalService: LexicalService = new LexicalService();
-        let words: DictionaryEntry[];
-        let nAttempts: number = 0;
-        let randomPosition: number = 0;
-
-        words = await lexicalService.searchWords(constraints, this.difficultyLevel);
+    private findWordsWithConstraints(length: number, requiredLettersPositions: Constraint[]): DictionaryEntry {
+        let word: DictionaryEntry;
+        let iAttempts: number = 0;
         do {
             if(words.length === 0) {
                 return { word: cst.NOT_FOUND, definition: "" };
             }
-            randomPosition =  Math.floor(Math.random() * words.length);
-
-            ++nAttempts;
-        } while (this.verifyAlreadyUsedWord(words[randomPosition].word) && nAttempts < cst.MAX_WORD_QUERY_ATTEMPS);
+            ++iAttempts;
+        } while (this.verifyAlreadyUsedWord(word.word) && iAttempts < cst.MAX_WORD_QUERY_ATTEMPS);
 
         return words[randomPosition];
     }
@@ -261,8 +243,8 @@ export class GridFiller {
 
     // Temporary, to be replaced when we have a lexical service
     private searchWordsTemporaryDB(length: number, requiredLettersPositions: Constraint[]): DictionaryEntry {
-        // const entries: DictionaryEntry[] = require("../../../bigDb.json");
-        const searchResults: DictionaryEntry[] = DICTIONNARY.filter((entry: DictionaryEntry) => {
+        const data: DictionaryEntry[] = require("../../../dbWords.json");
+        const searchResults: DictionaryEntry[] = data.filter((entry: DictionaryEntry) => {
             return this.constraintFilter(entry, length, requiredLettersPositions); }
         );
         const randomInt: number =  Math.floor(Math.random() * searchResults.length);
