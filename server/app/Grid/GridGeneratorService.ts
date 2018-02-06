@@ -10,7 +10,7 @@ export class GridGeneratorService {
     }
 
     public static get Instance(): GridGeneratorService {
-        if (this.instance == null || this.instance === undefined) {
+        if (this.instance == null) {
             this.instance = new GridGeneratorService();
         }
 

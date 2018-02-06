@@ -27,7 +27,9 @@ export class BlackSquareGenerator {
     }
 
     public generateBlackSquares(): string[][] {
+        console.log("Generating bs");
         const numberOfBlackSquaresPerLine: number = this.percentageOfBlackSquares * this.sideSize;
+
         do {
             this.grid = this.initializeEmptyGrid();
             for (let i: number = 0; i < this.sideSize; i++) {
@@ -37,7 +39,9 @@ export class BlackSquareGenerator {
                     this.grid[tempPosition.X][tempPosition.Y] = cst.BLACKSQUARE_CHARACTER;
                 }
             }
+            console.log(this.grid);
         } while (!this.verifyBlackSquareGrid());
+        console.log("Done generating bs");
 
         return this.grid;
     }
@@ -62,8 +66,7 @@ export class BlackSquareGenerator {
     }
 
     private tooManyBlackSquares(nBlackSquaresCol: number, nBlackSquaresRow: number): boolean {
-        return (nBlackSquaresCol / this.sideSize > cst.MAX_BLACKSQUARE_RATIO) ||
-               (nBlackSquaresRow / this.sideSize > cst.MAX_BLACKSQUARE_RATIO);
+        return nBlackSquaresCol / this.sideSize > cst.MAX_BLACKSQUARE_RATIO || nBlackSquaresRow / this.sideSize > cst.MAX_BLACKSQUARE_RATIO;
     }
 
     // tslint:disable-next-line:max-func-body-length
@@ -103,7 +106,7 @@ export class BlackSquareGenerator {
     }
 
     private acceptableWordLine(nWordsLine: number): boolean {
-        return (nWordsLine < cst.MIN_WORDS_PER_LINE) || (nWordsLine > cst.MAX_WORDS_PER_LINE);
+        return nWordsLine < cst.MIN_WORDS_PER_LINE || nWordsLine > cst.MAX_WORDS_PER_LINE;
     }
 
     private initializeEmptyGrid(): string[][] {
@@ -128,6 +131,7 @@ export class BlackSquareGenerator {
 
     private randomPositionGenerator(): CoordXY {
         let tempPosition: CoordXY = new CoordXY(this.randomIntGenerator(), this.randomIntGenerator());
+
         while (this.isOccupiedPosition(tempPosition)) {
             tempPosition = new CoordXY(this.randomIntGenerator(), this.randomIntGenerator());
         }
@@ -136,6 +140,6 @@ export class BlackSquareGenerator {
     }
 
     private verifyBlackSquareGrid(): boolean {
-        return this.correctBlackSquareRatio() && this.correctNumberWords();
+        return this.correctBlackSquareRatio() /*&& this.correctNumberWords()*/;
     }
 }

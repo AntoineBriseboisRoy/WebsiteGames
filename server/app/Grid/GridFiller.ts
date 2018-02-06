@@ -64,7 +64,7 @@ export class GridFiller {
         if (this.wordsLengths.length === 0) {
             return true;
         }
-        if (this.words.length >= (this.words.length + this.wordsLengths.length) * 0.5) {
+        if (this.words.length >= (this.words.length + this.wordsLengths.length) * cst.HALF) {
             return true;
         }
         const longestFreeSpace: Word = this.wordsLengths.pop();
@@ -130,24 +130,24 @@ export class GridFiller {
 
     private establishWordLengths(): void {
         for (let i: number = 0; i < this.sideSize; i++) {
-            let nLettersCol: number = 0, nLettersRow: number = 0, lastBlacksquarePosRow: number = -1, lastBlacksquarePosCol: number = -1;
+            let nLettersCol: number = 0, nLettersRow: number = 0;
             for (let j: number = 0; j < this.sideSize; j++) {
                 if (this.grid[j][i] === cst.EMPTY_SQUARE) {
                     ++nLettersCol;
                 } else {
                     if (nLettersCol >= cst.MIN_LETTERS_FOR_WORD) {
-                        this.wordsLengths.push(new Word(new CoordXY(j - nLettersCol, i), Orientation.Horizontal, StringService.generateDefaultString(nLettersCol), ""));
+                        this.wordsLengths.push(new Word(new CoordXY(j - nLettersCol, i),
+                                                        Orientation.Horizontal, StringService.generateDefaultString(nLettersCol), ""));
                     }
-                    lastBlacksquarePosCol = j;
                     nLettersCol = 0;
                 }
                 if (this.grid[i][j] === cst.EMPTY_SQUARE) {
                     ++nLettersRow;
                 } else {
                     if (nLettersRow >= cst.MIN_LETTERS_FOR_WORD) {
-                        this.wordsLengths.push(new Word(new CoordXY(i, j - nLettersRow), Orientation.Vertical, StringService.generateDefaultString(nLettersRow), ""));
+                        this.wordsLengths.push(new Word(new CoordXY(i, j - nLettersRow),
+                                                        Orientation.Vertical, StringService.generateDefaultString(nLettersRow), ""));
                     }
-                    lastBlacksquarePosRow = i;
                     nLettersRow = 0;
                 }
             }
@@ -155,7 +155,7 @@ export class GridFiller {
                 this.wordsLengths.push(new Word(new CoordXY(this.sideSize - nLettersCol, i), Orientation.Horizontal, StringService.generateDefaultString(nLettersCol), ""));
             }
             if (nLettersRow >= cst.MIN_LETTERS_FOR_WORD) {
-                this.wordsLengths.push(new Word(new CoordXY(i, this.sideSize - nLettersRow), Orientation.Horizontal, StringService.generateDefaultString(nLettersCol), ""));
+                this.wordsLengths.push(new Word(new CoordXY(i, this.sideSize - nLettersRow), Orientation.Vertical, StringService.generateDefaultString(nLettersRow), ""));
             }
         }
     }
@@ -228,7 +228,7 @@ export class GridFiller {
             word = this.searchWordsTemporaryDB(length, constraints);
 
             if (word.word === cst.NOT_FOUND) {
-                return { word: cst.NOT_FOUND, definition: "" };
+                return { word: cst.NOT_FOUND, definition: "", field3: "" };
             }
 
             ++nAttempts;
@@ -248,8 +248,8 @@ export class GridFiller {
         );
         const randomInt: number =  Math.floor(Math.random() * searchResults.length);
 
-        return searchResults.length === 0 ? { word: cst.NOT_FOUND, definition: "" } :
-            {word: searchResults[randomInt].word, definition: searchResults[randomInt].definition};
+        return searchResults.length === 0 ? { word: cst.NOT_FOUND, definition: "", field3: "" } :
+            {word: searchResults[randomInt].word, definition: searchResults[randomInt].definition, field3: ""};
     }
 
     private constraintFilter(entry: DictionaryEntry, length: number, requiredLettersPositions: Constraint[]): boolean {
