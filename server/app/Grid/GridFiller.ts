@@ -4,7 +4,6 @@ import { Word, Orientation } from "./Word";
 import { DictionaryEntry, Constraint } from "./Interfaces";
 import { StringService } from "./StringService";
 
-import { LexicalService, Difficulty } from "../Services/LexicalService/LexicalService";
 export class GridFiller {
 
     private static instance: GridFiller;
@@ -34,7 +33,7 @@ export class GridFiller {
         return this.words;
     }
 
-    public async fillWords(grid: string[][], difficultyLevel: number, sideSize: number): Promise<string[][]> {
+    public fillWords(grid: string[][], difficultyLevel: number, sideSize: number): string[][] {
         this.difficultyLevel = difficultyLevel;
         this.sideSize = sideSize;
         this.grid = grid;
@@ -42,20 +41,35 @@ export class GridFiller {
         this.establishWordLengths();
         this.sortWordLengths();
 
-        while (await !this.fillGridWithWords()) {
+        while (!this.fillGridWithWords()) {
             // Do nothing
         }
+
+        this.fillRemainingSpacesWithBlacksquares();
 
         return this.grid;
     }
 
-    private async fillGridWithWords(): Promise<boolean> {
+    private fillRemainingSpacesWithBlacksquares(): void {
+        for (let i: number = 0; i < this.sideSize; ++i) {
+            for (let j: number = 0; j < this.sideSize; ++j) {
+                if (this.grid[i][j] === cst.EMPTY_SQUARE) {
+                    this.grid[i][j] = cst.BLACKSQUARE_CHARACTER;
+                }
+            }
+        }
+    }
+
+    private fillGridWithWords(): boolean {
         if (this.wordsLengths.length === 0) {
             return true;
         }
-        console.log("Words array: " + this.words.length + "\t Wordlengths array: " + this.wordsLengths.length);
+        if (this.words.length >= (this.words.length + this.wordsLengths.length) * 0.5) {
+            return true;
+        }
         const longestFreeSpace: Word = this.wordsLengths.pop();
-        const entry: DictionaryEntry = await this.findWordsWithConstraints(this.establishConstraints(longestFreeSpace));
+        const entry: DictionaryEntry = this.findWordsWithConstraints(longestFreeSpace.Length,
+                                                                     this.establishConstraints(longestFreeSpace));
         if (entry.word === cst.NOT_FOUND) {
             this.wordsLengths.push(longestFreeSpace);
 
@@ -64,11 +78,10 @@ export class GridFiller {
         this.addNewWord(new Word(longestFreeSpace.Position, longestFreeSpace.Orientation, entry.word, entry.definition));
         this.sortWordLengthsByCommonLetters();
 
-        if (await !this.fillGridWithWords()) {
-            console.log("Words status before backtrack(1): " + this.words.length);
+        if (!this.fillGridWithWords()) {
             this.backtrack();
             this.wordsLengths.push(longestFreeSpace);
-            if (await !this.fillGridWithWordsNextTry()) {
+            if (!this.fillGridWithWordsNextTry()) {
                 return false;
             } else {
                 return true;
@@ -78,12 +91,13 @@ export class GridFiller {
         }
     }
 
-    private async fillGridWithWordsNextTry(): Promise<boolean> {
+    private fillGridWithWordsNextTry(): boolean {
         if (this.wordsLengths.length === 0) {
             return true;
         }
         const longestFreeSpace: Word = this.wordsLengths.pop();
-        const entry: DictionaryEntry = await this.findWordsWithConstraints(this.establishConstraints(longestFreeSpace));
+        const entry: DictionaryEntry = this.findWordsWithConstraints(longestFreeSpace.Length,
+                                                                     this.establishConstraints(longestFreeSpace));
         if (entry.word === cst.NOT_FOUND) {
             this.wordsLengths.push(longestFreeSpace);
 
@@ -92,8 +106,7 @@ export class GridFiller {
         this.addNewWord(new Word(longestFreeSpace.Position, longestFreeSpace.Orientation, entry.word, entry.definition));
         this.sortWordLengthsByCommonLetters();
 
-        if (await !this.fillGridWithWords()) {
-            console.log("Words status before backtrack(2): " + this.words.length);
+        if (!this.fillGridWithWords()) {
             this.backtrack();
             this.wordsLengths.push(longestFreeSpace);
 
@@ -139,10 +152,10 @@ export class GridFiller {
                 }
             }
             if (nLettersCol >= cst.MIN_LETTERS_FOR_WORD) {
-                this.wordsLengths.push(new Word(new CoordXY(lastBlacksquarePosCol + 1, i), Orientation.Horizontal, StringService.generateDefaultString(nLettersCol), ""));
+                this.wordsLengths.push(new Word(new CoordXY(this.sideSize - nLettersCol, i), Orientation.Horizontal, StringService.generateDefaultString(nLettersCol), ""));
             }
             if (nLettersRow >= cst.MIN_LETTERS_FOR_WORD) {
-                this.wordsLengths.push(new Word(new CoordXY(i, lastBlacksquarePosRow + 1), Orientation.Vertical, StringService.generateDefaultString(nLettersRow), ""));
+                this.wordsLengths.push(new Word(new CoordXY(i, this.sideSize - nLettersRow), Orientation.Horizontal, StringService.generateDefaultString(nLettersCol), ""));
             }
         }
     }
@@ -193,40 +206,35 @@ export class GridFiller {
         return nCommonLetters;
     }
 
-    private establishConstraints(nextWord: Word): string {
-        let constraints: string = "";
-
+    private establishConstraints(nextWord: Word): Constraint[] {
+        const constraints: Constraint[] = new Array<Constraint>();
         for (let i: number = 0; i < nextWord.Length; i++) {
             const currentChar: string = (nextWord.Orientation === Orientation.Vertical) ?
                 this.grid[nextWord.Position.X][i + nextWord.Position.Y] :
                 this.grid[nextWord.Position.X + i][nextWord.Position.Y];
             if (currentChar !== cst.EMPTY_SQUARE) {
-                constraints += currentChar;
-            } else {
-                constraints += cst.EMPTY_CHAR_FOR_QUERY;
+                constraints.push({position: i, letter: currentChar});
             }
         }
 
         return constraints;
     }
 
-    private async findWordsWithConstraints(constraints: string): Promise<DictionaryEntry> {
-        let lexicalService: LexicalService = new LexicalService();
-        let words: DictionaryEntry[];
+    private findWordsWithConstraints(length: number, constraints: Constraint[]): DictionaryEntry {
         let nAttempts: number = 0;
-        let randomPosition: number = 0;
+        let word: DictionaryEntry;
 
-        words = await lexicalService.searchWords(constraints, this.difficultyLevel);
         do {
-            if(words.length === 0) {
+            word = this.searchWordsTemporaryDB(length, constraints);
+
+            if (word.word === cst.NOT_FOUND) {
                 return { word: cst.NOT_FOUND, definition: "" };
             }
-            randomPosition =  Math.floor(Math.random() * words.length);
 
             ++nAttempts;
-        } while (this.verifyAlreadyUsedWord(words[randomPosition].word) && nAttempts < cst.MAX_WORD_QUERY_ATTEMPS);
+        } while (this.verifyAlreadyUsedWord(word.word) && nAttempts < cst.MAX_WORD_QUERY_ATTEMPS);
 
-        return words[randomPosition];
+        return word;
     }
 
     private verifyAlreadyUsedWord(wordToCheck: string): boolean {
@@ -235,8 +243,7 @@ export class GridFiller {
 
     // Temporary, to be replaced when we have a lexical service
     private searchWordsTemporaryDB(length: number, requiredLettersPositions: Constraint[]): DictionaryEntry {
-        const entries: DictionaryEntry[] = require("../../../dbWords.json");
-        const searchResults: DictionaryEntry[] = entries.filter((entry: DictionaryEntry) => {
+        const searchResults: DictionaryEntry[] = cst.DICTIONNARY.filter((entry: DictionaryEntry) => {
             return this.constraintFilter(entry, length, requiredLettersPositions); }
         );
         const randomInt: number =  Math.floor(Math.random() * searchResults.length);
@@ -251,7 +258,9 @@ export class GridFiller {
             passesFilter = false;
         }
         requiredLettersPositions.forEach((constraint: Constraint) => {
-            if (entry.word[constraint.position] !== constraint.letter) {
+            if (entry.word[constraint.position] === undefined) {
+                passesFilter = false;
+            } else if (entry.word[constraint.position].toUpperCase() !== constraint.letter.toUpperCase()) {
                 passesFilter = false;
             }
         });

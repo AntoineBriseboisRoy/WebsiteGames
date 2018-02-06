@@ -29,6 +29,7 @@ export class BlackSquareGenerator {
     public generateBlackSquares(): string[][] {
         const numberOfBlackSquaresPerLine: number = this.percentageOfBlackSquares * this.sideSize;
         do {
+            this.grid = this.initializeEmptyGrid();
             for (let i: number = 0; i < this.sideSize; i++) {
                 for (let j: number = 0; j < numberOfBlackSquaresPerLine; j++) {
                     const tempPosition: CoordXY = this.randomPositionGenerator();

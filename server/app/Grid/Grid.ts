@@ -11,11 +11,8 @@ export class Grid {
     public constructor(private sideSize: number, private percentageOfBlackSquares: number, private difficultyLevel: number) {
         this.gridContent = BlackSquareGenerator.getInstance(this.sideSize, this.percentageOfBlackSquares).generateBlackSquares();
         GridFiller.Instance.fillWords(this.gridContent, this.difficultyLevel, this.sideSize)
-        .then((grid: string[][]) => {
-            this.words = GridFiller.Instance.Words;
-            this.cleanGrid();
-            return this;
-        });
+        this.words = GridFiller.Instance.Words;
+        this.cleanGrid();
      }
 
     public get GridContent(): string[][] {
@@ -35,6 +32,7 @@ export class Grid {
             row.forEach((letter: string) => {
                 letter = StringService.eliminateSpecialChars(letter);
                 letter = StringService.replaceAccentedChars(letter);
+                letter = letter.toUpperCase();
             });
         });
     }
