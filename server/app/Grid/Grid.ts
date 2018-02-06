@@ -8,9 +8,9 @@ export class Grid {
     private gridContent: string[][];
     private words: Word[];
 
-    public constructor(private sideSize: number, private percentageOfBlackSquares: number, private difficultyLevel: number) {
+    public constructor(private sideSize: number, private percentageOfBlackSquares: number) {
         this.gridContent = BlackSquareGenerator.getInstance(this.sideSize, this.percentageOfBlackSquares).generateBlackSquares();
-        GridFiller.Instance.fillWords(this.gridContent, this.difficultyLevel, this.sideSize)
+        GridFiller.Instance.fillWords(this.gridContent, this.sideSize);
         this.words = GridFiller.Instance.Words;
         this.cleanGrid();
      }

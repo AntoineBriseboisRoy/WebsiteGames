@@ -10,11 +10,9 @@ export class GridFiller {
     private grid: string[][];
     private words: Word[];
     private wordsLengths: Word[];
-    private difficultyLevel: number;
     private sideSize: number;
 
     private constructor() {
-        this.difficultyLevel = 0;
         this.sideSize = 0;
         this.grid = new Array<Array<string>>();
         this.words = new Array<Word>();
@@ -33,99 +31,45 @@ export class GridFiller {
         return this.words;
     }
 
-    public fillWords(grid: string[][], difficultyLevel: number, sideSize: number): string[][] {
-        this.difficultyLevel = difficultyLevel;
+    public fillWords(grid: string[][], sideSize: number): string[][] {
         this.sideSize = sideSize;
         this.grid = grid;
 
         this.establishWordLengths();
         this.sortWordLengths();
-
-        while (!this.fillGridWithWords()) {
-            // Do nothing
-        }
-
+        while (!this.fillGridWithWords()) { /* Do nothing */ }
         this.fillRemainingSpacesWithBlacksquares();
 
         return this.grid;
     }
 
-    private fillRemainingSpacesWithBlacksquares(): void {
-        for (let i: number = 0; i < this.sideSize; ++i) {
-            for (let j: number = 0; j < this.sideSize; ++j) {
-                if (this.grid[i][j] === cst.EMPTY_SQUARE) {
-                    this.grid[i][j] = cst.BLACKSQUARE_CHARACTER;
-                }
+    private sortWordLengths(): void {
+        this.wordsLengths.sort((left: Word, right: Word): number => {
+            if (left.Length < right.Length) {
+                return -1;
             }
-        }
-    }
-
-    private fillGridWithWords(): boolean {
-        if (this.wordsLengths.length === 0) {
-            return true;
-        }
-        if (this.words.length >= (this.words.length + this.wordsLengths.length) * cst.HALF) {
-            return true;
-        }
-        const longestFreeSpace: Word = this.wordsLengths.pop();
-        const entry: DictionaryEntry = this.findWordsWithConstraints(longestFreeSpace.Length,
-                                                                     this.establishConstraints(longestFreeSpace));
-        if (entry.word === cst.NOT_FOUND) {
-            this.wordsLengths.push(longestFreeSpace);
-
-            return false;
-        }
-        this.addNewWord(new Word(longestFreeSpace.Position, longestFreeSpace.Orientation, entry.word, entry.definition));
-        this.sortWordLengthsByCommonLetters();
-
-        if (!this.fillGridWithWords()) {
-            this.backtrack();
-            this.wordsLengths.push(longestFreeSpace);
-            if (!this.fillGridWithWordsNextTry()) {
-                return false;
+            if (left.Length > right.Length) {
+                return 1;
             } else {
-                return true;
+                return 0;
             }
-        } else {
-            return true;
-        }
+        });
     }
 
-    private fillGridWithWordsNextTry(): boolean {
-        if (this.wordsLengths.length === 0) {
-            return true;
-        }
-        const longestFreeSpace: Word = this.wordsLengths.pop();
-        const entry: DictionaryEntry = this.findWordsWithConstraints(longestFreeSpace.Length,
-                                                                     this.establishConstraints(longestFreeSpace));
-        if (entry.word === cst.NOT_FOUND) {
-            this.wordsLengths.push(longestFreeSpace);
+    private sortWordLengthsByCommonLetters(): void {
+        this.wordsLengths.sort((left: Word, right: Word): number => {
+            const nCommonLettersLeft: number = this.countLettersBelongingOtherWords(left);
+            const nCommonLettersRight: number = this.countLettersBelongingOtherWords(right);
 
-            return false;
-        }
-        this.addNewWord(new Word(longestFreeSpace.Position, longestFreeSpace.Orientation, entry.word, entry.definition));
-        this.sortWordLengthsByCommonLetters();
-
-        if (!this.fillGridWithWords()) {
-            this.backtrack();
-            this.wordsLengths.push(longestFreeSpace);
-
-            return false;
-        } else {
-            return true;
-        }
-
-    }
-
-    private addNewWord (newWord: Word): void {
-        this.words.push(newWord);
-        for (let i: number = 0; i < newWord.Length; i++) {
-            if (newWord.Orientation === Orientation.Horizontal) {
-                this.grid[newWord.Position.X + i][newWord.Position.Y] = newWord.Content[i];
+            if (nCommonLettersLeft < nCommonLettersRight) {
+                return -1;
+            }
+            if (nCommonLettersLeft > nCommonLettersRight) {
+                return 1;
             } else {
-                this.grid[newWord.Position.X][newWord.Position.Y + i] = newWord.Content[i];
+                return 0;
             }
-        }
+        });
     }
 
     private establishWordLengths(): void {
@@ -160,33 +104,82 @@ export class GridFiller {
         }
     }
 
-    private sortWordLengths(): void {
-        this.wordsLengths.sort((left: Word, right: Word): number => {
-            if (left.Length < right.Length) {
-                return -1;
-            }
-            if (left.Length > right.Length) {
-                return 1;
+    private fillGridWithWords(): boolean {
+        if (this.gridFilled()) {
+            return true;
+        }
+        const longestFreeSpace: Word = this.wordsLengths.pop();
+        const entry: DictionaryEntry = this.findWordsWithConstraints(longestFreeSpace.Length,
+                                                                     this.establishConstraints(longestFreeSpace));
+        if (entry.word === cst.NOT_FOUND) {
+            this.wordsLengths.push(longestFreeSpace);
+
+            return false;
+        }
+        this.addNewWord(new Word(longestFreeSpace.Position, longestFreeSpace.Orientation, entry.word, entry.definition));
+        this.sortWordLengthsByCommonLetters();
+
+        if (!this.fillGridWithWords()) {
+            this.backtrack();
+            this.wordsLengths.push(longestFreeSpace);
+            if (!this.fillGridWithWordsNextTry()) {
+                return false;
             } else {
-                return 0;
+                return true;
             }
-        });
+        } else {
+            return true;
+        }
     }
 
-    private sortWordLengthsByCommonLetters(): void {
-        this.wordsLengths.sort((left: Word, right: Word): number => {
-            const nCommonLettersLeft: number = this.countLettersBelongingOtherWords(left);
-            const nCommonLettersRight: number = this.countLettersBelongingOtherWords(right);
+    private gridFilled(): boolean {
+        return (this.wordsLengths.length === 0) || (this.words.length >= (this.words.length + this.wordsLengths.length) * cst.HALF);
+    }
 
-            if (nCommonLettersLeft < nCommonLettersRight) {
-                return -1;
+    private fillGridWithWordsNextTry(): boolean {
+        if (this.gridFilled()) {
+            return true;
+        }
+        const longestFreeSpace: Word = this.wordsLengths.pop();
+        const entry: DictionaryEntry = this.findWordsWithConstraints(longestFreeSpace.Length,
+                                                                     this.establishConstraints(longestFreeSpace));
+        if (entry.word === cst.NOT_FOUND) {
+            this.wordsLengths.push(longestFreeSpace);
+
+            return false;
+        }
+        this.addNewWord(new Word(longestFreeSpace.Position, longestFreeSpace.Orientation, entry.word, entry.definition));
+        this.sortWordLengthsByCommonLetters();
+
+        if (!this.fillGridWithWords()) {
+            this.backtrack();
+            this.wordsLengths.push(longestFreeSpace);
+
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    private fillRemainingSpacesWithBlacksquares(): void {
+        for (let i: number = 0; i < this.sideSize; ++i) {
+            for (let j: number = 0; j < this.sideSize; ++j) {
+                if (this.grid[i][j] === cst.EMPTY_SQUARE) {
+                    this.grid[i][j] = cst.BLACKSQUARE_CHARACTER;
+                }
             }
-            if (nCommonLettersLeft > nCommonLettersRight) {
-                return 1;
+        }
+    }
+
+    private addNewWord (newWord: Word): void {
+        this.words.push(newWord);
+        for (let i: number = 0; i < newWord.Length; i++) {
+            if (newWord.Orientation === Orientation.Horizontal) {
+                this.grid[newWord.Position.X + i][newWord.Position.Y] = newWord.Content[i];
             } else {
-                return 0;
+                this.grid[newWord.Position.X][newWord.Position.Y + i] = newWord.Content[i];
             }
-        });
+        }
     }
 
     private countLettersBelongingOtherWords(word: Word): number {
@@ -204,6 +197,27 @@ export class GridFiller {
         }
 
         return nCommonLetters;
+    }
+
+    private letterBelongsOtherWord(position: CoordXY): boolean {
+        let belongs: boolean = false;
+        this.words.forEach((word: Word) => {
+            if (word.Orientation === Orientation.Horizontal) {
+                if (word.Position.Y === position.Y) {
+                    if (word.Position.X <= position.X && word.Position.X + word.Length - 1 >= position.X) {
+                        belongs = true;
+                    }
+                }
+            } else {
+                if (word.Position.X === position.X) {
+                    if (word.Position.Y <= position.Y && word.Position.Y + word.Length - 1 >= position.Y) {
+                        belongs = true;
+                    }
+                }
+            }
+        });
+
+        return belongs;
     }
 
     private establishConstraints(nextWord: Word): Constraint[] {
@@ -226,11 +240,9 @@ export class GridFiller {
 
         do {
             word = this.searchWordsTemporaryDB(length, constraints);
-
             if (word.word === cst.NOT_FOUND) {
                 return { word: cst.NOT_FOUND, definition: "", field3: "" };
             }
-
             ++nAttempts;
         } while (this.verifyAlreadyUsedWord(word.word) && nAttempts < cst.MAX_WORD_QUERY_ATTEMPS);
 
@@ -241,7 +253,7 @@ export class GridFiller {
         return this.words.filter((word: Word) => word.Content === wordToCheck).length > 0;
     }
 
-    // Temporary, to be replaced when we have a lexical service
+    // Temporary, to be replaced when we can establish a proper link with the lexical service
     private searchWordsTemporaryDB(length: number, requiredLettersPositions: Constraint[]): DictionaryEntry {
         const searchResults: DictionaryEntry[] = cst.DICTIONNARY.filter((entry: DictionaryEntry) => {
             return this.constraintFilter(entry, length, requiredLettersPositions); }
@@ -273,6 +285,10 @@ export class GridFiller {
         this.removeLastWordFromGrid(lastWord);
     }
 
+    private removeLastWordFromWordArray(): Word {
+        return this.words.pop();
+    }
+
     private removeLastWordFromGrid(lastWord: Word): void {
         for (let i: number = 0; i < lastWord.Length; i++) {
             if (lastWord.Orientation === Orientation.Horizontal) {
@@ -285,30 +301,5 @@ export class GridFiller {
                 }
             }
         }
-    }
-
-    private letterBelongsOtherWord(position: CoordXY): boolean {
-        let belongs: boolean = false;
-        this.words.forEach((word: Word) => {
-            if (word.Orientation === Orientation.Horizontal) {
-                if (word.Position.Y === position.Y) {
-                    if (word.Position.X <= position.X && word.Position.X + word.Length - 1 >= position.X) {
-                        belongs = true;
-                    }
-                }
-            } else {
-                if (word.Position.X === position.X) {
-                    if (word.Position.Y <= position.Y && word.Position.Y + word.Length - 1 >= position.Y) {
-                        belongs = true;
-                    }
-                }
-            }
-        });
-
-        return belongs;
-    }
-
-    private removeLastWordFromWordArray(): Word {
-        return this.words.pop();
     }
 }

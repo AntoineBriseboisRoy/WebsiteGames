@@ -9,7 +9,7 @@ export class Word {
 
     private length: number;
 
-    constructor(private position: CoordXY, private orientation: Orientation, private content: string, private definition: string) {
+    public constructor(private position: CoordXY, private orientation: Orientation, private content: string, private definition: string) {
         this.length = content.length;
     }
 
