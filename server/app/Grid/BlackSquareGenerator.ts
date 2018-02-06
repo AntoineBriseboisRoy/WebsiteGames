@@ -27,8 +27,10 @@ export class BlackSquareGenerator {
     }
 
     public generateBlackSquares(): string[][] {
+        console.log("Generating bs");
         const numberOfBlackSquaresPerLine: number = this.percentageOfBlackSquares * this.sideSize;
         do {
+            this.grid = this.initializeEmptyGrid();
             for (let i: number = 0; i < this.sideSize; i++) {
                 for (let j: number = 0; j < numberOfBlackSquaresPerLine; j++) {
                     const tempPosition: CoordXY = this.randomPositionGenerator();
@@ -36,7 +38,9 @@ export class BlackSquareGenerator {
                     this.grid[tempPosition.X][tempPosition.Y] = cst.BLACKSQUARE_CHARACTER;
                 }
             }
+            console.log(this.grid);
         } while (!this.verifyBlackSquareGrid());
+        console.log("Done generating bs");
 
         return this.grid;
     }
@@ -135,6 +139,6 @@ export class BlackSquareGenerator {
     }
 
     private verifyBlackSquareGrid(): boolean {
-        return this.correctBlackSquareRatio() && this.correctNumberWords();
+        return this.correctBlackSquareRatio() /*&& this.correctNumberWords()*/;
     }
 }

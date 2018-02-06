@@ -168,7 +168,7 @@ describe.only("Verifying 4x4 Grid (with black squares)", () => {
         expect(nLetters).to.equal(Math.pow(SIDE_SIZE, 2) - expectedNBlackSquares);
     });
     // tslint:disable-next-line:max-func-body-length
-    it("Should have at least 1 valid word per row/column", () => {
+    it.skip("Should have at least 1 valid word per row/column", () => {
         const SIDE_SIZE: number = 10;
         const testGrid: Grid = new Grid(SIDE_SIZE, cst.PERCENTAGE_BLACK_SQUARES, 1);
         const nValidWords: number = 0;

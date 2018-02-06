@@ -3,6 +3,7 @@ import * as cst from "./Constants";
 import { Word, Orientation } from "./Word";
 import { DictionaryEntry, Constraint } from "./Interfaces";
 import { StringService } from "./StringService";
+import { DICTIONNARY } from "./Constants";
 
 export class GridFiller {
 
@@ -12,6 +13,7 @@ export class GridFiller {
     private wordsLengths: Word[];
     private difficultyLevel: number;
     private sideSize: number;
+    private nAttempts: number = 0;
 
     private constructor() {
         this.difficultyLevel = 0;
@@ -45,6 +47,15 @@ export class GridFiller {
             // Do nothing
         }
 
+        for (let i: number = 0; i < this.sideSize; ++i) {
+            for (let j: number = 0; j < this.sideSize; ++j) {
+                if (this.grid[i][j] === cst.EMPTY_SQUARE) {
+                    this.grid[i][j] = cst.BLACKSQUARE_CHARACTER;
+                }
+            }
+        }
+        console.log("GRILLE FINALE WOO");
+        console.log(this.grid);
         return this.grid;
     }
 
@@ -52,10 +63,15 @@ export class GridFiller {
         if (this.wordsLengths.length === 0) {
             return true;
         }
+        console.log(this.grid); console.log(this.nAttempts);
         console.log("Words array: " + this.words.length + "\t Wordlengths array: " + this.wordsLengths.length);
         const longestFreeSpace: Word = this.wordsLengths.pop();
+        console.log(longestFreeSpace);
+
         const entry: DictionaryEntry = this.findWordsWithConstraints(longestFreeSpace.Length,
                                                                      this.establishConstraints(longestFreeSpace));
+        ++this.nAttempts;
+
         if (entry.word === cst.NOT_FOUND) {
             this.wordsLengths.push(longestFreeSpace);
 
@@ -65,7 +81,7 @@ export class GridFiller {
         this.sortWordLengthsByCommonLetters();
 
         if (!this.fillGridWithWords()) {
-            console.log("Words status before backtrack(1): " + this.words.length);
+
             this.backtrack();
             this.wordsLengths.push(longestFreeSpace);
             if (!this.fillGridWithWordsNextTry()) {
@@ -140,10 +156,10 @@ export class GridFiller {
                 }
             }
             if (nLettersCol >= cst.MIN_LETTERS_FOR_WORD) {
-                this.wordsLengths.push(new Word(new CoordXY(lastBlacksquarePosCol + 1, i), Orientation.Horizontal, StringService.generateDefaultString(nLettersCol), ""));
+                this.wordsLengths.push(new Word(new CoordXY(this.sideSize - nLettersCol, i), Orientation.Horizontal, StringService.generateDefaultString(nLettersCol), ""));
             }
             if (nLettersRow >= cst.MIN_LETTERS_FOR_WORD) {
-                this.wordsLengths.push(new Word(new CoordXY(i, lastBlacksquarePosRow + 1), Orientation.Vertical, StringService.generateDefaultString(nLettersRow), ""));
+                this.wordsLengths.push(new Word(new CoordXY(i, this.sideSize - nLettersRow), Orientation.Vertical, StringService.generateDefaultString(nLettersRow), ""));
             }
         }
     }
@@ -228,14 +244,14 @@ export class GridFiller {
 
     // Temporary, to be replaced when we have a lexical service
     private searchWordsTemporaryDB(length: number, requiredLettersPositions: Constraint[]): DictionaryEntry {
-        const entries: DictionaryEntry[] = require("../../../dbWords.json");
-        const searchResults: DictionaryEntry[] = entries.filter((entry: DictionaryEntry) => {
+        // const entries: DictionaryEntry[] = require("../../../bigDb.json");
+        const searchResults: DictionaryEntry[] = DICTIONNARY.filter((entry: DictionaryEntry) => {
             return this.constraintFilter(entry, length, requiredLettersPositions); }
         );
         const randomInt: number =  Math.floor(Math.random() * searchResults.length);
 
-        return searchResults.length === 0 ? { word: cst.NOT_FOUND, definition: "" } :
-            {word: searchResults[randomInt].word, definition: searchResults[randomInt].definition};
+        return searchResults.length === 0 ? { word: cst.NOT_FOUND, definition: "", field3: "" } :
+            {word: searchResults[randomInt].word, definition: searchResults[randomInt].definition, field3: ""};
     }
 
     private constraintFilter(entry: DictionaryEntry, length: number, requiredLettersPositions: Constraint[]): boolean {
