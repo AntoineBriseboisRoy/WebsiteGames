@@ -1,6 +1,6 @@
 import * as requestPromise from "request-promise-native";
-import * as fs from "file-system";
 import { RequestOptions, WordAndDefinition } from "./Interfaces";
+import { STATUS_CODES } from "http";
 
 export enum Difficulty {
     EASY = 5,
@@ -26,21 +26,21 @@ export class LexicalService {
 
         return requestPromise(this.options)
             .then( (data: JSON) => {
-                if (Object.keys(data).length === 0) {
-                    throw new Error("Il n'existe aucun mot pour cette requete");
-                }
                 this.requestResult = data;
+                if (Object.keys(data).length === 0) {
+                    throw new Error("Datamuse returns nothing for that request");
+                }
 
                 return data;
             },     (reject: Error) => {
                 throw reject;
             })
             .catch((error: Error) => {
-                console.log(error.message);
+                //Gérer les erreurs ici. (Erreur http et erreur Datamuse return nothing).
         });
     }
 
-    private hasDefinition(index: number): boolean{
+    private hasDefinition(index: number): boolean {
         return this.requestResult[index].hasOwnProperty("defs");
     }
 
@@ -62,7 +62,7 @@ export class LexicalService {
             const wordFrequency: number = parseFloat(this.requestResult[index].tags[0].substr(BEG_FRQ_STR, END_FRQ_STR));
 
             return (this.isInFrequencyInterval(difficulty, wordFrequency));
-        } catch (err) { console.log(err.message); }
+        } catch (err) { /*Gérer l'erreur ici.*/ }
     }
 
     private getWordAndDefinition(index: number, difficulty: number): WordAndDefinition {
@@ -91,20 +91,14 @@ export class LexicalService {
                     result.push(this.getWordAndDefinition(i, difficulty));
                 }
             }
-        } catch (err) { console.log(err.message); }
+        } catch (err) { /*Gérer l'erreur ici*/ }
 
         return result;
     }
 
     public async searchWords(searchedTemplate: string, difficulty: number): Promise<Array<WordAndDefinition>> {
         await this.sendGetRequest(searchedTemplate);
+
         return this.filterWords(difficulty);
     }
 }
-
-/*
-const service = new LexicalService;
-service.searchWords("aspen", Difficulty.MEDIUM).then((result) => {
-    console.log(result);
-});
-*/
