@@ -134,7 +134,7 @@ export class GridFiller {
     }
 
     private gridFilled(): boolean {
-        return (this.wordsLengths.length === 0) || (this.words.length >= (this.words.length + this.wordsLengths.length) * cst.HALF);
+        return (this.wordsLengths.length === 0);
     }
 
     private fillGridWithWordsNextTry(): boolean {
