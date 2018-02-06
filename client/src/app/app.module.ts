@@ -15,6 +15,7 @@ import { FormsModule } from "@angular/forms";
 
 import { AppRoutingModule } from ".//app-routing.module";
 import { DashboardComponent } from "./dashboard/dashboard.component";
+import { EditTrackComponent } from './race/edit-track/edit-track.component';
 
 @NgModule({
     declarations: [
@@ -24,7 +25,8 @@ import { DashboardComponent } from "./dashboard/dashboard.component";
         TopBarComponent,
         GridComponent,
         DefinitionComponent,
-        DashboardComponent
+        DashboardComponent,
+        EditTrackComponent
     ],
     imports: [
         BrowserModule,
