@@ -10,7 +10,7 @@ export class Position {
         return this.y;
     }
 
-    public update(lenght: number, width: number) {
+    public update(lenght: number, width: number): void {
         this.x += lenght;
         if (this.x >= width) {
             this.x %= width;
