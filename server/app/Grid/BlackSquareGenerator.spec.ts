@@ -14,7 +14,7 @@ describe("Verifying BlackSquare generation.", () => {
                 }
             });
         });
-        expect(nBlackSquares).to.equal(cst.PERCENTAGE_BLACK_SQUARES * cst.STANDARD_SIDE_SIZE);
+        expect(nBlackSquares).to.equal(cst.PERCENTAGE_BLACK_SQUARES * cst.STANDARD_SIDE_SIZE * cst.STANDARD_SIDE_SIZE);
     });
     it("Should have room for at least one word per row/column.", () => {
         const generator: BlackSquareGenerator = BlackSquareGenerator.getInstance(cst.STANDARD_SIDE_SIZE, cst.PERCENTAGE_BLACK_SQUARES);
