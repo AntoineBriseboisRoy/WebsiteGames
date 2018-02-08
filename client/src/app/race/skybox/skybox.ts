@@ -20,11 +20,12 @@ export class Skybox {
     private texture: Texture;
     private sky: Mesh;
 
-    public constructor(private dayPeriod: DayPeriod, radius: number) {
+    public constructor(private dayPeriod: DayPeriod = DayPeriod.Night, radius: number) {
         this.geometry = new SphereGeometry(radius, N_POLY, N_POLY);
-        this.texture = new TextureLoader().load(this.dayPeriod === DayPeriod.Day ? SKY_DAY : SKY_NIGHT);
+        this.texture = new TextureLoader().load(/*this.dayPeriod === DayPeriod.Day ? SKY_DAY :*/ SKY_NIGHT);
         this.material = new MeshPhongMaterial({map: this.texture, side: DoubleSide});
         this.sky = new Mesh(this.geometry, this.material);
+        this.sky.rotation.y = PI_OVER_2;
     }
 
     public get Sky(): Mesh {
