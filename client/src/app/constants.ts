@@ -15,3 +15,5 @@ export const enum Difficulty {
 }
 export const INITIAL_CAMERA_POSITION_Y: number = 25;
 export const FRUSTUM_RATIO: number = 100;
+export const NO_CHEAT_COLOR: string = "#7BABEF";
+export const CHEAT_COLOR: string = "#FF3E04";
