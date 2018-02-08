@@ -52,7 +52,6 @@ export class BlackSquareGenerator {
                     this.grid[tempPosition.X][tempPosition.Y] = cst.BLACKSQUARE_CHARACTER;
                 }
             }
-            console.log(this.grid);
         } while (!this.verifyBlackSquareGrid());
 
         return this.grid;
@@ -109,10 +108,8 @@ export class BlackSquareGenerator {
 
     private countConnectedWords(): number {
         this.connectedWordsFound = new Array<Word>();
-        const tmp: number = this.countConnectedWordsRecursive(this.findFirstWord());
-        console.log("Expected: " + this.nTotalWords + "\tConnected: " + tmp);
 
-        return tmp;
+        return this.countConnectedWordsRecursive(this.findFirstWord());
     }
 
     // tslint:disable-next-line:max-func-body-length
@@ -133,7 +130,6 @@ export class BlackSquareGenerator {
                 }
             }
             currWordPosition = new CoordXY(i + 1, currChar.coord.Y);
-            console.log(currWordPosition);
             i = currChar.coord.X;
             while (++i < this.sideSize && this.grid[i][currChar.coord.Y] === cst.EMPTY_SQUARE) {
                 if (this.checkAdjacentSquares(new CoordXY(i, currChar.coord.Y), currChar.direction)) {
@@ -141,8 +137,6 @@ export class BlackSquareGenerator {
                 }
             }
             currWordLength = i - currWordPosition.X;
-            console.log("Length: " + currWordLength);
-            console.log(currChar.direction);
         } else {
             let i: number = currChar.coord.Y;
             while (--i >= 0 && this.grid[currChar.coord.X][i] === cst.EMPTY_SQUARE) {
@@ -151,7 +145,6 @@ export class BlackSquareGenerator {
                 }
             }
             currWordPosition = new CoordXY(currChar.coord.X, i + 1);
-            console.log(currWordPosition);
             i = currChar.coord.Y;
             while (++i < this.sideSize && this.grid[currChar.coord.X][i] === cst.EMPTY_SQUARE) {
                 if (this.checkAdjacentSquares(new CoordXY(currChar.coord.X, i), currChar.direction)) {
@@ -159,8 +152,6 @@ export class BlackSquareGenerator {
                 }
             }
             currWordLength = i - currWordPosition.Y;
-            console.log("Length: " + currWordLength);
-            console.log(currChar.direction);
         }
         this.connectedWordsFound.push(new Word(currWordPosition, currChar.direction,
                                                StringService.generateDefaultString(currWordLength), ""));
@@ -189,6 +180,7 @@ export class BlackSquareGenerator {
                 }
             }
         });
+
         return alreadyConnected;
     }
 

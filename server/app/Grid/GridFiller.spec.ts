@@ -7,7 +7,7 @@ import * as cst from "./Constants";
 describe("Verifying 2x2 Grid (no black squares)", () => {
     it("Should be full (4 letters)", () => {
         let nLetters: number = 0;
-        const SIDE_SIZE: number = 4, BLACK_SQUARE_RATIO: number = 0, SQUARE: number = 2;
+        const SIDE_SIZE: number = 2, BLACK_SQUARE_RATIO: number = 0, SQUARE: number = 2;
         const testGrid: Grid = new Grid(SIDE_SIZE, BLACK_SQUARE_RATIO);
         testGrid.GridContent.forEach((row: string[]) => {
             row.forEach((letter: string) => {
