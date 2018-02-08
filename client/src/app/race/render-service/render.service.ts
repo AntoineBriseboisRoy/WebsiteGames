@@ -7,6 +7,7 @@ import { Car } from "../car/car";
 import { ThirdPersonCamera } from "../camera/camera-perspective";
 // import { TopViewCamera } from "../camera/camera-orthogonal";
 import { /*INITIAL_CAMERA_POSITION_Y, FRUSTUM_RATIO,*/ PI_OVER_2 } from "../../constants";
+import { Skybox } from "../skybox/skybox";
 
 export const FAR_CLIPPING_PLANE: number = 1000;
 export const NEAR_CLIPPING_PLANE: number = 1;
@@ -101,7 +102,11 @@ export class RenderService {
         const material: MeshBasicMaterial = new MeshBasicMaterial( { map: floorTexture, side: DoubleSide } );
         const mesh: Mesh = new Mesh( geometry, material );
         mesh.rotation.x = PI_OVER_2;
+
+        const skybox: Skybox = new Skybox(1, TEXTURE_SIZE);
+
         this.scene.add( mesh );
+        this.scene.add(skybox.Sky);
     }
 
     private startRenderingLoop(): void {
