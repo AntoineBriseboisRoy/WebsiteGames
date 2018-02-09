@@ -10,10 +10,13 @@
       <button (click)="activeDifficulty($event.currentTarget.value)" value="Difficulty.Normal" id="normal-button" type="button" class="btn btn-outline-warning btn-lg button-layout">Normal</button>
     </div>
     <div class="row">
-      <button (click)="activeDifficulty($event.currentTarget.value)" value="Difficulty.Hard"id="hard-button" type="button" class="btn btn-outline-danger btn-lg button-layout">Hard</button>
+      <button (click)="activeDifficulty($event.currentTarget.value)" value="Difficulty.Hard" id="hard-button" type="button" class="btn btn-outline-danger btn-lg button-layout">Hard</button>
     </div>
     <div class="row">
-      <button id="play-button" type="button" class="btn btn-outline-info play-layout">Play</button>
+      <a *ngIf = "isActiveDifficulty; else deactivateLink" routerLink="/crossword/play" id = "play-button" type="submit" class="btn btn-outline-info play-layout">Play</a>
+      <ng-template #deactivateLink>
+        <button type="button" class="btn btn-outline-secondary deactivated-layout">Play</button>
+      </ng-template>
     </div>
   </div>
 </div>

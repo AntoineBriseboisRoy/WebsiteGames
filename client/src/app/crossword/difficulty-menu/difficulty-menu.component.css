@@ -24,6 +24,15 @@
     background-color: white;
 }
 
+.deactivated-layout{
+    margin:10% 35% 0 35%;
+    float: none;
+    text-align: center;
+    width: 50%;
+    font-size: 260%;
+    background-color: grey;
+}
+
 #easy-button:hover{
     background-color: green;
 }

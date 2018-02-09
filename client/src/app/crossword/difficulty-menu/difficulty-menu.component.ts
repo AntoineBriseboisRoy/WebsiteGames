@@ -8,10 +8,12 @@ import { Difficulty } from "../../constants";
     styleUrls: ["./difficulty-menu.component.css", "../game-view/crossword-view.component.css"]
 })
 export class DifficultyMenuComponent implements OnInit {
-    public readonly title: string = "Chose wisely your difficulty, smart ass!";
+    public readonly title: string = "Choose wisely your difficulty, smart ass!";
     private gameManager: GameManager;
+    private isActiveDifficulty: boolean;
     public constructor() {
         this.gameManager = GameManager.getInstance();
+        this.isActiveDifficulty = false;
     }
 
     public ngOnInit(): void {
@@ -19,6 +21,7 @@ export class DifficultyMenuComponent implements OnInit {
 
     public activeDifficulty(difficulty: Difficulty): void {
         this.gameManager.setDifficulty(difficulty);
+        this.isActiveDifficulty = true;
         // faudrait que je toogle une classe active ou desactive
         switch (difficulty.toString()) {
             case "Difficulty.Easy": {
