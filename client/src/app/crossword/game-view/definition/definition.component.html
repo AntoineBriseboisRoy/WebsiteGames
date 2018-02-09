@@ -7,10 +7,11 @@
       <select multiple class="form-control word-definition">
         <div *ngIf="!cheatModeActive;then showDefinitionsHorizontal else cheatModeHorizontal"></div>
         <ng-template #showDefinitionsHorizontal>
-          <option *ngFor="let definition of horizontalDefinitions; index as i">{{i+1 +". "+definition}}</option>
+          <option *ngFor="let definition of horizontalDefinitions; index as i" (click)="chooseADefinition(definition)">{{i+1 +". "+definition}}</option>
+          <option>{{choosedDefinition}}</option>
         </ng-template>
         <ng-template #cheatModeHorizontal>
-          <option *ngFor="let word of mockCheatModeWordsHorizontal; index as i">{{i+1 +". "+word}}</option>
+          <option *ngFor="let word of mockCheatModeWordsHorizontal; index as i" >{{i+1 +". "+word}}</option>
         </ng-template>
       </select>
     </div>
@@ -25,7 +26,7 @@
       <select multiple class="form-control word-definition">
         <div *ngIf="!cheatModeActive;then showDefinitionsVertical else cheatModeVertical"></div>
         <ng-template #showDefinitionsVertical>
-          <option *ngFor="let definition of verticalDefinitions; index as i">{{i+1 +". "+definition}}</option>
+          <option *ngFor="let definition of verticalDefinitions; index as i" (click)="chooseADefinition(definition)">{{i+1 +". "+definition}}</option>
         </ng-template>
         <ng-template #cheatModeVertical>
           <option *ngFor="let word of mockCheatModeWordsVertical; index as i">{{i+1 +". "+word}}</option>

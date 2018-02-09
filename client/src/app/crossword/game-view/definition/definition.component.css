@@ -4,6 +4,10 @@
     height: 28vh;
 }
 
+.word-definition:hover {
+    background-color: rgb(228, 245, 255);
+}
+
 .title-layout-name {
     border: 2px solid rgba(109, 97, 97, 0.603);
     width: 50%;

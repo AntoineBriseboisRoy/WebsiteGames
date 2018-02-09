@@ -15,10 +15,10 @@ export class GridComponent implements OnInit {
     // Mock list that we will receive from crossword generator
     private mockWords: string[];
     private convertedMockWords: string;
-
     public constructor() {
         this.indexPosition = new Array();
         this.cells = new Array();
+        // Créer un service pour couche de persistance :
         this.mockWords = ["aaa", BLACK_CHAR, "aa", BLACK_CHAR, "aa", BLACK_CHAR, "sadasd", BLACK_CHAR, "asd",
                           "aaaaaaa", BLACK_CHAR, "aa", "sadasd", BLACK_CHAR, "asd",
                           "aaaaaa", BLACK_CHAR, "aaa", "sadas", BLACK_CHAR, BLACK_CHAR, "asd",

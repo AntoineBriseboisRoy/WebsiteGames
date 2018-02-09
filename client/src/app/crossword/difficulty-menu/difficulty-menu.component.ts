@@ -8,7 +8,7 @@ import { Difficulty } from "../../constants";
     styleUrls: ["./difficulty-menu.component.css", "../game-view/crossword-view.component.css"]
 })
 export class DifficultyMenuComponent implements OnInit {
-    public readonly title: string = "Choose wisely your difficulty, smart ass!";
+    public readonly title: string = "Choose wisely your difficulty, smarty!";
     private gameManager: GameManager;
     private isActiveDifficulty: boolean;
     public constructor() {

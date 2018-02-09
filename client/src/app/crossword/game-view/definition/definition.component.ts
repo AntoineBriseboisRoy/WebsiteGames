@@ -12,9 +12,11 @@ export class DefinitionComponent implements OnInit {
     public readonly verticalDefinitions: string[];
     public readonly mockCheatModeWordsVertical: string[];
     public readonly mockCheatModeWordsHorizontal: string[];
+    public choosedDefinition: string;
     private cheatButtonColor: string;
     public cheatModeActive: boolean;
     public constructor() {
+        // Créer un service pour la couche de persistance :
         this.horizontalDefinitions = ["Lorem ipsum dolor sit amet, et",
                                       "sea. Cu harum dolor fabellas",
                                       "Ea decore copiosae recusabo quo."];
@@ -29,6 +31,10 @@ export class DefinitionComponent implements OnInit {
 
     public ngOnInit(): void {
         document.getElementById("cheat-button").style.backgroundColor = this.cheatButtonColor;
+    }
+
+    public chooseADefinition(choosedDefinition: string): void {
+        this.choosedDefinition = choosedDefinition;
     }
 
     public toogleCheatMode(): void {
