@@ -15,3 +15,8 @@ export const enum Difficulty {
 }
 export const INITIAL_CAMERA_POSITION_Y: number = 25;
 export const FRUSTUM_RATIO: number = 100;
+
+// Edit track
+export const DEFAULT_LINE_WIDTH: number = 5;
+export const DEFAULT_CIRCLE_RADIUS: number = 10;
+export const FULL_CIRCLE_RAD: number = Math.PI * 2;
