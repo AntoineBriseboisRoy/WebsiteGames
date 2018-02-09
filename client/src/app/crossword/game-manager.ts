@@ -37,6 +37,10 @@ export class GameManager implements OnInit {
         return this.difficulty;
     }
 
+    public setDifficulty(difficulty: Difficulty): void {
+        this.difficulty = difficulty;
+    }
+
     public get IsMultiplayer(): boolean {
         return this.isMultiplayer;
     }

@@ -1,0 +1,41 @@
+#main-title {
+    font-size: 5vw;
+    color: rgb(95, 95, 95);
+    margin-bottom: 0;
+    text-align: center;
+    text-transform: capitalize;
+}
+
+.button-layout{
+    margin:5% 35% 0 35%;
+    float: none;
+    text-align: center;
+    width: 30%;
+    font-size: 200%;
+    background-color: white;
+}
+
+.play-layout{
+    margin:10% 35% 0 35%;
+    float: none;
+    text-align: center;
+    width: 50%;
+    font-size: 260%;
+    background-color: white;
+}
+
+#easy-button:hover{
+    background-color: green;
+}
+
+#normal-button:hover{
+    background-color: yellow;
+}
+
+#hard-button:hover{
+    background-color: red;
+}
+
+#play-button:hover{
+    background-color: rgb(9, 193, 199);
+}
