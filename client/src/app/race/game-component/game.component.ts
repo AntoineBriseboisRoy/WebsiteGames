@@ -19,7 +19,9 @@ export class GameComponent implements AfterViewInit {
     @ViewChild("container")
     private containerRef: ElementRef;
 
-    public constructor(private renderService: RenderService, private carControlService: CarControlService) { }
+    public constructor(private renderService: RenderService, private carControlService: CarControlService) {
+        this.carControlService.init(this.car);
+    }
 
     @HostListener("window:resize", ["$event"])
     public onResize(): void {
@@ -28,12 +30,12 @@ export class GameComponent implements AfterViewInit {
 
     @HostListener("window:keydown", ["$event"])
     public onKeyDown(event: KeyboardEvent): void {
-        this.carControlService.handleKeyDown(event, this.car);
+        this.carControlService.handleKeyDown(event);
     }
 
     @HostListener("window:keyup", ["$event"])
     public onKeyUp(event: KeyboardEvent): void {
-        this.carControlService.handleKeyUp(event, this.car);
+        this.carControlService.handleKeyUp(event);
     }
 
     public ngAfterViewInit(): void {
