@@ -1,5 +1,5 @@
 import { OnInit } from "@angular/core";
-import { Difficulty } from "../constants";
+import { Difficulty, DIFFICULTY_LENGHT } from "../constants";
 import { Player } from "./player";
 
 // Singleton class
@@ -24,7 +24,7 @@ export class GameManager implements OnInit {
             name: "Antoine",
             point: 100
         };
-        this.difficulty = Difficulty.Easy;
+        this.difficulty = Difficulty.Hard;
         this.isMultiplayer = true;
     }
 
@@ -34,7 +34,7 @@ export class GameManager implements OnInit {
     }
 
     public getDifficulty(): string {
-        return this.difficulty;
+        return this.difficulty.slice(DIFFICULTY_LENGHT); // Delete the "Difficulty." before the difficulty type
     }
 
     public setDifficulty(difficulty: Difficulty): void {
