@@ -32,10 +32,7 @@ import { DashboardComponent } from "./dashboard/dashboard.component";
         FormsModule,
         AppRoutingModule
     ],
-    providers: [
-        RenderService,
-        BasicService
-    ],
+    providers: [BasicService],
     bootstrap: [AppComponent]
 })
 export class AppModule { }

@@ -7,15 +7,11 @@ import { Car } from "../car/car";
 import { ThirdPersonCamera } from "../camera/camera-perspective";
 // import { TopViewCamera } from "../camera/camera-orthogonal";
 import { /*INITIAL_CAMERA_POSITION_Y, FRUSTUM_RATIO,*/ PI_OVER_2 } from "../../constants";
+import { Skybox } from "../skybox/skybox";
 
 export const FAR_CLIPPING_PLANE: number = 1000;
 export const NEAR_CLIPPING_PLANE: number = 1;
 export const FIELD_OF_VIEW: number = 70;
-
-const ACCELERATE_KEYCODE: number = 87;  // w
-const LEFT_KEYCODE: number = 65;        // a
-const BRAKE_KEYCODE: number = 83;       // s
-const RIGHT_KEYCODE: number = 68;       // d
 
 const WHITE: number = 0xFFFFFF;
 const AMBIENT_LIGHT_OPACITY: number = 0.5;
@@ -101,7 +97,11 @@ export class RenderService {
         const material: MeshBasicMaterial = new MeshBasicMaterial( { map: floorTexture, side: DoubleSide } );
         const mesh: Mesh = new Mesh( geometry, material );
         mesh.rotation.x = PI_OVER_2;
+
+        const skybox: Skybox = new Skybox(1, TEXTURE_SIZE);
+
         this.scene.add( mesh );
+        this.scene.add(skybox.Sky);
     }
 
     private startRenderingLoop(): void {
@@ -124,43 +124,5 @@ export class RenderService {
     public onResize(): void {
         this.camera.onResize(this.container.clientWidth, this.container.clientHeight);
         this.renderer.setSize(this.container.clientWidth, this.container.clientHeight);
-    }
-
-    // TODO: Create an event handler service.
-    public handleKeyDown(event: KeyboardEvent): void {
-        switch (event.keyCode) {
-            case ACCELERATE_KEYCODE:
-                this._car.isAcceleratorPressed = true;
-                break;
-            case LEFT_KEYCODE:
-                this._car.steerLeft();
-                break;
-            case RIGHT_KEYCODE:
-                this._car.steerRight();
-                break;
-            case BRAKE_KEYCODE:
-                this._car.brake();
-                break;
-            default:
-                break;
-        }
-    }
-
-    // TODO: Create an event handler service.
-    public handleKeyUp(event: KeyboardEvent): void {
-        switch (event.keyCode) {
-            case ACCELERATE_KEYCODE:
-                this._car.isAcceleratorPressed = false;
-                break;
-            case LEFT_KEYCODE:
-            case RIGHT_KEYCODE:
-                this._car.releaseSteering();
-                break;
-            case BRAKE_KEYCODE:
-                this._car.releaseBrakes();
-                break;
-            default:
-                break;
-        }
     }
 }
