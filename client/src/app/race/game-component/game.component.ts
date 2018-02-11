@@ -1,7 +1,9 @@
 import { AfterViewInit, Component, ElementRef, ViewChild, HostListener } from "@angular/core";
 import { RenderService } from "../render-service/render.service";
 import { Car } from "../car/car";
-import { CarControlService } from "../car-control-service/car-control.service";
+import { InputManagerService } from "../input-manager-service/input-manager.service";
+import { PerspectiveCamera, Camera } from "three";
+import { GameCamera } from "../camera/game-camera";
 
 @Component({
     moduleId: module.id,
@@ -10,7 +12,7 @@ import { CarControlService } from "../car-control-service/car-control.service";
     styleUrls: ["./game.component.css"],
     providers: [
         RenderService,
-        CarControlService
+        InputManagerService
     ]
 })
 
@@ -19,8 +21,8 @@ export class GameComponent implements AfterViewInit {
     @ViewChild("container")
     private containerRef: ElementRef;
 
-    public constructor(private renderService: RenderService, private carControlService: CarControlService) {
-        this.carControlService.init(this.car);
+    public constructor(private renderService: RenderService, private inputManagerService: InputManagerService) {
+        this.inputManagerService.init(this.car, this.camera);
     }
 
     @HostListener("window:resize", ["$event"])
@@ -30,12 +32,12 @@ export class GameComponent implements AfterViewInit {
 
     @HostListener("window:keydown", ["$event"])
     public onKeyDown(event: KeyboardEvent): void {
-        this.carControlService.handleKeyDown(event);
+        this.inputManagerService.handleKeyDown(event);
     }
 
     @HostListener("window:keyup", ["$event"])
     public onKeyUp(event: KeyboardEvent): void {
-        this.carControlService.handleKeyUp(event);
+        this.inputManagerService.handleKeyUp(event);
     }
 
     public ngAfterViewInit(): void {
@@ -47,5 +49,9 @@ export class GameComponent implements AfterViewInit {
 
     public get car(): Car {
         return this.renderService.car;
+    }
+
+    public get camera(): GameCamera {
+        return this.renderService.camera;
     }
 }

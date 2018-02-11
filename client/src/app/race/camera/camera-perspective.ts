@@ -1,11 +1,12 @@
 import { PerspectiveCamera, Vector3 } from "three";
 import { Car } from "../car/car";
+import { GameCamera } from "./game-camera";
 
 const RELATIVE_CAMERA_OFFSET_X: number = 0;
 const RELATIVE_CAMERA_OFFSET_Y: number = 2;
 const RELATIVE_CAMERA_OFFSET_Z: number = 5;
 
-export class ThirdPersonCamera extends PerspectiveCamera {
+export class ThirdPersonCamera extends PerspectiveCamera implements GameCamera {
 
     private static getAspectRatio(clientWidth: number, clientHeight: number): number {
         return clientWidth / clientHeight;
@@ -39,5 +40,12 @@ export class ThirdPersonCamera extends PerspectiveCamera {
     public onResize(clientWidth: number, clientHeight: number): void {
         this.aspect = ThirdPersonCamera.getAspectRatio(clientWidth, clientHeight);
         this.updateProjectionMatrix();
+    }
+
+    public zoomIn(): void {
+        throw new Error("Method not implemented.");
+    }
+    public zoomOut(): void {
+        throw new Error("Method not implemented.");
     }
 }

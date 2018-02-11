@@ -8,6 +8,7 @@ import { ThirdPersonCamera } from "../camera/camera-perspective";
 // import { TopViewCamera } from "../camera/camera-orthogonal";
 import { /*INITIAL_CAMERA_POSITION_Y, FRUSTUM_RATIO,*/ PI_OVER_2 } from "../../constants";
 import { Skybox } from "../skybox/skybox";
+import { GameCamera } from "../camera/game-camera";
 
 export const FAR_CLIPPING_PLANE: number = 1000;
 export const NEAR_CLIPPING_PLANE: number = 1;
@@ -19,7 +20,7 @@ const AMBIENT_LIGHT_OPACITY: number = 0.5;
 @Injectable()
 export class RenderService {
     // private camera: TopViewCamera;
-    private camera: ThirdPersonCamera;
+    private _camera: GameCamera;
     private container: HTMLDivElement;
     private _car: Car;
     private renderer: WebGLRenderer;
@@ -29,6 +30,10 @@ export class RenderService {
 
     public get car(): Car {
         return this._car;
+    }
+
+    public get camera(): GameCamera {
+        return this.camera;
     }
 
     public constructor() {
@@ -54,7 +59,7 @@ export class RenderService {
     private update(): void {
         const timeSinceLastFrame: number = Date.now() - this.lastDate;
         this._car.update(timeSinceLastFrame);
-        this.camera.update(this._car);
+        this._camera.update(this._car);
         this.lastDate = Date.now();
     }
 
@@ -62,7 +67,7 @@ export class RenderService {
         this.scene = new Scene();
         // Decomment to view the third person camera and comment the orthogonal camera below
         //
-        this.camera = new ThirdPersonCamera(
+        this._camera = new ThirdPersonCamera(
              FIELD_OF_VIEW,
              NEAR_CLIPPING_PLANE,
              FAR_CLIPPING_PLANE,
@@ -122,7 +127,7 @@ export class RenderService {
     }
 
     public onResize(): void {
-        this.camera.onResize(this.container.clientWidth, this.container.clientHeight);
+        this._camera.onResize(this.container.clientWidth, this.container.clientHeight);
         this.renderer.setSize(this.container.clientWidth, this.container.clientHeight);
     }
 }

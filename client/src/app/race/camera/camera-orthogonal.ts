@@ -1,8 +1,9 @@
 import { OrthographicCamera, Vector3 } from "three";
 import { Car } from "../car/car";
 import { INITIAL_CAMERA_POSITION_Y, FRUSTUM_RATIO } from "../../constants";
+import { GameCamera } from "./game-camera";
 
-export class TopViewCamera extends OrthographicCamera {
+export class TopViewCamera extends OrthographicCamera implements GameCamera {
 
     public constructor(left: number, right: number, top: number,
                        bottom: number, near: number, far: number) {
@@ -25,5 +26,13 @@ export class TopViewCamera extends OrthographicCamera {
         this.top = clientHeight / FRUSTUM_RATIO;
         this.bottom = -clientHeight / FRUSTUM_RATIO;
         this.updateProjectionMatrix();
+    }
+
+    public zoomIn(): void {
+        throw new Error("Method not implemented.");
+    }
+
+    public zoomOut(): void {
+        throw new Error("Method not implemented.");
     }
 }
