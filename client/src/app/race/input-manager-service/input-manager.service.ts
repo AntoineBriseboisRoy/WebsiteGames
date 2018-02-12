@@ -1,10 +1,10 @@
 import { Injectable } from "@angular/core";
 import { Car } from "../car/car";
-import { AccelerateCarCommand } from "./UpCarCommand";
-import { RightCarCommand } from "./RightCarCommand";
-import { LeftCarCommand } from "./LeftCarCommand";
-import { ReleaseSteeringrCommand } from "./ReleaseSteeringCommand";
-import { DecelerateCarCommand } from "./DecelerateCarCommand";
+import { AccelerateCarCommand } from "./car-commands/UpCarCommand";
+import { RightCarCommand } from "./car-commands/RightCarCommand";
+import { LeftCarCommand } from "./car-commands/LeftCarCommand";
+import { ReleaseSteeringCommand } from "./car-commands/ReleaseSteeringCommand";
+import { DecelerateCarCommand } from "./car-commands/DecelerateCarCommand";
 import { AbsCommand } from "./AbsCommand";
 import { ZoomInCommand } from "./camera-commands/ZoomInCommand";
 import { ZoomOutCommand } from "./camera-commands/ZoomOutCommand";
@@ -14,8 +14,8 @@ const ACCELERATE_KEYCODE: number = 87;  // w
 const LEFT_KEYCODE: number = 65;        // a
 const BRAKE_KEYCODE: number = 83;       // s
 const RIGHT_KEYCODE: number = 68;       // d
-const ZOOM_IN_KEYCODE: number = 189;    // -
-const ZOOM_OUT_KEYCODE: number = 187;   // +
+const ZOOM_IN_KEYCODE: number = 90;    // z
+const ZOOM_OUT_KEYCODE: number = 88;   // x
 
 interface CommandKeyPair {
     KeyCode: number;
@@ -40,8 +40,8 @@ export class InputManagerService {
         ];
         this.keyUpCommands = [
             {KeyCode: ACCELERATE_KEYCODE, Command:  new DecelerateCarCommand(car) },
-            {KeyCode: RIGHT_KEYCODE, Command: new ReleaseSteeringrCommand(car) },
-            {KeyCode: LEFT_KEYCODE, Command: new ReleaseSteeringrCommand(car) }
+            {KeyCode: RIGHT_KEYCODE, Command: new ReleaseSteeringCommand(car) },
+            {KeyCode: LEFT_KEYCODE, Command: new ReleaseSteeringCommand(car) }
         ];
     }
 

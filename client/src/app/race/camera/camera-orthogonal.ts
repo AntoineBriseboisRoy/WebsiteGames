@@ -3,6 +3,8 @@ import { Car } from "../car/car";
 import { INITIAL_CAMERA_POSITION_Y, FRUSTUM_RATIO } from "../../constants";
 import { GameCamera } from "./game-camera";
 
+const ZOOM_FACTOR: number = 1;
+
 export class TopViewCamera extends OrthographicCamera implements GameCamera {
 
     public constructor(left: number, right: number, top: number,
@@ -29,10 +31,12 @@ export class TopViewCamera extends OrthographicCamera implements GameCamera {
     }
 
     public zoomIn(): void {
-        throw new Error("Method not implemented.");
+      //  throw new Error("Method not implemented.");
+     this.zoom += ZOOM_FACTOR;
     }
 
     public zoomOut(): void {
-        throw new Error("Method not implemented.");
+       // throw new Error("Method not implemented.");
+       this.zoom -= ZOOM_FACTOR;
     }
 }

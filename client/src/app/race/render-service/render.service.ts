@@ -2,10 +2,10 @@ import { Injectable } from "@angular/core";
 import Stats = require("stats.js");
 import { WebGLRenderer, Scene, AmbientLight,
          AxisHelper, Mesh, PlaneBufferGeometry, MeshBasicMaterial,
-         DoubleSide, Texture, RepeatWrapping, TextureLoader } from "three";
+         DoubleSide, Texture, RepeatWrapping, TextureLoader, Camera } from "three";
 import { Car } from "../car/car";
 import { ThirdPersonCamera } from "../camera/camera-perspective";
-// import { TopViewCamera } from "../camera/camera-orthogonal";
+import { TopViewCamera } from "../camera/camera-orthogonal";
 import { /*INITIAL_CAMERA_POSITION_Y, FRUSTUM_RATIO,*/ PI_OVER_2 } from "../../constants";
 import { Skybox } from "../skybox/skybox";
 import { GameCamera } from "../camera/game-camera";
@@ -33,7 +33,7 @@ export class RenderService {
     }
 
     public get camera(): GameCamera {
-        return this.camera;
+        return this._camera;
     }
 
     public constructor() {

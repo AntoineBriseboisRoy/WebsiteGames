@@ -1,5 +1,6 @@
 import { AbsCameraCommand } from "./AbsCameraCommand";
 import { GameCamera } from "../../camera/game-camera";
+import {Car} from "../../car/car";
 
 export class ZoomInCommand extends AbsCameraCommand {
     public constructor(camera: GameCamera) {
@@ -7,6 +8,7 @@ export class ZoomInCommand extends AbsCameraCommand {
     }
 
     public execute(): void {
-        this.camera.zoomOut();
+        console.log("zooming in Command");
+        this.camera.zoomIn();
     }
 }
