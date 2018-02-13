@@ -5,7 +5,7 @@ import { GameCamera } from "./game-camera";
 const RELATIVE_CAMERA_OFFSET_X: number = 0;
 const RELATIVE_CAMERA_OFFSET_Y: number = 2;
 const RELATIVE_CAMERA_OFFSET_Z: number = 5;
-const ZOOM_INCREMENT: number = 1;
+const ZOOM_INCREMENT: number = 0.01;
 export class ThirdPersonCamera extends PerspectiveCamera implements GameCamera {
 
     private static getAspectRatio(clientWidth: number, clientHeight: number): number {
@@ -42,11 +42,11 @@ export class ThirdPersonCamera extends PerspectiveCamera implements GameCamera {
         this.updateProjectionMatrix();
     }
     public zoomIn(): void {
-        console.log("ZOOMING in");
         this.zoom += ZOOM_INCREMENT;
+        this.updateProjectionMatrix();
     }
     public zoomOut(): void {
-        console.log("ZOOMING out");
         this.zoom -= ZOOM_INCREMENT;
+        this.updateProjectionMatrix();
     }
 }

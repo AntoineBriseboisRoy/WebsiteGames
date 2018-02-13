@@ -3,6 +3,7 @@ import { RenderService } from "../render-service/render.service";
 import { Car } from "../car/car";
 import { InputManagerService } from "../input-manager-service/input-manager.service";
 import { PerspectiveCamera, Camera } from "three";
+import { ThirdPersonCamera } from "../camera/camera-perspective";
 import { GameCamera } from "../camera/game-camera";
 
 @Component({
@@ -22,7 +23,6 @@ export class GameComponent implements AfterViewInit {
     private containerRef: ElementRef;
 
     public constructor(private renderService: RenderService, private inputManagerService: InputManagerService) {
-        this.inputManagerService.init(this.car, this.camera);
     }
 
     @HostListener("window:resize", ["$event"])
@@ -45,6 +45,7 @@ export class GameComponent implements AfterViewInit {
             .initialize(this.containerRef.nativeElement)
             .then(/* do nothing */)
             .catch((err) => console.error(err));
+        this.inputManagerService.init(this.car, this.camera);
     }
 
     public get car(): Car {

@@ -1,4 +1,5 @@
-import { Camera, Vector3 } from "three";
+
+import { Camera, Vector3, PerspectiveCamera } from "three";
 import { Car } from "../car/car";
 
 export abstract class GameCamera extends Camera {
@@ -6,5 +7,5 @@ export abstract class GameCamera extends Camera {
     public abstract zoomOut(): void;
     public abstract update(car: Car): void;
     public abstract init(lookAt: Vector3): void;
-    public abstract onResize(wisth: number, height: number): void;
+    public abstract onResize(width: number, height: number): void;
 }

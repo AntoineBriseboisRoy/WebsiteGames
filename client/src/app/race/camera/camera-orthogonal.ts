@@ -33,10 +33,13 @@ export class TopViewCamera extends OrthographicCamera implements GameCamera {
     public zoomIn(): void {
       //  throw new Error("Method not implemented.");
      this.zoom += ZOOM_FACTOR;
+     this.updateProjectionMatrix();
+
     }
 
     public zoomOut(): void {
        // throw new Error("Method not implemented.");
        this.zoom -= ZOOM_FACTOR;
+       this.updateProjectionMatrix();
     }
 }
