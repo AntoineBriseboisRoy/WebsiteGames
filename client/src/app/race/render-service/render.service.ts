@@ -19,7 +19,6 @@ const AMBIENT_LIGHT_OPACITY: number = 0.5;
 
 @Injectable()
 export class RenderService {
-     // private camera: TopViewCamera;
     private _camera: GameCamera;
     private container: HTMLDivElement;
     private _car: Car;
@@ -66,20 +65,19 @@ export class RenderService {
     private async createScene(): Promise<void> {
         this.scene = new Scene();
         // Decomment to view the third person camera and comment the orthogonal camera below
-        this._camera = new ThirdPersonCamera(
-             FIELD_OF_VIEW,
-             NEAR_CLIPPING_PLANE,
-             FAR_CLIPPING_PLANE,
-             this.container.clientWidth,
-             this.container.clientHeight
-         );
+        // this._camera = new ThirdPersonCamera(
+        //      FIELD_OF_VIEW,
+        //      NEAR_CLIPPING_PLANE,
+        //      FAR_CLIPPING_PLANE,
+        //      this.container.clientWidth,
+        //      this.container.clientHeight
+        //  );
 
-        /*this._camera = new TopViewCamera(this.container.clientWidth / FRUSTUM_RATIO,
+        this._camera = new TopViewCamera(-this.container.clientWidth / FRUSTUM_RATIO,
                                          this.container.clientWidth / FRUSTUM_RATIO,
                                          this.container.clientHeight / FRUSTUM_RATIO,
                                          -this.container.clientHeight / FRUSTUM_RATIO,
                                          1, INITIAL_CAMERA_POSITION_Y + 1); // Add 1 to see the floor
-        */
 
         await this._car.init();
         this.camera.init(this._car.getPosition());

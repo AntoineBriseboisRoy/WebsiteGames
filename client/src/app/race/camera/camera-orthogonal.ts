@@ -3,7 +3,9 @@ import { Car } from "../car/car";
 import { INITIAL_CAMERA_POSITION_Y, FRUSTUM_RATIO } from "../../constants";
 import { GameCamera } from "./game-camera";
 
-const ZOOM_FACTOR: number = 1;
+const ZOOM_INCREMENT: number = 0.05;
+const MAX_ZOOM: number = 3;
+const MIN_ZOOM: number = 0.5;
 
 export class TopViewCamera extends OrthographicCamera implements GameCamera {
 
@@ -31,15 +33,25 @@ export class TopViewCamera extends OrthographicCamera implements GameCamera {
     }
 
     public zoomIn(): void {
-      //  throw new Error("Method not implemented.");
-     this.zoom += ZOOM_FACTOR;
-     this.updateProjectionMatrix();
-
+        if (this.zoom >= MIN_ZOOM) {
+            this.zoom += ZOOM_INCREMENT;
+            if (this.zoom > MAX_ZOOM) {
+                this.zoom = MAX_ZOOM;
+            }
+            this.updateProjectionMatrix();
+        } else {
+            this.zoom = MIN_ZOOM;
+        }
     }
-
     public zoomOut(): void {
-       // throw new Error("Method not implemented.");
-       this.zoom -= ZOOM_FACTOR;
-       this.updateProjectionMatrix();
+        if (this.zoom >= MIN_ZOOM) {
+            this.zoom -= ZOOM_INCREMENT;
+            if (this.zoom > MAX_ZOOM) {
+                this.zoom = MAX_ZOOM;
+            }
+            this.updateProjectionMatrix();
+        } else {
+            this.zoom = MIN_ZOOM;
+        }
     }
 }
