@@ -13,6 +13,10 @@ export const enum Difficulty {
     Normal = "Normal",
     Hard = "Hard"
 }
+export enum Orientation {
+    Horizontal = 0,
+    Vertical
+}
 export const INITIAL_CAMERA_POSITION_Y: number = 25;
 export const FRUSTUM_RATIO: number = 100;
 export const NO_CHEAT_COLOR: string = "#7BABEF";
