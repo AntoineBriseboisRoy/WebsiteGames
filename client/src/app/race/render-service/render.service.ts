@@ -2,12 +2,13 @@ import { Injectable } from "@angular/core";
 import Stats = require("stats.js");
 import { WebGLRenderer, Scene, AmbientLight,
          AxisHelper, Mesh, PlaneBufferGeometry, MeshBasicMaterial,
-         DoubleSide, Texture, RepeatWrapping, TextureLoader } from "three";
+         DoubleSide, Texture, RepeatWrapping, TextureLoader, Camera } from "three";
 import { Car } from "../car/car";
 import { ThirdPersonCamera } from "../camera/camera-perspective";
-// import { TopViewCamera } from "../camera/camera-orthogonal";
-import { /*INITIAL_CAMERA_POSITION_Y, FRUSTUM_RATIO,*/ PI_OVER_2 } from "../../constants";
+import { TopViewCamera } from "../camera/camera-orthogonal";
+import { INITIAL_CAMERA_POSITION_Y, FRUSTUM_RATIO, PI_OVER_2 } from "../../constants";
 import { Skybox } from "../skybox/skybox";
+import { CameraContext } from '../camera/camera-context';
 
 export const FAR_CLIPPING_PLANE: number = 1000;
 export const NEAR_CLIPPING_PLANE: number = 1;
@@ -18,8 +19,7 @@ const AMBIENT_LIGHT_OPACITY: number = 0.5;
 
 @Injectable()
 export class RenderService {
-    // private camera: TopViewCamera;
-    private camera: ThirdPersonCamera;
+    private cameraContext: CameraContext;
     private container: HTMLDivElement;
     private _car: Car;
     private renderer: WebGLRenderer;
@@ -29,6 +29,10 @@ export class RenderService {
 
     public get car(): Car {
         return this._car;
+    }
+
+    public get CameraContext(): CameraContext {
+        return this.cameraContext;
     }
 
     public constructor() {
@@ -54,30 +58,27 @@ export class RenderService {
     private update(): void {
         const timeSinceLastFrame: number = Date.now() - this.lastDate;
         this._car.update(timeSinceLastFrame);
-        this.camera.update(this._car);
+        this.cameraContext.update(this._car);
         this.lastDate = Date.now();
     }
 
     private async createScene(): Promise<void> {
         this.scene = new Scene();
-        // Decomment to view the third person camera and comment the orthogonal camera below
-        //
-        this.camera = new ThirdPersonCamera(
-             FIELD_OF_VIEW,
-             NEAR_CLIPPING_PLANE,
-             FAR_CLIPPING_PLANE,
-             this.container.clientWidth,
-             this.container.clientHeight
-         );
+        this.cameraContext = new CameraContext();
+        this.cameraContext.addState(new ThirdPersonCamera(FIELD_OF_VIEW,
+                                                          NEAR_CLIPPING_PLANE,
+                                                          FAR_CLIPPING_PLANE,
+                                                          this.container.clientWidth,
+                                                          this.container.clientHeight));
 
-        /* this.camera = new TopViewCamera(-this.container.clientWidth / FRUSTUM_RATIO,
-                                           this.container.clientWidth / FRUSTUM_RATIO,
-                                           this.container.clientHeight / FRUSTUM_RATIO,
-                                           -this.container.clientHeight / FRUSTUM_RATIO,
-                                           1, INITIAL_CAMERA_POSITION_Y + 1); // Add 1 to see the floor */
+        this.cameraContext.addState(new TopViewCamera(-this.container.clientWidth / FRUSTUM_RATIO,
+                                                      this.container.clientWidth / FRUSTUM_RATIO,
+                                                      this.container.clientHeight / FRUSTUM_RATIO,
+                                                      -this.container.clientHeight / FRUSTUM_RATIO,
+                                                      1, INITIAL_CAMERA_POSITION_Y + 1)); // Add 1 to see the floor
 
         await this._car.init();
-        this.camera.init(this._car.getPosition());
+        this.cameraContext.initStates(this._car.getPosition());
         this.scene.add(this._car);
         this.scene.add(new AmbientLight(WHITE, AMBIENT_LIGHT_OPACITY));
 
@@ -116,12 +117,12 @@ export class RenderService {
     private render(): void {
         requestAnimationFrame(() => this.render());
         this.update();
-        this.renderer.render(this.scene, this.camera);
+        this.renderer.render(this.scene, this.cameraContext.CurrentState);
         this.stats.update();
     }
 
     public onResize(): void {
-        this.camera.onResize(this.container.clientWidth, this.container.clientHeight);
+        this.cameraContext.onResize(this.container.clientWidth, this.container.clientHeight);
         this.renderer.setSize(this.container.clientWidth, this.container.clientHeight);
     }
 }
