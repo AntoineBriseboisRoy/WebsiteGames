@@ -1,6 +1,6 @@
 import { PerspectiveCamera, Vector3 } from "three";
 import { Car } from "../car/car";
-import { GameCamera } from "./game-camera";
+import { CameraState } from "./camera-state";
 
 const RELATIVE_CAMERA_OFFSET_X: number = 0;
 const RELATIVE_CAMERA_OFFSET_Y: number = 2;
@@ -10,7 +10,7 @@ const ZOOM_INCREMENT: number = 0.05;
 const MAX_ZOOM: number = 2.5;
 const MIN_ZOOM: number = 0.5;
 
-export class ThirdPersonCamera extends PerspectiveCamera implements GameCamera {
+export class ThirdPersonCamera extends PerspectiveCamera implements CameraState {
 
     private static getAspectRatio(clientWidth: number, clientHeight: number): number {
         return clientWidth / clientHeight;

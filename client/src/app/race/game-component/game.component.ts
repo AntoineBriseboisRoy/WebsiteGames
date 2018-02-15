@@ -4,7 +4,7 @@ import { Car } from "../car/car";
 import { InputManagerService } from "../input-manager-service/input-manager.service";
 import { PerspectiveCamera, Camera } from "three";
 import { ThirdPersonCamera } from "../camera/camera-perspective";
-import { GameCamera } from "../camera/game-camera";
+import { CameraContext } from "../camera/camera-context";
 
 @Component({
     moduleId: module.id,
@@ -45,14 +45,14 @@ export class GameComponent implements AfterViewInit {
             .initialize(this.containerRef.nativeElement)
             .then(/* do nothing */)
             .catch((err) => console.error(err));
-        this.inputManagerService.init(this.car, this.camera);
+        this.inputManagerService.init(this.car, this.CameraContext);
     }
 
     public get car(): Car {
         return this.renderService.car;
     }
 
-    public get camera(): GameCamera {
-        return this.renderService.camera;
+    public get CameraContext(): CameraContext {
+        return this.renderService.CameraContext;
     }
 }

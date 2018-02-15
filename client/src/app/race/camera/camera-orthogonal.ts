@@ -1,13 +1,13 @@
 import { OrthographicCamera, Vector3 } from "three";
 import { Car } from "../car/car";
 import { INITIAL_CAMERA_POSITION_Y, FRUSTUM_RATIO } from "../../constants";
-import { GameCamera } from "./game-camera";
+import { CameraState } from "./camera-state";
 
 const ZOOM_INCREMENT: number = 0.05;
 const MAX_ZOOM: number = 3;
 const MIN_ZOOM: number = 0.5;
 
-export class TopViewCamera extends OrthographicCamera implements GameCamera {
+export class TopViewCamera extends OrthographicCamera implements CameraState {
 
     public constructor(left: number, right: number, top: number,
                        bottom: number, near: number, far: number) {

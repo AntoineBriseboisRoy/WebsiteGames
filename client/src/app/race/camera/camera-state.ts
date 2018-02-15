@@ -2,7 +2,7 @@
 import { Camera, Vector3, PerspectiveCamera } from "three";
 import { Car } from "../car/car";
 
-export abstract class GameCamera extends Camera {
+export abstract class CameraState extends Camera {
     public abstract zoomIn(): void;
     public abstract zoomOut(): void;
     public abstract update(car: Car): void;

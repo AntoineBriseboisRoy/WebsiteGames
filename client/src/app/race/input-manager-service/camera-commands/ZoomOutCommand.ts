@@ -1,13 +1,13 @@
 import { AbsCameraCommand } from "./AbsCameraCommand";
-import { GameCamera } from "../../camera/game-camera";
 import { Car } from "../../car/car";
 import { ThirdPersonCamera } from "../../camera/camera-perspective";
+import { CameraContext } from "../../camera/camera-context";
 export class ZoomOutCommand extends AbsCameraCommand {
-    public constructor(camera: GameCamera) {
-        super(camera);
+    public constructor(cameraContext: CameraContext) {
+        super(cameraContext);
     }
 
     public execute(): void {
-        this.camera.zoomOut();
+        this.cameraContext.zoomOut();
     }
 }
