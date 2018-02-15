@@ -20,6 +20,10 @@ export class CameraContext {
         return this.currentState;
     }
 
+    public get nStates(): number {
+        return this.states.length;
+    }
+
     public addState(newState: CameraState): void {
         this.states.push(newState);
     }
