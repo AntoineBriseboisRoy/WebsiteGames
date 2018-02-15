@@ -1,12 +1,12 @@
-import { Car } from "../car/car";
 import { AbsCarCommand } from "./AbsCarCommand";
+import { Car } from "../../car/car";
 
-export class RightCarCommand extends AbsCarCommand {
+export class LeftCarCommand extends AbsCarCommand {
     public constructor(car: Car) {
         super(car);
     }
 
     public execute(): void {
-        this.car.steerRight();
+        this.car.steerLeft();
     }
 }
