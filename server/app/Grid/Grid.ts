@@ -1,17 +1,18 @@
 import { Word } from "./Word";
 import { BlackSquareGenerator } from "./BlackSquareGenerator";
 import { StringService } from "./StringService";
-import { GridFiller } from "./GridFiller";
+// import { GridFiller } from "./GridFiller";
+// import { STANDARD_SIDE_SIZE, PERCENTAGE_BLACK_SQUARES } from "./Constants";
 
 export class Grid {
 
     private gridContent: string[][];
     private words: Word[];
 
-    public constructor(private sideSize: number, private percentageOfBlackSquares: number) {
+    public constructor(private sideSize: number = 10, private percentageOfBlackSquares: number = 0.4) {
         this.gridContent = BlackSquareGenerator.getInstance(this.sideSize, this.percentageOfBlackSquares).generateBlackSquares();
-        GridFiller.Instance.fillWords(this.gridContent, this.sideSize);
-        this.words = GridFiller.Instance.Words;
+        // GridFiller.Instance.fillWords(this.gridContent, this.sideSize);
+        // this.words = GridFiller.Instance.Words;
         this.cleanGrid();
      }
 
