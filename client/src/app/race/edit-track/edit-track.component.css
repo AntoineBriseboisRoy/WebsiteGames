@@ -1,3 +1,13 @@
-#tutorial {
-    border : 1px solid black
+#canvas-container {
+    position: relative
+}
+#edit {
+    border : 1px solid black;
+    position: absolute;
+}
+
+button {
+    position:absolute;
+    left:90vh;
+    top:70vh
 }
