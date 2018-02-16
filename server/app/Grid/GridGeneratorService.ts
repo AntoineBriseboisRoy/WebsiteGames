@@ -6,24 +6,26 @@ export class GridGeneratorService {
     private grid: Grid;
 
     private constructor() {
-        this.grid = new Grid(0, 0);
+        this.grid = new Grid();
     }
 
     public static get Instance(): GridGeneratorService {
-        if (this.instance == null) {
+        if (!this.instance) {
             this.instance = new GridGeneratorService();
         }
 
         return this.instance;
     }
 
-    public get Grid(): Grid {
-        return this.grid;
+    public get Grid(): string {
+        return this.grid.GridContent.toString().replace(",", "");
     }
 
-    public generateNewGrid(size: number, percentageBlackSquares: number): Grid {
-        this.grid = new Grid(size, percentageBlackSquares);
+    public get Words(): string {
+        return JSON.stringify(this.grid.Words);
+    }
 
-        return this.grid;
+    public generateNewGrid(): void {
+        this.grid = new Grid();
     }
 }

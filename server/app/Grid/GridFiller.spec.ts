@@ -36,7 +36,6 @@ describe("Verifying 2x2 Grid (no black squares)", () => {
                 ++nValidWords;
             }
         });
-
         expect(nValidWords).to.equal(EXPECTED_VALID_WORDS);
     });
 });
