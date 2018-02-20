@@ -1,4 +1,4 @@
-import { Word } from "./Word";
+import { Word } from "../../../common/Word";
 import { BlackSquareGenerator } from "./BlackSquareGenerator";
 import { StringService } from "./StringService";
 // import { GridFiller } from "./GridFiller";

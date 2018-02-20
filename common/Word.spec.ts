@@ -1,6 +1,6 @@
 import { expect } from "chai";
 import { Word, Orientation } from "./Word";
-import { CoordXY } from "./CoordXY";
+import { CoordXY } from "../server/app/Grid/CoordXY";
 
 describe("Verifying Word's constructor.", () => {
     it ("Construction should yield a word with the provided attributes.", () => {

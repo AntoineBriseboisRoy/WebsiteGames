@@ -1,7 +1,7 @@
 import { BlackSquare } from "./BlackSquare";
 import { CoordXY } from "./CoordXY";
 import * as cst from "./Constants";
-import { Orientation, Word } from "./Word";
+import { Orientation, Word } from "../../../common/Word";
 import { StringService } from "./StringService";
 export class BlackSquareGenerator {
 

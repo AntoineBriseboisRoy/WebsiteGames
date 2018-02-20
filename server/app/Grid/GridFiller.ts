@@ -1,6 +1,6 @@
 import { CoordXY } from "./CoordXY";
 import * as cst from "./Constants";
-import { Word, Orientation } from "./Word";
+import { Word, Orientation } from "../../../common/Word";
 import { DictionaryEntry, Constraint } from "./Interfaces";
 import { StringService } from "./StringService";
 

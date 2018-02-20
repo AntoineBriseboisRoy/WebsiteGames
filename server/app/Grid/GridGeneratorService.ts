@@ -1,5 +1,5 @@
 import { Grid } from "./Grid";
-import { Word } from "./Word";
+import { Word } from "../../../common/Word";
 import { CoordXY } from "./CoordXY";
 
 export class GridGeneratorService {

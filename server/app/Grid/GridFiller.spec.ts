@@ -1,6 +1,6 @@
 import { expect } from "chai";
 import { Grid } from "./Grid";
-import { Word } from "./Word";
+import { Word } from "../../../common/Word";
 import { DictionaryEntry, Constraint } from "./Interfaces";
 import * as cst from "./Constants";
 

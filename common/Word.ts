@@ -1,4 +1,4 @@
-import { CoordXY } from "./CoordXY";
+import { CoordXY } from "../server/app/Grid/CoordXY";
 
 export enum Orientation {
     Horizontal = 0,
