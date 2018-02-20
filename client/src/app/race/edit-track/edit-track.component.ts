@@ -15,8 +15,11 @@ export class EditTrackComponent implements OnInit {
   private points: Point[];
   private img: HTMLImageElement;
   private mousePressed: boolean = false;
+  private animationID: number;
+  private selectedPoint: number;
   public constructor() { }
 
+  // tslint:disable-next-line:max-func-body-length
   public ngOnInit(): void {
     this.points = new Array<Point>();
     this.canvas = document.getElementById("edit") as HTMLCanvasElement;
@@ -24,14 +27,39 @@ export class EditTrackComponent implements OnInit {
     this.resizeWindow();
 
     window.addEventListener("resize", () => this.resizeWindow());
-    this.canvas.addEventListener("click", (event: MouseEvent) => this.handleCreateNewPoint(event));
-    this.canvas.addEventListener("contextmenu", (event: MouseEvent) => this.handleDeleteLastPoint(event));
-   /*  this.canvas.addEventListener("mousedown", (event: MouseEvent) => {
-      this.mousePressed = true;
-      this.handleStartDrag(event);
-    });
-    this.canvas.addEventListener("mouseup", () => this.mousePressed = false); */
     this.canvas.oncontextmenu = () => false ;
+    this.canvas.addEventListener("mousedown", (event: MouseEvent) => {
+      if (event.button !== 2) {
+        this.mousePressed = true;
+        this.selectedPoint = this.isOnOtherPoint(event.x, event.y);
+        if (this.selectedPoint === -1) {
+          this.points.push(new Point(event.x, event.y,  (this.points.length === 0), false));
+          this.selectedPoint = this.points.length - 1;
+        } else if (this.selectedPoint === 0) {
+          this.mousePressed = false;
+          this.points.push(new Point(this.points[0].x, this.points[0].y, false, true));
+        }
+        this.redrawCanvas();
+      } else {
+        this.handleDeleteLastPoint(event);
+      }
+    });
+
+    this.canvas.addEventListener("mouseup", () => {
+      this.mousePressed = false;
+      window.cancelAnimationFrame(this.animationID);
+      this.selectedPoint = -1;
+    });
+
+    this.canvas.addEventListener("mousemove", (event: MouseEvent) => {
+      if (this.mousePressed) {
+        if (this.selectedPoint !== -1) {
+          this.points[this.selectedPoint].x = event.x;
+          this.points[this.selectedPoint].y = event.y;
+        }
+        this.redrawCanvas();
+      }
+    });
   }
 
   private resizeWindow(): void {
@@ -48,26 +76,8 @@ export class EditTrackComponent implements OnInit {
       this.context.stroke();
     };
     this.img.src = "https://www.sketchuptextureclub.com/public/texture_m/0013-road-texture-seamless.jpg";
-
   }*/
-
-  private handleStartDrag(event: MouseEvent): void {
-    /*while (this.mousePressed) {
-      console.log("boucle");
-    }*/
-  }
-
-  private handleCreateNewPoint(event: MouseEvent): void {
-    if (this.isEndPoint(event.x, event.y)) {
-      this.points.push(new Point(this.points[0].x, this.points[0].y, false, true));
-    } else if (this.points.length === 0) {
-      this.points.push(new Point(event.x, event.y, true, false));
-    } else {
-      this.points.push(new Point(event.x, event.y, false, false));
-    }
-    this.redrawCanvas();
-  }
-
+  
   private handleDeleteLastPoint(event: MouseEvent): void {
     this.points.pop();
     this.redrawCanvas();
@@ -108,20 +118,12 @@ export class EditTrackComponent implements OnInit {
     }
   }
 
-  private isEndPoint(x: number, y: number): boolean {
-    return (this.points.length !== 0 &&
-            this.points[0].x + cst.TWICE_DEFAULT_CIRCLE_RADIUS > x &&
-            this.points[0].x - cst.TWICE_DEFAULT_CIRCLE_RADIUS < x &&
-            this.points[0].y + cst.TWICE_DEFAULT_CIRCLE_RADIUS > y &&
-            this.points[0].y - cst.TWICE_DEFAULT_CIRCLE_RADIUS < y );
-  }
-
   private isOnOtherPoint(x: number, y: number): number {
     for (let i: number = 0; i < this.points.length; ++i) {
-      if (this.points[0].x + cst.TWICE_DEFAULT_CIRCLE_RADIUS > x &&
-          this.points[0].x - cst.TWICE_DEFAULT_CIRCLE_RADIUS < x &&
-          this.points[0].y + cst.TWICE_DEFAULT_CIRCLE_RADIUS > y &&
-          this.points[0].y - cst.TWICE_DEFAULT_CIRCLE_RADIUS < y ) {
+      if (this.points[i].x + cst.TWICE_DEFAULT_CIRCLE_RADIUS > x &&
+          this.points[i].x - cst.TWICE_DEFAULT_CIRCLE_RADIUS < x &&
+          this.points[i].y + cst.TWICE_DEFAULT_CIRCLE_RADIUS > y &&
+          this.points[i].y - cst.TWICE_DEFAULT_CIRCLE_RADIUS < y ) {
             return i;
       }
     }
