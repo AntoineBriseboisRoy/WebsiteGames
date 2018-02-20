@@ -20,6 +20,7 @@ export class Constraints {
         this.instantiateSegmentArray();
 
         this.checkAngleCondition();
+        this.checkSegmentLength();
     }
 
     private instantiateSegmentArray(): void {
@@ -61,5 +62,15 @@ export class Constraints {
         const vec2: Vector2 = new Vector2(point1.x - point2.x, point1.y - point2.y);
 
         return Math.acos(vec1.dot(vec2) / (vec1.length() * vec2.length())) > cst.PI_OVER_4;
+    }
+
+    private checkSegmentLength(): void {
+        for (const segment of this.segments) {
+            if (new Vector2(this.points[segment.firstPoint].x - this.points[segment.secondPoint].x,
+                            this.points[segment.firstPoint].y - this.points[segment.secondPoint].y).length() <
+                cst.TWICE_TRACK_WIDTH) {
+                segment.broken = true;
+            }
+        }
     }
 }

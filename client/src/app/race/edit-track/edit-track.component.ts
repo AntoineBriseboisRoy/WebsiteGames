@@ -98,7 +98,7 @@ export class EditTrackComponent implements OnInit {
   private drawRoads(): void {
     this.constraints.checkConstraints(this.points, this.trackComplete);
     const segments: Segment[] = this.constraints.Segments;
-    this.context.lineWidth = cst.DEFAULT_LINE_WIDTH;
+    this.context.lineWidth = cst.TRACK_WIDTH;
     this.context.beginPath();
 
     for (let i: number = 0; i < segments.length; ++i) {
