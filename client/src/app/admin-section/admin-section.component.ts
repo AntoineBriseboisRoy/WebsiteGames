@@ -8,7 +8,7 @@ import { Component, OnInit } from "@angular/core";
 
 export class AdminSectionComponent implements OnInit {
 
-  public readonly title: string = "This is where you can edit racetracks!";
+  public readonly title: string = "Welcome to the admistration section!";
   public constructor() { }
 
   public ngOnInit(): void {

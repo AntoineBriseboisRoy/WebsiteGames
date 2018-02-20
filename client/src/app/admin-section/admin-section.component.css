@@ -1,0 +1,54 @@
+#admin-page {
+    background: url("../crossword/images/background.jpg") no-repeat fixed;
+    padding-top: 10px;
+}
+
+.container {
+    padding: 0%;
+}
+
+.row {
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+}
+
+.title-box {
+    border: medium solid orange;
+    border-radius: 1em;
+    background: url("../crossword/images/background-blur.jpg") no-repeat fixed;
+    color: #fff;
+    text-align: center;
+}
+
+.track-list {
+    list-style-type: none;
+    border: medium solid orange;
+    border-radius: 1em;
+    margin: 5% 0%;
+    padding: 0% 5%;
+    overflow: auto;
+    background: url("../crossword/images/background-blur.jpg") no-repeat fixed;
+}
+
+.track-button {
+    background: white;
+    border: medium solid #333333;
+    border-radius: 1em;
+}
+
+.track-button:hover {
+    background: #aaa;
+    border: medium solid orange;
+}
+
+.button-layout {
+    margin: 2.5% 10% 2.5% 10%;
+    float: center;
+    text-align: left;
+    width: auto;
+    padding: 2%;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
