@@ -16,6 +16,7 @@ export class Constraints {
 
     public checkConstraints(points: Point[], trackComplete: boolean): void {
         this.points = points;
+        this.trackComplete = trackComplete;
         this.instantiateSegmentArray();
 
         this.checkAngleCondition();
@@ -45,7 +46,8 @@ export class Constraints {
         }
         if (this.segments.length > 0 && lastAngleBroken) {
             this.segments[this.segments.length - 1].broken = true;
-        } else if (this.trackComplete && this.segments.length > 0 &&
+        }
+        if (this.trackComplete && this.segments.length > 0 &&
                    !this.checkAngleBetweenTwoSegments(this.points[this.segments[this.segments.length - 1].firstPoint],
                                                       this.points[this.segments[this.segments.length - 1].secondPoint],
                                                       this.points[this.segments[0].secondPoint])) {
