@@ -1,7 +1,9 @@
 import { Component, OnInit } from "@angular/core";
-import { Point } from "./Point";
+import { Point, Segment } from "./Geometry";
 import * as cst from "../../constants";
 import { IterableChangeRecord_ } from "@angular/core/src/change_detection/differs/default_iterable_differ";
+import { Vector2 } from "three";
+import { Constraints } from "./constraints";
 
 @Component({
   selector: "app-edit-track",
@@ -10,11 +12,14 @@ import { IterableChangeRecord_ } from "@angular/core/src/change_detection/differ
 })
 export class EditTrackComponent implements OnInit {
 
+  private constraints: Constraints = new Constraints();
   private canvas: HTMLCanvasElement;
   private context: CanvasRenderingContext2D;
   private points: Point[];
   private img: HTMLImageElement;
   private mousePressed: boolean = false;
+  private trackComplete: boolean = false;
+  private brokenConstraints: boolean = false;
   private selectedPoint: number;
   public constructor() { }
 
@@ -56,6 +61,7 @@ export class EditTrackComponent implements OnInit {
 
   private handleDeleteLastPoint(event: MouseEvent): void {
     this.points.pop();
+    this.trackComplete = false;
     this.redrawCanvas();
   }
 
@@ -71,13 +77,14 @@ export class EditTrackComponent implements OnInit {
 
   private handleLeftMouseDown(event: MouseEvent): void {
     this.selectedPoint = this.isOnOtherPoint(event.x, event.y);
-    if (this.selectedPoint === cst.NO_SELECTED_POINT) {
-      this.mousePressed = true;
-      this.points.push(new Point(event.x, event.y,  (this.points.length === 0), false));
+    this.mousePressed = (this.selectedPoint !== 0);
+    if (this.selectedPoint === cst.NO_SELECTED_POINT && !this.trackComplete) {
+      this.points.push({ x: event.x, y: event.y, start: (this.points.length === 0), end: this.trackComplete });
       this.selectedPoint = this.points.length - 1;
-    } else if (this.selectedPoint === 0) {
+    } else if (this.selectedPoint === 0 && !this.trackComplete) {
       this.mousePressed = false;
-      this.points.push(new Point(this.points[0].x, this.points[0].y, false, true));
+      this.trackComplete = true;
+      this.points.push({ x: this.points[0].x, y: this.points[0].y, start: false, end: this.trackComplete });
     }
     this.redrawCanvas();
   }
@@ -88,16 +95,20 @@ export class EditTrackComponent implements OnInit {
     this.drawPoints();
   }
 
+  /* TODO: Make first line different colour */
   private drawRoads(): void {
+    this.constraints.checkConstraints(this.points, this.trackComplete);
+    const segments: Segment[] = this.constraints.Segments;
     this.context.lineWidth = cst.DEFAULT_LINE_WIDTH;
     this.context.beginPath();
-    this.context.strokeStyle = "red";
-    for (let i: number = 1; i < this.points.length; ++i) {
+    this.context.strokeStyle = "green";
+
+    for (const segment of segments) {
       this.context.beginPath();
-      this.context.moveTo(this.points[i - 1].x, this.points[i - 1].y);
-      this.context.lineTo(this.points[i].x, this.points[i].y);
+      this.context.moveTo(this.points[segment.firstPoint].x, this.points[segment.firstPoint].y);
+      this.context.lineTo(this.points[segment.secondPoint].x, this.points[segment.secondPoint].y);
+      this.context.strokeStyle = segment.broken ? "red" : "black";
       this.context.stroke();
-      this.context.strokeStyle = "black";
       this.context.closePath();
     }
   }
@@ -109,7 +120,7 @@ export class EditTrackComponent implements OnInit {
       this.context.lineJoin = "round";
       this.context.fillStyle = "black";
       this.context.arc(iterator.x, iterator.y, cst.DEFAULT_CIRCLE_RADIUS, 0, cst.FULL_CIRCLE_RAD, false);
-      this.context.strokeStyle = (iterator.start) ? "red" : "blue";
+      this.context.strokeStyle = (iterator.start) ? "green" : "blue";
       this.context.stroke();
       this.context.fill();
       this.context.closePath();
