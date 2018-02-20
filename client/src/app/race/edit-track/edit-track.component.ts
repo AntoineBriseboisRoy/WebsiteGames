@@ -95,19 +95,17 @@ export class EditTrackComponent implements OnInit {
     this.drawPoints();
   }
 
-  /* TODO: Make first line different colour */
   private drawRoads(): void {
     this.constraints.checkConstraints(this.points, this.trackComplete);
     const segments: Segment[] = this.constraints.Segments;
     this.context.lineWidth = cst.DEFAULT_LINE_WIDTH;
     this.context.beginPath();
-    this.context.strokeStyle = "green";
 
-    for (const segment of segments) {
+    for (let i: number = 0; i < segments.length; ++i) {
       this.context.beginPath();
-      this.context.moveTo(this.points[segment.firstPoint].x, this.points[segment.firstPoint].y);
-      this.context.lineTo(this.points[segment.secondPoint].x, this.points[segment.secondPoint].y);
-      this.context.strokeStyle = segment.broken ? "red" : "black";
+      this.context.moveTo(this.points[segments[i].firstPoint].x, this.points[segments[i].firstPoint].y);
+      this.context.lineTo(this.points[segments[i].secondPoint].x, this.points[segments[i].secondPoint].y);
+      this.context.strokeStyle = segments[i].broken ? "red" : (i === 0) ? "green" : "black";
       this.context.stroke();
       this.context.closePath();
     }
