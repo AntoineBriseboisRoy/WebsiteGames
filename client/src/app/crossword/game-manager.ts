@@ -29,7 +29,6 @@ export class GameManager implements OnInit {
     }
 
     public ngOnInit(): void {
-        this.difficulty = Difficulty.Easy;
         this.isMultiplayer = true;
     }
 
