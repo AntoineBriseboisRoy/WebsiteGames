@@ -16,6 +16,7 @@ import { FormsModule } from "@angular/forms";
 import { AppRoutingModule } from ".//app-routing.module";
 import { DashboardComponent } from "./dashboard/dashboard.component";
 import { DifficultyMenuComponent } from "./crossword/difficulty-menu/difficulty-menu.component";
+import { AdminSectionComponent } from './admin-section/admin-section.component';
 
 @NgModule({
     declarations: [
@@ -26,7 +27,8 @@ import { DifficultyMenuComponent } from "./crossword/difficulty-menu/difficulty-
         GridComponent,
         DefinitionComponent,
         DashboardComponent,
-        DifficultyMenuComponent
+        DifficultyMenuComponent,
+        AdminSectionComponent
     ],
     imports: [
         BrowserModule,
