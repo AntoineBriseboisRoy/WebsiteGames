@@ -47,6 +47,7 @@
     float: center;
     text-align: left;
     width: auto;
+    min-width: 600px;
     padding: 2%;
     display: block;
     margin-left: auto;
