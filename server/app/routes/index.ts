@@ -19,7 +19,14 @@ module Route {
         public getGrid(req: Request, res: Response, next: NextFunction): void {
             const message: Message = new Message();
             message.title = "Fetching grid";
-            message.body = GridGeneratorService.Instance.Grid;
+            message.body = GridGeneratorService.Instance.getFakeGridContent();
+            res.send(JSON.stringify(message));
+        }
+
+        public getWords(req: Request, res: Response, next: NextFunction): void {
+            const message: Message = new Message();
+            message.title = "Fetching grid";
+            message.body = GridGeneratorService.Instance.getFakeGridWords();
             res.send(JSON.stringify(message));
         }
     }
