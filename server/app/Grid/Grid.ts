@@ -1,4 +1,4 @@
-import { Word } from "../../../common/Word";
+import { IWord } from "../../../common/Word";
 import { BlackSquareGenerator } from "./BlackSquareGenerator";
 import { StringService } from "./StringService";
 // import { GridFiller } from "./GridFiller";
@@ -7,7 +7,7 @@ import { StringService } from "./StringService";
 export class Grid {
 
     private gridContent: string[][];
-    private words: Word[];
+    private words: IWord[];
 
     public constructor(private sideSize: number = 10, private percentageOfBlackSquares: number = 0.4) {
         this.gridContent = BlackSquareGenerator.getInstance(this.sideSize, this.percentageOfBlackSquares).generateBlackSquares();
@@ -20,7 +20,7 @@ export class Grid {
         return this.gridContent;
     }
 
-    public get Words(): Word[] {
+    public get Words(): IWord[] {
         return this.words;
     }
 

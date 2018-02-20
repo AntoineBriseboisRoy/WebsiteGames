@@ -16,6 +16,7 @@ import { FormsModule } from "@angular/forms";
 import { AppRoutingModule } from ".//app-routing.module";
 import { DashboardComponent } from "./dashboard/dashboard.component";
 import { DifficultyMenuComponent } from "./crossword/difficulty-menu/difficulty-menu.component";
+import { GridService } from "./crossword/grid.service";
 
 @NgModule({
     declarations: [
@@ -34,7 +35,7 @@ import { DifficultyMenuComponent } from "./crossword/difficulty-menu/difficulty-
         FormsModule,
         AppRoutingModule
     ],
-    providers: [BasicService],
+    providers: [BasicService, GridService],
     bootstrap: [AppComponent]
 })
 export class AppModule { }

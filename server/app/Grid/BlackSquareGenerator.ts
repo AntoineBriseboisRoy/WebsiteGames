@@ -1,7 +1,7 @@
 import { BlackSquare } from "./BlackSquare";
 import { CoordXY } from "./CoordXY";
 import * as cst from "./Constants";
-import { Orientation, Word } from "../../../common/Word";
+import { Orientation, IWord } from "../../../common/Word";
 import { StringService } from "./StringService";
 export class BlackSquareGenerator {
 
@@ -9,7 +9,7 @@ export class BlackSquareGenerator {
     private blackSquares: BlackSquare[];
     private grid: string[][];
     private nTotalWords: number;
-    private connectedWordsFound: Word[];
+    private connectedWordsFound: IWord[];
 
     private constructor(private sideSize: number, private percentageOfBlackSquares: number) {
         this.blackSquares = new Array<BlackSquare>();
@@ -108,7 +108,7 @@ export class BlackSquareGenerator {
     }
 
     private countConnectedWords(): number {
-        this.connectedWordsFound = new Array<Word>();
+        this.connectedWordsFound = new Array<IWord>();
 
         return this.countConnectedWordsRecursive(this.findFirstWord());
     }
@@ -154,8 +154,8 @@ export class BlackSquareGenerator {
             }
             currWordLength = i - currWordPosition.Y;
         }
-        this.connectedWordsFound.push(new Word(currWordPosition, currChar.direction,
-                                               StringService.generateDefaultString(currWordLength), ""));
+        this.connectedWordsFound.push({position: currWordPosition, orientation: currChar.direction,
+                                       content: StringService.generateDefaultString(currWordLength), definition: ""});
 
         charsToCheck.forEach((char: { coord: CoordXY, direction: Orientation }) => {
             nWordsConnected += this.countConnectedWordsRecursive(char);
@@ -166,16 +166,16 @@ export class BlackSquareGenerator {
 
     private charBelongsToAlreadyCheckedWord(currChar: { coord: CoordXY, direction: Orientation }): boolean {
         let alreadyConnected: boolean = false;
-        this.connectedWordsFound.forEach((word: Word) => {
-            if (currChar.direction === word.Orientation) {
+        this.connectedWordsFound.forEach((word: IWord) => {
+            if (currChar.direction === word.orientation) {
                 if (currChar.direction === Orientation.Horizontal) {
-                    if (word.Position.Y === currChar.coord.Y && word.Position.X <= currChar.coord.X
-                        && word.Position.X + word.Content.length >= currChar.coord.X) {
+                    if (word.position.Y === currChar.coord.Y && word.position.X <= currChar.coord.X
+                        && word.position.X + word.content.length >= currChar.coord.X) {
                         alreadyConnected = true;
                     }
                 } else {
-                    if (word.Position.X === currChar.coord.X && word.Position.Y <= currChar.coord.Y
-                        && word.Position.Y + word.Content.length >= currChar.coord.Y) {
+                    if (word.position.X === currChar.coord.X && word.position.Y <= currChar.coord.Y
+                        && word.position.Y + word.content.length >= currChar.coord.Y) {
                         alreadyConnected = true;
                     }
                 }

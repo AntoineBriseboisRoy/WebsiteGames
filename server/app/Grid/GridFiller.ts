@@ -1,6 +1,6 @@
 import { CoordXY } from "./CoordXY";
 import * as cst from "./Constants";
-import { Word, Orientation } from "../../../common/Word";
+import { IWord, Orientation } from "../../../common/Word";
 import { DictionaryEntry, Constraint } from "./Interfaces";
 import { StringService } from "./StringService";
 
@@ -8,15 +8,15 @@ export class GridFiller {
 
     private static instance: GridFiller;
     private grid: string[][];
-    private words: Word[];
-    private wordsLengths: Word[];
+    private words: IWord[];
+    private wordsLengths: IWord[];
     private sideSize: number;
 
     private constructor() {
         this.sideSize = 0;
         this.grid = new Array<Array<string>>();
-        this.words = new Array<Word>();
-        this.wordsLengths = new Array<Word>();
+        this.words = new Array<IWord>();
+        this.wordsLengths = new Array<IWord>();
     }
 
     public static get Instance(): GridFiller {
@@ -27,7 +27,7 @@ export class GridFiller {
         return this.instance;
     }
 
-    public get Words(): Word[] {
+    public get Words(): IWord[] {
         return this.words;
     }
 
@@ -46,11 +46,11 @@ export class GridFiller {
     }
 
     private sortWordLengths(): void {
-        this.wordsLengths.sort((left: Word, right: Word): number => {
-            if (left.Length < right.Length) {
+        this.wordsLengths.sort((left: IWord, right: IWord): number => {
+            if (left.content.length < right.content.length) {
                 return -1;
             }
-            if (left.Length > right.Length) {
+            if (left.content.length > right.content.length) {
                 return 1;
             } else {
                 return 0;
@@ -59,7 +59,7 @@ export class GridFiller {
     }
 
     private sortWordLengthsByCommonLetters(): void {
-        this.wordsLengths.sort((left: Word, right: Word): number => {
+        this.wordsLengths.sort((left: IWord, right: IWord): number => {
             const nCommonLettersLeft: number = this.countLettersBelongingOtherWords(left);
             const nCommonLettersRight: number = this.countLettersBelongingOtherWords(right);
 
@@ -82,8 +82,8 @@ export class GridFiller {
                     ++nLettersCol;
                 } else {
                     if (nLettersCol >= cst.MIN_LETTERS_FOR_WORD) {
-                        this.wordsLengths.push(new Word(new CoordXY(j - nLettersCol, i),
-                                                        Orientation.Horizontal, StringService.generateDefaultString(nLettersCol), ""));
+                        this.wordsLengths.push( { position: new CoordXY(j - nLettersCol, i), orientation: Orientation.Horizontal,
+                                                  content: StringService.generateDefaultString(nLettersCol), definition: ""} as IWord);
                     }
                     nLettersCol = 0;
                 }
@@ -91,17 +91,17 @@ export class GridFiller {
                     ++nLettersRow;
                 } else {
                     if (nLettersRow >= cst.MIN_LETTERS_FOR_WORD) {
-                        this.wordsLengths.push(new Word(new CoordXY(i, j - nLettersRow),
-                                                        Orientation.Vertical, StringService.generateDefaultString(nLettersRow), ""));
+                        this.wordsLengths.push( { position: new CoordXY(i, j - nLettersRow), orientation: Orientation.Vertical,
+                                                  content: StringService.generateDefaultString(nLettersRow), definition: ""} as IWord);
                     }
                     nLettersRow = 0;
                 }
             }
             if (nLettersCol >= cst.MIN_LETTERS_FOR_WORD) {
-                this.wordsLengths.push(new Word(new CoordXY(this.sideSize - nLettersCol, i), Orientation.Horizontal, StringService.generateDefaultString(nLettersCol), ""));
+                this.wordsLengths.push({ position: new CoordXY(this.sideSize - nLettersCol, i), orientation: Orientation.Horizontal, content: StringService.generateDefaultString(nLettersCol), definition: "" } as IWord);
             }
             if (nLettersRow >= cst.MIN_LETTERS_FOR_WORD) {
-                this.wordsLengths.push(new Word(new CoordXY(i, this.sideSize - nLettersRow), Orientation.Vertical, StringService.generateDefaultString(nLettersRow), ""));
+                this.wordsLengths.push({ position: new CoordXY(i, this.sideSize - nLettersRow), orientation: Orientation.Vertical, content: StringService.generateDefaultString(nLettersRow), definition: "" } as IWord);
             }
         }
     }
@@ -112,15 +112,16 @@ export class GridFiller {
         if (this.gridFilled()) {
             return true;
         }
-        const longestFreeSpace: Word = this.wordsLengths.pop();
-        const entry: DictionaryEntry = this.findWordsWithConstraints(longestFreeSpace.Length,
+        const longestFreeSpace: IWord = this.wordsLengths.pop();
+        const entry: DictionaryEntry = this.findWordsWithConstraints(longestFreeSpace.content.length,
                                                                      this.establishConstraints(longestFreeSpace));
         if (entry.word === cst.NOT_FOUND) {
             this.wordsLengths.push(longestFreeSpace);
 
             return false;
         }
-        const wordAdded: Word = new Word(longestFreeSpace.Position, longestFreeSpace.Orientation, entry.word, entry.definition);
+        const wordAdded: IWord = { position: longestFreeSpace.position, orientation: longestFreeSpace.orientation,
+                                   content: entry.word, definition: entry.definition };
         this.addNewWord(wordAdded);
         this.sortWordLengthsByCommonLetters();
 
@@ -144,15 +145,16 @@ export class GridFiller {
         console.log(this.grid);
         console.log("Words: " + this.words.length + "   WordsLength: " + this.wordsLengths.length);
 
-        const longestFreeSpace: Word = this.wordsLengths.pop();
-        const entry: DictionaryEntry = this.findWordsWithConstraints(longestFreeSpace.Length,
+        const longestFreeSpace: IWord = this.wordsLengths.pop();
+        const entry: DictionaryEntry = this.findWordsWithConstraints(longestFreeSpace.content.length,
                                                                      this.establishConstraints(longestFreeSpace));
         if (entry.word === cst.NOT_FOUND) {
             this.wordsLengths.push(longestFreeSpace);
 
             return false;
         }
-        const wordAdded: Word = new Word(longestFreeSpace.Position, longestFreeSpace.Orientation, entry.word, entry.definition);
+        const wordAdded: IWord = {position: longestFreeSpace.position, orientation: longestFreeSpace.orientation,
+                                  content: entry.word, definition: entry.definition };
         this.addNewWord(wordAdded);
         this.sortWordLengthsByCommonLetters();
 
@@ -175,26 +177,26 @@ export class GridFiller {
         }
     }
 
-    private addNewWord (newWord: Word): void {
+    private addNewWord (newWord: IWord): void {
         this.words.push(newWord);
-        for (let i: number = 0; i < newWord.Length; i++) {
-            if (newWord.Orientation === Orientation.Horizontal) {
-                this.grid[newWord.Position.X + i][newWord.Position.Y] = newWord.Content[i];
+        for (let i: number = 0; i < newWord.content.length; i++) {
+            if (newWord.orientation === Orientation.Horizontal) {
+                this.grid[newWord.position.X + i][newWord.position.Y] = newWord.content.length[i];
             } else {
-                this.grid[newWord.Position.X][newWord.Position.Y + i] = newWord.Content[i];
+                this.grid[newWord.position.X][newWord.position.Y + i] = newWord.content.length[i];
             }
         }
     }
 
-    private countLettersBelongingOtherWords(word: Word): number {
+    private countLettersBelongingOtherWords(word: IWord): number {
         let nCommonLetters: number = 0;
-        for (let i: number = 0; i < word.Content.length; i++) {
-            if (word.Orientation === Orientation.Horizontal) {
-                if (this.letterBelongsOtherWord(new CoordXY(word.Position.X + i, word.Position.Y))) {
+        for (let i: number = 0; i < word.content.length; i++) {
+            if (word.orientation === Orientation.Horizontal) {
+                if (this.letterBelongsOtherWord(new CoordXY(word.position.X + i, word.position.Y))) {
                     ++nCommonLetters;
                 }
             } else {
-                if (this.letterBelongsOtherWord(new CoordXY(word.Position.X, word.Position.Y + i))) {
+                if (this.letterBelongsOtherWord(new CoordXY(word.position.X, word.position.Y + i))) {
                     ++nCommonLetters;
                 }
             }
@@ -203,16 +205,16 @@ export class GridFiller {
         return nCommonLetters;
     }
 
-    private haveCommonLetter(leftWord: Word, rightWord: Word): boolean {
-        if (leftWord.Orientation === rightWord.Orientation) {
+    private haveCommonLetter(leftWord: IWord, rightWord: IWord): boolean {
+        if (leftWord.orientation === rightWord.orientation) {
             return false;
         }
-        if (leftWord.Orientation === Orientation.Horizontal) {
-            if (leftWord.Position.X <= rightWord.Position.X && leftWord.Position.X + leftWord.Length >= rightWord.Position.X) {
+        if (leftWord.orientation === Orientation.Horizontal) {
+            if (leftWord.position.X <= rightWord.position.X && leftWord.position.X + leftWord.content.length >= rightWord.position.X) {
                 return true;
             }
         } else {
-            if (leftWord.Position.Y <= rightWord.Position.Y && leftWord.Position.Y + leftWord.Length >= rightWord.Position.Y) {
+            if (leftWord.position.Y <= rightWord.position.Y && leftWord.position.Y + leftWord.content.length >= rightWord.position.Y) {
                 return true;
             }
         }
@@ -222,16 +224,16 @@ export class GridFiller {
 
     private letterBelongsOtherWord(position: CoordXY): boolean {
         let belongs: boolean = false;
-        this.words.forEach((word: Word) => {
-            if (word.Orientation === Orientation.Horizontal) {
-                if (word.Position.Y === position.Y) {
-                    if (word.Position.X <= position.X && word.Position.X + word.Length - 1 >= position.X) {
+        this.words.forEach((word: IWord) => {
+            if (word.orientation === Orientation.Horizontal) {
+                if (word.position.Y === position.Y) {
+                    if (word.position.X <= position.X && word.position.X + word.content.length - 1 >= position.X) {
                         belongs = true;
                     }
                 }
             } else {
-                if (word.Position.X === position.X) {
-                    if (word.Position.Y <= position.Y && word.Position.Y + word.Length - 1 >= position.Y) {
+                if (word.position.X === position.X) {
+                    if (word.position.Y <= position.Y && word.position.Y + word.content.length - 1 >= position.Y) {
                         belongs = true;
                     }
                 }
@@ -241,12 +243,12 @@ export class GridFiller {
         return belongs;
     }
 
-    private establishConstraints(nextWord: Word): Constraint[] {
+    private establishConstraints(nextWord: IWord): Constraint[] {
         const constraints: Constraint[] = new Array<Constraint>();
-        for (let i: number = 0; i < nextWord.Length; i++) {
-            const currentChar: string = (nextWord.Orientation === Orientation.Vertical) ?
-                this.grid[nextWord.Position.X][i + nextWord.Position.Y] :
-                this.grid[nextWord.Position.X + i][nextWord.Position.Y];
+        for (let i: number = 0; i < nextWord.content.length; i++) {
+            const currentChar: string = (nextWord.orientation === Orientation.Vertical) ?
+                this.grid[nextWord.position.X][i + nextWord.position.Y] :
+                this.grid[nextWord.position.X + i][nextWord.position.Y];
             if (currentChar !== cst.EMPTY_SQUARE) {
                 constraints.push({position: i, letter: currentChar});
             }
@@ -271,7 +273,7 @@ export class GridFiller {
     }
 
     private verifyAlreadyUsedWord(wordToCheck: string): boolean {
-        return this.words.filter((word: Word) => word.Content === wordToCheck).length > 0;
+        return this.words.filter((word: IWord) => word.content === wordToCheck).length > 0;
     }
 
     // Temporary, to be replaced when we can establish a proper link with the lexical service
@@ -303,9 +305,9 @@ export class GridFiller {
         return passesFilter;
     }
 
-    private findWordWithCommonLetters(wordCompared: Word): Word {
-        let wordFound: Word = this.words[0];
-        this.words.forEach((word: Word) => {
+    private findWordWithCommonLetters(wordCompared: IWord): IWord {
+        let wordFound: IWord = this.words[0];
+        this.words.forEach((word: IWord) => {
             if (this.haveCommonLetter(word, wordCompared)) {
                 wordFound = word;
             }
@@ -314,21 +316,21 @@ export class GridFiller {
         return wordFound;
     }
 
-    private backtrack(wordToErase: Word): void {
-        this.words = this.words.filter((word: Word) => word !== wordToErase);
+    private backtrack(wordToErase: IWord): void {
+        this.words = this.words.filter((word: IWord) => word !== wordToErase);
         this.wordsLengths.push(wordToErase);
         this.removeLastWordFromGrid(wordToErase);
     }
 
-    private removeLastWordFromGrid(lastWord: Word): void {
-        for (let i: number = 0; i < lastWord.Length; i++) {
-            if (lastWord.Orientation === Orientation.Horizontal) {
-                if (!this.letterBelongsOtherWord(new CoordXY(lastWord.Position.X + i, lastWord.Position.Y))) {
-                    this.grid[lastWord.Position.X + i][lastWord.Position.Y] = cst.EMPTY_SQUARE;
+    private removeLastWordFromGrid(lastWord: IWord): void {
+        for (let i: number = 0; i < lastWord.content.length; i++) {
+            if (lastWord.orientation === Orientation.Horizontal) {
+                if (!this.letterBelongsOtherWord(new CoordXY(lastWord.position.X + i, lastWord.position.Y))) {
+                    this.grid[lastWord.position.X + i][lastWord.position.Y] = cst.EMPTY_SQUARE;
                 }
             } else {
-                if (!this.letterBelongsOtherWord(new CoordXY(lastWord.Position.X, lastWord.Position.Y + i))) {
-                    this.grid[lastWord.Position.X][lastWord.Position.Y + i] = cst.EMPTY_SQUARE;
+                if (!this.letterBelongsOtherWord(new CoordXY(lastWord.position.X, lastWord.position.Y + i))) {
+                    this.grid[lastWord.position.X][lastWord.position.Y + i] = cst.EMPTY_SQUARE;
                 }
             }
         }

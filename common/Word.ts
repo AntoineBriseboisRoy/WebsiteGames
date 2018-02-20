@@ -5,6 +5,14 @@ export enum Orientation {
     Vertical
 }
 
+export interface IWord {
+    position: CoordXY;
+    orientation: Orientation;
+    content: string;
+    definition: string;
+}
+
+/*
 export class Word {
 
     private length: number;
@@ -33,3 +41,4 @@ export class Word {
         return this.definition;
     }
 }
+*/
