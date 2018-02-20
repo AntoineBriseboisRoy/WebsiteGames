@@ -9,14 +9,26 @@ import { TrackInfo } from "./track-info";
 export class AdminSectionComponent implements OnInit {
 
     private tracks: TrackInfo[];
+    private activeTrack: TrackInfo;
 
     public readonly title: string = "Welcome to the admistration section!";
     public constructor() {
         this.tracks = new Array<TrackInfo>();
+        this.activeTrack = new TrackInfo("", "");
     }
 
     public ngOnInit(): void {
         this.createArtificialTracks();
+    }
+
+    public onClick(name: string, description: string): void {
+        const selectedTrack: TrackInfo = this.tracks.find((track: TrackInfo) => {
+            return track.Name === name;
+        });
+        if (selectedTrack) {
+            this.activeTrack = selectedTrack;
+        }
+        alert("Can't yet edit " + name + " because the track editor is not implemented.");
     }
 
     private createArtificialTracks(): void {

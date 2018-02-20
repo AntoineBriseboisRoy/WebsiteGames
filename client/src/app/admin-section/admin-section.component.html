@@ -1,4 +1,4 @@
-<div id="admin-page">
+<div id="admin-page" class="container-fluid">
     <div class="container">
         <div class="row title-box">
             <h1 id="main-title">{{title}}</h1>
@@ -7,8 +7,8 @@
         <div class="container">
             <ul class="track-list">
                 <div *ngFor="let track of tracks">
-                    <li class="track-info">
-                        <button type="button" class="button-layout track-button">
+                    <li class="track-info row">
+                        <button (click)="onClick(track.Name)" type="button" class="button-layout track-button">
                             <h3>{{track.Name}}</h3>
                             <p>{{track.Description}}</p>
                         </button>
