@@ -15,11 +15,9 @@ export class EditTrackComponent implements OnInit {
   private points: Point[];
   private img: HTMLImageElement;
   private mousePressed: boolean = false;
-  private animationID: number;
   private selectedPoint: number;
   public constructor() { }
 
-  // tslint:disable-next-line:max-func-body-length
   public ngOnInit(): void {
     this.points = new Array<Point>();
     this.canvas = document.getElementById("edit") as HTMLCanvasElement;
@@ -28,58 +26,59 @@ export class EditTrackComponent implements OnInit {
 
     window.addEventListener("resize", () => this.resizeWindow());
     this.canvas.oncontextmenu = () => false ;
+
     this.canvas.addEventListener("mousedown", (event: MouseEvent) => {
-      if (event.button !== 2) {
-        this.mousePressed = true;
-        this.selectedPoint = this.isOnOtherPoint(event.x, event.y);
-        if (this.selectedPoint === -1) {
-          this.points.push(new Point(event.x, event.y,  (this.points.length === 0), false));
-          this.selectedPoint = this.points.length - 1;
-        } else if (this.selectedPoint === 0) {
-          this.mousePressed = false;
-          this.points.push(new Point(this.points[0].x, this.points[0].y, false, true));
-        }
-        this.redrawCanvas();
-      } else {
+      if (event.button === cst.RIGHT_MOUSE_BUTTON) {
         this.handleDeleteLastPoint(event);
+      } else {
+        this.handleLeftMouseDown(event);
       }
     });
 
     this.canvas.addEventListener("mouseup", () => {
       this.mousePressed = false;
-      window.cancelAnimationFrame(this.animationID);
-      this.selectedPoint = -1;
+      this.selectedPoint = cst.NO_SELECTED_POINT;
     });
 
-    this.canvas.addEventListener("mousemove", (event: MouseEvent) => {
-      if (this.mousePressed) {
-        if (this.selectedPoint !== -1) {
-          this.points[this.selectedPoint].x = event.x;
-          this.points[this.selectedPoint].y = event.y;
-        }
-        this.redrawCanvas();
-      }
-    });
+    this.canvas.addEventListener("mousemove", (event: MouseEvent) => this.handleMouseMove(event));
+  }
+
+  public get Points(): Point[] {
+    return this.points;
   }
 
   private resizeWindow(): void {
-      this.canvas.width = window.innerWidth - 10;
-      this.canvas.height = window.innerHeight - 10;
+      this.canvas.width = window.innerWidth;
+      this.canvas.height = window.innerHeight;
       this.drawRoads();
       this.drawPoints();
   }
 
-  /*private drawimage(): void {
-    this.img = new Image();
-    this.img.onload = () => {
-      this.context.drawImage(this.img, 0, 0);
-      this.context.stroke();
-    };
-    this.img.src = "https://www.sketchuptextureclub.com/public/texture_m/0013-road-texture-seamless.jpg";
-  }*/
-  
   private handleDeleteLastPoint(event: MouseEvent): void {
     this.points.pop();
+    this.redrawCanvas();
+  }
+
+  private handleMouseMove(event: MouseEvent): void {
+    if (this.mousePressed) {
+      if (this.selectedPoint !== cst.NO_SELECTED_POINT) {
+        this.points[this.selectedPoint].x = event.x;
+        this.points[this.selectedPoint].y = event.y;
+      }
+      this.redrawCanvas();
+    }
+  }
+
+  private handleLeftMouseDown(event: MouseEvent): void {
+    this.selectedPoint = this.isOnOtherPoint(event.x, event.y);
+    if (this.selectedPoint === cst.NO_SELECTED_POINT) {
+      this.mousePressed = true;
+      this.points.push(new Point(event.x, event.y,  (this.points.length === 0), false));
+      this.selectedPoint = this.points.length - 1;
+    } else if (this.selectedPoint === 0) {
+      this.mousePressed = false;
+      this.points.push(new Point(this.points[0].x, this.points[0].y, false, true));
+    }
     this.redrawCanvas();
   }
 
@@ -109,7 +108,6 @@ export class EditTrackComponent implements OnInit {
       this.context.lineWidth = cst.DEFAULT_LINE_WIDTH;
       this.context.lineJoin = "round";
       this.context.fillStyle = "black";
-      console.log(iterator.x, iterator.y);
       this.context.arc(iterator.x, iterator.y, cst.DEFAULT_CIRCLE_RADIUS, 0, cst.FULL_CIRCLE_RAD, false);
       this.context.strokeStyle = (iterator.start) ? "red" : "blue";
       this.context.stroke();
@@ -128,7 +126,6 @@ export class EditTrackComponent implements OnInit {
       }
     }
 
-    return -1;
+    return cst.NO_SELECTED_POINT;
   }
-
 }

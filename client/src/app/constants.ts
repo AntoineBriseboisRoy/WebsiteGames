@@ -21,4 +21,5 @@ export const DEFAULT_LINE_WIDTH: number = 5;
 export const DEFAULT_CIRCLE_RADIUS: number = 10;
 export const TWICE_DEFAULT_CIRCLE_RADIUS: number = DEFAULT_CIRCLE_RADIUS * 2;
 export const FULL_CIRCLE_RAD: number = Math.PI * 2;
-
+export const NO_SELECTED_POINT: number = -1;
+export const RIGHT_MOUSE_BUTTON: number = 2;
