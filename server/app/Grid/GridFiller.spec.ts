@@ -1,6 +1,6 @@
 import { expect } from "chai";
 import { Grid } from "./Grid";
-import { Word } from "./Word";
+import { Word } from "../../../common/Word";
 import { DictionaryEntry, Constraint } from "./Interfaces";
 import * as cst from "./Constants";
 
@@ -36,7 +36,6 @@ describe("Verifying 2x2 Grid (no black squares)", () => {
                 ++nValidWords;
             }
         });
-
         expect(nValidWords).to.equal(EXPECTED_VALID_WORDS);
     });
 });

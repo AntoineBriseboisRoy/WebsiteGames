@@ -1,11 +1,16 @@
 import { PerspectiveCamera, Vector3 } from "three";
 import { Car } from "../car/car";
+import { CameraState } from "./camera-state";
 
 const RELATIVE_CAMERA_OFFSET_X: number = 0;
 const RELATIVE_CAMERA_OFFSET_Y: number = 2;
 const RELATIVE_CAMERA_OFFSET_Z: number = 5;
 
-export class ThirdPersonCamera extends PerspectiveCamera {
+const ZOOM_INCREMENT: number = 0.05;
+const MAX_ZOOM: number = 2.5;
+const MIN_ZOOM: number = 0.5;
+
+export class ThirdPersonCamera extends PerspectiveCamera implements CameraState {
 
     private static getAspectRatio(clientWidth: number, clientHeight: number): number {
         return clientWidth / clientHeight;
@@ -19,8 +24,8 @@ export class ThirdPersonCamera extends PerspectiveCamera {
 
     public init(lookAt: Vector3): void {
         this.position.set(RELATIVE_CAMERA_OFFSET_X + lookAt.x,
-                          RELATIVE_CAMERA_OFFSET_Y + lookAt.x,
-                          RELATIVE_CAMERA_OFFSET_Z + lookAt.x);
+                          RELATIVE_CAMERA_OFFSET_Y + lookAt.y,
+                          RELATIVE_CAMERA_OFFSET_Z + lookAt.z);
         this.lookAt(lookAt);
     }
 
@@ -39,5 +44,27 @@ export class ThirdPersonCamera extends PerspectiveCamera {
     public onResize(clientWidth: number, clientHeight: number): void {
         this.aspect = ThirdPersonCamera.getAspectRatio(clientWidth, clientHeight);
         this.updateProjectionMatrix();
+    }
+    public zoomIn(): void {
+        if (this.zoom >= MIN_ZOOM) {
+            this.zoom += ZOOM_INCREMENT;
+            if (this.zoom > MAX_ZOOM) {
+                this.zoom = MAX_ZOOM;
+            }
+            this.updateProjectionMatrix();
+        } else {
+            this.zoom = MIN_ZOOM;
+        }
+    }
+    public zoomOut(): void {
+        if (this.zoom >= MIN_ZOOM) {
+            this.zoom -= ZOOM_INCREMENT;
+            if (this.zoom > MAX_ZOOM) {
+                this.zoom = MAX_ZOOM;
+            }
+            this.updateProjectionMatrix();
+        } else {
+            this.zoom = MIN_ZOOM;
+        }
     }
 }
