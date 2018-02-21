@@ -8,10 +8,12 @@
             <ul class="track-list">
                 <div *ngFor="let track of tracks">
                     <li class="track-info row">
-                        <button (click)="onClick(track.Name)" type="button" class="button-layout track-button">
-                            <h3>{{track.Name}}</h3>
-                            <p>{{track.Description}}</p>
-                        </button>
+                        <h3>{{track.Name}}</h3>
+                        <p>{{track.Description}}</p>
+                        <div class="track-actions">
+                            <button (click)="onClick(track.Name, 'edit')" type="button" class="btn btn-outline-success">Edit</button>
+                            <button (click)="onClick(track.Name, 'delete')" type="button" class="btn btn-outline-danger">Delete</button>
+                        </div>
                     </li>
                 </div>
             </ul>

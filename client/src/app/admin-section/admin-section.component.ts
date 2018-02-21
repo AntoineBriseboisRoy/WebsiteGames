@@ -21,14 +21,14 @@ export class AdminSectionComponent implements OnInit {
         this.createArtificialTracks();
     }
 
-    public onClick(name: string, description: string): void {
+    private onClick(name: string, action: string): void {
         const selectedTrack: TrackInfo = this.tracks.find((track: TrackInfo) => {
             return track.Name === name;
         });
         if (selectedTrack) {
             this.activeTrack = selectedTrack;
         }
-        alert("Can't yet edit " + name + " because the track editor is not implemented.");
+        alert("Can't yet " + action + " \"" + name + "\" because the track editor is not implemented.");
     }
 
     private createArtificialTracks(): void {
