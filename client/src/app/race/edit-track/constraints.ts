@@ -21,6 +21,7 @@ export class Constraints {
 
         this.checkAngleCondition();
         this.checkSegmentLength();
+        this.checkSegmentOverlap();
     }
 
     private instantiateSegmentArray(): void {
@@ -66,11 +67,32 @@ export class Constraints {
 
     private checkSegmentLength(): void {
         for (const segment of this.segments) {
-            if (new Vector2(this.points[segment.firstPoint].x - this.points[segment.secondPoint].x,
-                            this.points[segment.firstPoint].y - this.points[segment.secondPoint].y).length() <
+            if (new Vector2(this.points[segment.secondPoint].x - this.points[segment.firstPoint].x,
+                            this.points[segment.secondPoint].y - this.points[segment.firstPoint].y).length() <
                 cst.TWICE_TRACK_WIDTH) {
                 segment.broken = true;
             }
         }
+    }
+
+    private checkSegmentOverlap(): void {
+        for (let i: number = 0; i < this.segments.length; ++i) {
+            for (let j: number = i; j < this.segments.length; ++j) {
+                if (this.intersect(this.points[this.segments[i].firstPoint], this.points[this.segments[i].secondPoint],
+                                   this.points[this.segments[j].firstPoint], this.points[this.segments[j].secondPoint])) {
+                    this.segments[i].broken = true;
+                    this.segments[j].broken = true;
+                }
+            }
+        }
+    }
+
+    private intersect(point1: Point, point2: Point, point3: Point, point4: Point): boolean {
+        return this.counterClockwise(point1, point3, point4) !== this.counterClockwise(point2, point3, point4)
+            && this.counterClockwise(point1, point2, point3) !== this.counterClockwise(point1, point2, point4);
+    }
+
+    private counterClockwise(point1: Point, point2: Point, point3: Point): boolean {
+        return (point3.y - point1.y) * (point2.x - point1.x) > (point2.y - point1.y) * (point3.x - point1.x);
     }
 }
