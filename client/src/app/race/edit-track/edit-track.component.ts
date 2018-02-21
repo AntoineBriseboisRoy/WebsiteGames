@@ -118,7 +118,7 @@ export class EditTrackComponent implements OnInit {
       this.context.lineJoin = "round";
       this.context.fillStyle = "black";
       this.context.arc(iterator.x, iterator.y, cst.DEFAULT_CIRCLE_RADIUS, 0, cst.FULL_CIRCLE_RAD, false);
-      this.context.strokeStyle = (iterator.start) ? "green" : "blue";
+      this.context.strokeStyle = (iterator.start || iterator.end) ? "green" : "blue";
       this.context.stroke();
       this.context.fill();
       this.context.closePath();
