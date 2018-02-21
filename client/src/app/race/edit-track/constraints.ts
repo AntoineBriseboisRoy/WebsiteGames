@@ -32,7 +32,6 @@ export class Constraints {
         }
     }
 
-    /* TODO: Refactor */
     private checkAngleCondition(): void {
         let lastAngleBroken: boolean = false;
         for (let i: number = 0; i < this.segments.length - 1; ++i) {
@@ -75,7 +74,7 @@ export class Constraints {
 
     private checkSegmentOverlap(): void {
         for (let i: number = 0; i < this.segments.length; ++i) {
-            for (let j: number = i; j < this.segments.length; ++j) {
+            for (let j: number = i + 1; j < this.segments.length; ++j) {
                 if (this.intersect(this.segments[i], this.segments[j])) {
                     this.segments[i].broken = true;
                     this.segments[j].broken = true;
@@ -98,10 +97,19 @@ export class Constraints {
             Math.max(this.points[segment2.firstPoint].x, this.points[segment2.secondPoint].x));
 
         /* f1(x) = a1 * x + b1 */
-        const a1: number = (this.points[segment1.firstPoint].y - this.points[segment1.secondPoint].y) /
-                           (this.points[segment1.firstPoint].x - this.points[segment1.secondPoint].x);
-        const a2: number = (this.points[segment2.firstPoint].y - this.points[segment2.secondPoint].y) /
-                           (this.points[segment2.firstPoint].x - this.points[segment2.secondPoint].x);
+        let a1: number, a2: number;
+        if (this.points[segment1.firstPoint].x === this.points[segment1.secondPoint].x) {
+            a1 = 0;
+        } else {
+            a1 = (this.points[segment1.firstPoint].y - this.points[segment1.secondPoint].y) /
+                 (this.points[segment1.firstPoint].x - this.points[segment1.secondPoint].x);
+        }
+        if (this.points[segment2.firstPoint].x === this.points[segment2.secondPoint].x) {
+            a2 = 0;
+        } else {
+            a2 = (this.points[segment2.firstPoint].y - this.points[segment2.secondPoint].y) /
+                 (this.points[segment2.firstPoint].x - this.points[segment2.secondPoint].x);
+        }
 
         const b1: number = this.points[segment1.firstPoint].y - a1 * this.points[segment1.firstPoint].x;
         const b2: number = this.points[segment2.firstPoint].y - a2 * this.points[segment2.firstPoint].x;
