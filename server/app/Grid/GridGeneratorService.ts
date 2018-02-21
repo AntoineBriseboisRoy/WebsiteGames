@@ -1,6 +1,6 @@
 import { Grid } from "./Grid";
-import { IWord } from "../../../common/Word";
-import { ICoordXY } from "./CoordXY";
+import { IWord } from "../../../common/interfaces/IWord";
+import { ICoordXY } from "../../../common/interfaces/ICoordXY";
 
 export class GridGeneratorService {
 

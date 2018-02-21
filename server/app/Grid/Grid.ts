@@ -1,4 +1,4 @@
-import { IWord } from "../../../common/Word";
+import { IWord } from "../../../common/interfaces/IWord";
 import { BlackSquareGenerator } from "./BlackSquareGenerator";
 import { StringService } from "./StringService";
 // import { GridFiller } from "./GridFiller";

@@ -4,7 +4,7 @@ import { BLACK_CHAR, GRID_WIDTH } from "../../../constants";
 import { GridWord } from "./gridWord";
 
 import { GridService } from "../../grid.service";
-import { IWord } from "../../../../../../common/Word";
+import { IWord } from "../../../../../../common/interfaces/IWord";
 
 @Component({
     selector: "app-crossword-grid",

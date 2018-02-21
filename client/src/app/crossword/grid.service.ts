@@ -5,7 +5,7 @@ import { Observable } from "rxjs/Observable";
 import { catchError } from "rxjs/operators";
 import { of } from "rxjs/observable/of";
 
-import { IWord } from "../../../../common/Word";
+import { IWord } from "../../../../common/interfaces/IWord";
 
 @Injectable()
 export class GridService {

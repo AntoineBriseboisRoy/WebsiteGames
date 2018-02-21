@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { Message } from "../../../common/communication/message";
-import { IWord } from "../../../common/Word";
+import { IWord } from "../../../common/interfaces/IWord";
 import "reflect-metadata";
 import { injectable, } from "inversify";
 import { GridGeneratorService } from "../Grid/GridGeneratorService";
