@@ -39,9 +39,7 @@ export class Constraints {
             if (i > 0 && lastAngleBroken) {
                 this.segments[i].broken = true;
             }
-            lastAngleBroken = !this.checkAngleBetweenTwoSegments(this.points[this.segments[i].firstPoint],
-                                                                 this.points[this.segments[i].secondPoint],
-                                                                 this.points[this.segments[i + 1].secondPoint]);
+            lastAngleBroken = !this.checkAngleBetweenTwoSegments(this.segments[i], this.segments[i + 1]);
             if (lastAngleBroken) {
                 this.segments[i].broken = true;
             }
@@ -50,17 +48,17 @@ export class Constraints {
             this.segments[this.segments.length - 1].broken = true;
         }
         if (this.trackComplete && this.segments.length > 0 &&
-                   !this.checkAngleBetweenTwoSegments(this.points[this.segments[this.segments.length - 1].firstPoint],
-                                                      this.points[this.segments[this.segments.length - 1].secondPoint],
-                                                      this.points[this.segments[0].secondPoint])) {
+                   !this.checkAngleBetweenTwoSegments(this.segments[this.segments.length - 1], this.segments[0])) {
             this.segments[this.segments.length - 1].broken = true;
             this.segments[0].broken = true;
         }
     }
 
-    private checkAngleBetweenTwoSegments(point1: Point, point2: Point, point3: Point): boolean {
-        const vec1: Vector2 = new Vector2(point3.x - point2.x, point3.y - point2.y);
-        const vec2: Vector2 = new Vector2(point1.x - point2.x, point1.y - point2.y);
+    private checkAngleBetweenTwoSegments(segment1: Segment, segment2: Segment): boolean {
+        const vec1: Vector2 = new Vector2(this.points[segment1.secondPoint].x - this.points[segment1.firstPoint].x,
+                                          this.points[segment1.secondPoint].y - this.points[segment1.firstPoint].y);
+        const vec2: Vector2 = new Vector2(this.points[segment2.firstPoint].x - this.points[segment2.secondPoint].x,
+                                          this.points[segment2.firstPoint].y - this.points[segment2.secondPoint].y);
 
         return Math.acos(vec1.dot(vec2) / (vec1.length() * vec2.length())) > cst.PI_OVER_4;
     }
@@ -78,8 +76,7 @@ export class Constraints {
     private checkSegmentOverlap(): void {
         for (let i: number = 0; i < this.segments.length; ++i) {
             for (let j: number = i; j < this.segments.length; ++j) {
-                if (this.intersect(this.points[this.segments[i].firstPoint], this.points[this.segments[i].secondPoint],
-                                   this.points[this.segments[j].firstPoint], this.points[this.segments[j].secondPoint])) {
+                if (this.intersect(this.segments[i], this.segments[j])) {
                     this.segments[i].broken = true;
                     this.segments[j].broken = true;
                 }
@@ -87,12 +84,34 @@ export class Constraints {
         }
     }
 
-    private intersect(point1: Point, point2: Point, point3: Point, point4: Point): boolean {
-        return this.counterClockwise(point1, point3, point4) !== this.counterClockwise(point2, point3, point4)
-            && this.counterClockwise(point1, point2, point3) !== this.counterClockwise(point1, point2, point4);
-    }
+    private intersect(segment1: Segment, segment2: Segment): boolean {
+        if (Math.max(this.points[segment1.firstPoint].x, this.points[segment1.secondPoint].x) <
+        Math.min(this.points[segment2.firstPoint].x, this.points[segment2.secondPoint].x)) {
+            return false; // No common X coordinates
+        }
 
-    private counterClockwise(point1: Point, point2: Point, point3: Point): boolean {
-        return (point3.y - point1.y) * (point2.x - point1.x) > (point2.y - point1.y) * (point3.x - point1.x);
+        const intersectingXmin: number = Math.max(
+            Math.min(this.points[segment1.firstPoint].x, this.points[segment1.secondPoint].x),
+            Math.min(this.points[segment2.firstPoint].x, this.points[segment2.secondPoint].x));
+        const intersectingXmax: number = Math.min(
+            Math.max(this.points[segment1.firstPoint].x, this.points[segment1.secondPoint].x),
+            Math.max(this.points[segment2.firstPoint].x, this.points[segment2.secondPoint].x));
+
+        /* f1(x) = a1 * x + b1 */
+        const a1: number = (this.points[segment1.firstPoint].y - this.points[segment1.secondPoint].y) /
+                           (this.points[segment1.firstPoint].x - this.points[segment1.secondPoint].x);
+        const a2: number = (this.points[segment2.firstPoint].y - this.points[segment2.secondPoint].y) /
+                           (this.points[segment2.firstPoint].x - this.points[segment2.secondPoint].x);
+
+        const b1: number = this.points[segment1.firstPoint].y - a1 * this.points[segment1.firstPoint].x;
+        const b2: number = this.points[segment2.firstPoint].y - a2 * this.points[segment2.firstPoint].x;
+
+        if (a1 === a2) {
+            return false; // If they're parallel
+        }
+
+        const intersectingX: number = (b2 - b1) / (a1 - a2);
+
+        return !(intersectingX - cst.PRECISION_PIXELS <= intersectingXmin || intersectingX + cst.PRECISION_PIXELS >= intersectingXmax);
     }
 }
