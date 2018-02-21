@@ -1,3 +1,8 @@
+export interface ICoordXY {
+    x: number;
+    y: number;
+}
+
 export class CoordXY {
 
     public static invertCoordinates(coord: CoordXY): CoordXY {

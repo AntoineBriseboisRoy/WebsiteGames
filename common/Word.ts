@@ -1,12 +1,12 @@
-import { CoordXY } from "../server/app/Grid/CoordXY";
+import { ICoordXY } from "../server/app/Grid/CoordXY";
 
 export enum Orientation {
-    Horizontal = 0,
-    Vertical
+    Vertical = 0,
+    Horizontal
 }
 
 export interface IWord {
-    position: CoordXY;
+    position: ICoordXY;
     orientation: Orientation;
     content: string;
     definition: string;

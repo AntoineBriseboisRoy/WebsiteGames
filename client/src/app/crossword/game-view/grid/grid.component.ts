@@ -95,28 +95,24 @@ export class GridComponent implements OnInit {
 
     private createWords(): void {
         let mockCells: Array<Cell> = new Array();
-
         this.words.forEach((word: IWord, index: number) => {
-            console.log(word);
-            console.log(word.content);
-            const startPosition: number = this.convertPositionToCellIndex(word.position.X, word.position.Y);
-            if (!word.orientation) {// Vertical
-                for (let i: number = startPosition; i < word.content.length; i = i + GRID_WIDTH) {
+            const startPosition: number = this.convertPositionToCellIndex(word.position.x, word.position.y);
+            if (word.orientation === 0) { // Vertical
+                for (let i: number = startPosition, j: number = 0; j < word.content.length; i = i + GRID_WIDTH, j++) {
                     mockCells.push(this.cells[i]);
                 }
             } else {
-                for (let i: number = startPosition; i < word.content.length; i++) {
+                for (let i: number = startPosition; i < word.content.length + startPosition; i++) {
                     mockCells.push(this.cells[i]);
                 }
             }
             this.gridWords.push(new GridWord(mockCells, word.content, word.definition, word.orientation));
-            console.log(this.gridWords);
             mockCells = [];
         });
     }
 
     private convertPositionToCellIndex(x: number, y: number): number {
-        return y * GRID_WIDTH + x;
+        return (y * GRID_WIDTH + x);
     }
 
     private gridLineJump(index: number): string {

@@ -1,6 +1,6 @@
 import { Grid } from "./Grid";
 import { IWord } from "../../../common/Word";
-import { CoordXY } from "./CoordXY";
+import { ICoordXY } from "./CoordXY";
 
 export class GridGeneratorService {
 
@@ -34,36 +34,36 @@ export class GridGeneratorService {
     // tslint:disable-next-line:max-func-body-length
     public getFakeGridWords(): Array<IWord> {
         return [
-            { position: new CoordXY(2, 2), orientation: 1, content: "RESINATE", definition: "cpascompliquectunmot"},
-            { position: new CoordXY(0, 2), orientation: 0, content: "MARACA", definition: "cpascompliquectunmot"},
-            { position: new CoordXY(1, 4), orientation: 0, content: "MS", definition: "cpascompliquectunmot"},
-            { position: new CoordXY(2, 7), orientation: 0, content: "ARS", definition: "cpascompliquectunmot"},
-            { position: new CoordXY(4, 2), orientation: 1, content: "CONTEST", definition: "cpascompliquectunmot"},
-            { position: new CoordXY(0, 6), orientation: 0, content: "LANAE", definition: "cpascompliquectunmot"},
-            { position: new CoordXY(3, 6), orientation: 1, content: "AR", definition: "cpascompliquectunmot"},
-            { position: new CoordXY(0, 0), orientation: 1, content: "RAMA", definition: "cpascompliquectunmot"},
-            { position: new CoordXY(5, 1), orientation: 1, content: "JA", definition: "cpascompliquectunmot"},
-            { position: new CoordXY(3, 0), orientation: 1, content: "YEA", definition: "cpascompliquectunmot"},
-            { position: new CoordXY(0, 0), orientation: 0, content: "ROSY", definition: "cpascompliquectunmot"},
-            { position: new CoordXY(1, 0), orientation: 1, content: "OCA", definition: "cpascompliquectunmot"},
-            { position: new CoordXY(0, 1), orientation: 0, content: "AC", definition: "cpascompliquectunmot"},
-            { position: new CoordXY(4, 8), orientation: 0, content: "TIDI", definition: "cpascompliquectunmot"},
-            { position: new CoordXY(4, 4), orientation: 0, content: "NF", definition: "cpascompliquectunmot"},
-            { position: new CoordXY(0, 6), orientation: 1, content: "LN", definition: "cpascompliquectunmot"},
-            { position: new CoordXY(5, 1), orientation: 0, content: "JOBS", definition: "cpascompliquectunmot"},
-            { position: new CoordXY(5, 8), orientation: 1, content: "IY", definition: "cpascompliquectunmot"},
-            { position: new CoordXY(6, 7), orientation: 1, content: "VDE", definition: "cpascompliquectunmot"},
-            { position: new CoordXY(5, 9), orientation: 0, content: "YES", definition: "cpascompliquectunmot"},
-            { position: new CoordXY(7, 7), orientation: 1, content: "BIS", definition: "cpascompliquectunmot"},
-            { position: new CoordXY(6, 7), orientation: 0, content: "VB", definition: "cpascompliquectunmot"},
-            { position: new CoordXY(7, 0), orientation: 1, content: "WB", definition: "cpascompliquectunmot"},
-            { position: new CoordXY(8, 0), orientation: 1, content: "USABLY", definition: "cpascompliquectunmot"},
-            { position: new CoordXY(7, 0), orientation: 0, content: "WUN", definition: "cpascompliquectunmot"},
-            { position: new CoordXY(8, 5), orientation: 0, content: "YS", definition: "cpascompliquectunmot"},
-            { position: new CoordXY(7, 3), orientation: 0, content: "RB", definition: "cpascompliquectunmot"},
-            { position: new CoordXY(7, 4), orientation: 0, content: "ALO", definition: "cpascompliquectunmot"},
-            { position: new CoordXY(9, 4), orientation: 1, content: "OSKAR", definition: "cpascompliquectunmot"},
-            { position: new CoordXY(7, 3), orientation: 1, content: "RA", definition: "cpascompliquectunmot"}
+            { position: { x: 2, y: 2} as ICoordXY, orientation: 1, content: "RESINATE", definition: "cpascompliquectunmot"},
+            { position: { x: 2, y: 0} as ICoordXY, orientation: 0, content: "MARACA", definition: "cpascompliquectunmot"},
+            { position: { x: 4, y: 1} as ICoordXY, orientation: 0, content: "MS", definition: "cpascompliquectunmot"},
+            { position: { x: 7, y: 2} as ICoordXY, orientation: 0, content: "ARS", definition: "cpascompliquectunmot"},
+            { position: { x: 2, y: 4} as ICoordXY, orientation: 1, content: "CONTEST", definition: "cpascompliquectunmot"},
+            { position: { x: 6, y: 0} as ICoordXY, orientation: 0, content: "LANAE", definition: "cpascompliquectunmot"},
+            { position: { x: 6, y: 3} as ICoordXY, orientation: 1, content: "AR", definition: "cpascompliquectunmot"},
+            { position: { x: 0, y: 0} as ICoordXY, orientation: 1, content: "RAMA", definition: "cpascompliquectunmot"},
+            { position: { x: 1, y: 5} as ICoordXY, orientation: 1, content: "JA", definition: "cpascompliquectunmot"},
+            { position: { x: 0, y: 3} as ICoordXY, orientation: 1, content: "YEA", definition: "cpascompliquectunmot"},
+            { position: { x: 0, y: 0} as ICoordXY, orientation: 0, content: "ROSY", definition: "cpascompliquectunmot"},
+            { position: { x: 0, y: 1} as ICoordXY, orientation: 1, content: "OCA", definition: "cpascompliquectunmot"},
+            { position: { x: 1, y: 0} as ICoordXY, orientation: 0, content: "AC", definition: "cpascompliquectunmot"},
+            { position: { x: 8, y: 4} as ICoordXY, orientation: 0, content: "TIDI", definition: "cpascompliquectunmot"},
+            { position: { x: 4, y: 4} as ICoordXY, orientation: 0, content: "NF", definition: "cpascompliquectunmot"},
+            { position: { x: 6, y: 0} as ICoordXY, orientation: 1, content: "LN", definition: "cpascompliquectunmot"},
+            { position: { x: 1, y: 5} as ICoordXY, orientation: 0, content: "JOBS", definition: "cpascompliquectunmot"},
+            { position: { x: 8, y: 5} as ICoordXY, orientation: 1, content: "IY", definition: "cpascompliquectunmot"},
+            { position: { x: 7, y: 6} as ICoordXY, orientation: 1, content: "VDE", definition: "cpascompliquectunmot"},
+            { position: { x: 9, y: 5} as ICoordXY, orientation: 0, content: "YES", definition: "cpascompliquectunmot"},
+            { position: { x: 7, y: 7} as ICoordXY, orientation: 1, content: "BIS", definition: "cpascompliquectunmot"},
+            { position: { x: 7, y: 6} as ICoordXY, orientation: 0, content: "VB", definition: "cpascompliquectunmot"},
+            { position: { x: 0, y: 7} as ICoordXY, orientation: 1, content: "WB", definition: "cpascompliquectunmot"},
+            { position: { x: 0, y: 8} as ICoordXY, orientation: 1, content: "USABLY", definition: "cpascompliquectunmot"},
+            { position: { x: 0, y: 7} as ICoordXY, orientation: 0, content: "WUN", definition: "cpascompliquectunmot"},
+            { position: { x: 5, y: 8} as ICoordXY, orientation: 0, content: "YS", definition: "cpascompliquectunmot"},
+            { position: { x: 3, y: 7} as ICoordXY, orientation: 0, content: "RB", definition: "cpascompliquectunmot"},
+            { position: { x: 4, y: 7} as ICoordXY, orientation: 0, content: "ALO", definition: "cpascompliquectunmot"},
+            { position: { x: 4, y: 9} as ICoordXY, orientation: 1, content: "OSKAR", definition: "cpascompliquectunmot"},
+            { position: { x: 3, y: 7} as ICoordXY, orientation: 1, content: "RA", definition: "cpascompliquectunmot"}
         ] as Array<IWord>;
 
         /*return [new Word(new CoordXY(2, 2), 1, "RESINATE", ""),
