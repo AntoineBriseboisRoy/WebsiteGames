@@ -4,8 +4,9 @@ export enum CellColor {
 }
 
 export interface ICell {
+    gridIndex: number;
     index: number;
-    hasIndex: boolean;
-    content: string;
+    answer: string;
     cellColor: CellColor;
+    content: string;
 }

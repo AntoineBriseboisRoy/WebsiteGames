@@ -11,5 +11,4 @@ export class CrosswordViewComponent implements OnInit {
 
     public ngOnInit(): void {
     }
-
 }

@@ -5,6 +5,7 @@ import { GridService } from "../../grid.service";
 import { IWord } from "../../../../../../common/interfaces/IWord";
 import { IGridWord } from "../../interfaces/IGridWord";
 import { ICell, CellColor } from "../../interfaces/ICell";
+import { FocusCell } from "../focusCell";
 
 @Component({
     selector: "app-crossword-grid",
@@ -23,13 +24,14 @@ export class GridComponent implements OnInit {
     private words: Array<IWord>;
     private clickedWords: Array<IGridWord>;
     private clickedCell: ICell;
-    private focusCell: ICell;
+    private focusCell: FocusCell;
 
     public constructor(private gridService: GridService) {
         this.indexPosition = new Array();
         this.cells = new Array();
         this.gridWords = new Array<IGridWord>();
         this.clickedWords = new Array();
+        this.focusCell = FocusCell.Instance;
     }
 
     public ngOnInit(): void {
@@ -52,13 +54,16 @@ export class GridComponent implements OnInit {
         let index: number = 1;
         for (let i: number = 0; i < this.gridContent.length; ++i) {
             if (i === this.indexPosition[index - 1]) {
-                this.cells.push({ index: index, hasIndex: true, content: this.gridContent[i], cellColor: CellColor.White } as ICell);
+                this.cells.push({ gridIndex: i, index: index, answer: this.gridContent[i],
+                                  cellColor: CellColor.White, content: "" } as ICell);
                 ++index;
             } else {
                 if (this.gridContent[i] === BLACK_CHAR) {
-                    this.cells.push({ index: i, hasIndex: false, content: "", cellColor: CellColor.Black } as ICell);
+                    this.cells.push({ gridIndex: i, index: null, answer: "",
+                                      cellColor: CellColor.Black, content: "" } as ICell);
                 } else {
-                    this.cells.push({ index: i, hasIndex: false, content: this.gridContent[i], cellColor: CellColor.White } as ICell);
+                    this.cells.push({ gridIndex: i, index: null, answer: this.gridContent[i],
+                                      cellColor: CellColor.White, content: "" } as ICell);
                 }
             }
         }
@@ -105,34 +110,49 @@ export class GridComponent implements OnInit {
         });
     }
 
-    private convertPositionToCellIndex(x: number, y: number): number {
+    /*Fonctions appeler directement par le html*/
+
+    public convertPositionToCellIndex(x: number, y: number): number {
         return (y * GRID_WIDTH + x);
     }
 
-    private gridLineJump(index: number): string {
+    public gridLineJump(index: number): string {
         return (index % GRID_WIDTH) === 0 ? "square clear" : "square";
     }
 
-    private getCellType(color: CellColor): string {
+    public getCellType(color: CellColor): string {
         return color === CellColor.Black ? "black-square" : "white-square";
     }
 
     public focusOnCell(cell: ICell): void {
         if (this.clickedCell === cell) {    // if click on the same cell twice, switch to Vertical/Horizontal word
-            if (this.clickedWords.length > 1) {
-                this.focusCell = this.focusCell === this.clickedWords[0].cells[0] ?
-                    this.clickedWords[1].cells[0] : this.clickedWords[0].cells[0];
-            }
+            this.chooseHorizontalOrVertical();
         } else {
-            this.clickedWords = [];
-            this.gridWords.forEach((word: IGridWord, index: number) => {
-                if (word.cells.includes(cell)) {
-                    this.clickedWords.push(word);
-                }
-            });
-            this.clickedCell = cell;
-            this.focusCell = this.clickedWords[0].cells[0];
+           this.chooseNewWords(cell);
         }
-        console.log(this.focusCell);
+    }
+
+    private chooseHorizontalOrVertical(): void {
+        if (this.clickedWords.length > 1) {
+            this.focusCell.Cell = this.focusCell.Cell === this.clickedWords[0].cells[0] ?
+                this.clickedWords[1].cells[0] : this.clickedWords[0].cells[0];
+            this.focusCell.invertOrientation();
+        }
+    }
+
+    private chooseNewWords(cell: ICell): void {
+        this.clickedWords = [];
+        this.gridWords.forEach((word: IGridWord, index: number) => {
+            if (word.cells.includes(cell))  {
+                this.clickedWords.push(word);
+            }
+        });
+        this.clickedCell = cell;
+        this.focusCell.Cell = this.clickedWords[0].cells[0];
+        this.focusCell.Orientation = this.clickedWords[0].orientation;
+    }
+
+    public addHighlightOnFocus(cell: ICell): string {
+       return this.focusCell.Cell === cell ? "focus" : "";
     }
 }

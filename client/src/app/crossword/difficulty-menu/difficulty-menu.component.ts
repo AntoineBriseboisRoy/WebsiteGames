@@ -22,14 +22,15 @@ export class DifficultyMenuComponent implements OnInit {
     public onButtonGroupClick($event: Event): void {
         const clickedElement: Element = $event.srcElement;
         if (clickedElement.nodeName === "BUTTON") {
-            const isCertainButtonAlreadyActive: Element = clickedElement.parentElement.parentElement.querySelector(".active");
+            const isButtonAlreadyActive: Element = clickedElement.parentElement.parentElement.querySelector(".active");
             // if a Button already has Class: .active
-            if (isCertainButtonAlreadyActive) {
-                isCertainButtonAlreadyActive.classList.remove("active");
+            if (isButtonAlreadyActive) {
+                isButtonAlreadyActive.classList.remove("active");
             }
             clickedElement.className += " active";
         }
     }
+
     public activeDifficulty(difficulty: Difficulty): void {
         this.gameManager.setDifficulty(difficulty);
         this.isActiveDifficulty = true;
