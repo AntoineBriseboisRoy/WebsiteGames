@@ -2,7 +2,6 @@ import { OnInit } from "@angular/core";
 import { Difficulty, DIFFICULTY_LENGHT } from "../constants";
 import { Player } from "./player";
 
-// Singleton class
 export class GameManager implements OnInit {
     private static instance: GameManager;
     private difficulty: Difficulty;
@@ -11,7 +10,7 @@ export class GameManager implements OnInit {
     public playerOne: Player;
     public playerTwo: Player;
 
-    public static getInstance(): GameManager {
+    public static get Instance(): GameManager {
         return this.instance || (this.instance = new this());
     }
 

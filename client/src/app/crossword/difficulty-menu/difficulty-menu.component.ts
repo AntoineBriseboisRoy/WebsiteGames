@@ -12,7 +12,7 @@ export class DifficultyMenuComponent implements OnInit {
     private gameManager: GameManager;
     private isActiveDifficulty: boolean;
     public constructor() {
-        this.gameManager = GameManager.getInstance();
+        this.gameManager = GameManager.Instance;
         this.isActiveDifficulty = false;
     }
 
