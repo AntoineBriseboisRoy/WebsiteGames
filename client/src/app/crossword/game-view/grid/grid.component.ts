@@ -1,6 +1,9 @@
 import { Component, OnInit } from "@angular/core";
 import { Cell } from "./cell";
 import { BLACK_CHAR, GRID_WIDTH } from "../../../constants";
+import { GridWord } from "./gridWord";
+// import {Grid} from "../../../../../../server/app/Grid/Grid";
+// import {Word} from "../../../../../../server/app/Grid/Word";
 
 @Component({
     selector: "app-crossword-grid",
@@ -9,13 +12,13 @@ import { BLACK_CHAR, GRID_WIDTH } from "../../../constants";
 })
 
 export class GridComponent implements OnInit {
-
     private indexPosition: number[];
     private cells: Array<Cell>;
+    private words: Array<GridWord>;
     // Mock list that we will receive from crossword generator
     private mockWords: string[];
     private convertedMockWords: string;
-    public constructor() {
+    public constructor() {// private grid: Grid) {
         this.indexPosition = new Array();
         this.cells = new Array();
         // Créer un service pour couche de persistance :
@@ -28,8 +31,10 @@ export class GridComponent implements OnInit {
     }
 
     public ngOnInit(): void {
+        // this.grid = ;
         this.createIndex();
         this.createCells();
+        this.createWords();
     }
 
     private isABlackSquare(letter: string): boolean {
@@ -71,9 +76,33 @@ export class GridComponent implements OnInit {
     private containsIndex(i: number): boolean {
         return !this.isABlackSquare(this.convertedMockWords[i]) &&              // the cell isn't black
                 (i < GRID_WIDTH ||                                              // first line
-                this.isABlackSquare(this.convertedMockWords[i - 1]) ||          // right side of a black square
-                this.isABlackSquare(this.convertedMockWords[i - GRID_WIDTH]) || // below a black square
+                this.isABlackSquare(this.convertedMockWords[i - 1]) &&
+                !this.isABlackSquare(this.convertedMockWords[i + 1]) ||          // right side of a black square
+                this.isABlackSquare(this.convertedMockWords[i - GRID_WIDTH])
+                && !this.isABlackSquare(this.convertedMockWords[i + GRID_WIDTH]) || // below a black square
                 i % GRID_WIDTH === 0);                                          // first column
+    }
+
+    private createWords(): void {
+        const mockCells: Array<Cell> = new Array();
+
+        // this.grid.Words.forEach((word: Word, index: number) => {
+        //     const startPosition: number = this.convertPositionToCellIndex(word.Position.X, word.Position.Y);
+        //     if (!word.Orientation) {// Vertical
+        //         for (let i: number = startPosition; i < word.Length; i = i + GRID_WIDTH) {
+        //             mockCells.push(this.cells[i]);
+        //         }
+        //     } else {
+        //         for (let i: number = startPosition; i < word.Length; i++) {
+        //             mockCells.push(this.cells[i]);
+        //         }
+        //     }
+        //     this.words.push(new GridWord(mockCells, word.Content, word.Definition, word.Orientation));
+        // });
+    }
+
+    private convertPositionToCellIndex(x: number, y: number): number {
+        return y * GRID_WIDTH + x;
     }
 
     private gridLineJump(index: number): string {

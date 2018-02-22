@@ -16,6 +16,8 @@ import { FormsModule } from "@angular/forms";
 import { AppRoutingModule } from ".//app-routing.module";
 import { DashboardComponent } from "./dashboard/dashboard.component";
 import { DifficultyMenuComponent } from "./crossword/difficulty-menu/difficulty-menu.component";
+import { AdminSectionComponent } from "./admin-section/admin-section.component";
+import { APP_BASE_HREF } from "@angular/common";
 
 @NgModule({
     declarations: [
@@ -26,7 +28,8 @@ import { DifficultyMenuComponent } from "./crossword/difficulty-menu/difficulty-
         GridComponent,
         DefinitionComponent,
         DashboardComponent,
-        DifficultyMenuComponent
+        DifficultyMenuComponent,
+        AdminSectionComponent
     ],
     imports: [
         BrowserModule,
@@ -34,7 +37,7 @@ import { DifficultyMenuComponent } from "./crossword/difficulty-menu/difficulty-
         FormsModule,
         AppRoutingModule
     ],
-    providers: [BasicService],
+    providers: [{provide: APP_BASE_HREF, useValue : "/" }, BasicService],
     bootstrap: [AppComponent]
 })
 export class AppModule { }
