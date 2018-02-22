@@ -12,6 +12,16 @@ export class Constraints {
         return this.segments;
     }
 
+    public get isBroken(): boolean {
+        for (const segment of this.segments) {
+            if (segment.broken) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public constructor() { }
 
     public checkConstraints(points: Point[], trackComplete: boolean): void {

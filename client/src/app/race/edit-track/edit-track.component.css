@@ -4,10 +4,10 @@
 #edit {
     border : 1px solid black;
     position: absolute;
+    background-image: url("./grass.jpg")
 }
 
-button {
-    position:absolute;
-    left:90vh;
-    top:70vh
+.navbar-text {
+    color: black;
+    font-size: large;
 }

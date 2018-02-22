@@ -11,7 +11,6 @@ import { Constraints } from "./constraints";
   styleUrls: ["./edit-track.component.css"]
 })
 export class EditTrackComponent implements OnInit {
-
   private constraints: Constraints = new Constraints();
   private canvas: HTMLCanvasElement;
   private context: CanvasRenderingContext2D;
@@ -19,7 +18,6 @@ export class EditTrackComponent implements OnInit {
   private img: HTMLImageElement;
   private mousePressed: boolean = false;
   private trackComplete: boolean = false;
-  private brokenConstraints: boolean = false;
   private selectedPoint: number;
   public constructor() { }
 
@@ -50,6 +48,10 @@ export class EditTrackComponent implements OnInit {
 
   public get Points(): Point[] {
     return this.points;
+  }
+
+  public get canBeSaved(): boolean {
+      return this.trackComplete && !this.constraints.isBroken;
   }
 
   private resizeWindow(): void {
