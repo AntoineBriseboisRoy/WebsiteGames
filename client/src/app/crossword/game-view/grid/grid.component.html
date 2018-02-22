@@ -1,10 +1,10 @@
 <div *ngFor="let cell of cells; index as i" multiple [ngClass]="gridLineJump(i)">
-  <div [ngClass]="getCellType(cell.isBlackSquare())">
-    <div *ngIf="!cell.isBlackSquare()"> <!-- remove the "*" in all black square -->
-      <div *ngIf="cell.hasAnIndex()" class="cell-index">
-        {{cell.getIndex()}}
+  <div [ngClass]="getCellType(cell.cellColor)">
+    <div *ngIf="cell.cellColor == 'White'" (click)="focusOnCell(cell)"> <!-- remove the "*" in all black square -->
+      <div *ngIf="cell.hasIndex" class="cell-index">
+        {{cell.index}}
       </div>
-      <p class="cell-main-content">{{cell.getContent()}}</p>
+      <p class="cell-main-content">{{cell.content}}</p>
     </div>
   </div>
 </div>
