@@ -16,13 +16,13 @@ import { ReleaseBrakeCommand } from "./car-commands/ReleaseBrakeCommand";
 import { CameraContext } from "../camera/camera-context";
 import { SwapCameraCommand } from "./camera-commands/SwapCameraCommand";
 
-const ACCELERATE_KEYCODE: number = 87; // w
-const LEFT_KEYCODE: number = 65;       // a
-const BRAKE_KEYCODE: number = 83;      // s
-const RIGHT_KEYCODE: number = 68;      // d
-const ZOOM_IN_KEYCODE: number = 90;    // z
-const ZOOM_OUT_KEYCODE: number = 88;   // x
-const SWAP_CAM_KEYCODE: number = 67;   // c
+export const ACCELERATE_KEYCODE: number = 87; // w
+export const LEFT_KEYCODE: number = 65;       // a
+export const BRAKE_KEYCODE: number = 83;      // s
+export const RIGHT_KEYCODE: number = 68;      // d
+export const ZOOM_IN_KEYCODE: number = 90;    // z
+export const ZOOM_OUT_KEYCODE: number = 88;   // x
+export const SWAP_CAM_KEYCODE: number = 67;   // c
 
 interface CommandKeyPair {
     KeyCode: number;
