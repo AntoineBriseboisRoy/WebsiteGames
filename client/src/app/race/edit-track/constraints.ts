@@ -85,7 +85,8 @@ export class Constraints {
     private checkSegmentOverlap(): void {
         for (let i: number = 0; i < this.segments.length; ++i) {
             for (let j: number = i + 2; j < this.segments.length; ++j) {
-                if (this.intersect(this.segments[i], this.segments[j])) {
+                if (!(this.trackComplete && i === 0 && j === this.segments.length - 1)
+                    && this.intersect(this.segments[i], this.segments[j])) {
                     this.segments[i].broken = true;
                     this.segments[j].broken = true;
                 }
