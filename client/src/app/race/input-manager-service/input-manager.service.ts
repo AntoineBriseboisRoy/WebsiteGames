@@ -55,18 +55,18 @@ export class InputManagerService {
         ];
     }
 
-    public handleKeyDown(event: KeyboardEvent): void {
+    public handleKeyDown(eventKeyCode: number): void {
         const command: CommandKeyPair = this.keyDownCommands.find((cmd: CommandKeyPair) => {
-            return cmd.KeyCode === event.keyCode;
+            return cmd.KeyCode === eventKeyCode;
         });
         if (command) {
             command.Command.execute();
         }
     }
 
-    public handleKeyUp(event: KeyboardEvent): void {
+    public handleKeyUp(eventKeyCode: number): void {
          const command: CommandKeyPair = this.keyUpCommands.find((cmd: CommandKeyPair) => {
-            return cmd.KeyCode === event.keyCode;
+            return cmd.KeyCode === eventKeyCode;
          });
          if (command) {
             command.Command.execute();
