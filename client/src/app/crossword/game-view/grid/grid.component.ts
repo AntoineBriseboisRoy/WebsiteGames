@@ -6,13 +6,13 @@ import { IWord } from "../../../../../../common/interfaces/IWord";
 import { IGridWord } from "../../interfaces/IGridWord";
 import { ICell, CellColor } from "../../interfaces/ICell";
 import { FocusCell } from "../focusCell";
-import { KeywordInputManagerService } from "../keyword-input-manager/keyword-input-manager.service";
+import { KeyboardInputManagerService } from "../keyboard-input-manager/keyboard-input-manager.service";
 
 @Component({
     selector: "app-crossword-grid",
     templateUrl: "./grid.component.html",
     styleUrls: ["./grid.component.css"],
-    providers: [KeywordInputManagerService]
+    providers: [KeyboardInputManagerService]
 })
 
 export class GridComponent implements OnInit {
@@ -28,14 +28,14 @@ export class GridComponent implements OnInit {
     private clickedCell: ICell;
     private focusCell: FocusCell;
 
-    private keywordInputManagerService: KeywordInputManagerService;
+    private keyboardInputManagerService: KeyboardInputManagerService;
     public constructor(private gridService: GridService) {
         this.indexPosition = new Array();
         this.cells = new Array();
         this.gridWords = new Array<IGridWord>();
         this.clickedWords = new Array();
         this.focusCell = FocusCell.Instance;
-        this.keywordInputManagerService = new KeywordInputManagerService(this.cells);
+        this.keyboardInputManagerService = new KeyboardInputManagerService(this.cells);
     }
 
     public ngOnInit(): void {
@@ -162,6 +162,6 @@ export class GridComponent implements OnInit {
 
     @HostListener("window:keydown", ["$event"])
     public onKeyDown(event: KeyboardEvent): void {
-        this.keywordInputManagerService.handleKeyDown(event);
+        this.keyboardInputManagerService.handleKeyDown(event);
     }
 }
