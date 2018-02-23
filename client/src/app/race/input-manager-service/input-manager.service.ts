@@ -15,6 +15,7 @@ import { BrakeCarCommand } from "./car-commands/BrakeCarCommand";
 import { ReleaseBrakeCommand } from "./car-commands/ReleaseBrakeCommand";
 import { CameraContext } from "../camera/camera-context";
 import { SwapCameraCommand } from "./camera-commands/SwapCameraCommand";
+import { CommandKeyPair } from "./CommandKeyPair";
 
 const ACCELERATE_KEYCODE: number = 87; // w
 const LEFT_KEYCODE: number = 65;       // a
@@ -23,11 +24,6 @@ const RIGHT_KEYCODE: number = 68;      // d
 const ZOOM_IN_KEYCODE: number = 90;    // z
 const ZOOM_OUT_KEYCODE: number = 88;   // x
 const SWAP_CAM_KEYCODE: number = 67;   // c
-
-interface CommandKeyPair {
-    KeyCode: number;
-    Command: AbsCommand;
-}
 
 @Injectable()
 export class InputManagerService {
