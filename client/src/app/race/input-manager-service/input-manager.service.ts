@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { Car } from "../car/car";
-import { AccelerateCarCommand } from "./car-commands/UpCarCommand";
+import { AccelerateCarCommand } from "./car-commands/AccelerateCarCommand";
 import { RightCarCommand } from "./car-commands/RightCarCommand";
 import { LeftCarCommand } from "./car-commands/LeftCarCommand";
 import { ReleaseSteeringCommand } from "./car-commands/ReleaseSteeringCommand";
