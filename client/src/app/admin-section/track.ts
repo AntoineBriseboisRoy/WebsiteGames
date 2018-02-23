@@ -1,11 +1,13 @@
+import { Schema } from "mongoose";
 const UNDEFINED_NAME: string = "Unknown track";
 const UNDEFINED_DESCRIPTION: string = "Unknown description.";
 
-export class TrackInfo {
+export class Track extends Schema {
     private name: string;
     private description: string;
 
     public constructor(name: string, description: string) {
+        super();
         this.name = (name.length > 0) ? name : UNDEFINED_NAME;
         this.description = (description.length) ? description : UNDEFINED_DESCRIPTION;
     }
