@@ -91,7 +91,7 @@ export class RenderService {
         const SKYBOX_RADIUS: number = 50;
         /* tslint:disable */
         // Loading picture with its URI
-        const floorTexture: Texture = new TextureLoader().load("/assets/checkerboard.jpg");
+        const floorTexture: Texture = new TextureLoader().load("/assets/camero/floor-texture.jpg");
         /* tslint:enable */
         floorTexture.wrapS = floorTexture.wrapT = RepeatWrapping;
         floorTexture.repeat.set(TEXTURE_TILE_SIZE, TEXTURE_TILE_SIZE);
@@ -102,6 +102,7 @@ export class RenderService {
 
         const skybox: Skybox = new Skybox();
         this.scene.background = skybox.getCubeTexture();
+        this.scene.add(mesh);
     }
 
     private startRenderingLoop(): void {
