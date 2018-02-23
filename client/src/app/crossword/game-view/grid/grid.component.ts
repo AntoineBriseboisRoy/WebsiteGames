@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, HostListener } from "@angular/core";
 import { BLACK_CHAR, GRID_WIDTH } from "../../../constants";
 
 import { GridService } from "../../grid.service";
@@ -6,11 +6,13 @@ import { IWord } from "../../../../../../common/interfaces/IWord";
 import { IGridWord } from "../../interfaces/IGridWord";
 import { ICell, CellColor } from "../../interfaces/ICell";
 import { FocusCell } from "../focusCell";
+import { KeywordInputManagerService } from "../keyword-input-manager/keyword-input-manager.service";
 
 @Component({
     selector: "app-crossword-grid",
     templateUrl: "./grid.component.html",
-    styleUrls: ["./grid.component.css"]
+    styleUrls: ["./grid.component.css"],
+    providers: [KeywordInputManagerService]
 })
 
 export class GridComponent implements OnInit {
@@ -26,12 +28,14 @@ export class GridComponent implements OnInit {
     private clickedCell: ICell;
     private focusCell: FocusCell;
 
+    private keywordInputManagerService: KeywordInputManagerService;
     public constructor(private gridService: GridService) {
         this.indexPosition = new Array();
         this.cells = new Array();
         this.gridWords = new Array<IGridWord>();
         this.clickedWords = new Array();
         this.focusCell = FocusCell.Instance;
+        this.keywordInputManagerService = new KeywordInputManagerService(this.cells);
     }
 
     public ngOnInit(): void {
@@ -154,5 +158,10 @@ export class GridComponent implements OnInit {
 
     public addHighlightOnFocus(cell: ICell): string {
        return this.focusCell.Cell === cell ? "focus" : "";
+    }
+
+    @HostListener("window:keydown", ["$event"])
+    public onKeyDown(event: KeyboardEvent): void {
+        this.keywordInputManagerService.handleKeyDown(event);
     }
 }
