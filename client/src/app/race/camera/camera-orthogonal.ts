@@ -38,10 +38,10 @@ export class TopViewCamera extends OrthographicCamera implements CameraState {
             if (this.zoom > MAX_ZOOM) {
                 this.zoom = MAX_ZOOM;
             }
-            this.updateProjectionMatrix();
         } else {
             this.zoom = MIN_ZOOM;
         }
+        this.updateProjectionMatrix();
     }
     public zoomOut(): void {
         if (this.zoom >= MIN_ZOOM) {
@@ -49,9 +49,9 @@ export class TopViewCamera extends OrthographicCamera implements CameraState {
             if (this.zoom > MAX_ZOOM) {
                 this.zoom = MAX_ZOOM;
             }
-            this.updateProjectionMatrix();
         } else {
             this.zoom = MIN_ZOOM;
         }
+        this.updateProjectionMatrix();
     }
 }

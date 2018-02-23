@@ -8,7 +8,7 @@ const RELATIVE_CAMERA_OFFSET_Z: number = 5;
 
 const ZOOM_INCREMENT: number = 0.05;
 const MAX_ZOOM: number = 2.5;
-const MIN_ZOOM: number = 0.5;
+const MIN_ZOOM: number = 0.7;
 
 export class ThirdPersonCamera extends PerspectiveCamera implements CameraState {
 
