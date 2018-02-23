@@ -84,7 +84,7 @@ export class Constraints {
 
     private checkSegmentOverlap(): void {
         for (let i: number = 0; i < this.segments.length; ++i) {
-            for (let j: number = i + 1; j < this.segments.length; ++j) {
+            for (let j: number = i + 2; j < this.segments.length; ++j) {
                 if (this.intersect(this.segments[i], this.segments[j])) {
                     this.segments[i].broken = true;
                     this.segments[j].broken = true;
@@ -94,35 +94,41 @@ export class Constraints {
     }
 
     private intersect(segment1: Segment, segment2: Segment): boolean {
-        if (Math.max(this.points[segment1.firstPoint].x, this.points[segment1.secondPoint].x) <
-        Math.min(this.points[segment2.firstPoint].x, this.points[segment2.secondPoint].x)) {
+        const x1: number = this.initializePoint(this.points[segment1.firstPoint].x, this.points[segment1.secondPoint].x);
+        const x2: number = this.initializePoint(this.points[segment1.secondPoint].x, this.points[segment1.firstPoint].x);
+        const x3: number = this.initializePoint(this.points[segment2.firstPoint].x, this.points[segment2.secondPoint].x);
+        const x4: number = this.initializePoint(this.points[segment2.secondPoint].x, this.points[segment2.firstPoint].x);
+        const y1: number = this.initializePoint(this.points[segment1.firstPoint].y, this.points[segment1.secondPoint].y);
+        const y2: number = this.initializePoint(this.points[segment1.secondPoint].y, this.points[segment1.firstPoint].y);
+        const y3: number = this.initializePoint(this.points[segment2.firstPoint].y, this.points[segment2.secondPoint].y);
+        const y4: number = this.initializePoint(this.points[segment2.secondPoint].y, this.points[segment2.firstPoint].y);
+
+        if (Math.max(x1, x2) < Math.min(x3, x4) || Math.max(x3, x4) < Math.min(x1, x2)) {
             return false; // No common X coordinates
         }
 
-        const intersectingXmin: number = Math.max(
-            Math.min(this.points[segment1.firstPoint].x, this.points[segment1.secondPoint].x),
-            Math.min(this.points[segment2.firstPoint].x, this.points[segment2.secondPoint].x));
-        const intersectingXmax: number = Math.min(
-            Math.max(this.points[segment1.firstPoint].x, this.points[segment1.secondPoint].x),
-            Math.max(this.points[segment2.firstPoint].x, this.points[segment2.secondPoint].x));
-
+        const intersectingXmin: number = Math.max(Math.min(x1, x2), Math.min(x3, x4));
+        const intersectingXmax: number = Math.min(Math.max(x1, x2), Math.max(x3, x4));
+        let b1: number, b2: number;
         /* f1(x) = a1 * x + b1 */
         let a1: number, a2: number;
-        if (this.points[segment1.firstPoint].x === this.points[segment1.secondPoint].x) {
-            a1 = 0;
-        } else {
-            a1 = (this.points[segment1.firstPoint].y - this.points[segment1.secondPoint].y) /
-                 (this.points[segment1.firstPoint].x - this.points[segment1.secondPoint].x);
-        }
-        if (this.points[segment2.firstPoint].x === this.points[segment2.secondPoint].x) {
-            a2 = 0;
-        } else {
-            a2 = (this.points[segment2.firstPoint].y - this.points[segment2.secondPoint].y) /
-                 (this.points[segment2.firstPoint].x - this.points[segment2.secondPoint].x);
-        }
+        if (x1 === x2) {
+            a2 = (y3 - y4) / (x3 - x4);
+            b2 = y3 - a2 * x3;
+            const intersectingY: number = a2 * x1 + b2;
 
-        const b1: number = this.points[segment1.firstPoint].y - a1 * this.points[segment1.firstPoint].x;
-        const b2: number = this.points[segment2.firstPoint].y - a2 * this.points[segment2.firstPoint].x;
+            return (intersectingY <= Math.max(y1, y2) && intersectingY >= Math.min(y1, y2));
+        } else if (x3 === x4) {
+            a1 = (y1 - y2) / (x1 - x2);
+            b1 = y1 - a1 * x1;
+            const intersectingY: number = a1 * x3 + b1;
+
+            return (intersectingY <= Math.max(y3, y4) && intersectingY >= Math.min(y3, y4));
+        }
+        a1 = (y1 - y2) / (x1 - x2);
+        a2 = (y3 - y4) / (x3 - x4);
+        b1 = y1 - a1 * x1;
+        b2 = y3 - a2 * x3;
 
         if (a1 === a2) {
             return false; // If they're parallel
@@ -131,5 +137,9 @@ export class Constraints {
         const intersectingX: number = (b2 - b1) / (a1 - a2);
 
         return !(intersectingX - cst.PRECISION_PIXELS <= intersectingXmin || intersectingX + cst.PRECISION_PIXELS >= intersectingXmax);
+    }
+
+    private initializePoint(currPos: number, otherPos: number): number {
+        return currPos + ((Math.max(currPos, otherPos) === currPos) ? cst.DEFAULT_CIRCLE_RADIUS : -cst.DEFAULT_CIRCLE_RADIUS);
     }
 }
