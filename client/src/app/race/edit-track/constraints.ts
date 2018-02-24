@@ -37,8 +37,8 @@ export class Constraints {
     private instantiateSegmentArray(): void {
         this.segments = new Array<Segment>();
 
-        for (let i: number = 1; i < this.points.length; ++i) {
-            this.segments.push({ firstPoint: i - 1, secondPoint: i, broken: false });
+        for (let i: number = 0; i < this.points.length - 1; ++i) {
+            this.segments.push(new Segment(i, this.points, false));
         }
     }
 
@@ -64,19 +64,18 @@ export class Constraints {
     }
 
     private checkAngleBetweenTwoSegments(segment1: Segment, segment2: Segment): boolean {
-        const vec1: Vector2 = new Vector2(this.points[segment1.secondPoint].x - this.points[segment1.firstPoint].x,
-                                          this.points[segment1.secondPoint].y - this.points[segment1.firstPoint].y);
-        const vec2: Vector2 = new Vector2(this.points[segment2.firstPoint].x - this.points[segment2.secondPoint].x,
-                                          this.points[segment2.firstPoint].y - this.points[segment2.secondPoint].y);
+        const vec1: Vector2 = new Vector2(segment1.SecondPoint.x - segment1.FirstPoint.x,
+                                          segment1.SecondPoint.y - segment1.FirstPoint.y);
+        const vec2: Vector2 = new Vector2(segment2.FirstPoint.x - segment2.SecondPoint.x,
+                                          segment2.FirstPoint.y - segment2.SecondPoint.y);
 
         return Math.acos(vec1.dot(vec2) / (vec1.length() * vec2.length())) > cst.PI_OVER_4;
     }
 
     private checkSegmentLength(): void {
         for (const segment of this.segments) {
-            if (new Vector2(this.points[segment.secondPoint].x - this.points[segment.firstPoint].x,
-                            this.points[segment.secondPoint].y - this.points[segment.firstPoint].y).length() <
-                cst.TWICE_TRACK_WIDTH) {
+            if (new Vector2(segment.SecondPoint.x - segment.FirstPoint.x,
+                            segment.SecondPoint.y - segment.FirstPoint.y).length() < cst.TWICE_TRACK_WIDTH) {
                 segment.broken = true;
             }
         }
@@ -95,14 +94,14 @@ export class Constraints {
     }
 
     private intersect(segment1: Segment, segment2: Segment): boolean {
-        const x1: number = this.initializePoint(this.points[segment1.firstPoint].x, this.points[segment1.secondPoint].x);
-        const x2: number = this.initializePoint(this.points[segment1.secondPoint].x, this.points[segment1.firstPoint].x);
-        const x3: number = this.initializePoint(this.points[segment2.firstPoint].x, this.points[segment2.secondPoint].x);
-        const x4: number = this.initializePoint(this.points[segment2.secondPoint].x, this.points[segment2.firstPoint].x);
-        const y1: number = this.initializePoint(this.points[segment1.firstPoint].y, this.points[segment1.secondPoint].y);
-        const y2: number = this.initializePoint(this.points[segment1.secondPoint].y, this.points[segment1.firstPoint].y);
-        const y3: number = this.initializePoint(this.points[segment2.firstPoint].y, this.points[segment2.secondPoint].y);
-        const y4: number = this.initializePoint(this.points[segment2.secondPoint].y, this.points[segment2.firstPoint].y);
+        const x1: number = this.initializePoint(segment1.FirstPoint.x, segment1.SecondPoint.x);
+        const x2: number = this.initializePoint(segment1.SecondPoint.x, segment1.FirstPoint.x);
+        const x3: number = this.initializePoint(segment2.FirstPoint.x, segment2.SecondPoint.x);
+        const x4: number = this.initializePoint(segment2.SecondPoint.x, segment2.FirstPoint.x);
+        const y1: number = this.initializePoint(segment1.FirstPoint.y, segment1.SecondPoint.y);
+        const y2: number = this.initializePoint(segment1.SecondPoint.y, segment1.FirstPoint.y);
+        const y3: number = this.initializePoint(segment2.FirstPoint.y, segment2.SecondPoint.y);
+        const y4: number = this.initializePoint(segment2.SecondPoint.y, segment2.FirstPoint.y);
 
         if (Math.max(x1, x2) < Math.min(x3, x4) || Math.max(x3, x4) < Math.min(x1, x2)) {
             return false; // No common X coordinates

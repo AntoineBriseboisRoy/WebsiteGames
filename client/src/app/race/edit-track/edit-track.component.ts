@@ -105,8 +105,8 @@ export class EditTrackComponent implements OnInit {
 
     for (let i: number = 0; i < segments.length; ++i) {
       this.context.beginPath();
-      this.context.moveTo(this.points[segments[i].firstPoint].x, this.points[segments[i].firstPoint].y);
-      this.context.lineTo(this.points[segments[i].secondPoint].x, this.points[segments[i].secondPoint].y);
+      this.context.moveTo(segments[i].FirstPoint.x, segments[i].FirstPoint.y);
+      this.context.lineTo(segments[i].SecondPoint.x, segments[i].SecondPoint.y);
       this.context.strokeStyle = segments[i].broken ? "red" : (i === 0) ? "green" : "black";
       this.context.stroke();
       this.context.closePath();
