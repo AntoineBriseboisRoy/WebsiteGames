@@ -3,10 +3,17 @@
 </div>
 <nav class="navbar navbar-light bg-light" id="top-bar">
     <span class="navbar-brand mb-0 h1 col-sm-2">Edit a track!</span>
-    <form class="form-inline">
-      <input class="form-control mr-sm-2 info" type="name" placeholder="Track Name" aria-label="Name">
-      <input class="form-control mr-sm-2 info" type="name" placeholder="Description" aria-label="Name">
-      <button class="btn btn-outline-success my-2 my-sm-0" type="submit" [disabled]="!canBeSaved">Save</button>
-    </form>
+  <form class="navbar-form">
+    <div class="form-row">
+      <div class="col-4">
+        <input class="form-control mr-sm-2 info" type="name" placeholder="Track Name" aria-label="Name">
+      </div>
+      <div class="col-6">
+        <input class="form-control mr-sm-2 info" type="name" placeholder="Description" aria-label="Name">
+      </div>
+      <div class="col-2">
+          <button type="submit" class="btn btn-default">Submit</button>
+      </div>
+    </div>
+  </form>
 </nav>
-
