@@ -17,6 +17,7 @@ import { AppRoutingModule } from ".//app-routing.module";
 import { DashboardComponent } from "./dashboard/dashboard.component";
 import { DifficultyMenuComponent } from "./crossword/difficulty-menu/difficulty-menu.component";
 import { GridService } from "./crossword/grid.service";
+import { WordTransmitterService } from "./crossword/game-view/wordTransmitter.service";
 
 @NgModule({
     declarations: [
@@ -35,7 +36,7 @@ import { GridService } from "./crossword/grid.service";
         FormsModule,
         AppRoutingModule
     ],
-    providers: [BasicService, GridService],
+    providers: [BasicService, GridService, WordTransmitterService],
     bootstrap: [AppComponent]
 })
 export class AppModule { }
