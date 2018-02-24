@@ -13,7 +13,6 @@ export class MoveDownCommand extends AbsGridCommand {
             this.cells[FocusCell.Instance.Cell.gridIndex + GRID_WIDTH];
     }
     public execute(): void {
-        console.log("Down");
         do {
             this.move();
         } while ( FocusCell.Instance.Cell.cellColor === "Black" );

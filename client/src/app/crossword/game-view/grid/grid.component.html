@@ -1,6 +1,6 @@
 <div *ngFor="let cell of cells; index as i" multiple [ngClass]="gridLineJump(i)">
   <div [ngClass]="getCellType(cell.cellColor)">
-    <div *ngIf="cell.cellColor == 'White'" (click)="focusOnCell(cell)" [ngClass]="addHighlightOnFocus(cell)"> <!-- remove the "*" in all black square -->
+    <div class="cell-for-click" *ngIf="cell.cellColor == 'White'" (click)="focusOnCell(cell)" [ngClass]="addHighlightOnFocus(cell)"> <!-- remove the "*" in all black square -->
       <div *ngIf="cell.index != null" class="cell-index">
         {{cell.index}}
       </div>
