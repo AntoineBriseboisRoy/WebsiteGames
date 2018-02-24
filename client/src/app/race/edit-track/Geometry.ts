@@ -1,3 +1,7 @@
+export interface Position {
+  x: number;
+  y: number;
+}
 export interface Point {
   x: number;
   y: number;
@@ -20,8 +24,19 @@ export class Segment {
   public get FirstPoint(): PointInSegment {
     return this.firstPoint;
   }
+
+  public set FirstPointPosition(position: Position) {
+    this.firstPoint.x = position.x;
+    this.firstPoint.y = position.y;
+  }
+
   public get SecondPoint(): PointInSegment {
     return this.secondPoint;
+  }
+
+  public set SecondPointPosition(position: Position) {
+    this.secondPoint.x = position.x;
+    this.secondPoint.y = position.y;
   }
 
   private getPointAtIndex(index: number): PointInSegment {
