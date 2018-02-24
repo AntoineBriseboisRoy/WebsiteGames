@@ -1,4 +1,5 @@
 .square {
+    z-index: 0;
     height: 3.8vw;
     width: 3.8vw;
     border: 1px solid black;
@@ -12,12 +13,12 @@
 .white-square {
     background-color: white;
     height: 100%;
-    border: thin solid lightblue;
+    border: thin solid rgba(173, 216, 230, 0);
 }
 
 .white-square > div {
     height: 100%;
-    border: thin solid white;
+    border: thin solid rgba(255, 255, 255, 0)
 }
 
 .white-square:hover {
@@ -52,27 +53,33 @@
 }
 
 .horizontal-border {
-    border-top: 10px dotted #0796E5;
-    border-bottom: 10px dotted #0796E5;
+    border-top: 3px dashed #0796E5;
+    border-bottom: 3px dashed #0796E5;
+    background-color: violet;
 }
 
-.vectical-border {
-    border-left: 10px dotted #0796E5;
-    border-right: 10px dotted #0796E5;
+.vertical-border {
+    border-left: 3px dashed #0796E5;
+    border-right: 3px dashed #0796E5;
+    background-color: violet;
 }
 
 .first-case-border-horizontal {
-    border-left: 10px dotted #0796E5;
+    border-left: 3px dashed #0796E5;
+    background-color: violet;
 }
 
 .last-case-border-horizontal {
-    border-right: 10px dotted #0796E5;
+    border-right: 3px dashed #0796E5;
+    background-color: violet;
 }
 
 .first-case-border-vertical {
-    border-top: 10px dotted #0796E5;
+    border-top: 3px dashed #0796E5;
+    background-color: violet;
 }
 
 .last-case-border-vertical {
-    border-bottom: 10px dotted #0796E5;
+    border-bottom: 3px dashed #0796E5;
+    background-color: violet;
 }
