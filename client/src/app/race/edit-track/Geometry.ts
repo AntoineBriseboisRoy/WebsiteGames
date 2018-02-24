@@ -1,3 +1,5 @@
+import { InvalidArgumentError } from "../../invalidArgumentError";
+
 export interface Position {
   x: number;
   y: number;
@@ -8,9 +10,16 @@ export interface Point {
   start: boolean;
   end: boolean;
 }
+
 export interface PointInSegment extends Point {
   index: number;
 }
+
+export interface Interval {
+  min: number;
+  max: number;
+}
+
 export class Segment {
 
   private firstPoint: PointInSegment;
@@ -37,6 +46,23 @@ export class Segment {
   public set SecondPointPosition(position: Position) {
     this.secondPoint.x = position.x;
     this.secondPoint.y = position.y;
+  }
+
+  public getSlope(): number {
+    return (this.FirstPoint.y - this.SecondPoint.y) / (this.FirstPoint.x - this.SecondPoint.x);
+  }
+
+  public getB(): number {
+    return this.FirstPoint.y - this.getSlope() * this.FirstPoint.x;
+  }
+
+  public getYInterval(): Interval {
+    return { min: Math.min(this.FirstPoint.y, this.SecondPoint.y),
+             max: Math.max(this.FirstPoint.y, this.SecondPoint.y) };
+  }
+
+  public isPerfectlyVertical(): boolean {
+    return (this.FirstPoint.x === this.SecondPoint.x);
   }
 
   private getPointAtIndex(index: number): PointInSegment {

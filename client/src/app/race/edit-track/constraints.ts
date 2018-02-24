@@ -1,8 +1,7 @@
-import { Point, Segment } from "./Geometry";
+import { Point, Segment, Interval } from "./Geometry";
 import { Vector2 } from "three";
 import * as cst from "../../constants";
 import { InvalidArgumentError } from "../../invalidArgumentError";
-
 export class Constraints {
 
     private segments: Segment[];
@@ -94,7 +93,6 @@ export class Constraints {
         }
     }
 
-    // TODO: Donner a Segment certaines de ces fonctions
     private intersect(segment1: Segment, segment2: Segment): boolean {
         const longerSegment1: Segment = this.elongateSegment(segment1);
         const longerSegment2: Segment = this.elongateSegment(segment2);
@@ -103,13 +101,13 @@ export class Constraints {
             return false; // No common X coordinates
         }
 
-        if (this.isPerfectlyVertical(longerSegment1)) {
-            return this.isWithinInterval(this.getIntersectingY(longerSegment2, longerSegment1), this.getYInterval(longerSegment1));
-        } else if (this.isPerfectlyVertical(longerSegment2)) {
-            return this.isWithinInterval(this.getIntersectingY(longerSegment1, longerSegment2), this.getYInterval(longerSegment2));
+        if (longerSegment1.isPerfectlyVertical()) {
+            return this.isWithinInterval(this.getIntersectingY(longerSegment2, longerSegment1), longerSegment1.getYInterval());
+        } else if (longerSegment2.isPerfectlyVertical()) {
+            return this.isWithinInterval(this.getIntersectingY(longerSegment1, longerSegment2), longerSegment2.getYInterval());
         }
 
-        if (this.getSlope(longerSegment1) === this.getSlope(longerSegment2)) {
+        if (longerSegment1.getSlope() === longerSegment2.getSlope()) {
             return false; // If they're parallel
         }
 
@@ -118,19 +116,14 @@ export class Constraints {
     }
 
     private getIntersectingY(segment1: Segment, verticalSegment: Segment): number {
-        return this.getSlope(segment1) * verticalSegment.FirstPoint.x + this.getB(segment1);
+        return segment1.getSlope() * verticalSegment.FirstPoint.x + segment1.getB();
     }
 
-    private isWithinInterval(x: number, interval: {min: number, max: number }): boolean {
+    private isWithinInterval(x: number, interval: Interval): boolean {
         return (x - cst.PRECISION_PIXELS <= interval.max && x + cst.PRECISION_PIXELS >= interval.min);
     }
 
-    private getYInterval(segment: Segment): { min: number, max: number } {
-        return { min: Math.min(segment.FirstPoint.y, segment.SecondPoint.y),
-                 max: Math.max(segment.FirstPoint.y, segment.SecondPoint.y) };
-    }
-
-    private getInteresectionIntervalX(segment1: Segment, segment2: Segment): { min: number, max: number} {
+    private getInteresectionIntervalX(segment1: Segment, segment2: Segment): Interval {
         return { min: Math.max(Math.min(segment1.FirstPoint.x, segment1.SecondPoint.x),
                                Math.min(segment2.FirstPoint.x, segment2.SecondPoint.x)),
                  max: Math.min(Math.max(segment1.FirstPoint.x, segment1.SecondPoint.x),
@@ -138,24 +131,8 @@ export class Constraints {
     }
 
     private getIntersectingX(segment1: Segment, segment2: Segment): number {
-        return (this.getB(segment2) - this.getB(segment1)) /
-               (this.getSlope(segment1) - this.getSlope(segment2));
-    }
-
-    private isPerfectlyVertical(segment: Segment): boolean {
-        return (segment.FirstPoint.x === segment.SecondPoint.x);
-    }
-
-    private getSlope(segment: Segment): number {
-        if (segment.FirstPoint.x === segment.SecondPoint.x) {
-            throw new InvalidArgumentError("Segment is perfectly vertical. Can't compute slope.");
-        }
-
-        return (segment.FirstPoint.y - segment.SecondPoint.y) / (segment.FirstPoint.x - segment.SecondPoint.x);
-    }
-
-    private getB(segment: Segment): number {
-        return segment.FirstPoint.y - this.getSlope(segment) * segment.FirstPoint.x;
+        return (segment2.getB() - segment1.getB()) /
+               (segment1.getSlope() - segment2.getSlope());
     }
 
     private elongateSegment(segment: Segment): Segment {
