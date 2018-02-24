@@ -85,16 +85,18 @@ export class GridComponent implements OnInit {
     }
 
     public addOrientationBorders(cell: ICell): string {
+
         if (this.focusCell.Cells.includes(cell)) {
+
             return this.focusCell.Orientation === Orientation.Vertical ?
-                    "vectical-border" : "horizontal-border";
+                    "vertical-border" : "horizontal-border";
         }
 
         return "";
     }
 
     public addFirstCellBorder(cell: ICell): string {
-        if (this.focusCell.Cell === cell) {
+        if (this.focusCell.Cells[0] === cell) {
             return this.focusCell.Orientation === Orientation.Vertical ?
                 "first-case-border-vertical" : "first-case-border-horizontal";
         }
