@@ -1,5 +1,5 @@
 import { Component, OnInit } from "@angular/core";
-import { TrackInfo } from "./track-info";
+import { Track, TrackType } from "./track-info";
 
 @Component({
     selector: "app-admin-section",
@@ -8,13 +8,13 @@ import { TrackInfo } from "./track-info";
 })
 export class AdminSectionComponent implements OnInit {
 
-    private tracks: TrackInfo[];
-    private activeTrack: TrackInfo;
+    private tracks: Track[];
+    private activeTrack: Track;
 
     public readonly title: string = "Welcome to the admistration section!";
     public constructor() {
-        this.tracks = new Array<TrackInfo>();
-        this.activeTrack = new TrackInfo("", "");
+        this.tracks = new Array<Track>();
+        this.activeTrack = new Track("", "", 0, ["0:00"], TrackType.DESERT);
     }
 
     public ngOnInit(): void {
@@ -22,7 +22,7 @@ export class AdminSectionComponent implements OnInit {
     }
 
     private onClick(name: string, action: string): void {
-        const selectedTrack: TrackInfo = this.tracks.find((track: TrackInfo) => {
+        const selectedTrack: Track = this.tracks.find((track: Track) => {
             return track.Name === name;
         });
         if (selectedTrack) {
@@ -32,10 +32,10 @@ export class AdminSectionComponent implements OnInit {
     }
 
     private createArtificialTracks(): void {
-        this.tracks.push(new TrackInfo("Laguna Seca", "A great American track with a corkscrew."));
-        this.tracks.push(new TrackInfo("Monza", "The best Italian chicane."));
-        this.tracks.push(new TrackInfo("Nürburgring Nordschleife", "Pure German madness."));
-        this.tracks.push(new TrackInfo("La Sarthe", "24 hours of French adrenaline."));
-        this.tracks.push(new TrackInfo("Monaco", "A street racing circuit."));
+        this.tracks.push(new Track("Laguna Seca", "A great American track with a corkscrew.", 0, ["0:00"], TrackType.DESERT));
+        this.tracks.push(new Track("Monza", "The best Italian chicane.", 0, ["0:00"], TrackType.DESERT));
+        this.tracks.push(new Track("Nürburgring Nordschleife", "Pure German madness.", 0, ["0:00"], TrackType.DESERT));
+        this.tracks.push(new Track("La Sarthe", "24 hours of French adrenaline.", 0, ["0:00"], TrackType.DESERT));
+        this.tracks.push(new Track("Monaco", "A street racing circuit.", 0, ["0:00"], TrackType.DESERT));
     }
 }
