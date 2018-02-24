@@ -50,8 +50,17 @@ export class EditTrackComponent implements OnInit {
     return this.points;
   }
 
+  private getInputElement(id: string): HTMLInputElement {
+    return document.getElementById(id) as HTMLInputElement;
+  }
+
+  private get areFieldsComplete(): boolean {
+    return this.getInputElement("Description").value !== this.getInputElement("Description").defaultValue &&
+           this.getInputElement("Name").value !== this.getInputElement("Name").defaultValue;
+  }
+
   public get canBeSaved(): boolean {
-      return this.trackComplete && !this.constraints.isBroken;
+    return this.trackComplete && !this.constraints.isBroken && this.areFieldsComplete;
   }
 
   private resizeWindow(): void {

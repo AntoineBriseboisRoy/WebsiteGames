@@ -6,13 +6,13 @@
   <form class="navbar-form">
     <div class="form-row">
       <div class="col-4">
-        <input class="form-control mr-sm-2 info" type="name" placeholder="Track Name" aria-label="Name">
+        <input class="form-control mr-sm-2" id="Name" type="name" placeholder="Track Name" aria-label="Name">
       </div>
       <div class="col-6">
-        <input class="form-control mr-sm-2 info" type="name" placeholder="Description" aria-label="Name">
+        <input class="form-control mr-sm-2" id="Description" type="name" placeholder="Description" aria-label="Description">
       </div>
       <div class="col-2">
-          <button type="submit" class="btn btn-default">Submit</button>
+          <button type="submit" class="btn btn-outline-success" [disabled]="!canBeSaved">Save</button>
       </div>
     </div>
   </form>
