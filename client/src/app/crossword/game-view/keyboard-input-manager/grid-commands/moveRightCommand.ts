@@ -9,15 +9,14 @@ export class MoveRightCommand extends AbsGridCommand {
     }
 
     private move(): void {
-        if (FocusCell.Instance.Cell.gridIndex <= GRID_WIDTH * GRID_WIDTH) {
-            FocusCell.Instance.Cell = this.cells[FocusCell.Instance.Cell.gridIndex + 1];
-        }
+        FocusCell.Instance.Cell = (FocusCell.Instance.Cell.gridIndex === (GRID_WIDTH * GRID_WIDTH - 1) ?
+            this.cells[0] :
+            this.cells[FocusCell.Instance.Cell.gridIndex + 1]);
     }
     public execute(): void {
         console.log("Right");
-        this.move();
-        while ( FocusCell.Instance.Cell.cellColor === "Black" ) {
+        do {
             this.move();
-        }
+        } while ( FocusCell.Instance.Cell.cellColor === "Black" );
     }
 }

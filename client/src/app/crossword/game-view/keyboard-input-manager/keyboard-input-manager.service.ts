@@ -14,11 +14,11 @@ const RIGHT_ARROW_KEYCODE: number = 39;
 const DOWN_ARROW_KEYCODE: number = 40;
 
 @Injectable()
-export class KeywordInputManagerService {
+export class KeyboardInputManagerService {
     private keyDownCommands: CommandKeyPair[];
 
     public constructor(cells: Array<ICell>) {
-        this.keyDownCommands = [  // POURQUOI METTRE DANS FONCTION INIT()?
+        this.keyDownCommands = [
             { KeyCode: LEFT_ARROW_KEYCODE,  Command: new MoveLeftCommand(cells) },
             { KeyCode: UP_ARROW_KEYCODE,    Command: new MoveUpCommand(cells) },
             { KeyCode: RIGHT_ARROW_KEYCODE, Command: new MoveRightCommand(cells) },

@@ -1,17 +1,17 @@
-import { Component, OnInit, HostListener, Input } from "@angular/core";
+import { Component, OnInit, HostListener} from "@angular/core";
 import { GRID_WIDTH } from "../../../constants";
 
 import { IGridWord } from "../../interfaces/IGridWord";
 import { ICell, CellColor } from "../../interfaces/ICell";
 import { FocusCell } from "../focusCell";
-import { KeywordInputManagerService } from "../keyword-input-manager/keyword-input-manager.service";
+import { KeyboardInputManagerService } from "../keyboard-input-manager/keyboard-input-manager.service";
 import { WordTransmitterService } from "../wordTransmitter.service";
 
 @Component({
     selector: "app-crossword-grid",
     templateUrl: "./grid.component.html",
     styleUrls: ["./grid.component.css"],
-    providers: [KeywordInputManagerService]
+    providers: [KeyboardInputManagerService]
 })
 
 export class GridComponent implements OnInit {
@@ -21,7 +21,7 @@ export class GridComponent implements OnInit {
     private clickedCell: ICell;
     private focusCell: FocusCell;
 
-    private keywordInputManagerService: KeywordInputManagerService;
+    private keyboardInputManagerService: KeyboardInputManagerService;
     public constructor(private wordTransmitterService: WordTransmitterService) {
         this.cells = new Array();
         this.gridWords = new Array<IGridWord>();
@@ -34,7 +34,7 @@ export class GridComponent implements OnInit {
             this.gridWords = gridWords;
             this.wordTransmitterService.getCells().subscribe((gridCells: Array<ICell>) => {
                 this.cells = gridCells;
-                this.keywordInputManagerService = new KeywordInputManagerService(this.cells);
+                this.keyboardInputManagerService = new KeyboardInputManagerService(this.cells);
             });
         });
     }
@@ -83,6 +83,6 @@ export class GridComponent implements OnInit {
 
     @HostListener("window:keydown", ["$event"])
     public onKeyDown(event: KeyboardEvent): void {
-        this.keywordInputManagerService.handleKeyDown(event);
+        this.keyboardInputManagerService.handleKeyDown(event);
     }
 }

@@ -8,15 +8,14 @@ export class MoveDownCommand extends AbsGridCommand {
         super(cells);
     }
     private move(): void {
-        if (FocusCell.Instance.Cell.gridIndex < GRID_WIDTH * GRID_WIDTH - GRID_WIDTH) {
-            FocusCell.Instance.Cell = this.cells[FocusCell.Instance.Cell.gridIndex + GRID_WIDTH];
-        }
+        FocusCell.Instance.Cell = (FocusCell.Instance.Cell.gridIndex >= GRID_WIDTH * GRID_WIDTH - GRID_WIDTH) ?
+            this.cells[FocusCell.Instance.Cell.gridIndex - GRID_WIDTH * GRID_WIDTH + GRID_WIDTH] :
+            this.cells[FocusCell.Instance.Cell.gridIndex + GRID_WIDTH];
     }
     public execute(): void {
         console.log("Down");
-        this.move();
-        while ( FocusCell.Instance.Cell.cellColor === "Black" ) {
+        do {
             this.move();
-        }
+        } while ( FocusCell.Instance.Cell.cellColor === "Black" );
     }
 }
