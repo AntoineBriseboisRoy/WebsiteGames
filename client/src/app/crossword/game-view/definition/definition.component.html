@@ -7,11 +7,14 @@
       <select multiple class="form-control word-definition">
         <div *ngIf="!cheatModeActive;then showDefinitionsHorizontal else cheatModeHorizontal"></div>
         <ng-template #showDefinitionsHorizontal>
-          <option class="definition-for-click" *ngFor="let definition of horizontalDefinitions; index as i" (click)="chooseADefinition(definition)">{{i+1 +". "+definition}}</option>
-          <option>{{choosedDefinition}}</option>
+          <option class="definition-for-click" *ngFor="let word of gridWordsHorizontal" (click)="focusOnCell(word.definition)">
+            {{word.cells[0].index +". "+ word.definition}}
+          </option>
         </ng-template>
         <ng-template #cheatModeHorizontal>
-          <option class="definition-for-click" *ngFor="let word of mockCheatModeWordsHorizontal; index as i" >{{i+1 +". "+word}}</option>
+          <option class="definition-for-click" *ngFor="let word of gridWordsHorizontal" (click)="focusOnCell(word.definition)">
+            {{word.cells[0].index +". "+ word.correctAnswer}}
+          </option>
         </ng-template>
       </select>
     </div>
@@ -26,14 +29,17 @@
       <select multiple class="form-control word-definition">
         <div *ngIf="!cheatModeActive;then showDefinitionsVertical else cheatModeVertical"></div>
         <ng-template #showDefinitionsVertical>
-          <option class="definition-for-click" *ngFor="let definition of verticalDefinitions; index as i" (click)="chooseADefinition(definition)">{{i+1 +". "+definition}}</option>
+          <option class="definition-for-click" *ngFor="let word of gridWordsVertical" (click)="focusOnCell(word.definition)">
+            {{word.cells[0].index +". "+ word.definition}}
+          </option>
         </ng-template>
         <ng-template #cheatModeVertical>
-          <option class="definition-for-click" *ngFor="let word of mockCheatModeWordsVertical; index as i">{{i+1 +". "+word}}</option>
+          <option class="definition-for-click" *ngFor="let word of gridWordsVertical" (click)="focusOnCell(word.definition)">
+            {{word.cells[0].index +". "+ word.correctAnswer}}
+          </option>
         </ng-template>
       </select>
     </div>
   </form>
 </div>
-<button id="cheat-button" (click)="toogleCheatMode()" type="button"
- class="btn btn-lg btn-block">{{cheatModeToString()}}</button>
+<button id="cheat-button" (click)="toogleCheatMode()" type="button" class="btn btn-lg btn-block">{{cheatModeToString()}}</button>

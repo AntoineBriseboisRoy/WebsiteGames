@@ -1,3 +1,5 @@
+import { Orientation } from "../../../../../common/interfaces/IWord";
+
 export enum CellColor {
     White = "White",
     Black = "Black"
@@ -9,4 +11,5 @@ export interface ICell {
     answer: string;
     cellColor: CellColor;
     content: string;
+    orientation: Orientation;
 }

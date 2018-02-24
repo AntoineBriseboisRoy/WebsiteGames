@@ -9,8 +9,10 @@ import { Difficulty } from "../../constants";
 })
 export class DifficultyMenuComponent implements OnInit {
     public readonly title: string = "Choose wisely your difficulty, smarty!";
+    public isActiveDifficulty: boolean;
+
     private gameManager: GameManager;
-    private isActiveDifficulty: boolean;
+
     public constructor() {
         this.gameManager = GameManager.Instance;
         this.isActiveDifficulty = false;

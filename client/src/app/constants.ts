@@ -14,8 +14,8 @@ export const enum Difficulty {
     Hard = "Hard"
 }
 export enum Orientation {
-    Horizontal = 0,
-    Vertical
+    Vertical = 0,
+    Horizontal
 }
 export const INITIAL_CAMERA_POSITION_Y: number = 25;
 export const FRUSTUM_RATIO: number = 100;

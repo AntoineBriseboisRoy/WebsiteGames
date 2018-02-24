@@ -1,5 +1,5 @@
 import { Component, OnInit, HostListener} from "@angular/core";
-import { GRID_WIDTH } from "../../../constants";
+import { GRID_WIDTH, Orientation } from "../../../constants";
 
 import { IGridWord } from "../../interfaces/IGridWord";
 import { ICell, CellColor } from "../../interfaces/ICell";
@@ -24,7 +24,7 @@ export class GridComponent implements OnInit {
     private keyboardInputManagerService: KeyboardInputManagerService;
     public constructor(private wordTransmitterService: WordTransmitterService) {
         this.cells = new Array();
-        this.gridWords = new Array<IGridWord>();
+        this.gridWords = new Array();
         this.clickedWords = new Array();
         this.focusCell = FocusCell.Instance;
     }
@@ -32,10 +32,10 @@ export class GridComponent implements OnInit {
     public ngOnInit(): void {
         this.wordTransmitterService.getTransformedWords().subscribe((gridWords: Array<IGridWord>) => {
             this.gridWords = gridWords;
-            this.wordTransmitterService.getCells().subscribe((gridCells: Array<ICell>) => {
-                this.cells = gridCells;
-                this.keyboardInputManagerService = new KeyboardInputManagerService(this.cells);
-            });
+        });
+        this.wordTransmitterService.getCells().subscribe((gridCells: Array<ICell>) => {
+            this.cells = gridCells;
+            this.keyboardInputManagerService = new KeyboardInputManagerService(this.cells);
         });
     }
 
@@ -61,6 +61,8 @@ export class GridComponent implements OnInit {
         if (this.clickedWords.length > 1) {
             this.focusCell.Cell = this.focusCell.Cell === this.clickedWords[0].cells[0] ?
                 this.clickedWords[1].cells[0] : this.clickedWords[0].cells[0];
+            this.focusCell.Cells = this.focusCell.Cells === this.clickedWords[0].cells ?
+                this.clickedWords[1].cells : this.clickedWords[0].cells;
             this.focusCell.invertOrientation();
         }
     }
@@ -74,11 +76,39 @@ export class GridComponent implements OnInit {
         });
         this.clickedCell = cell;
         this.focusCell.Cell = this.clickedWords[0].cells[0];
+        this.focusCell.Cells = this.clickedWords[0].cells;
         this.focusCell.Orientation = this.clickedWords[0].orientation;
     }
 
     public addHighlightOnFocus(cell: ICell): string {
         return this.focusCell.Cell === cell ? "focus" : "";
+    }
+
+    public addOrientationBorders(cell: ICell): string {
+        if (this.focusCell.Cells.includes(cell)) {
+            return this.focusCell.Orientation === Orientation.Vertical ?
+                    "vectical-border" : "horizontal-border";
+        }
+
+        return "";
+    }
+
+    public addFirstCellBorder(cell: ICell): string {
+        if (this.focusCell.Cell === cell) {
+            return this.focusCell.Orientation === Orientation.Vertical ?
+                "first-case-border-vertical" : "first-case-border-horizontal";
+        }
+
+        return "";
+    }
+
+    public addLastCellBorder(cell: ICell): string {
+        if (this.focusCell.Cells[this.focusCell.Cells.length - 1] === cell) {
+            return this.focusCell.Orientation === Orientation.Vertical ?
+                "last-case-border-vertical" : "last-case-border-horizontal";
+        }
+
+        return "";
     }
 
     @HostListener("window:keydown", ["$event"])

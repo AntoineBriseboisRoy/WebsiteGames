@@ -50,3 +50,29 @@
 .focus {
     background-color: lightblue;
 }
+
+.horizontal-border {
+    border-top: 10px dotted #0796E5;
+    border-bottom: 10px dotted #0796E5;
+}
+
+.vectical-border {
+    border-left: 10px dotted #0796E5;
+    border-right: 10px dotted #0796E5;
+}
+
+.first-case-border-horizontal {
+    border-left: 10px dotted #0796E5;
+}
+
+.last-case-border-horizontal {
+    border-right: 10px dotted #0796E5;
+}
+
+.first-case-border-vertical {
+    border-top: 10px dotted #0796E5;
+}
+
+.last-case-border-vertical {
+    border-bottom: 10px dotted #0796E5;
+}

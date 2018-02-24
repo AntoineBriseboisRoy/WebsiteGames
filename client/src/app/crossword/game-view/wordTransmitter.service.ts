@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core";
 import { Observable } from "rxjs/Observable";
 
 import { IGridWord } from "../interfaces/IGridWord";
-import { IWord } from "../../../../../common/interfaces/IWord";
+import { IWord, Orientation } from "../../../../../common/interfaces/IWord";
 
 import { GridService } from "../grid.service";
 import { ICell, CellColor } from "../interfaces/ICell";
@@ -32,9 +32,11 @@ export class WordTransmitterService {
             if (this.words === undefined) {
                 this.gridService.getWords().subscribe((words: Array<IWord>) => {
                     this.words = words;
-                    this.addIndextoCells();
-                    this.createCells();
-                    this.createWords();
+                    if (this.gridWords.length === 0) {
+                        this.addIndextoCells();
+                        this.createCells();
+                        this.createWords();
+                    }
                     observer.next(this.gridWords);
                 });
             } else {
@@ -65,19 +67,19 @@ export class WordTransmitterService {
             if (i === this.indexPosition[index - 1]) {
                 this.cells.push({
                     gridIndex: i, index: index, answer: this.gridContent[i],
-                    cellColor: CellColor.White, content: ""
+                    cellColor: CellColor.White, content: "", orientation: 0
                 } as ICell);
                 ++index;
             } else {
                 if (this.gridContent[i] === BLACK_CHAR) {
                     this.cells.push({
                         gridIndex: i, index: null, answer: "",
-                        cellColor: CellColor.Black, content: ""
+                        cellColor: CellColor.Black, content: "",  orientation: 0
                     } as ICell);
                 } else {
                     this.cells.push({
                         gridIndex: i, index: null, answer: this.gridContent[i],
-                        cellColor: CellColor.White, content: ""
+                        cellColor: CellColor.White, content: "",  orientation: 0
                     } as ICell);
                 }
             }
@@ -108,12 +110,14 @@ export class WordTransmitterService {
         let mockCells: Array<ICell> = new Array();
         this.words.forEach((word: IWord, index: number) => {
             const startPosition: number = this.convertPositionToCellIndex(word.position.x, word.position.y);
-            if (word.orientation === 0) { // Vertical
+            if (word.orientation === Orientation.Vertical) { // Vertical
                 for (let i: number = startPosition, j: number = 0; j < word.content.length; i = i + GRID_WIDTH, j++) {
+                    this.cells[i].orientation = Orientation.Vertical;
                     mockCells.push(this.cells[i]);
                 }
             } else {
                 for (let i: number = startPosition; i < word.content.length + startPosition; i++) {
+                    this.cells[i].orientation = Orientation.Horizontal;
                     mockCells.push(this.cells[i]);
                 }
             }

@@ -1,11 +1,10 @@
-import { OnInit } from "@angular/core";
-import { GridService } from "../grid.service";
 import { ICell } from "../interfaces/ICell";
 import { Orientation } from "../../constants";
 
-export class FocusCell implements OnInit {
+export class FocusCell {
     private static instance: FocusCell;
     private cell: ICell;
+    private cells: Array<ICell>;
     private orientation: Orientation;
 
     public static get Instance(): FocusCell {
@@ -13,9 +12,7 @@ export class FocusCell implements OnInit {
     }
 
     private constructor() {
-    }
-
-    public ngOnInit(): void {
+        this.cells = new Array();
     }
 
     public get Cell(): ICell {
@@ -24,6 +21,14 @@ export class FocusCell implements OnInit {
 
     public set Cell(cell: ICell) {
         this.cell = cell;
+    }
+
+    public get Cells(): Array<ICell> {
+        return this.cells;
+    }
+
+    public set Cells(cells: Array<ICell>) {
+        this.cells = cells;
     }
 
     public get Orientation(): Orientation {
