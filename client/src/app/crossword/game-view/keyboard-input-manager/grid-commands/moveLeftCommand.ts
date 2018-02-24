@@ -13,8 +13,10 @@ export class MoveLeftCommand extends AbsGridCommand {
             this.cells[FocusCell.Instance.Cell.gridIndex - 1]);
     }
     public execute(): void {
-        do {
-            this.move();
-        } while ( FocusCell.Instance.Cell.cellColor === "Black" );
+        if (FocusCell.Instance.Cell !== undefined) {
+            do {
+                this.move();
+            } while ( FocusCell.Instance.Cell.cellColor === "Black" );
+        }
     }
 }

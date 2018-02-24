@@ -11,5 +11,4 @@ export interface ICell {
     answer: string;
     cellColor: CellColor;
     content: string;
-    orientation: Orientation;
 }

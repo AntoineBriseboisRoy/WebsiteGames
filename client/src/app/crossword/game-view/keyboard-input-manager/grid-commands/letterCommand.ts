@@ -9,9 +9,19 @@ export class LetterCommand extends AbsGridCommand {
         super(cells);
         this.letter = (String.fromCharCode(unicode));
     }
+
+    private next(): void {
+        if (FocusCell.Instance.Cell.gridIndex !== (GRID_WIDTH * GRID_WIDTH - 1)) {
+            FocusCell.Instance.Cell = FocusCell.Instance.Orientation === Orientation.Horizontal ?
+            this.cells[FocusCell.Instance.Cell.gridIndex + 1] : this.cells[FocusCell.Instance.Cell.gridIndex + GRID_WIDTH];
+        }
+    }
     public execute(): void {
-        FocusCell.Instance.Cell.content = (this.letter);
-        FocusCell.Instance.Cell = FocusCell.Instance.Cell.orientation === Orientation.Horizontal ?
-        this.cells[FocusCell.Instance.Cell.gridIndex + 1] : this.cells[FocusCell.Instance.Cell.gridIndex + GRID_WIDTH];
+        if (FocusCell.Instance.Cell !== undefined) {
+            FocusCell.Instance.Cell.content = (this.letter);
+            do {
+                this.next();
+            } while (FocusCell.Instance.Cell.cellColor === "Black");
+        }
     }
 }
