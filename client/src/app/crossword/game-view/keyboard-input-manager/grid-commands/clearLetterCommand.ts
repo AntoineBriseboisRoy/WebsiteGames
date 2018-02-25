@@ -44,7 +44,7 @@ export class ClearLetterCommand extends AbsGridCommand {
                 FocusCell.Instance.Cell = (FocusCell.Instance.Orientation === Orientation.Horizontal) ?
                 this.cells[FocusCell.Instance.Cell.gridIndex - 1] : this.cells[FocusCell.Instance.Cell.gridIndex - GRID_WIDTH];
             }
-        } while (FocusCell.Instance.Cell.isFound);
+        } while (FocusCell.Instance.Cell.isFound && !this.isFirstCellOfSelection());
         if (FocusCell.Instance.Cell.isFound) {
             FocusCell.Instance.Cell = this.cells[currentGridIndex];
         }

@@ -10,14 +10,16 @@ export class MoveLeftCommand extends AbsGridCommand {
     }
 
     public execute(): void {
-        const currentGridIndex: number = FocusCell.Instance.Cell.gridIndex;
-        do {
-            if (this.isStillInSelection()) {
-                this.move();
+        if (FocusCell.Instance.Cell) {
+            const currentGridIndex: number = FocusCell.Instance.Cell.gridIndex;
+            do {
+                if (this.isStillInSelection()) {
+                    this.move();
+                }
+            } while (FocusCell.Instance.Cell.isFound && this.canMove());
+            if (FocusCell.Instance.Cell.isFound) {
+                FocusCell.Instance.Cell = this.cells[currentGridIndex];
             }
-        } while (FocusCell.Instance.Cell.isFound && this.canMove());
-        if (FocusCell.Instance.Cell.isFound) {
-            FocusCell.Instance.Cell = this.cells[currentGridIndex];
         }
     }
     private canMove(): boolean {
