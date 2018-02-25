@@ -67,19 +67,19 @@ export class WordTransmitterService {
             if (i === this.indexPosition[index - 1]) {
                 this.cells.push({
                     gridIndex: i, index: index, answer: this.gridContent[i],
-                    cellColor: CellColor.White, content: "", orientation: 0
+                    cellColor: CellColor.White, content: "", isFound: false
                 } as ICell);
                 ++index;
             } else {
                 if (this.gridContent[i] === BLACK_CHAR) {
                     this.cells.push({
                         gridIndex: i, index: null, answer: "",
-                        cellColor: CellColor.Black, content: "",  orientation: 0
+                        cellColor: CellColor.Black, content: "", isFound: false
                     } as ICell);
                 } else {
                     this.cells.push({
                         gridIndex: i, index: null, answer: this.gridContent[i],
-                        cellColor: CellColor.White, content: "",  orientation: 0
+                        cellColor: CellColor.White, content: "", isFound: false
                     } as ICell);
                 }
             }
@@ -112,12 +112,10 @@ export class WordTransmitterService {
             const startPosition: number = this.convertPositionToCellIndex(word.position.x, word.position.y);
             if (word.orientation === Orientation.Vertical) { // Vertical
                 for (let i: number = startPosition, j: number = 0; j < word.content.length; i = i + GRID_WIDTH, j++) {
-                    this.cells[i].orientation = Orientation.Vertical;
                     mockCells.push(this.cells[i]);
                 }
             } else {
                 for (let i: number = startPosition; i < word.content.length + startPosition; i++) {
-                    this.cells[i].orientation = Orientation.Horizontal;
                     mockCells.push(this.cells[i]);
                 }
             }

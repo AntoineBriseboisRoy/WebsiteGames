@@ -2,6 +2,7 @@ import { AbsGridCommand } from "./AbsGridCommand";
 import { ICell } from "../../../interfaces/ICell";
 import { FocusCell } from "../../focusCell";
 import { GRID_WIDTH } from "../../../../constants";
+import { Orientation } from "../../../../../../../common/interfaces/IWord";
 
 export class MoveUpCommand extends AbsGridCommand {
     public constructor(cells: Array<ICell>) {
@@ -9,15 +10,17 @@ export class MoveUpCommand extends AbsGridCommand {
     }
 
     private move(): void {
-        FocusCell.Instance.Cell = (FocusCell.Instance.Cell.gridIndex < GRID_WIDTH) ?
-            this.cells[FocusCell.Instance.Cell.gridIndex + GRID_WIDTH * GRID_WIDTH - GRID_WIDTH] :
-            this.cells[FocusCell.Instance.Cell.gridIndex - GRID_WIDTH];
+        if (FocusCell.Instance.Cell.gridIndex > FocusCell.Instance.Cells[0].gridIndex) {
+            FocusCell.Instance.Cell = this.cells[FocusCell.Instance.Cell.gridIndex - GRID_WIDTH];
+        }
     }
     public execute(): void {
-        if (FocusCell.Instance.Cell !== undefined) {
-            do {
-                this.move();
-            } while ( FocusCell.Instance.Cell.cellColor === "Black" );
+        if (this.isStillInSelection()) {
+            this.move();
         }
+    }
+
+    private isStillInSelection(): boolean {
+        return FocusCell.Instance.Cell !== undefined && FocusCell.Instance.Orientation === Orientation.Vertical;
     }
 }
