@@ -1,5 +1,5 @@
 import { Component, OnInit } from "@angular/core";
-import { Track, TrackType } from "../../admin-section/track-info";
+import { Track, TrackType } from "../../admin-section/track";
 
 @Component({
     selector: "app-track-view",

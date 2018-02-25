@@ -1,5 +1,5 @@
 import { Component, OnInit } from "@angular/core";
-import { Track, TrackType } from "./track-info";
+import { Track, TrackType } from "./track";
 
 @Component({
     selector: "app-admin-section",
