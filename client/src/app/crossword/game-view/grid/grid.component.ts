@@ -140,6 +140,10 @@ export class GridComponent implements OnInit {
         return "";
     }
 
+    public addStyleOnFoundWord(cell: ICell): string {
+        return cell.isFound ? "isFoundCell" : "";
+    }
+
     @HostListener("window:keydown", ["$event"])
     public onKeyDown(event: KeyboardEvent): void {
         this.keyboardInputManagerService.handleKeyDown(event);
