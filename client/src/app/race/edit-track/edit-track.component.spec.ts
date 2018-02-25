@@ -6,15 +6,15 @@ import * as cst from "../../constants";
 let elem: HTMLCanvasElement;
 const oEvent: MouseEvent = document.createEvent("MouseEvent");
 
-const createPoint: Function = (x: number, y: number) => {
-    createMouseEvent("mousedown", x, y, 0);
-    createMouseEvent("mouseup", x, y, 0);
-};
-
 const createMouseEvent: Function = (nameEvent: string, x: number, y: number, button: number) => {
     oEvent.initMouseEvent(nameEvent, true, true, document.defaultView, 1,
                           x, y, x, y, false, false, false, false, button, null);
     elem.dispatchEvent(oEvent);
+};
+
+const createPoint: Function = (x: number, y: number) => {
+    createMouseEvent("mousedown", x, y, 0);
+    createMouseEvent("mouseup", x, y, 0);
 };
 
 describe("EditTrackComponent", () => {

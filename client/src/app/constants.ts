@@ -27,3 +27,4 @@ export const FULL_CIRCLE_RAD: number = Math.PI * 2;
 export const NO_SELECTED_POINT: number = -1;
 export const RIGHT_MOUSE_BUTTON: number = 2;
 export const PRECISION_PIXELS: number = 1;
+export const SKIP_SEGMENT: number = 2;

@@ -1,8 +1,6 @@
 import { Component, OnInit } from "@angular/core";
 import { Point, Segment } from "./Geometry";
 import * as cst from "../../constants";
-import { IterableChangeRecord_ } from "@angular/core/src/change_detection/differs/default_iterable_differ";
-import { Vector2 } from "three";
 import { Constraints } from "./constraints";
 
 @Component({
@@ -15,7 +13,6 @@ export class EditTrackComponent implements OnInit {
   private canvas: HTMLCanvasElement;
   private context: CanvasRenderingContext2D;
   private points: Point[];
-  private img: HTMLImageElement;
   private mousePressed: boolean = false;
   private trackComplete: boolean = false;
   private selectedPoint: number;

@@ -1,7 +1,6 @@
 import { Point, Segment, Interval } from "./Geometry";
 import { Vector2 } from "three";
 import * as cst from "../../constants";
-import { InvalidArgumentError } from "../../invalidArgumentError";
 export class Constraints {
 
     private segments: Segment[];
@@ -83,7 +82,7 @@ export class Constraints {
 
     private checkSegmentOverlap(): void {
         for (let i: number = 0; i < this.segments.length; ++i) {
-            for (let j: number = i + 2; j < this.segments.length; ++j) {
+            for (let j: number = i + cst.SKIP_SEGMENT; j < this.segments.length; ++j) {
                 if (!(this.trackComplete && i === 0 && j === this.segments.length - 1)
                     && this.intersect(this.segments[i], this.segments[j])) {
                     this.segments[i].broken = true;

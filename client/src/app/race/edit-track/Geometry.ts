@@ -1,5 +1,3 @@
-import { InvalidArgumentError } from "../../invalidArgumentError";
-
 export interface Position {
   x: number;
   y: number;
