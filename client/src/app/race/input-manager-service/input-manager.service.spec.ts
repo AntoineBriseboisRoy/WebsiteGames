@@ -48,4 +48,20 @@ describe("InputManagerService", () => {
     service.handleKeyDown(RIGHT_KEYCODE);
     expect(car.steerRight).toHaveBeenCalled();
   });
+  it("should swap the camera view from the current one", () => {
+    const currentCameraView: CameraState = new ThirdPersonCamera(0, 0, 0, 0, 0);
+    spyOn(cameraContext, "swapCameraState");
+    service.handleKeyDown(SWAP_CAM_KEYCODE);
+    expect(cameraContext.swapCameraState).toHaveBeenCalled();
+  });
+  it("should call the ZoomIn method of CameraState", () => {
+    spyOn(cameraContext, "zoomIn");
+    service.handleKeyDown(ZOOM_IN_KEYCODE);
+    expect(cameraContext.zoomIn).toHaveBeenCalled();
+  });
+  it("should call the ZoomOut method of CameraState", () => {
+    spyOn(cameraContext, "zoomOut");
+    service.handleKeyDown(ZOOM_OUT_KEYCODE);
+    expect(cameraContext.zoomOut).toHaveBeenCalled();
+  });
 });
