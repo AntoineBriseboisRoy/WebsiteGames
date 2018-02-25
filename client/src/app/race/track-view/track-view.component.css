@@ -70,3 +70,7 @@
     display: inline-block;
     margin: 1%;
 }
+
+.play-btn {
+    border-radius: 0.85em;
+}

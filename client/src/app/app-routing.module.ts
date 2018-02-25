@@ -12,9 +12,9 @@ const routes: Routes = [
     { path: "", component: DashboardComponent },
     { path: "crossword", component: DifficultyMenuComponent },
     { path: "crossword/play", component: CrosswordViewComponent },
-    { path: "race", component: GameComponent },
+    { path: "race/play", component: GameComponent },
     { path: "admin", component: AdminSectionComponent },
-    { path: "tracks", component: TrackViewComponent}
+    { path: "race", component: TrackViewComponent}
 ];
 
 @NgModule({
