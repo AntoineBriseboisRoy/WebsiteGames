@@ -51,12 +51,11 @@ export class GridComponent implements OnInit {
     }
 
     public focusOnCell(cell: ICell): void {
-        if (this.clickedCell === cell) {    // if click on the same cell twice, switch to Vertical/Horizontal word
+        if (this.clickedCell === cell && cell.isFound === false) {    // if click on the same cell twice, switch to Vertical/Horizontal word
             this.chooseHorizontalOrVertical();
         } else {
             this.chooseNewWords(cell);
         }
-        console.log(cell);
     }
 
     private chooseHorizontalOrVertical(): void {
@@ -74,8 +73,6 @@ export class GridComponent implements OnInit {
     private firstUnknownCell(cells: Array<ICell>): number {
         for (let i: number = 0; i < cells.length; i++) {
             if (!cells[i].isFound) {
-                console.log(i);
-
                 return i;
             }
         }
@@ -93,7 +90,6 @@ export class GridComponent implements OnInit {
         if (this.clickedWords.length !== 0) {
             this.clickedCell = cell;
             this.focusCell.Cell = this.clickedWords[0].cells[this.firstUnknownCell(this.clickedWords[0].cells)];
-            // this.focusCell.Cell = this.clickedWords[0].cells[0];
             this.focusCell.Cells = this.clickedWords[0].cells;
             this.focusCell.Orientation = this.clickedWords[0].orientation;
         } else {
@@ -117,7 +113,6 @@ export class GridComponent implements OnInit {
     }
 
     public addOrientationBorders(cell: ICell): string {
-
         if (this.focusCell.Cells.includes(cell)) {
 
             return this.focusCell.Orientation === Orientation.Vertical ?
