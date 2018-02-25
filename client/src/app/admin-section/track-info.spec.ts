@@ -9,7 +9,7 @@ describe("TrackInfo", () => {
         expect(testTrack.Description).toBe(DESCRIPTION);
         expect(testTrack.NPlayed).toBe(0);
         expect(testTrack.Type).toBe(TrackType.DESERT);
-        expect(testTrack.BestTimes).toBe(["0:00"]);
+        expect(testTrack.BestTimes).toEqual(["0:00"]);
     });
     it("Should not create a track with a null name/description", () => {
         const testTrack: Track = new Track("", "", 0, ["0:00"], TrackType.DESERT);

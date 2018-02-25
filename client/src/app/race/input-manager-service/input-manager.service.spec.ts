@@ -11,7 +11,6 @@ import { CameraState } from "../camera/camera-state";
 import { ThirdPersonCamera } from "../camera/camera-perspective";
 
 const car: Car = new Car();
-const MS_BETWEEN_FRAMES: number = 16.6667;
 const cameraContext: CameraContext = new CameraContext();
 const service: InputManagerService = new InputManagerService();
 const INVALID_KEYCODE: number = 123;
@@ -47,5 +46,20 @@ describe("InputManagerService", () => {
     spyOn(car, "steerRight");
     service.handleKeyDown(RIGHT_KEYCODE);
     expect(car.steerRight).toHaveBeenCalled();
+  });
+  it("should swap the camera view from the current one", () => {
+    spyOn(cameraContext, "swapCameraState");
+    service.handleKeyDown(SWAP_CAM_KEYCODE);
+    expect(cameraContext.swapCameraState).toHaveBeenCalled();
+  });
+  it("should call the ZoomIn method of CameraState", () => {
+    spyOn(cameraContext, "zoomIn");
+    service.handleKeyDown(ZOOM_IN_KEYCODE);
+    expect(cameraContext.zoomIn).toHaveBeenCalled();
+  });
+  it("should call the ZoomOut method of CameraState", () => {
+    spyOn(cameraContext, "zoomOut");
+    service.handleKeyDown(ZOOM_OUT_KEYCODE);
+    expect(cameraContext.zoomOut).toHaveBeenCalled();
   });
 });
