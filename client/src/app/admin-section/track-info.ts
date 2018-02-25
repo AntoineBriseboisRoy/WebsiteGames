@@ -3,7 +3,7 @@ const UNDEFINED_DESCRIPTION: string = "Unknown description.";
 const MAX_BEST_TIMES: number = 10;
 
 export enum TrackType {
-    DESERT, RAIN, F1, REGULAR
+    DESERT = "Desert", RAIN = "Rain", F1 = "F1", REGULAR = "Regular"
 }
 
 export class Track {

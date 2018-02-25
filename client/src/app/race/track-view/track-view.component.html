@@ -1,3 +1,28 @@
-<p>
-  track-view works!
-</p>
+<div id="track-view-page" class="container-fluid">
+    <div class="container">
+        <div class="row title-box">
+            <h1 id="main-title">{{title}}</h1>
+            <h2>Click on a track to edit it.</h2>
+        </div>
+        <div class="container">
+            <ul class="track-list">
+                <div *ngFor="let track of tracks">
+                    <li class="track row">
+                        <div class="track-info">
+                            <h3>{{track.Name}}</h3>
+                            <p>{{track.Description}} <br> Type: {{track.type}} <br> Times played: {{track.NPlayed}}</p>
+                            <div>
+                                <h4>Best Times</h4>
+                                <ul class="track-times">
+                                    <li *ngFor="let time of track.bestTimes">
+                                        {{time}}
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </li>
+                </div>
+            </ul>
+        </div>
+    </div>
+</div>
