@@ -8,17 +8,19 @@
             <ul class="track-list">
                 <div *ngFor="let track of tracks">
                     <li class="track row">
-                        <div class="track-info">
+                        <div class="general-info">
                             <h3>{{track.Name}}</h3>
-                            <p>{{track.Description}} <br> Type: {{track.type}} <br> Times played: {{track.NPlayed}}</p>
-                            <div>
-                                <h4>Best Times</h4>
-                                <ul class="track-times">
-                                    <li *ngFor="let time of track.bestTimes">
-                                        {{time}}
-                                    </li>
-                                </ul>
-                            </div>
+                            <p>{{track.Description}}
+                                <br> Type: {{track.type}}
+                                <br> Times played: {{track.NPlayed}}</p>
+                        </div>
+                        <div class="time-info">
+                            <h4>Best Times</h4>
+                            <ul class="track-times">
+                                <li *ngFor="let time of track.bestTimes">
+                                    {{time}}
+                                </li>
+                            </ul>
                         </div>
                     </li>
                 </div>

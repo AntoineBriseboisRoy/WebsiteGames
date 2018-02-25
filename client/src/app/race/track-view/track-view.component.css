@@ -50,11 +50,23 @@
 }
 
 .track-times {
-    max-width: 30%;
     padding: 2%;
     margin-left: auto;
     margin-right: auto;
     border: medium solid #666;
     border-radius:  1em;
     list-style-type: none;
+}
+
+.general-info {
+    min-width: 50%;
+    display: inline-block;
+    margin: 1%;
+    text-align: left;
+}
+
+.time-info {
+    min-width: 40%;
+    display: inline-block;
+    margin: 1%;
 }
