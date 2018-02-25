@@ -3,6 +3,7 @@ import { NO_CHEAT_COLOR, CHEAT_COLOR, Orientation } from "../../../constants";
 import { WordTransmitterService } from "../../game-view/wordTransmitter.service";
 import { IGridWord } from "../../interfaces/IGridWord";
 import { FocusCell } from "../focusCell";
+import { ICell } from "../../interfaces/ICell";
 
 @Component({
     selector: "app-crossword-definition",

@@ -42,4 +42,10 @@ export class FocusCell {
     public invertOrientation(): void {
         this.Orientation = this.Orientation === Orientation.Horizontal ? Orientation.Vertical : Orientation.Horizontal;
     }
+
+    public clear(): void {
+        this.Cell = undefined;
+        this.Cells = [];
+        this.Orientation = undefined;
+    }
 }

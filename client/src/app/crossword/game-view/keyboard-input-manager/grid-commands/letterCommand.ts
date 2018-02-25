@@ -23,9 +23,7 @@ export class LetterCommand extends AbsGridCommand {
                 FocusCell.Instance.Cells.forEach((cell: ICell) => {
                     cell.isFound = true;
                 });
-                FocusCell.Instance.Cell = undefined;
-                FocusCell.Instance.Cells = [];
-                FocusCell.Instance.Orientation = undefined;
+                FocusCell.Instance.clear();
             }
         }
     }

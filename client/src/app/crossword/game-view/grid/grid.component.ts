@@ -97,9 +97,7 @@ export class GridComponent implements OnInit {
             this.focusCell.Cells = this.clickedWords[0].cells;
             this.focusCell.Orientation = this.clickedWords[0].orientation;
         } else {
-            this.focusCell.Cell = undefined;
-            this.focusCell.Cells = [];
-            this.focusCell.Orientation = undefined;
+            this.focusCell.clear();
         }
     }
 
