@@ -9,7 +9,7 @@ import { Track, TrackType } from "../../admin-section/track-info";
 export class TrackViewComponent implements OnInit {
     private tracks: Track[];
 
-    public readonly title: string = "Welcome to the admistration section!";
+    public readonly title: string = "Welcome to track list!";
     public constructor() {
         this.tracks = new Array<Track>();
     }
