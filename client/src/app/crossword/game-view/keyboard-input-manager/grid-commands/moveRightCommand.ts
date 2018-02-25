@@ -10,13 +10,21 @@ export class MoveRightCommand extends AbsGridCommand {
     }
 
     public execute(): void {
-        if (this.isStillInSelection()) {
-            this.move();
+        const currentGridIndex: number = FocusCell.Instance.Cell.gridIndex;
+        do {
+            if (this.isStillInSelection()) {
+                this.move();
+            }
+        } while (FocusCell.Instance.Cell.isFound && this.canMove());
+        if (FocusCell.Instance.Cell.isFound) {
+            FocusCell.Instance.Cell = this.cells[currentGridIndex];
         }
     }
-
+    private canMove(): boolean {
+        return FocusCell.Instance.Cell.gridIndex < FocusCell.Instance.Cells[FocusCell.Instance.Cells.length - 1].gridIndex;
+    }
     private move(): void {
-        if (FocusCell.Instance.Cell.gridIndex < FocusCell.Instance.Cells[FocusCell.Instance.Cells.length - 1].gridIndex) {
+        if (this.canMove()) {
             FocusCell.Instance.Cell = this.cells[FocusCell.Instance.Cell.gridIndex + 1];
         }
     }
