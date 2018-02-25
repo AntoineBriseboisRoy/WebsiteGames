@@ -1,6 +1,6 @@
 const UNDEFINED_NAME: string = "Unknown track";
 const UNDEFINED_DESCRIPTION: string = "Unknown description.";
-const MAX_BEST_TIMES: number = 10;
+// const MAX_BEST_TIMES: number = 10;
 
 export enum TrackType {
     DESERT = "Desert", RAIN = "Rain", F1 = "F1", REGULAR = "Regular"
