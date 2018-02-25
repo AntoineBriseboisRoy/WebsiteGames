@@ -18,6 +18,7 @@ import { DashboardComponent } from "./dashboard/dashboard.component";
 import { DifficultyMenuComponent } from "./crossword/difficulty-menu/difficulty-menu.component";
 import { AdminSectionComponent } from "./admin-section/admin-section.component";
 import { APP_BASE_HREF } from "@angular/common";
+import { TrackViewComponent } from "./race/track-view/track-view.component";
 
 @NgModule({
     declarations: [
@@ -29,7 +30,8 @@ import { APP_BASE_HREF } from "@angular/common";
         DefinitionComponent,
         DashboardComponent,
         DifficultyMenuComponent,
-        AdminSectionComponent
+        AdminSectionComponent,
+        TrackViewComponent
     ],
     imports: [
         BrowserModule,
