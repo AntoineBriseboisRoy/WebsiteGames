@@ -11,4 +11,5 @@ export interface ICell {
     answer: string;
     cellColor: CellColor;
     content: string;
+    isFound: boolean;
 }

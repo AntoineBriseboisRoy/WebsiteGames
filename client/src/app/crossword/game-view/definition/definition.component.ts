@@ -42,10 +42,22 @@ export class DefinitionComponent implements OnInit {
         });
     }
 
+    private firstUnknownCell(cells: Array<ICell>): number {
+        for (let i: number = 0; i < cells.length; i++) {
+            if (!cells[i].isFound) {
+                console.log(i);
+
+                return i;
+            }
+        }
+
+        return -1;
+    }
+
     public focusOnCell(choosedDefinition: string): void {
         this.gridWords.forEach((word: IGridWord, index: number) => {
             if (word.definition === choosedDefinition) {
-                this.focusCell.Cell = word.cells[0];
+                this.focusCell.Cell = word.cells[this.firstUnknownCell(word.cells)];
                 this.focusCell.Cells = word.cells;
                 this.focusCell.Orientation = word.orientation;
                 this.choosedDefinition = word.definition;
