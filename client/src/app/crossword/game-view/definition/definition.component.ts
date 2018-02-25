@@ -46,13 +46,22 @@ export class DefinitionComponent implements OnInit {
     private firstUnknownCell(cells: Array<ICell>): number {
         for (let i: number = 0; i < cells.length; i++) {
             if (!cells[i].isFound) {
-                console.log(i);
-
                 return i;
             }
         }
 
         return -1;
+    }
+
+    private isAlreadyFoundWord(): boolean {
+        let isFoundWord: boolean = true;
+        this.focusCell.Cells.forEach((cell: ICell) => {
+            if (!cell.isFound) {
+                isFoundWord = false;
+            }
+        });
+
+        return isFoundWord;
     }
 
     public focusOnCell(choosedDefinition: string): void {
@@ -62,6 +71,12 @@ export class DefinitionComponent implements OnInit {
                 this.focusCell.Cells = word.cells;
                 this.focusCell.Orientation = word.orientation;
                 this.choosedDefinition = word.definition;
+                if (this.isAlreadyFoundWord()) {
+                    this.focusCell.Cell = undefined;
+                    this.focusCell.Cells = undefined;
+                    this.focusCell.Orientation = undefined;
+                    this.choosedDefinition = undefined;
+                }
             }
         });
     }

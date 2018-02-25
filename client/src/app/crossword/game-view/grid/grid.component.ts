@@ -113,28 +113,33 @@ export class GridComponent implements OnInit {
     }
 
     public addOrientationBorders(cell: ICell): string {
-        if (this.focusCell.Cells.includes(cell)) {
-
-            return this.focusCell.Orientation === Orientation.Vertical ?
-                "vertical-border" : "horizontal-border";
+        if (this.focusCell.Cells) {
+            if (this.focusCell.Cells.includes(cell)) {
+                return this.focusCell.Orientation === Orientation.Vertical ?
+                    "vertical-border" : "horizontal-border";
+            }
         }
 
         return "";
     }
 
     public addFirstCellBorder(cell: ICell): string {
-        if (this.focusCell.Cells[0] === cell) {
-            return this.focusCell.Orientation === Orientation.Vertical ?
-                "first-case-border-vertical" : "first-case-border-horizontal";
+        if (this.focusCell.Cells) {
+            if (this.focusCell.Cells[0] === cell) {
+                return this.focusCell.Orientation === Orientation.Vertical ?
+                    "first-case-border-vertical" : "first-case-border-horizontal";
+            }
         }
 
         return "";
     }
 
     public addLastCellBorder(cell: ICell): string {
-        if (this.focusCell.Cells[this.focusCell.Cells.length - 1] === cell) {
-            return this.focusCell.Orientation === Orientation.Vertical ?
-                "last-case-border-vertical" : "last-case-border-horizontal";
+        if (this.focusCell.Cells) {
+            if (this.focusCell.Cells[this.focusCell.Cells.length - 1] === cell) {
+                return this.focusCell.Orientation === Orientation.Vertical ?
+                    "last-case-border-vertical" : "last-case-border-horizontal";
+            }
         }
 
         return "";
