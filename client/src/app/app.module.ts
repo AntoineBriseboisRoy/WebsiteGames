@@ -19,6 +19,8 @@ import { DifficultyMenuComponent } from "./crossword/difficulty-menu/difficulty-
 import { AdminSectionComponent } from "./admin-section/admin-section.component";
 import { APP_BASE_HREF } from "@angular/common";
 import { TrackViewComponent } from "./race/track-view/track-view.component";
+import { GridService } from "./crossword/grid.service";
+import { WordTransmitterService } from "./crossword/game-view/wordTransmitter.service";
 
 @NgModule({
     declarations: [
@@ -39,7 +41,7 @@ import { TrackViewComponent } from "./race/track-view/track-view.component";
         FormsModule,
         AppRoutingModule
     ],
-    providers: [{provide: APP_BASE_HREF, useValue : "/" }, BasicService],
+    providers: [BasicService, GridService, WordTransmitterService, {provide: APP_BASE_HREF, useValue : "/" }],
     bootstrap: [AppComponent]
 })
 export class AppModule { }

@@ -1,115 +1,189 @@
-import { Component, OnInit } from "@angular/core";
-import { Cell } from "./cell";
-import { BLACK_CHAR, GRID_WIDTH } from "../../../constants";
-import { GridWord } from "./gridWord";
-// import {Grid} from "../../../../../../server/app/Grid/Grid";
-// import {Word} from "../../../../../../server/app/Grid/Word";
+import { Component, OnInit, HostListener } from "@angular/core";
+import { GRID_WIDTH, Orientation } from "../../../constants";
+
+import { IGridWord } from "../../interfaces/IGridWord";
+import { ICell, CellColor } from "../../interfaces/ICell";
+import { FocusCell } from "../focusCell";
+import { KeyboardInputManagerService } from "../keyboard-input-manager/keyboard-input-manager.service";
+import { WordTransmitterService } from "../wordTransmitter.service";
+import { IWord } from "../../../../../../common/interfaces/IWord";
+import { GameManager } from "../../game-manager";
 
 @Component({
     selector: "app-crossword-grid",
     templateUrl: "./grid.component.html",
-    styleUrls: ["./grid.component.css"]
+    styleUrls: ["./grid.component.css"],
+    providers: [KeyboardInputManagerService]
 })
 
 export class GridComponent implements OnInit {
-    private indexPosition: number[];
-    private cells: Array<Cell>;
-    private words: Array<GridWord>;
-    // Mock list that we will receive from crossword generator
-    private mockWords: string[];
-    private convertedMockWords: string;
-    public constructor() {// private grid: Grid) {
-        this.indexPosition = new Array();
+    private cells: Array<ICell>;
+    private gridWords: Array<IGridWord>;
+    private clickedWords: Array<IGridWord>;
+    private clickedCell: ICell;
+    private focusCell: FocusCell;
+
+    private keyboardInputManagerService: KeyboardInputManagerService;
+    public constructor(private wordTransmitterService: WordTransmitterService) {
         this.cells = new Array();
-        // Créer un service pour couche de persistance :
-        this.mockWords = ["aaa", BLACK_CHAR, "aa", BLACK_CHAR, "aa", BLACK_CHAR, "sadasd", BLACK_CHAR, "asd",
-                          "aaaaaaa", BLACK_CHAR, "aa", "sadasd", BLACK_CHAR, "asd",
-                          "aaaaaa", BLACK_CHAR, "aaa", "sadas", BLACK_CHAR, BLACK_CHAR, "asd",
-                          "aaa", BLACK_CHAR, "aa", BLACK_CHAR, "aaa", "sadasd", BLACK_CHAR, "asd",
-                          "aaaaaa", BLACK_CHAR, "aaa", "sadasd", BLACK_CHAR, "asd"];
-        this.createConvertedMockWords();
+        this.gridWords = new Array();
+        this.clickedWords = new Array();
+        this.focusCell = FocusCell.Instance;
     }
 
     public ngOnInit(): void {
-        // this.grid = ;
-        this.createIndex();
-        this.createCells();
-        this.createWords();
+        this.wordTransmitterService.getTransformedWords().subscribe((gridWords: Array<IGridWord>) => {
+            this.gridWords = gridWords;
+        });
+        this.wordTransmitterService.getCells().subscribe((gridCells: Array<ICell>) => {
+            this.cells = gridCells;
+            this.keyboardInputManagerService = new KeyboardInputManagerService(this.cells);
+        });
     }
 
-    private isABlackSquare(letter: string): boolean {
-        return letter === BLACK_CHAR;
-    }
-
-    private createCells(): void {
-        let index: number = 1;
-        for (let i: number = 0; i < this.convertedMockWords.length; ++i) {
-            if (i === this.indexPosition[index - 1]) {
-                this.cells.push(new Cell(index, true, this.convertedMockWords[i], false));
-                ++index;
-            } else {
-                if (this.convertedMockWords[i] === BLACK_CHAR) {
-                    this.cells.push(new Cell(i, false, this.convertedMockWords[i], true));
-                } else {
-                    this.cells.push(new Cell(i, false, this.convertedMockWords[i], false));
-                }
-            }
-        }
-    }
-
-    private createConvertedMockWords(): void {
-        this.convertedMockWords = this.mockWords[0];
-        for (let i: number = 1; i < this.mockWords.length; ++i) {
-            this.convertedMockWords += this.mockWords[i];
-        }
-    }
-
-    // create the array that contain every cell's number that need an index
-    private createIndex(): void {
-        for (let i: number = 0; i < this.convertedMockWords.length; ++i) {
-            if (this.containsIndex(i)) {
-                this.indexPosition.push(i);
-            }
-        }
-    }
-
-    private containsIndex(i: number): boolean {
-        return !this.isABlackSquare(this.convertedMockWords[i]) &&              // the cell isn't black
-                (i < GRID_WIDTH ||                                              // first line
-                this.isABlackSquare(this.convertedMockWords[i - 1]) &&
-                !this.isABlackSquare(this.convertedMockWords[i + 1]) ||          // right side of a black square
-                this.isABlackSquare(this.convertedMockWords[i - GRID_WIDTH])
-                && !this.isABlackSquare(this.convertedMockWords[i + GRID_WIDTH]) || // below a black square
-                i % GRID_WIDTH === 0);                                          // first column
-    }
-
-    private createWords(): void {
-        const mockCells: Array<Cell> = new Array();
-
-        // this.grid.Words.forEach((word: Word, index: number) => {
-        //     const startPosition: number = this.convertPositionToCellIndex(word.Position.X, word.Position.Y);
-        //     if (!word.Orientation) {// Vertical
-        //         for (let i: number = startPosition; i < word.Length; i = i + GRID_WIDTH) {
-        //             mockCells.push(this.cells[i]);
-        //         }
-        //     } else {
-        //         for (let i: number = startPosition; i < word.Length; i++) {
-        //             mockCells.push(this.cells[i]);
-        //         }
-        //     }
-        //     this.words.push(new GridWord(mockCells, word.Content, word.Definition, word.Orientation));
-        // });
-    }
-
-    private convertPositionToCellIndex(x: number, y: number): number {
-        return y * GRID_WIDTH + x;
-    }
-
-    private gridLineJump(index: number): string {
+    /*Fonctions appeler directement par le html*/
+    public gridLineJump(index: number): string {
         return (index % GRID_WIDTH) === 0 ? "square clear" : "square";
     }
 
-    private getCellType(isBlack: boolean): string {
-        return isBlack ? "black-square" : "white-square";
+    public getCellType(color: CellColor): string {
+        return color === CellColor.Black ? "black-square" : "white-square";
+    }
+
+    public focusOnCell(cell: ICell): void {
+         // if click on the same cell twice, switch to Vertical/Horizontal word
+        if (this.clickedCell === cell && cell.isFound === false && this.focusCell.Cell !== undefined) {
+            this.chooseHorizontalOrVertical();
+        } else {
+            this.chooseNewWords(cell);
+        }
+    }
+    private chooseHorizontalOrVertical(): void {
+        if (this.clickedWords.length > 1) {
+            this.focusCell.Cell = this.isFocusCellinCells(this.clickedWords[0].cells) ?
+                this.clickedWords[1].cells[this.firstUnknownCell(this.clickedWords[1].cells)] :
+                this.clickedWords[0].cells[this.firstUnknownCell(this.clickedWords[0].cells)];
+            this.focusCell.Cells = this.focusCell.Cells === this.clickedWords[0].cells ?
+                this.clickedWords[1].cells : this.clickedWords[0].cells;
+            this.focusCell.invertOrientation();
+        }
+    }
+    private isFocusCellinCells(cells: Array<ICell>): boolean {
+        for (const cell of cells) {
+            if (this.focusCell.Cell === cell && this.focusCell.Cells === cells) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    // Focus on the first unfound cell of an unfound word.
+    private firstUnknownCell(cells: Array<ICell>): number {
+        for (let i: number = 0; i < cells.length; i++) {
+            if (!cells[i].isFound) {
+                return i;
+            }
+        }
+
+        return -1;
+    }
+
+    private addWordsToClickedWords(cell: ICell): void {
+        this.gridWords.forEach((word: IGridWord) => {
+            if (word.cells.includes(cell) && !word.isFound) {
+                this.clickedWords.push(word);
+            }
+        });
+    }
+    private chooseNewWords(cell: ICell): void {
+        this.clickedWords = [];
+        this.addWordsToClickedWords(cell);
+        if (this.clickedWords.length !== 0) {
+            this.clickedCell = cell;
+            this.focusCell.Cell = this.clickedWords[0].cells[this.firstUnknownCell(this.clickedWords[0].cells)];
+            this.focusCell.Cells = this.clickedWords[0].cells;
+            this.focusCell.Orientation = this.clickedWords[0].orientation;
+        } else {
+            this.focusCell.clear();
+        }
+    }
+
+    public addHighlightOnFocus(cell: ICell): string {
+        return this.focusCell.Cell === cell ? "focus" : "";
+    }
+
+    public addOrientationBorders(cell: ICell): string {
+        if (this.focusCell.Cells) {
+            if (this.focusCell.Cells.includes(cell)) {
+                return this.focusCell.Orientation === Orientation.Vertical ?
+                    "vertical-border" : "horizontal-border";
+            }
+        }
+
+        return "";
+    }
+
+    public addFirstCellBorder(cell: ICell): string {
+        if (this.focusCell.Cells) {
+            if (this.focusCell.Cells[0] === cell) {
+                return this.focusCell.Orientation === Orientation.Vertical ?
+                    "first-case-border-vertical" : "first-case-border-horizontal";
+            }
+        }
+
+        return "";
+    }
+
+    public addLastCellBorder(cell: ICell): string {
+        if (this.focusCell.Cells) {
+            if (this.focusCell.Cells[this.focusCell.Cells.length - 1] === cell) {
+                return this.focusCell.Orientation === Orientation.Vertical ?
+                    "last-case-border-vertical" : "last-case-border-horizontal";
+            }
+        }
+
+        return "";
+    }
+
+    public addStyleOnFoundWord(cell: ICell): string {
+        return cell.isFound ? "isFoundCell" : "";
+    }
+
+    private verifyAnswers(focusCell: ICell): void {
+        let userAnswer: string = "";
+        let correctAnswer: string = "";
+
+        this.clickedWords = [];
+        this.addWordsToClickedWords(focusCell);
+
+        for (const word of this.clickedWords) {
+            correctAnswer = word.correctAnswer;
+            for (const cell of word.cells) {
+                userAnswer += cell.content;
+            }
+            if (userAnswer === correctAnswer) {
+                this.setCellsToFound(word);
+                GameManager.Instance.PlayerOne.addPoint(word.cells.length);
+                word.isFound = true;
+            }
+            userAnswer = "";
+        }
+    }
+
+    private setCellsToFound(word: IGridWord): void {
+        word.cells.forEach((cell) => {
+            cell.isFound = true;
+        });
+        if (FocusCell.Instance.Cells === word.cells) {
+            FocusCell.Instance.clear();
+        }
+    }
+
+    @HostListener("window:keydown", ["$event"])
+    public onKeyDown(event: KeyboardEvent): void {
+        const cell: ICell = this.focusCell.Cell;
+        this.keyboardInputManagerService.handleKeyDown(event);
+        this.verifyAnswers(cell);
     }
 }

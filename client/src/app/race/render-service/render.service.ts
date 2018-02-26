@@ -8,7 +8,7 @@ import { ThirdPersonCamera } from "../camera/camera-perspective";
 import { TopViewCamera } from "../camera/camera-orthogonal";
 import { INITIAL_CAMERA_POSITION_Y, FRUSTUM_RATIO, PI_OVER_2 } from "../../constants";
 import { Skybox } from "../skybox/skybox";
-import { CameraContext } from '../camera/camera-context';
+import { CameraContext } from "../camera/camera-context";
 
 export const FAR_CLIPPING_PLANE: number = 1000;
 export const NEAR_CLIPPING_PLANE: number = 1;
