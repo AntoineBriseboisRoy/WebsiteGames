@@ -1,6 +1,6 @@
 import { Point, Segment, Interval } from "./Geometry";
-import { Vector2 } from "three";
 import * as cst from "../../constants";
+import { Vector2 } from "three";
 export class Constraints {
 
     private segments: Segment[];
@@ -63,18 +63,17 @@ export class Constraints {
     }
 
     private checkAngleBetweenTwoSegments(segment1: Segment, segment2: Segment): boolean {
-        const vec1: Vector2 = new Vector2(segment1.SecondPoint.x - segment1.FirstPoint.x,
-                                          segment1.SecondPoint.y - segment1.FirstPoint.y);
-        const vec2: Vector2 = new Vector2(segment2.FirstPoint.x - segment2.SecondPoint.x,
-                                          segment2.FirstPoint.y - segment2.SecondPoint.y);
+        return this.getAngleBetweenTwoSegments(segment1, segment2) < cst.COMPLEMENT_PI_OVER_4;
+    }
 
-        return Math.acos(vec1.dot(vec2) / (vec1.length() * vec2.length())) > cst.PI_OVER_4;
+    private getAngleBetweenTwoSegments(segment1: Segment, segment2: Segment): number {
+        return Math.acos(segment1.getAsVector().dot(segment2.getAsVector()) /
+                        (segment1.getLength() * segment2.getLength()));
     }
 
     private checkSegmentLength(): void {
         for (const segment of this.segments) {
-            if (new Vector2(segment.SecondPoint.x - segment.FirstPoint.x,
-                            segment.SecondPoint.y - segment.FirstPoint.y).length() < cst.TWICE_TRACK_WIDTH) {
+            if (segment.getLength() < cst.TWICE_TRACK_WIDTH) {
                 segment.broken = true;
             }
         }
@@ -97,7 +96,7 @@ export class Constraints {
         const longerSegment2: Segment = this.elongateSegment(segment2);
 
         if (!this.haveCommonXcoordinates(longerSegment1, longerSegment2)) {
-            return false; // No common X coordinates
+            return false;
         }
 
         if (longerSegment1.isPerfectlyVertical()) {
@@ -107,7 +106,7 @@ export class Constraints {
         }
 
         if (longerSegment1.getSlope() === longerSegment2.getSlope()) {
-            return false; // If they're parallel
+            return false;
         }
 
         return this.isWithinInterval(this.getIntersectingX(longerSegment1, longerSegment2),

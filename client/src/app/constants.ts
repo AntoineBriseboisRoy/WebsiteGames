@@ -8,6 +8,7 @@ export const RAD_TO_DEG: number = STRAIGHT_ANGLE_DEG / Math.PI;
 export const GRID_WIDTH: number = 10;
 export const PI_OVER_2: number = Math.PI / 2;
 export const PI_OVER_4: number = Math.PI / 4;
+export const COMPLEMENT_PI_OVER_4: number = Math.PI - PI_OVER_4;
 export const BLACK_CHAR: string = "*";
 export const enum Difficulty {
     Easy = "Easy",

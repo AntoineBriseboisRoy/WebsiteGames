@@ -1,3 +1,5 @@
+import { Vector2 } from "three";
+
 export interface Position {
   x: number;
   y: number;
@@ -44,6 +46,15 @@ export class Segment {
   public set SecondPointPosition(position: Position) {
     this.secondPoint.x = position.x;
     this.secondPoint.y = position.y;
+  }
+
+  public getAsVector(): Vector2 {
+    return new Vector2(this.SecondPoint.x - this.FirstPoint.x,
+                       this.SecondPoint.y - this.FirstPoint.y);
+  }
+
+  public getLength(): number {
+    return this.getAsVector().length();
   }
 
   public getSlope(): number {
