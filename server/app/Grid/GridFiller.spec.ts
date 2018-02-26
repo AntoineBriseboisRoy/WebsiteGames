@@ -1,6 +1,6 @@
 import { expect } from "chai";
 import { Grid } from "./Grid";
-import { Word } from "./Word";
+import { IWord } from "../../../common/interfaces/IWord";
 import { DictionaryEntry, Constraint } from "./Interfaces";
 import * as cst from "./Constants";
 
@@ -23,10 +23,10 @@ describe("Verifying 2x2 Grid (no black squares)", () => {
         const testGrid: Grid = new Grid(SIDE_SIZE, BLACK_SQUARE_RATIO);
         const EXPECTED_VALID_WORDS: number = 4;
         let nValidWords: number = 0;
-        testGrid.Words.forEach((word: Word) => {
+        testGrid.Words.forEach((word: IWord) => {
             const searchResult: DictionaryEntry[] = cst.DICTIONNARY.filter((entry: DictionaryEntry) => {
                 let passesFilter: boolean = true;
-                if (entry.word === word.Content) {
+                if (entry.word === word.content) {
                     passesFilter = false;
                 }
 
@@ -36,7 +36,6 @@ describe("Verifying 2x2 Grid (no black squares)", () => {
                 ++nValidWords;
             }
         });
-
         expect(nValidWords).to.equal(EXPECTED_VALID_WORDS);
     });
 });
@@ -60,10 +59,10 @@ describe("Verifying 3x3 Grid (no black squares)", () => {
         const testGrid: Grid = new Grid(SIDE_SIZE, BLACK_SQUARE_RATIO);
         const EXPECTED_VALID_WORDS: number = 6;
         let nValidWords: number = 0;
-        testGrid.Words.forEach((word: Word) => {
+        testGrid.Words.forEach((word: IWord) => {
             const searchResult: DictionaryEntry[] = cst.DICTIONNARY.filter((entry: DictionaryEntry) => {
                 let passesFilter: boolean = true;
-                if (entry.word === word.Content) {
+                if (entry.word === word.content) {
                     passesFilter = false;
                 }
 
@@ -97,10 +96,10 @@ describe.skip("Verifying 10x10 Grid (no black squares)", () => {
         const testGrid: Grid = new Grid(cst.STANDARD_SIDE_SIZE, BLACK_SQUARE_RATIO);
         const EXPECTED_VALID_WORDS: number = testGrid.Words.length;
         let nValidWords: number = 0;
-        testGrid.Words.forEach((word: Word) => {
+        testGrid.Words.forEach((word: IWord) => {
             const searchResult: DictionaryEntry[] = cst.DICTIONNARY.filter((entry: DictionaryEntry) => {
                 let passesFilter: boolean = true;
-                if (entry.word === word.Content) {
+                if (entry.word === word.content) {
                     passesFilter = false;
                 }
 
@@ -127,7 +126,7 @@ describe.skip("Verifying 10x10 Grid (no black squares)", () => {
     });
     it ("There should be no words shorter than 3 letters.", () => {
         const testGrid: Grid = new Grid(cst.STANDARD_SIDE_SIZE, cst.PERCENTAGE_BLACK_SQUARES);
-        expect(testGrid.Words.filter((word: Word) => word.Length < cst.MIN_LETTERS_FOR_WORD).length).to.equal(0);
+        expect(testGrid.Words.filter((word: IWord) => word.content.length < cst.MIN_LETTERS_FOR_WORD).length).to.equal(0);
     });
     // tslint:disable-next-line:max-func-body-length
     it("Should have at least 1 valid word per row/column", () => {

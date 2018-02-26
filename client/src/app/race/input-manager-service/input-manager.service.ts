@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { Car } from "../car/car";
-import { AccelerateCarCommand } from "./car-commands/UpCarCommand";
+import { AccelerateCarCommand } from "./car-commands/AccelerateCarCommand";
 import { RightCarCommand } from "./car-commands/RightCarCommand";
 import { LeftCarCommand } from "./car-commands/LeftCarCommand";
 import { ReleaseSteeringCommand } from "./car-commands/ReleaseSteeringCommand";
@@ -15,19 +15,15 @@ import { BrakeCarCommand } from "./car-commands/BrakeCarCommand";
 import { ReleaseBrakeCommand } from "./car-commands/ReleaseBrakeCommand";
 import { CameraContext } from "../camera/camera-context";
 import { SwapCameraCommand } from "./camera-commands/SwapCameraCommand";
+import { CommandKeyPair } from "./CommandKeyPair";
 
-const ACCELERATE_KEYCODE: number = 87; // w
-const LEFT_KEYCODE: number = 65;       // a
-const BRAKE_KEYCODE: number = 83;      // s
-const RIGHT_KEYCODE: number = 68;      // d
-const ZOOM_IN_KEYCODE: number = 90;    // z
-const ZOOM_OUT_KEYCODE: number = 88;   // x
-const SWAP_CAM_KEYCODE: number = 67;   // c
-
-interface CommandKeyPair {
-    KeyCode: number;
-    Command: AbsCommand;
-}
+export const ACCELERATE_KEYCODE: number = 87; // w
+export const LEFT_KEYCODE: number = 65;       // a
+export const BRAKE_KEYCODE: number = 83;      // s
+export const RIGHT_KEYCODE: number = 68;      // d
+export const ZOOM_IN_KEYCODE: number = 90;    // z
+export const ZOOM_OUT_KEYCODE: number = 88;   // x
+export const SWAP_CAM_KEYCODE: number = 67;   // c
 
 @Injectable()
 export class InputManagerService {
@@ -55,18 +51,18 @@ export class InputManagerService {
         ];
     }
 
-    public handleKeyDown(event: KeyboardEvent): void {
+    public handleKeyDown(eventKeyCode: number): void {
         const command: CommandKeyPair = this.keyDownCommands.find((cmd: CommandKeyPair) => {
-            return cmd.KeyCode === event.keyCode;
+            return cmd.KeyCode === eventKeyCode;
         });
         if (command) {
             command.Command.execute();
         }
     }
 
-    public handleKeyUp(event: KeyboardEvent): void {
+    public handleKeyUp(eventKeyCode: number): void {
          const command: CommandKeyPair = this.keyUpCommands.find((cmd: CommandKeyPair) => {
-            return cmd.KeyCode === event.keyCode;
+            return cmd.KeyCode === eventKeyCode;
          });
          if (command) {
             command.Command.execute();

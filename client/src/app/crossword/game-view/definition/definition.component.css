@@ -8,6 +8,10 @@
     background-color: rgb(228, 245, 255);
 }
 
+.word-definition-found {
+    text-decoration: line-through;
+}
+
 .title-layout-name {
     border: 2px solid rgba(109, 97, 97, 0.603);
     width: 50%;
