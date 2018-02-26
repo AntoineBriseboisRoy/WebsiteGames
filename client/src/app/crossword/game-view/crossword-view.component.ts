@@ -15,8 +15,7 @@ export class CrosswordViewComponent implements OnInit {
 
     public clickHandler(event: Event): void {
         if (this.isOutsideClick(event)) {
-            FocusCell.Instance.Cell = undefined;
-            FocusCell.Instance.Orientation = undefined;
+            FocusCell.Instance.clear();
         }
     }
 
