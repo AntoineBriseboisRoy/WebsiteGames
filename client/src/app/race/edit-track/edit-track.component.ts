@@ -10,15 +10,22 @@ import * as $ from "jquery";
     styleUrls: ["./edit-track.component.css"]
 })
 export class EditTrackComponent implements OnInit {
-    private constraints: Constraints = new Constraints();
+    private constraints: Constraints;
     private canvas: HTMLCanvasElement;
     private context: CanvasRenderingContext2D;
     private points: Point[];
-    private mousePressed: boolean = false;
-    private moveStartPoint: boolean = false;
-    private trackComplete: boolean = false;
-    private selectedPoint: number = cst.NO_SELECTED_POINT;
-    public constructor() { }
+    private mousePressed: boolean;
+    private moveStartPoint: boolean;
+    private trackComplete: boolean;
+    private selectedPoint: number;
+
+    public constructor() {
+        this.constraints = new Constraints();
+        this.mousePressed = false;
+        this.moveStartPoint = false;
+        this.trackComplete = false;
+        this.selectedPoint = cst.NO_SELECTED_POINT;
+     }
 
     public ngOnInit(): void {
         this.points = new Array<Point>();
@@ -52,7 +59,7 @@ export class EditTrackComponent implements OnInit {
 
     private get areFieldsComplete(): boolean {
         return this.getInputElement("Description").value !== this.getInputElement("Description").defaultValue &&
-            this.getInputElement("Name").value !== this.getInputElement("Name").defaultValue;
+               this.getInputElement("Name").value !== this.getInputElement("Name").defaultValue;
     }
 
     public get canBeSaved(): boolean {
@@ -67,6 +74,7 @@ export class EditTrackComponent implements OnInit {
     }
 
     public showPopover(target: HTMLElement): void {
+        // tslint:disable-next-line:no-any
         const $j: any = jQuery.noConflict();
         $j(target).popover({
             title: "Can't save track",
