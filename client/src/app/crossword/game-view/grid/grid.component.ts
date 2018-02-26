@@ -6,7 +6,6 @@ import { ICell, CellColor } from "../../interfaces/ICell";
 import { FocusCell } from "../focusCell";
 import { KeyboardInputManagerService } from "../keyboard-input-manager/keyboard-input-manager.service";
 import { WordTransmitterService } from "../wordTransmitter.service";
-import { IWord } from "../../../../../../common/interfaces/IWord";
 import { GameManager } from "../../game-manager";
 
 @Component({
@@ -41,7 +40,7 @@ export class GridComponent implements OnInit {
         });
     }
 
-    /*Fonctions appeler directement par le html*/
+    /*Fonctions appelées directement par le html*/
     public gridLineJump(index: number): string {
         return (index % GRID_WIDTH) === 0 ? "square clear" : "square";
     }

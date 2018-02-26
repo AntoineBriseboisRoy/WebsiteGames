@@ -2,8 +2,6 @@ import { AfterViewInit, Component, ElementRef, ViewChild, HostListener } from "@
 import { RenderService } from "../render-service/render.service";
 import { Car } from "../car/car";
 import { InputManagerService } from "../input-manager-service/input-manager.service";
-import { PerspectiveCamera, Camera } from "three";
-import { ThirdPersonCamera } from "../camera/camera-perspective";
 import { CameraContext } from "../camera/camera-context";
 
 @Component({

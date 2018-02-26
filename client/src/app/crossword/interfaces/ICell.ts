@@ -1,4 +1,3 @@
-import { Orientation } from "../../../../../common/interfaces/IWord";
 
 export enum CellColor {
     White = "White",

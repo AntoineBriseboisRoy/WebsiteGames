@@ -22,7 +22,7 @@ export class AdminSectionComponent implements OnInit {
         this.createArtificialTracks();
     }
 
-    private onButtonClick(name: string, action: string): void {
+    public onButtonClick(name: string, action: string): void {
         const selectedTrack: Track = this.tracks.find((track: Track) => {
             return track.Name === name;
         });
