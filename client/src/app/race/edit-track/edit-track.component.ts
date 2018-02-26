@@ -2,6 +2,7 @@ import { Component, OnInit } from "@angular/core";
 import { Point, Segment } from "./Geometry";
 import * as cst from "../../constants";
 import { Constraints } from "./constraints";
+import * as $ from "jquery";
 
 @Component({
     selector: "app-edit-track",
@@ -66,7 +67,7 @@ export class EditTrackComponent implements OnInit {
     }
 
     public showPopover(target: HTMLElement): void {
-        $(target).popover({
+        ($(target) as any).popover({
             title: "Can't save track",
             content: (() => {
                 let content: string = "";
