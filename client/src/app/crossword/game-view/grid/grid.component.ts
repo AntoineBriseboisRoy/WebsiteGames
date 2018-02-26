@@ -91,7 +91,7 @@ export class GridComponent implements OnInit {
     private chooseNewWords(cell: ICell): void {
         this.clickedWords = [];
         this.gridWords.forEach((word: IGridWord, index: number) => {
-            if (word.cells.includes(cell) && !this.isAlreadyFoundWord(word)) {
+            if (word.cells.includes(cell) && !word.isFound) {
                 this.clickedWords.push(word);
             }
         });
@@ -103,17 +103,6 @@ export class GridComponent implements OnInit {
         } else {
             this.focusCell.clear();
         }
-    }
-
-    private isAlreadyFoundWord(word: IGridWord): boolean {
-        let isFoundWord: boolean = true;
-        word.cells.forEach((wordCell: ICell) => {
-            if (!wordCell.isFound) {
-                isFoundWord = false;
-            }
-        });
-
-        return isFoundWord;
     }
 
     public addHighlightOnFocus(cell: ICell): string {
@@ -163,7 +152,7 @@ export class GridComponent implements OnInit {
 
         this.clickedWords = [];
         this.gridWords.forEach((word: IGridWord, index: number) => {
-            if (word.cells.includes(this.focusCell.Cell) && !this.isAlreadyFoundWord(word)) {
+            if (word.cells.includes(this.focusCell.Cell) && !word.isFound) {
                 this.clickedWords.push(word);
             }
         });
@@ -175,6 +164,7 @@ export class GridComponent implements OnInit {
             }
             if (userAnswer === correctAnswer) {
                 this.setCellsToFound(word);
+                word.isFound = true;
             }
             userAnswer = "";
         }

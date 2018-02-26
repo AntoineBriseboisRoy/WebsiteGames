@@ -6,4 +6,5 @@ export interface IGridWord {
     correctAnswer: string;
     definition: string;
     orientation: Orientation;
+    isFound: boolean;
 }
