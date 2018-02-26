@@ -51,6 +51,7 @@ export class GridComponent implements OnInit {
     }
 
     public focusOnCell(cell: ICell): void {
+        this.addWordsToClickedWords(cell);
          // if click on the same cell twice, switch to Vertical/Horizontal word
         if (this.clickedCell === cell && cell.isFound === false && this.focusCell.Cell !== undefined) {
             this.chooseHorizontalOrVertical();
@@ -58,6 +59,16 @@ export class GridComponent implements OnInit {
             this.chooseNewWords(cell);
         }
     }
+
+    private addWordsToClickedWords(cell: ICell): void {
+        this.clickedWords = [];
+        this.gridWords.forEach((word: IGridWord) => {
+            if (word.cells.includes(cell) && !word.isFound) {
+                this.clickedWords.push(word);
+            }
+        });
+    }
+
     private chooseHorizontalOrVertical(): void {
         if (this.clickedWords.length > 1) {
             this.focusCell.Cell = this.isFocusCellinCells(this.clickedWords[0].cells) ?
@@ -66,6 +77,16 @@ export class GridComponent implements OnInit {
             this.focusCell.Cells = this.focusCell.Cells === this.clickedWords[0].cells ?
                 this.clickedWords[1].cells : this.clickedWords[0].cells;
             this.focusCell.invertOrientation();
+        }
+    }
+    private chooseNewWords(cell: ICell): void {
+        if (this.clickedWords.length !== 0) {
+            this.clickedCell = cell;
+            this.focusCell.Cell = this.clickedWords[0].cells[this.firstUnknownCell(this.clickedWords[0].cells)];
+            this.focusCell.Cells = this.clickedWords[0].cells;
+            this.focusCell.Orientation = this.clickedWords[0].orientation;
+        } else {
+            this.focusCell.clear();
         }
     }
     private isFocusCellinCells(cells: Array<ICell>): boolean {
@@ -89,23 +110,32 @@ export class GridComponent implements OnInit {
         return -1;
     }
 
-    private addWordsToClickedWords(cell: ICell): void {
-        this.gridWords.forEach((word: IGridWord) => {
-            if (word.cells.includes(cell) && !word.isFound) {
-                this.clickedWords.push(word);
+    private verifyAnswers(focusCell: ICell): void {
+        let userAnswer: string = "";
+        let correctAnswer: string = "";
+
+        this.addWordsToClickedWords(focusCell);
+
+        for (const word of this.clickedWords) {
+            correctAnswer = word.correctAnswer;
+            for (const cell of word.cells) {
+                userAnswer += cell.content;
             }
-        });
+            if (userAnswer === correctAnswer) {
+                this.setCellsToFound(word);
+                GameManager.Instance.PlayerOne.addPoint(word.cells.length);
+                word.isFound = true;
+            }
+            userAnswer = "";
+        }
     }
-    private chooseNewWords(cell: ICell): void {
-        this.clickedWords = [];
-        this.addWordsToClickedWords(cell);
-        if (this.clickedWords.length !== 0) {
-            this.clickedCell = cell;
-            this.focusCell.Cell = this.clickedWords[0].cells[this.firstUnknownCell(this.clickedWords[0].cells)];
-            this.focusCell.Cells = this.clickedWords[0].cells;
-            this.focusCell.Orientation = this.clickedWords[0].orientation;
-        } else {
-            this.focusCell.clear();
+
+    private setCellsToFound(word: IGridWord): void {
+        word.cells.forEach((cell) => {
+            cell.isFound = true;
+        });
+        if (FocusCell.Instance.Cells === word.cells) {
+            FocusCell.Instance.clear();
         }
     }
 
@@ -148,36 +178,6 @@ export class GridComponent implements OnInit {
 
     public addStyleOnFoundWord(cell: ICell): string {
         return cell.isFound ? "isFoundCell" : "";
-    }
-
-    private verifyAnswers(focusCell: ICell): void {
-        let userAnswer: string = "";
-        let correctAnswer: string = "";
-
-        this.clickedWords = [];
-        this.addWordsToClickedWords(focusCell);
-
-        for (const word of this.clickedWords) {
-            correctAnswer = word.correctAnswer;
-            for (const cell of word.cells) {
-                userAnswer += cell.content;
-            }
-            if (userAnswer === correctAnswer) {
-                this.setCellsToFound(word);
-                GameManager.Instance.PlayerOne.addPoint(word.cells.length);
-                word.isFound = true;
-            }
-            userAnswer = "";
-        }
-    }
-
-    private setCellsToFound(word: IGridWord): void {
-        word.cells.forEach((cell) => {
-            cell.isFound = true;
-        });
-        if (FocusCell.Instance.Cells === word.cells) {
-            FocusCell.Instance.clear();
-        }
     }
 
     @HostListener("window:keydown", ["$event"])
