@@ -1,9 +1,8 @@
 import { Car } from "../car/car";
 import { CameraState } from "./camera-state";
 import { Vector3 } from "three";
-import { stagger } from "@angular/core/src/animation/dsl";
 
-const N_STATES: number = 2;
+const N_CAMERA_STATES: number = 2;
 
 export class CameraContext {
 
@@ -32,11 +31,14 @@ export class CameraContext {
         this.states.forEach((state: CameraState) => {
             state.init(lookAt);
         });
+    }
+
+    public setInitialState(): void {
         this.currentState = this.states[this.stateCounter];
     }
 
     public swapCameraState(): void {
-        this.currentState = this.states[++this.stateCounter % N_STATES];
+        this.currentState = this.states[++this.stateCounter % N_CAMERA_STATES];
     }
 
     public update(car: Car): void {

@@ -22,6 +22,7 @@ describe("CameraContext", () => {
 
     it("Should correctly initialize its states", () => {
         camContext.initStates(new Vector3());
+        camContext.setInitialState();
         expect(camContext.CurrentState).toBeTruthy(); // The CurrentState is undefined before initStates is called.
     });
 

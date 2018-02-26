@@ -79,6 +79,7 @@ export class RenderService {
 
         await this._car.init();
         this.cameraContext.initStates(this._car.getPosition());
+        this.cameraContext.setInitialState();
         this.scene.add(this._car);
         this.scene.add(new AmbientLight(WHITE, AMBIENT_LIGHT_OPACITY));
 

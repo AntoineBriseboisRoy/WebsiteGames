@@ -31,11 +31,6 @@ export class TopViewCamera extends OrthographicCamera implements CameraState {
         this.bottom = -clientHeight / FRUSTUM_RATIO;
         this.updateProjectionMatrix();
     }
-    public roundZoom(zoomFactor: number): number {
-        const SECOND_DECIMAL_ROUND: number = 100;
-
-        return (Math.round(zoomFactor * SECOND_DECIMAL_ROUND) / SECOND_DECIMAL_ROUND);
-    }
 
     public zoomIn(): void {
         if (this.zoom >= MIN_ZOOM) {
@@ -49,6 +44,7 @@ export class TopViewCamera extends OrthographicCamera implements CameraState {
         }
         this.updateProjectionMatrix();
     }
+
     public zoomOut(): void {
         if (this.zoom >= MIN_ZOOM) {
             this.zoom -= ZOOM_INCREMENT;
@@ -60,5 +56,11 @@ export class TopViewCamera extends OrthographicCamera implements CameraState {
             this.zoom = MIN_ZOOM;
         }
         this.updateProjectionMatrix();
+    }
+
+    private roundZoom(zoomFactor: number): number {
+        const SECOND_DECIMAL_ROUND: number = 100;
+
+        return (Math.round(zoomFactor * SECOND_DECIMAL_ROUND) / SECOND_DECIMAL_ROUND);
     }
 }

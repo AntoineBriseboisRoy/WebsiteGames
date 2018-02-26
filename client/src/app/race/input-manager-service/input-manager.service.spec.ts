@@ -20,6 +20,7 @@ describe("InputManagerService", () => {
   service.init(car, cameraContext);
   beforeEach(() => {
     cameraContext.initStates(ARBITRARY_VECTOR);
+    cameraContext.setInitialState();
     TestBed.configureTestingModule({
       providers: [InputManagerService]
     });

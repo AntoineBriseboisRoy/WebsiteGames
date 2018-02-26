@@ -45,11 +45,6 @@ export class ThirdPersonCamera extends PerspectiveCamera implements CameraState 
         this.aspect = ThirdPersonCamera.getAspectRatio(clientWidth, clientHeight);
         this.updateProjectionMatrix();
     }
-    public roundZoom(zoomFactor: number): number {
-        const SECOND_DECIMAL_ROUND: number = 100;
-
-        return (Math.round(zoomFactor * SECOND_DECIMAL_ROUND) / SECOND_DECIMAL_ROUND);
-    }
 
     public zoomIn(): void {
         if (this.zoom >= MIN_ZOOM) {
@@ -63,6 +58,7 @@ export class ThirdPersonCamera extends PerspectiveCamera implements CameraState 
             this.zoom = MIN_ZOOM;
         }
     }
+
     public zoomOut(): void {
         if (this.zoom >= MIN_ZOOM) {
             this.zoom -= ZOOM_INCREMENT;
@@ -74,5 +70,11 @@ export class ThirdPersonCamera extends PerspectiveCamera implements CameraState 
         } else {
             this.zoom = MIN_ZOOM;
         }
+    }
+
+    private roundZoom(zoomFactor: number): number {
+        const SECOND_DECIMAL_ROUND: number = 100;
+
+        return (Math.round(zoomFactor * SECOND_DECIMAL_ROUND) / SECOND_DECIMAL_ROUND);
     }
 }
