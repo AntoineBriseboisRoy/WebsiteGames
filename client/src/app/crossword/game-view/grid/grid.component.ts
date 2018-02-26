@@ -7,6 +7,7 @@ import { FocusCell } from "../focusCell";
 import { KeyboardInputManagerService } from "../keyboard-input-manager/keyboard-input-manager.service";
 import { WordTransmitterService } from "../wordTransmitter.service";
 import { IWord } from "../../../../../../common/interfaces/IWord";
+import { GameManager } from "../../game-manager";
 
 @Component({
     selector: "app-crossword-grid",
@@ -175,6 +176,7 @@ export class GridComponent implements OnInit {
             }
             if (userAnswer === correctAnswer) {
                 this.setCellsToFound(word);
+                GameManager.Instance.PlayerOne.addPoint(word.cells.length);
             }
             userAnswer = "";
         }

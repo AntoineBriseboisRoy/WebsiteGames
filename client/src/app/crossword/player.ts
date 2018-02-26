@@ -1,7 +1,11 @@
-export class Player {
-    public point: number = 0;
+import { POINT_BY_LETTER } from "../constants";
 
-    public constructor(public name: string) {
-        this.point = 0;
+export class Player {
+
+    public constructor(public name: string, public point: number = 0) {
+    }
+
+    public addPoint(nLetter: number): void {
+        this.point += (nLetter * POINT_BY_LETTER);
     }
 }

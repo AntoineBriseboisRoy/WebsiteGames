@@ -7,28 +7,21 @@ export class GameManager implements OnInit {
     private difficulty: Difficulty;
     private isMultiplayer: boolean;
 
-    public playerOne: Player;
-    public playerTwo: Player;
+    private playerOne: Player;
+    private playerTwo: Player;
 
     public static get Instance(): GameManager {
         return this.instance || (this.instance = new this());
     }
 
     private constructor() {
-        this.playerOne = {
-            name: "Claudia",
-            point: 0
-        };
-        this.playerTwo = {
-            name: "Antoine",
-            point: 100
-        };
-        this.difficulty = Difficulty.Hard;
-        this.isMultiplayer = true;
+        this.playerOne = new Player("Claudia", 0);
+        this.playerTwo = new Player("Antoine", 0);
+        this.difficulty = Difficulty.Easy;
+        this.isMultiplayer = false;
     }
 
     public ngOnInit(): void {
-        this.isMultiplayer = true;
     }
 
     public getDifficulty(): string {
@@ -41,5 +34,13 @@ export class GameManager implements OnInit {
 
     public get IsMultiplayer(): boolean {
         return this.isMultiplayer;
+    }
+
+    public get PlayerOne(): Player {
+        return this.playerOne;
+    }
+
+    public get PlayerTwo(): Player {
+        return this.playerTwo;
     }
 }

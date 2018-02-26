@@ -22,3 +22,4 @@ export const FRUSTUM_RATIO: number = 100;
 export const NO_CHEAT_COLOR: string = "#7BABEF";
 export const CHEAT_COLOR: string = "#FF3E04";
 export const DIFFICULTY_LENGHT: number = 11;
+export const POINT_BY_LETTER: number = 10;
