@@ -11,8 +11,8 @@
                         <h3>{{track.Name}}</h3>
                         <p>{{track.Description}}</p>
                         <div class="track-actions">
-                            <button (click)="onClick(track.Name, 'edit')" type="button" class="btn btn-outline-success">Edit</button>
-                            <button (click)="onClick(track.Name, 'delete')" type="button" class="btn btn-outline-danger">Delete</button>
+                            <button (click)="onButtonClick(track.Name, 'edit')" type="button" class="btn btn-outline-success">Edit</button>
+                            <button (click)="onButtonClick(track.Name, 'delete')" type="button" class="btn btn-outline-danger">Delete</button>
                         </div>
                     </li>
                 </div>

@@ -11,24 +11,30 @@ export class AdminSectionComponent implements OnInit {
     private tracks: Track[];
     private activeTrack: Track;
 
-    public readonly title: string = "Welcome to the admistration section!";
+    public readonly title: string;
     public constructor() {
         this.tracks = new Array<Track>();
         this.activeTrack = new Track("", "", 0, ["0:00"], TrackType.DESERT);
+        this.title = "Welcome to the admistration section!";
     }
 
     public ngOnInit(): void {
         this.createArtificialTracks();
     }
 
-    private onClick(name: string, action: string): void {
+    private onButtonClick(name: string, action: string): void {
         const selectedTrack: Track = this.tracks.find((track: Track) => {
             return track.Name === name;
         });
         if (selectedTrack) {
             this.activeTrack = selectedTrack;
         }
-        alert("Can't yet " + action + " \"" + name + "\" because the track editor is not implemented.");
+
+        this.showNotImplementedMessage(action); // This will be replaced by a call to the track editor.
+    }
+
+    private showNotImplementedMessage(action: string): void {
+        alert("Can't yet " + action + " \"" + this.activeTrack.Name + "\" because the track editor is not implemented.");
     }
 
     private createArtificialTracks(): void {
