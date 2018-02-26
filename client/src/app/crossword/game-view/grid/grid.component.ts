@@ -50,7 +50,8 @@ export class GridComponent implements OnInit {
     }
 
     public focusOnCell(cell: ICell): void {
-        if (this.clickedCell === cell && cell.isFound === false) {    // if click on the same cell twice, switch to Vertical/Horizontal word
+         // if click on the same cell twice, switch to Vertical/Horizontal word
+        if (this.clickedCell === cell && cell.isFound === false && this.focusCell.Cell !== undefined) {
             this.chooseHorizontalOrVertical();
         } else {
             this.chooseNewWords(cell);
@@ -68,7 +69,7 @@ export class GridComponent implements OnInit {
     }
     private isFocusCellinCells(cells: Array<ICell>): boolean {
         for (const cell of cells) {
-            if (this.focusCell.Cell === cell) {
+            if (this.focusCell.Cell === cell && this.focusCell.Cells === cells) {
                 return true;
             }
         }
@@ -159,6 +160,13 @@ export class GridComponent implements OnInit {
     private verifyAnswers(): void {
         let userAnswer: string = "";
         let correctAnswer: string = "";
+
+        this.clickedWords = [];
+        this.gridWords.forEach((word: IGridWord, index: number) => {
+            if (word.cells.includes(this.focusCell.Cell) && !this.isAlreadyFoundWord(word)) {
+                this.clickedWords.push(word);
+            }
+        });
 
         for (const word of this.clickedWords) {
             correctAnswer = word.correctAnswer;

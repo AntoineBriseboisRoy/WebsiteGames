@@ -9,32 +9,15 @@ export class ClearLetterCommand extends AbsGridCommand {
         super(cells);
     }
 
-    private deleteLastCell(): void {
-        if (FocusCell.Instance.Cell.content === undefined) {
-            this.next();
-            FocusCell.Instance.Cell.content = undefined;
-        } else {
-            FocusCell.Instance.Cell.content = undefined;
-        }
-    }
-
     public execute(): void {
-        if (FocusCell.Instance.Cell !== undefined) {    // Does nothing if no cell is targeted by focus.
-            if (this.isLastCellOfSelection()) {
-                this.deleteLastCell();
-            } else {
+        if (FocusCell.Instance.Cell) {    // Does nothing if no cell is targeted by focus.
+            if (FocusCell.Instance.Cell.content === undefined) {
                 this.next();
+                FocusCell.Instance.Cell.content = undefined;
+            } else {
                 FocusCell.Instance.Cell.content = undefined;
             }
         }
-    }
-
-    private isLastCellOfSelection(): boolean {
-        return FocusCell.Instance.Cell === FocusCell.Instance.Cells[FocusCell.Instance.Cells.length - 1 ];
-    }
-
-    private isFirstCellOfSelection(): boolean {
-        return FocusCell.Instance.Cell === FocusCell.Instance.Cells[0];
     }
 
     private next(): void {
@@ -48,5 +31,9 @@ export class ClearLetterCommand extends AbsGridCommand {
         if (FocusCell.Instance.Cell.isFound) {
             FocusCell.Instance.Cell = this.cells[currentGridIndex];
         }
+    }
+
+    private isFirstCellOfSelection(): boolean {
+        return FocusCell.Instance.Cell === FocusCell.Instance.Cells[0];
     }
 }
