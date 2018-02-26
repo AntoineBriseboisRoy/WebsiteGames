@@ -41,7 +41,6 @@ export class GridComponent implements OnInit {
     }
 
     /*Fonctions appeler directement par le html*/
-
     public gridLineJump(index: number): string {
         return (index % GRID_WIDTH) === 0 ? "square clear" : "square";
     }
@@ -57,16 +56,24 @@ export class GridComponent implements OnInit {
             this.chooseNewWords(cell);
         }
     }
-
     private chooseHorizontalOrVertical(): void {
         if (this.clickedWords.length > 1) {
-            this.focusCell.Cell = this.focusCell.Cell === this.clickedWords[0].cells[this.firstUnknownCell(this.clickedWords[0].cells)] ?
+            this.focusCell.Cell = this.isFocusCellinCells(this.clickedWords[0].cells) ?
                 this.clickedWords[1].cells[this.firstUnknownCell(this.clickedWords[1].cells)] :
                 this.clickedWords[0].cells[this.firstUnknownCell(this.clickedWords[0].cells)];
             this.focusCell.Cells = this.focusCell.Cells === this.clickedWords[0].cells ?
                 this.clickedWords[1].cells : this.clickedWords[0].cells;
             this.focusCell.invertOrientation();
         }
+    }
+    private isFocusCellinCells(cells: Array<ICell>): boolean {
+        for (const cell of cells) {
+            if (this.focusCell.Cell === cell) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     // Focus on the first unfound cell of an unfound word.
@@ -149,7 +156,7 @@ export class GridComponent implements OnInit {
         return cell.isFound ? "isFoundCell" : "";
     }
 
-    private isGoodAnswer(): void {
+    private verifyAnswers(): void {
         let userAnswer: string = "";
         let correctAnswer: string = "";
 
@@ -177,6 +184,6 @@ export class GridComponent implements OnInit {
     @HostListener("window:keydown", ["$event"])
     public onKeyDown(event: KeyboardEvent): void {
         this.keyboardInputManagerService.handleKeyDown(event);
-        this.isGoodAnswer();
+        this.verifyAnswers();
     }
 }
