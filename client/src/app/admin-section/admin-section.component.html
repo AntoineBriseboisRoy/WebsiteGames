@@ -6,12 +6,13 @@
         </div>
         <div class="container">
             <ul class="track-list">
+                <button type="button" class="btn btn-lg btn-block mt-4" id="button-edit" routerLink="/edit">Edit a new track</button>
                 <div *ngFor="let track of tracks">
                     <li class="track-info row">
                         <h3>{{track.Name}}</h3>
                         <p>{{track.Description}}</p>
                         <div class="track-actions">
-                            <button (click)="onClick(track.Name, 'edit')" type="button" class="btn btn-outline-success">Edit</button>
+                            <button routerLink="/edit" type="button" class="btn btn-outline-success">Edit</button>
                             <button (click)="onClick(track.Name, 'delete')" type="button" class="btn btn-outline-danger">Delete</button>
                         </div>
                     </li>

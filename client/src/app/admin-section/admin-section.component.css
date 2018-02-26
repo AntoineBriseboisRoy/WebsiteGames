@@ -33,6 +33,14 @@
     background: url("../crossword/images/background-blur.jpg") no-repeat fixed;
 }
 
+#button-edit {
+    background-color: orange;
+}
+
+#button-edit:hover {
+    background-color: rgb(228, 148, 0);
+}
+
 .track-info {
     margin: 2.5% 10% 2.5% 10%;
     float: center;
