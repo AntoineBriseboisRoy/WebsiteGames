@@ -23,9 +23,9 @@ export class Segment {
   private firstPoint: PointInSegment;
   private secondPoint: PointInSegment;
 
-  public constructor(firstPoint: number, private points: Point[], public broken: boolean) {
-    this.firstPoint = this.getPointAtIndex(firstPoint);
-    this.secondPoint = this.getPointAtIndex(this.getSecondPointIndex(firstPoint));
+  public constructor(firstPoint: number, points: Point[], public broken: boolean) {
+    this.firstPoint = this.getPointAtIndex(firstPoint, points);
+    this.secondPoint = this.getPointAtIndex(this.getSecondPointIndex(firstPoint, points), points);
   }
 
   public get FirstPoint(): PointInSegment {
@@ -63,20 +63,15 @@ export class Segment {
     return (this.FirstPoint.x === this.SecondPoint.x);
   }
 
-  private getPointAtIndex(index: number): PointInSegment {
-    return { x: this.points[index].x, y: this.points[index].y, start: this.isStartPoint(index),
-             end: this.isEndPoint(index), index: index };
+  private getPointAtIndex(index: number, points: Point[]): PointInSegment {
+    return { x: points[index].x,
+             y: points[index].y,
+             start: points[index].start,
+             end: points[index].end,
+             index: index };
   }
 
-  private isStartPoint(index: number): boolean {
-    return (index === 0);
-  }
-
-  private isEndPoint(index: number): boolean {
-    return (index === this.points.length - 1);
-  }
-
-  private getSecondPointIndex(firstPoint: number): number {
-    return (firstPoint === this.points.length - 1) ? 0 : firstPoint + 1;
+  private getSecondPointIndex(firstPoint: number, points: Point[]): number {
+    return points[firstPoint].end ? 0 : firstPoint + 1;
   }
 }
