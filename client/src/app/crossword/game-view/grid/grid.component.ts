@@ -88,13 +88,16 @@ export class GridComponent implements OnInit {
         return -1;
     }
 
-    private chooseNewWords(cell: ICell): void {
-        this.clickedWords = [];
-        this.gridWords.forEach((word: IGridWord, index: number) => {
+    private addWordsToClickedWords(cell: ICell): void {
+        this.gridWords.forEach((word: IGridWord) => {
             if (word.cells.includes(cell) && !word.isFound) {
                 this.clickedWords.push(word);
             }
         });
+    }
+    private chooseNewWords(cell: ICell): void {
+        this.clickedWords = [];
+        this.addWordsToClickedWords(cell);
         if (this.clickedWords.length !== 0) {
             this.clickedCell = cell;
             this.focusCell.Cell = this.clickedWords[0].cells[this.firstUnknownCell(this.clickedWords[0].cells)];
@@ -151,11 +154,7 @@ export class GridComponent implements OnInit {
         let correctAnswer: string = "";
 
         this.clickedWords = [];
-        this.gridWords.forEach((word: IGridWord, index: number) => {
-            if (word.cells.includes(this.focusCell.Cell) && !word.isFound) {
-                this.clickedWords.push(word);
-            }
-        });
+        this.addWordsToClickedWords(this.focusCell.Cell);
 
         for (const word of this.clickedWords) {
             correctAnswer = word.correctAnswer;
