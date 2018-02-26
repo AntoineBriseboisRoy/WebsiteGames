@@ -149,12 +149,12 @@ export class GridComponent implements OnInit {
         return cell.isFound ? "isFoundCell" : "";
     }
 
-    private verifyAnswers(): void {
+    private verifyAnswers(focusCell: ICell): void {
         let userAnswer: string = "";
         let correctAnswer: string = "";
 
         this.clickedWords = [];
-        this.addWordsToClickedWords(this.focusCell.Cell);
+        this.addWordsToClickedWords(focusCell);
 
         for (const word of this.clickedWords) {
             correctAnswer = word.correctAnswer;
@@ -180,7 +180,8 @@ export class GridComponent implements OnInit {
 
     @HostListener("window:keydown", ["$event"])
     public onKeyDown(event: KeyboardEvent): void {
+        const cell: ICell = this.focusCell.Cell;
         this.keyboardInputManagerService.handleKeyDown(event);
-        this.verifyAnswers();
+        this.verifyAnswers(cell);
     }
 }
