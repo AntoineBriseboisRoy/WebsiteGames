@@ -67,7 +67,8 @@ export class EditTrackComponent implements OnInit {
     }
 
     public showPopover(target: HTMLElement): void {
-        ($(target) as any).popover({
+        const $j: any = jQuery.noConflict();
+        $j(target).popover({
             title: "Can't save track",
             content: (() => {
                 let content: string = "";
