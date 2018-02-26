@@ -14,8 +14,9 @@ export class EditTrackComponent implements OnInit {
     private context: CanvasRenderingContext2D;
     private points: Point[];
     private mousePressed: boolean = false;
+    private moveStartPoint: boolean = false;
     private trackComplete: boolean = false;
-    private selectedPoint: number;
+    private selectedPoint: number = cst.NO_SELECTED_POINT;
     public constructor() { }
 
     public ngOnInit(): void {
@@ -35,10 +36,7 @@ export class EditTrackComponent implements OnInit {
             }
         });
 
-        this.canvas.addEventListener("mouseup", () => {
-            this.mousePressed = false;
-            this.selectedPoint = cst.NO_SELECTED_POINT;
-        });
+        this.canvas.addEventListener("mouseup", () => this.handleMouseUp() );
 
         this.canvas.addEventListener("mousemove", (event: MouseEvent) => this.handleMouseMove(event));
     }
@@ -91,28 +89,38 @@ export class EditTrackComponent implements OnInit {
         this.redrawCanvas();
     }
 
-    private handleMouseMove(event: MouseEvent): void {
-        if (this.mousePressed) {
-            if (this.selectedPoint !== cst.NO_SELECTED_POINT) {
-                this.points[this.selectedPoint].x = event.x;
-                this.points[this.selectedPoint].y = event.y;
-            }
-            this.redrawCanvas();
-        }
-    }
-
     private handleLeftMouseDown(event: MouseEvent): void {
         this.selectedPoint = this.isOnOtherPoint(event.x, event.y);
-        this.mousePressed = (this.selectedPoint !== 0);
+        this.mousePressed = true;
         if (this.selectedPoint === cst.NO_SELECTED_POINT && !this.trackComplete) {
             this.points.push({ x: event.x, y: event.y, start: (this.points.length === 0), end: this.trackComplete });
             this.selectedPoint = this.points.length - 1;
-        } else if (this.selectedPoint === 0 && !this.trackComplete) {
-            this.mousePressed = false;
+        }
+        this.redrawCanvas();
+    }
+
+    private handleMouseUp(): void {
+        this.mousePressed = false;
+        if (this.selectedPoint === 0 && !this.moveStartPoint && this.points.length > 1) {
             this.trackComplete = true;
             this.points.push({ x: this.points[0].x, y: this.points[0].y, start: false, end: this.trackComplete });
         }
+        this.selectedPoint = cst.NO_SELECTED_POINT;
+        this.moveStartPoint = false;
         this.redrawCanvas();
+    }
+
+    private handleMouseMove(event: MouseEvent): void {
+        if (this.mousePressed) {
+            this.points[this.selectedPoint].x = event.x;
+            this.points[this.selectedPoint].y = event.y;
+            if (this.selectedPoint === 0) {
+                this.points[this.points.length - 1].x = event.x;
+                this.points[this.points.length - 1].y = event.y;
+            }
+            this.moveStartPoint = this.selectedPoint === 0;
+            this.redrawCanvas();
+        }
     }
 
     private redrawCanvas(): void {
