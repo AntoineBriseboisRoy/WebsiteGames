@@ -1,15 +1,15 @@
-import { TestBed, inject } from '@angular/core/testing';
+import { TestBed, inject } from "@angular/core/testing";
 
-import { KeyboardInputManagerService } from './keyboard-input-manager.service';
+import { KeyboardInputManagerService } from "./keyboard-input-manager.service";
 
-describe('KeyboardInputManagerService', () => {
+describe("KeyboardInputManagerService", () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [KeyboardInputManagerService]
     });
   });
 
-  it('should be created', inject([KeyboardInputManagerService], (service: KeyboardInputManagerService) => {
+  it("should be created", inject([KeyboardInputManagerService], (service: KeyboardInputManagerService) => {
     expect(service).toBeTruthy();
   }));
 });
