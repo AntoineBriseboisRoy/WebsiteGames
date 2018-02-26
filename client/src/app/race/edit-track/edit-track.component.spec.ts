@@ -60,6 +60,17 @@ describe("EditTrackComponent", () => {
         expect(component.Points[component.Points.length - 1].end).toBeTruthy();
     });
 
+    it("should not add point if track is complete", () => {
+        createPoint(15, 15);
+        createPoint(15, 45);
+        createPoint(5, 85);
+        createPoint(15, 15);
+        createPoint(100, 100);
+        expect(component.Points.length).toBe(4);
+        expect(component.Points[component.Points.length - 1].x).toBe(15);
+        expect(component.Points[component.Points.length - 1].y).toBe(15);
+    });
+
     it("should move point if it's being dragged", () => {
         createPoint(15, 15);
         createPoint(15, 45);
