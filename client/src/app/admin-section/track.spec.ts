@@ -1,4 +1,4 @@
-import { Track, TrackType } from "./track-info";
+import { Track, TrackType } from "./track";
 
 describe("TrackInfo", () => {
     it("Should correctly construct a TrackInfo instance", () => {

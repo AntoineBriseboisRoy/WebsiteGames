@@ -2,7 +2,7 @@ import { Component, OnInit } from "@angular/core";
 import { GameManager } from "../game-manager";
 import { Difficulty } from "../../constants";
 
-@Component({ 
+@Component({
     selector: "app-crossword-difficulty-menu",
     templateUrl: "./difficulty-menu.component.html",
     styleUrls: ["./difficulty-menu.component.css", "../game-view/crossword-view.component.css"]
@@ -33,7 +33,7 @@ export class DifficultyMenuComponent implements OnInit {
         }
     }
 
-    public activeDifficulty(difficulty: Difficulty): void {
+    public activateDifficulty(difficulty: Difficulty): void {
         this.gameManager.setDifficulty(difficulty);
         this.isActiveDifficulty = true;
     }
