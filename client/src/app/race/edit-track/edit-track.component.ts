@@ -36,7 +36,7 @@ export class EditTrackComponent implements OnInit {
             }
         });
 
-        this.canvas.addEventListener("mouseup", () => this.handleMouseUp() );
+        this.canvas.addEventListener("mouseup", (event: MouseEvent) => this.handleMouseUp(event) );
 
         this.canvas.addEventListener("mousemove", (event: MouseEvent) => this.handleMouseMove(event));
     }
@@ -99,10 +99,15 @@ export class EditTrackComponent implements OnInit {
         this.redrawCanvas();
     }
 
-    private handleMouseUp(): void {
+    private handleMouseUp(event: MouseEvent): void {
         this.mousePressed = false;
         if (this.selectedPoint === 0 && !this.moveStartPoint && this.points.length > 1) {
             this.trackComplete = true;
+            this.points.push({ x: this.points[0].x, y: this.points[0].y, start: false, end: this.trackComplete });
+        }
+        if (this.points.length > 1 && this.selectedPoint === this.points.length - 1 && this.isOnOtherPoint(event.x, event.y) === 0) {
+            this.trackComplete = true;
+            this.points.pop();
             this.points.push({ x: this.points[0].x, y: this.points[0].y, start: false, end: this.trackComplete });
         }
         this.selectedPoint = cst.NO_SELECTED_POINT;
@@ -111,13 +116,13 @@ export class EditTrackComponent implements OnInit {
     }
 
     private handleMouseMove(event: MouseEvent): void {
-        if (this.mousePressed) {
-            this.points[this.selectedPoint].x = event.x;
-            this.points[this.selectedPoint].y = event.y;
-            if (this.selectedPoint === 0) {
+        if (this.mousePressed && this.selectedPoint !== cst.NO_SELECTED_POINT) {
+            if (this.selectedPoint === 0 && this.trackComplete) {
                 this.points[this.points.length - 1].x = event.x;
                 this.points[this.points.length - 1].y = event.y;
             }
+            this.points[this.selectedPoint].x = event.x;
+            this.points[this.selectedPoint].y = event.y;
             this.moveStartPoint = this.selectedPoint === 0;
             this.redrawCanvas();
         }
