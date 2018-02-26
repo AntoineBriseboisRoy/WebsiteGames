@@ -157,13 +157,13 @@ export class GridComponent implements OnInit {
         return cell.isFound ? "isFoundCell" : "";
     }
 
-    private verifyAnswers(): void {
+    private verifyAnswers(focusCell: ICell): void {
         let userAnswer: string = "";
         let correctAnswer: string = "";
 
         this.clickedWords = [];
         this.gridWords.forEach((word: IGridWord, index: number) => {
-            if (word.cells.includes(this.focusCell.Cell) && !this.isAlreadyFoundWord(word)) {
+            if (word.cells.includes(focusCell) && !this.isAlreadyFoundWord(word)) {
                 this.clickedWords.push(word);
             }
         });
@@ -191,7 +191,8 @@ export class GridComponent implements OnInit {
 
     @HostListener("window:keydown", ["$event"])
     public onKeyDown(event: KeyboardEvent): void {
+        const cell: ICell = this.focusCell.Cell;
         this.keyboardInputManagerService.handleKeyDown(event);
-        this.verifyAnswers();
+        this.verifyAnswers(cell);
     }
 }
