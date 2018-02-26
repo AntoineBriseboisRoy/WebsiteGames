@@ -89,13 +89,16 @@ export class GridComponent implements OnInit {
         return -1;
     }
 
-    private chooseNewWords(cell: ICell): void {
-        this.clickedWords = [];
-        this.gridWords.forEach((word: IGridWord, index: number) => {
-            if (word.cells.includes(cell) && !this.isAlreadyFoundWord(word)) {
+    private addWordsToClickedWords(cell: ICell): void {
+        this.gridWords.forEach((word: IGridWord) => {
+            if (word.cells.includes(cell) && !word.isFound) {
                 this.clickedWords.push(word);
             }
         });
+    }
+    private chooseNewWords(cell: ICell): void {
+        this.clickedWords = [];
+        this.addWordsToClickedWords(cell);
         if (this.clickedWords.length !== 0) {
             this.clickedCell = cell;
             this.focusCell.Cell = this.clickedWords[0].cells[this.firstUnknownCell(this.clickedWords[0].cells)];
@@ -104,17 +107,6 @@ export class GridComponent implements OnInit {
         } else {
             this.focusCell.clear();
         }
-    }
-
-    private isAlreadyFoundWord(word: IGridWord): boolean {
-        let isFoundWord: boolean = true;
-        word.cells.forEach((wordCell: ICell) => {
-            if (!wordCell.isFound) {
-                isFoundWord = false;
-            }
-        });
-
-        return isFoundWord;
     }
 
     public addHighlightOnFocus(cell: ICell): string {
@@ -163,11 +155,7 @@ export class GridComponent implements OnInit {
         let correctAnswer: string = "";
 
         this.clickedWords = [];
-        this.gridWords.forEach((word: IGridWord, index: number) => {
-            if (word.cells.includes(focusCell) && !this.isAlreadyFoundWord(word)) {
-                this.clickedWords.push(word);
-            }
-        });
+        this.addWordsToClickedWords(focusCell);
 
         for (const word of this.clickedWords) {
             correctAnswer = word.correctAnswer;
@@ -177,6 +165,7 @@ export class GridComponent implements OnInit {
             if (userAnswer === correctAnswer) {
                 this.setCellsToFound(word);
                 GameManager.Instance.PlayerOne.addPoint(word.cells.length);
+                word.isFound = true;
             }
             userAnswer = "";
         }

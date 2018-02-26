@@ -121,7 +121,7 @@ export class WordTransmitterService {
             }
             this.gridWords.push({
                 cells: mockCells, correctAnswer: word.content,
-                definition: word.definition, orientation: word.orientation
+                definition: word.definition, orientation: word.orientation, isFound: false
             } as IGridWord);
             mockCells = [];
         });
