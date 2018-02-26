@@ -72,9 +72,7 @@ export class DefinitionComponent implements OnInit {
                 this.focusCell.Orientation = word.orientation;
                 this.choosedDefinition = word.definition;
                 if (this.isAlreadyFoundWord()) {
-                    this.focusCell.Cell = undefined;
-                    this.focusCell.Cells = undefined;
-                    this.focusCell.Orientation = undefined;
+                    this.focusCell.clear();
                     this.choosedDefinition = undefined;
                 }
             }

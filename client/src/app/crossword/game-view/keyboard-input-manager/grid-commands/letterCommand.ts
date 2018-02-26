@@ -19,12 +19,6 @@ export class LetterCommand extends AbsGridCommand {
                     this.next();
                 } while (FocusCell.Instance.Cell.isFound);
             }
-            if (this.isGoodAnswer()) {
-                FocusCell.Instance.Cells.forEach((cell: ICell) => {
-                    cell.isFound = true;
-                });
-                FocusCell.Instance.clear();
-            }
         }
     }
 
@@ -37,20 +31,5 @@ export class LetterCommand extends AbsGridCommand {
             FocusCell.Instance.Cell = FocusCell.Instance.Orientation === Orientation.Horizontal ?
                 this.cells[FocusCell.Instance.Cell.gridIndex + 1] : this.cells[FocusCell.Instance.Cell.gridIndex + GRID_WIDTH];
         }
-    }
-
-    private isGoodAnswer(): boolean {
-        let userAnswer: string = "";
-        let correctAnswer: string = "";
-
-        FocusCell.Instance.Cells.forEach((cell: ICell) => {
-            userAnswer += cell.content;
-        });
-
-        FocusCell.Instance.Cells.forEach((cell: ICell) => {
-            correctAnswer += cell.answer;
-        });
-
-        return userAnswer === correctAnswer;
     }
 }

@@ -149,8 +149,34 @@ export class GridComponent implements OnInit {
         return cell.isFound ? "isFoundCell" : "";
     }
 
+    private isGoodAnswer(): void {
+        let userAnswer: string = "";
+        let correctAnswer: string = "";
+
+        for (const word of this.clickedWords) {
+            correctAnswer = word.correctAnswer;
+            for (const cell of word.cells) {
+                userAnswer += cell.content;
+            }
+            if (userAnswer === correctAnswer) {
+                this.setCellsToFound(word);
+            }
+            userAnswer = "";
+        }
+    }
+
+    private setCellsToFound(word: IGridWord): void {
+        word.cells.forEach((cell) => {
+            cell.isFound = true;
+        });
+        if (FocusCell.Instance.Cells === word.cells) {
+            FocusCell.Instance.clear();
+        }
+    }
+
     @HostListener("window:keydown", ["$event"])
     public onKeyDown(event: KeyboardEvent): void {
         this.keyboardInputManagerService.handleKeyDown(event);
+        this.isGoodAnswer();
     }
 }
