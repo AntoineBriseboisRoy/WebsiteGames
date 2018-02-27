@@ -38,8 +38,8 @@ export class KeyboardInputManagerService {
         }
     }
 
-    public handleKeyDown(event: KeyboardEvent): void {
-        const command: AbsCommand = this.keyDownCommands.get(event.keyCode);
+    public handleKeyDown(keyCode: number): void {
+        const command: AbsCommand = this.keyDownCommands.get(keyCode);
         if (command) {
             command.execute();
         }

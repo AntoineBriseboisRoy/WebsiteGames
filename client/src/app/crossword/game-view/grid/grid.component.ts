@@ -41,15 +41,6 @@ export class GridComponent implements OnInit {
         });
     }
 
-    /*Fonctions appeler directement par le html*/
-    public gridLineJump(index: number): string {
-        return (index % GRID_WIDTH) === 0 ? "square clear" : "square";
-    }
-
-    public getCellType(color: CellColor): string {
-        return color === CellColor.Black ? "black-square" : "white-square";
-    }
-
     public focusOnCell(cell: ICell): void {
         this.addWordsToClickedWords(cell);
          // if click on the same cell twice, switch to Vertical/Horizontal word
@@ -139,6 +130,14 @@ export class GridComponent implements OnInit {
         }
     }
 
+    /* Fonctions appeler directement par le html: */
+    public gridLineJump(index: number): string {
+        return (index % GRID_WIDTH) === 0 ? "square clear" : "square";
+    }
+
+    public getCellType(color: CellColor): string {
+        return color === CellColor.Black ? "black-square" : "white-square";
+    }
     public addHighlightOnFocus(cell: ICell): string {
         return this.focusCell.Cell === cell ? "focus" : "";
     }
@@ -183,7 +182,7 @@ export class GridComponent implements OnInit {
     @HostListener("window:keydown", ["$event"])
     public onKeyDown(event: KeyboardEvent): void {
         const cell: ICell = this.focusCell.Cell;
-        this.keyboardInputManagerService.handleKeyDown(event);
+        this.keyboardInputManagerService.handleKeyDown(event.keyCode);
         this.verifyAnswers(cell);
     }
 }

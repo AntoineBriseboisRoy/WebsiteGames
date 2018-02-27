@@ -22,11 +22,4 @@ describe("GridComponent", () => {
     it("should create", () => {
         expect(component).toBeTruthy();
     });
-
-    /*it("", () => {
-        const keyboardEvent: KeyboardEvent = new KeyboardEvent()
-        document.createEvent("KeyboardEvent")
-
-            component.onKeyDown(event);
-    });*/
 });
