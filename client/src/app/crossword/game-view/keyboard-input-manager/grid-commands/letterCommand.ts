@@ -16,20 +16,20 @@ export class LetterCommand extends AbsGridCommand {
             FocusCell.Instance.Cell.content = this.letter;
             if (!this.isLastCellOfSelection()) {
                 do {
-                    this.next();
+                    this.nextCell();
                 } while (FocusCell.Instance.Cell.isFound);
             }
         }
     }
 
-    private isLastCellOfSelection(): boolean {
-        return FocusCell.Instance.Cell === FocusCell.Instance.Cells[FocusCell.Instance.Cells.length - 1];
-    }
-
-    private next(): void {
+    private nextCell(): void {
         if (FocusCell.Instance.Cell.gridIndex !== (GRID_WIDTH * GRID_WIDTH - 1)) {
             FocusCell.Instance.Cell = FocusCell.Instance.Orientation === Orientation.Horizontal ?
                 this.cells[FocusCell.Instance.Cell.gridIndex + 1] : this.cells[FocusCell.Instance.Cell.gridIndex + GRID_WIDTH];
         }
+    }
+
+    private isLastCellOfSelection(): boolean {
+        return FocusCell.Instance.Cell === FocusCell.Instance.Cells[FocusCell.Instance.Cells.length - 1];
     }
 }

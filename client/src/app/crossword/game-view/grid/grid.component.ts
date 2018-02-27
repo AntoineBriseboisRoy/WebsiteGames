@@ -22,13 +22,14 @@ export class GridComponent implements OnInit {
     private clickedWords: Array<IGridWord>;
     private clickedCell: ICell;
     private focusCell: FocusCell;
-
     private keyboardInputManagerService: KeyboardInputManagerService;
     public constructor(private wordTransmitterService: WordTransmitterService) {
         this.cells = new Array();
         this.gridWords = new Array();
         this.clickedWords = new Array();
+        this.clickedCell = undefined;
         this.focusCell = FocusCell.Instance;
+        this.keyboardInputManagerService = undefined;
     }
 
     public ngOnInit(): void {
@@ -43,12 +44,15 @@ export class GridComponent implements OnInit {
 
     public focusOnCell(cell: ICell): void {
         this.addWordsToClickedWords(cell);
-         // if click on the same cell twice, switch to Vertical/Horizontal word
-        if (this.clickedCell === cell && cell.isFound === false && this.focusCell.Cell !== undefined) {
-            this.chooseHorizontalOrVertical();
+        if (this.isSameCell(cell)) {
+            this.invertOrientation();
         } else {
-            this.chooseNewWords(cell);
+            this.chooseNewWord(cell);
         }
+    }
+
+    private isSameCell(cell: ICell): boolean {
+        return (this.clickedCell === cell && !cell.isFound && this.focusCell.Cell !== undefined);
     }
 
     private addWordsToClickedWords(cell: ICell): void {
@@ -60,7 +64,7 @@ export class GridComponent implements OnInit {
         });
     }
 
-    private chooseHorizontalOrVertical(): void {
+    private invertOrientation(): void {
         if (this.clickedWords.length > 1) {
             this.focusCell.Cell = this.isFocusCellinCells(this.clickedWords[0].cells) ?
                 this.clickedWords[1].cells[this.firstUnknownCell(this.clickedWords[1].cells)] :
@@ -70,7 +74,7 @@ export class GridComponent implements OnInit {
             this.focusCell.invertOrientation();
         }
     }
-    private chooseNewWords(cell: ICell): void {
+    private chooseNewWord(cell: ICell): void {
         if (this.clickedWords.length !== 0) {
             this.clickedCell = cell;
             this.focusCell.Cell = this.clickedWords[0].cells[this.firstUnknownCell(this.clickedWords[0].cells)];
@@ -90,7 +94,7 @@ export class GridComponent implements OnInit {
         return false;
     }
 
-    // Focus on the first unfound cell of an unfound word.
+    // Return index of the first unfound cell of an unfound word.
     private firstUnknownCell(cells: Array<ICell>): number {
         for (let i: number = 0; i < cells.length; i++) {
             if (!cells[i].isFound) {
@@ -130,7 +134,7 @@ export class GridComponent implements OnInit {
         }
     }
 
-    /* Fonctions appeler directement par le html: */
+    /* Functions directly called by html: */
     public gridLineJump(index: number): string {
         return (index % GRID_WIDTH) === 0 ? "square clear" : "square";
     }

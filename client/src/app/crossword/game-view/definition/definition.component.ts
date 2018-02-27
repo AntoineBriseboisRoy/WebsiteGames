@@ -26,11 +26,16 @@ export class DefinitionComponent implements OnInit {
     private focusCell: FocusCell;
 
     public constructor(private wordTransmitterService: WordTransmitterService) {
+        this.horizontalDefinitions = [];
+        this.verticalDefinitions = [];
+        this.mockCheatModeWordsVertical = [];
+        this.mockCheatModeWordsHorizontal = [];
+        this.choosedDefinition = "";
         this.cheatModeActive = false;
+        this.gridWordsHorizontal = [];
+        this.gridWordsVertical = [];
         this.cheatButtonColor = NO_CHEAT_COLOR;
-        this.gridWords = Array();
-        this.gridWordsHorizontal = Array();
-        this.gridWordsVertical = Array();
+        this.gridWords = [];
         this.focusCell = FocusCell.Instance;
     }
 
@@ -41,27 +46,6 @@ export class DefinitionComponent implements OnInit {
             this.gridWords = gridWords.sort(this.compareIndex);
             this.splitHorizontalAndVerticalWords();
         });
-    }
-
-    private firstUnknownCell(cells: Array<ICell>): number {
-        for (let i: number = 0; i < cells.length; i++) {
-            if (!cells[i].isFound) {
-                return i;
-            }
-        }
-
-        return -1;
-    }
-
-    private isAlreadyFoundWord(): boolean {
-        let isFoundWord: boolean = true;
-        this.focusCell.Cells.forEach((cell: ICell) => {
-            if (!cell.isFound) {
-                isFoundWord = false;
-            }
-        });
-
-        return isFoundWord;
     }
 
     public focusOnCell(choosedDefinition: string): void {
@@ -88,11 +72,31 @@ export class DefinitionComponent implements OnInit {
     public cheatModeToString(): string {
         return this.cheatModeActive ? "CHEAT MODE ACTIVATE!" : "Click to activate Cheat Mode";
     }
+    private firstUnknownCell(cells: Array<ICell>): number {
+        for (let i: number = 0; i < cells.length; i++) {
+            if (!cells[i].isFound) {
+                return i;
+            }
+        }
+
+        return -1;
+    }
+
+    private isAlreadyFoundWord(): boolean {
+        let isFoundWord: boolean = true;
+        this.focusCell.Cells.forEach((cell: ICell) => {
+            if (!cell.isFound) {
+                isFoundWord = false;
+            }
+        });
+
+        return isFoundWord;
+    }
 
     private splitHorizontalAndVerticalWords(): void {
         this.gridWords.forEach((word: IGridWord) => {
             if (word.orientation === Orientation.Horizontal) {
-               this.gridWordsHorizontal.push(word);
+                this.gridWordsHorizontal.push(word);
             } else {
                 this.gridWordsVertical.push(word);
             }

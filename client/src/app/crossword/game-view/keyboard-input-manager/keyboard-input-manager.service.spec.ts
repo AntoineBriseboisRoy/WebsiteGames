@@ -24,7 +24,6 @@ describe("KeyboardInputManagerService", () => {
     }));
 
     it("should have a cell with a content of A", () => {
-        const GRID_WIDTH: number = 2;
         cells = [{gridIndex: 1, index: 1, answer: "A", cellColor: CellColor.White, content: "", isFound: false },
                  {gridIndex: 2, index: 1, answer: "B", cellColor: CellColor.White, content: "", isFound: false },
                  {gridIndex: 3, index: 2, answer: "C", cellColor: CellColor.White, content: "", isFound: false },
@@ -40,7 +39,6 @@ describe("KeyboardInputManagerService", () => {
     });
 
     it("should have a cell with a content of nothing", () => {
-        const GRID_WIDTH: number = 2;
         cells = [{gridIndex: 1, index: 1, answer: "A", cellColor: CellColor.White, content: "", isFound: false },
                  {gridIndex: 2, index: 1, answer: "B", cellColor: CellColor.White, content: "", isFound: false },
                  {gridIndex: 3, index: 2, answer: "C", cellColor: CellColor.White, content: "", isFound: false },
@@ -55,7 +53,6 @@ describe("KeyboardInputManagerService", () => {
     });
 
     it("should contain all letters at least once", () => {
-        const GRID_WIDTH: number = 2;
         cells = [{gridIndex: 1, index: 1, answer: "A", cellColor: CellColor.White, content: "", isFound: false },
                  {gridIndex: 2, index: 1, answer: "B", cellColor: CellColor.White, content: "", isFound: false },
                  {gridIndex: 3, index: 2, answer: "C", cellColor: CellColor.White, content: "", isFound: false },
@@ -72,7 +69,6 @@ describe("KeyboardInputManagerService", () => {
     });
 
     it("should have a content of nothing", () => {
-        const GRID_WIDTH: number = 2;
         cells = [{gridIndex: 1, index: 1, answer: "A", cellColor: CellColor.White, content: "", isFound: false },
                  {gridIndex: 2, index: 1, answer: "B", cellColor: CellColor.White, content: "", isFound: false },
                  {gridIndex: 3, index: 2, answer: "C", cellColor: CellColor.White, content: "", isFound: false },
