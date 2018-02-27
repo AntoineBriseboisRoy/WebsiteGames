@@ -2,7 +2,7 @@ import { Component, OnInit } from "@angular/core";
 import { Point, Segment } from "./Geometry";
 import * as cst from "../../constants";
 import { Constraints } from "./constraints";
-import * as $ from "jquery";
+import * as jQuery from "jquery";
 
 @Component({
     selector: "app-edit-track",
