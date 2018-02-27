@@ -33,29 +33,37 @@ export class TopViewCamera extends OrthographicCamera implements CameraState {
     }
 
     public zoomIn(): void {
-        if (this.zoom >= MIN_ZOOM) {
+        if (this. isGreaterEqualThanMinZoom()) {
             this.zoom += ZOOM_INCREMENT;
-            if (this.zoom > MAX_ZOOM) {
+            if (this.isGreaterThanMaxZoom()) {
                 this.zoom = MAX_ZOOM;
             }
             this.zoom = this.roundZoom(this.zoom);
+            this.updateProjectionMatrix();
         } else {
             this.zoom = MIN_ZOOM;
         }
-        this.updateProjectionMatrix();
     }
 
     public zoomOut(): void {
-        if (this.zoom >= MIN_ZOOM) {
+        if (this. isGreaterEqualThanMinZoom()) {
             this.zoom -= ZOOM_INCREMENT;
-            if (this.zoom > MAX_ZOOM) {
+            if (this.isGreaterThanMaxZoom()) {
                 this.zoom = MAX_ZOOM;
             }
             this.zoom = this.roundZoom(this.zoom);
+            this.updateProjectionMatrix();
         } else {
             this.zoom = MIN_ZOOM;
         }
-        this.updateProjectionMatrix();
+    }
+
+    private isGreaterEqualThanMinZoom(): boolean {
+        return (this.zoom >= MIN_ZOOM);
+    }
+
+    private isGreaterThanMaxZoom(): boolean {
+        return (this.zoom > MAX_ZOOM);
     }
 
     private roundZoom(zoomFactor: number): number {
