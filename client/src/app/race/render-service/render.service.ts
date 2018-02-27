@@ -1,8 +1,8 @@
 import { Injectable } from "@angular/core";
 import Stats = require("stats.js");
 import { WebGLRenderer, Scene, AmbientLight,
-         AxisHelper, Mesh, PlaneBufferGeometry, MeshBasicMaterial,
-         DoubleSide, Texture, RepeatWrapping, TextureLoader, Camera } from "three";
+         Mesh, PlaneBufferGeometry, MeshBasicMaterial,
+         DoubleSide, Texture, RepeatWrapping, TextureLoader } from "three";
 import { Car } from "../car/car";
 import { ThirdPersonCamera } from "../camera/camera-perspective";
 import { TopViewCamera } from "../camera/camera-orthogonal";
@@ -16,6 +16,8 @@ export const FIELD_OF_VIEW: number = 70;
 
 const WHITE: number = 0xFFFFFF;
 const AMBIENT_LIGHT_OPACITY: number = 0.5;
+const TEXTURE_TILE_SIZE: number = 10;
+const TEXTURE_SIZE: number = 100;
 
 @Injectable()
 export class RenderService {
@@ -49,6 +51,11 @@ export class RenderService {
         this.startRenderingLoop();
     }
 
+    public onResize(): void {
+        this.cameraContext.onResize(this.container.clientWidth, this.container.clientHeight);
+        this.renderer.setSize(this.container.clientWidth, this.container.clientHeight);
+    }
+
     private initStats(): void {
         this.stats = new Stats();
         this.stats.dom.style.position = "absolute";
@@ -79,30 +86,24 @@ export class RenderService {
 
         await this._car.init();
         this.cameraContext.initStates(this._car.getPosition());
+        this.cameraContext.setInitialState();
         this.scene.add(this._car);
         this.scene.add(new AmbientLight(WHITE, AMBIENT_LIGHT_OPACITY));
 
-        // Addon for the floor and axis for future parts (Will be deleted in future fonctionalities)
-        const axesHelper: AxisHelper = new AxisHelper();
-        this.scene.add( axesHelper );
+        const skybox: Skybox = new Skybox();
+        this.scene.background = skybox.CubeTexture;
+        this.scene.add(this.createFloorMesh());
+    }
 
-        const TEXTURE_TILE_SIZE: number = 10;
-        const TEXTURE_SIZE: number = 100;
-        const SKYBOX_RADIUS: number = 50;
-        /* tslint:disable */
-        // Loading picture with its URI
+    private createFloorMesh(): Mesh {
         const floorTexture: Texture = new TextureLoader().load("/assets/camero/floor-texture.jpg");
-        /* tslint:enable */
         floorTexture.wrapS = floorTexture.wrapT = RepeatWrapping;
         floorTexture.repeat.set(TEXTURE_TILE_SIZE, TEXTURE_TILE_SIZE);
-        const geometry: PlaneBufferGeometry = new PlaneBufferGeometry(TEXTURE_SIZE, TEXTURE_SIZE, 1, 1);
-        const material: MeshBasicMaterial = new MeshBasicMaterial( { map: floorTexture, side: DoubleSide } );
-        const mesh: Mesh = new Mesh( geometry, material );
+        const mesh: Mesh = new Mesh(new PlaneBufferGeometry(TEXTURE_SIZE, TEXTURE_SIZE, 1, 1),
+                                    new MeshBasicMaterial({ map: floorTexture, side: DoubleSide }));
         mesh.rotation.x = PI_OVER_2;
 
-        const skybox: Skybox = new Skybox();
-        this.scene.background = skybox.getCubeTexture();
-        this.scene.add(mesh);
+        return mesh;
     }
 
     private startRenderingLoop(): void {
@@ -120,10 +121,5 @@ export class RenderService {
         this.update();
         this.renderer.render(this.scene, this.cameraContext.CurrentState);
         this.stats.update();
-    }
-
-    public onResize(): void {
-        this.cameraContext.onResize(this.container.clientWidth, this.container.clientHeight);
-        this.renderer.setSize(this.container.clientWidth, this.container.clientHeight);
     }
 }

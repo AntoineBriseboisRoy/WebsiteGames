@@ -1,4 +1,4 @@
-import { Track, TrackType } from "./track-info";
+import { Track, TrackType } from "./track";
 
 describe("TrackInfo", () => {
     it("Should correctly construct a TrackInfo instance", () => {
@@ -7,7 +7,7 @@ describe("TrackInfo", () => {
         const testTrack: Track = new Track(NAME, DESCRIPTION, 0, ["0:00"], TrackType.DESERT);
         expect(testTrack.Name).toBe(NAME);
         expect(testTrack.Description).toBe(DESCRIPTION);
-        expect(testTrack.NPlayed).toBe(0);
+        expect(testTrack.NTimesPlayed).toBe(0);
         expect(testTrack.Type).toBe(TrackType.DESERT);
         expect(testTrack.BestTimes).toEqual(["0:00"]);
     });

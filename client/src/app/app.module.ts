@@ -5,7 +5,6 @@ import { HttpClientModule } from "@angular/common/http";
 import { AppComponent } from "./app.component";
 import { GameComponent } from "./race/game-component/game.component";
 
-import { RenderService } from "./race/render-service/render.service";
 import { BasicService } from "./basic.service";
 import { CrosswordViewComponent } from "./crossword/game-view/crossword-view.component";
 import { TopBarComponent } from "./crossword/game-view/top-bar/top-bar.component";

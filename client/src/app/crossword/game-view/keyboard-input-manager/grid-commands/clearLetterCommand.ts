@@ -4,7 +4,6 @@ import { FocusCell } from "../../focusCell";
 import { GRID_WIDTH, Orientation } from "../../../../constants";
 
 export class ClearLetterCommand extends AbsGridCommand {
-    private letter: string;
     public constructor(cells: Array<ICell>) {
         super(cells);
     }

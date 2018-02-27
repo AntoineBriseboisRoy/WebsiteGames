@@ -1,5 +1,5 @@
 
-import { Camera, Vector3, PerspectiveCamera } from "three";
+import { Camera, Vector3 } from "three";
 import { Car } from "../car/car";
 
 export abstract class CameraState extends Camera {

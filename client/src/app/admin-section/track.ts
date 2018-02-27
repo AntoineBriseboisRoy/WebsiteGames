@@ -1,6 +1,5 @@
 const UNDEFINED_NAME: string = "Unknown track";
 const UNDEFINED_DESCRIPTION: string = "Unknown description.";
-const MAX_BEST_TIMES: number = 10;
 
 export enum TrackType {
     DESERT = "Desert", RAIN = "Rain", F1 = "F1", REGULAR = "Regular"
@@ -8,10 +7,10 @@ export enum TrackType {
 
 export class Track {
 
-    public constructor(private name: string, private description: string, private nPlayed: number,
+    public constructor(private name: string, private description: string, private nTimesPlayed: number,
                        private bestTimes: string[], private type: TrackType) {
         this.name = (name.length > 0) ? name : UNDEFINED_NAME;
-        this.description = (description.length) ? description : UNDEFINED_DESCRIPTION;
+        this.description = (description.length > 0) ? description : UNDEFINED_DESCRIPTION;
     }
 
     public get Name(): string {
@@ -22,8 +21,8 @@ export class Track {
         return this.description;
     }
 
-    public get NPlayed(): number {
-        return this.nPlayed;
+    public get NTimesPlayed(): number {
+        return this.nTimesPlayed;
     }
 
     public get BestTimes(): string[] {
@@ -34,7 +33,7 @@ export class Track {
         return this.type;
     }
 
-    public addNewTime(newTime: string): void {
+    public addNewBestTime(newTime: string): void {
         this.bestTimes.push(newTime);
     }
 }
