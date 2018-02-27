@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, HostListener } from "@angular/core";
 import { Point, Segment } from "./Geometry";
 import * as cst from "../../constants";
 import { Constraints } from "./constraints";
@@ -19,17 +19,15 @@ export class EditTrackComponent implements OnInit {
 
     public constructor(public mouseManagerService: MouseManagerService) {
         this.constraints = new Constraints();
+        this.points = new Array<Point>();
      }
 
     public ngOnInit(): void {
-        this.points = new Array<Point>();
         this.canvas = document.getElementById("edit") as HTMLCanvasElement;
         this.context = this.canvas.getContext("2d");
-        this.resizeWindow();
         this.mouseManagerService.init(this.points);
-
-        window.addEventListener("resize", () => this.resizeWindow());
         this.canvas.oncontextmenu = () => false;
+        this.resizeWindow();
 
         this.canvas.addEventListener("mousedown", (event: MouseEvent) => {
             if (event.button === cst.RIGHT_MOUSE_BUTTON) {
@@ -51,8 +49,20 @@ export class EditTrackComponent implements OnInit {
         });
     }
 
+    @HostListener("window:resize", ["$event"])
+    private resizeWindow(): void {
+        this.canvas.width = window.innerWidth;
+        this.canvas.height = window.innerHeight;
+        this.drawRoads();
+        this.drawPoints();
+    }
+
     public get Points(): Point[] {
         return this.points;
+    }
+
+    public get canBeSaved(): boolean {
+        return this.mouseManagerService.trackComplete && !this.constraints.isBroken && this.areFieldsComplete;
     }
 
     private getInputElement(id: string): HTMLInputElement {
@@ -62,17 +72,6 @@ export class EditTrackComponent implements OnInit {
     private get areFieldsComplete(): boolean {
         return this.getInputElement("Description").value !== this.getInputElement("Description").defaultValue &&
                this.getInputElement("Name").value !== this.getInputElement("Name").defaultValue;
-    }
-
-    public get canBeSaved(): boolean {
-        return this.mouseManagerService.trackComplete && !this.constraints.isBroken && this.areFieldsComplete;
-    }
-
-    private resizeWindow(): void {
-        this.canvas.width = window.innerWidth;
-        this.canvas.height = window.innerHeight;
-        this.drawRoads();
-        this.drawPoints();
     }
 
     public showPopover(target: HTMLElement): void {
