@@ -1,6 +1,5 @@
 import { Point, Segment, Interval } from "./Geometry";
 import * as cst from "../../constants";
-import { Vector2 } from "three";
 export class Constraints {
 
     private segments: Segment[];
