@@ -10,6 +10,8 @@ const INITIAL_ZOOM_FACTOR: number = 1;
 const MAX_ZOOM: number = 2.5;
 const MIN_ZOOM: number = 0.7;
 const ITERATION_NUMBER: number =  5;
+const ZOOM_IN_ITERATION_NUMBER: number = 10;
+const ZOOM_OUT_ITERATION_NUMBER: number = 20;
 
 describe("CameraPerspective", () => {
     let camera: ThirdPersonCamera;
@@ -83,13 +85,13 @@ describe("CameraPerspective", () => {
         expect(camera.zoom).toEqual(totalZoom + INITIAL_ZOOM_FACTOR);
     });
     it("should not exceed the maximum zoom factor", () => {
-        for (let i: number = 0; i < ITERATION_NUMBER * 10; i++) {
+        for (let i: number = 0; i < ITERATION_NUMBER * ZOOM_IN_ITERATION_NUMBER; i++) {
             camera.zoomIn();
         }
         expect(camera.zoom).toEqual(MAX_ZOOM);
     });
-    it("should not exceed the maximum zoom factor", () => {
-        for (let i: number = 0; i < ITERATION_NUMBER * 20; i++) {
+    it("should not exceed the minimum zoom factor", () => {
+        for (let i: number = 0; i < ITERATION_NUMBER * ZOOM_OUT_ITERATION_NUMBER; i++) {
             camera.zoomOut();
         }
         expect(camera.zoom).toEqual(MIN_ZOOM);
