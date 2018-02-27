@@ -23,7 +23,7 @@ describe("KeyboardInputManagerService", () => {
         expect(service).toBeTruthy();
     }));
 
-    it("should have a content of A", () => {
+    it("should have a cell with a content of A", () => {
         const GRID_WIDTH: number = 2;
         cells = [{gridIndex: 1, index: 1, answer: "A", cellColor: CellColor.White, content: "", isFound: false },
                  {gridIndex: 2, index: 1, answer: "B", cellColor: CellColor.White, content: "", isFound: false },
@@ -39,7 +39,7 @@ describe("KeyboardInputManagerService", () => {
         expect(FocusCell.Instance.Cell.content).toEqual("A");
     });
 
-    it("should have a content of nothing", () => {
+    it("should have a cell with a content of nothing", () => {
         const GRID_WIDTH: number = 2;
         cells = [{gridIndex: 1, index: 1, answer: "A", cellColor: CellColor.White, content: "", isFound: false },
                  {gridIndex: 2, index: 1, answer: "B", cellColor: CellColor.White, content: "", isFound: false },
@@ -54,7 +54,7 @@ describe("KeyboardInputManagerService", () => {
         expect(FocusCell.Instance.Cell.content).toBe("");
     });
 
-    it("should contain all letters once", () => {
+    it("should contain all letters at least once", () => {
         const GRID_WIDTH: number = 2;
         cells = [{gridIndex: 1, index: 1, answer: "A", cellColor: CellColor.White, content: "", isFound: false },
                  {gridIndex: 2, index: 1, answer: "B", cellColor: CellColor.White, content: "", isFound: false },
@@ -71,14 +71,15 @@ describe("KeyboardInputManagerService", () => {
         }
     });
 
-    it("should contain nothing", () => {
+    it("should have a content of nothing", () => {
         const GRID_WIDTH: number = 2;
-        cells = [{gridIndex: 1, index: 1, answer: "A", cellColor: CellColor.White, content: "A", isFound: false },
+        cells = [{gridIndex: 1, index: 1, answer: "A", cellColor: CellColor.White, content: "", isFound: false },
                  {gridIndex: 2, index: 1, answer: "B", cellColor: CellColor.White, content: "", isFound: false },
                  {gridIndex: 3, index: 2, answer: "C", cellColor: CellColor.White, content: "", isFound: false },
                  {gridIndex: 4, index: undefined, answer: "", cellColor: CellColor.Black, content: "", isFound: false }];
 
         FocusCell.Instance.Cell = cells[1];
+        FocusCell.Instance.Cell.content = "A";
         FocusCell.Instance.Orientation = Orientation.Horizontal;
         FocusCell.Instance.Cells = [cells[0], cells[1]];
 
