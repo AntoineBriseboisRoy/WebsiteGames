@@ -52,7 +52,7 @@ export class GridComponent implements OnInit {
     public focusOnCell(cell: ICell): void {
         this.addWordsToClickedWords(cell);
          // if click on the same cell twice, switch to Vertical/Horizontal word
-        if (this.clickedCell === cell && cell.isFound === false && this.focusCell.Cell !== undefined) {
+        if (this.clickedCell === cell && !cell.isFound && this.focusCell.Cell !== undefined) {
             this.chooseHorizontalOrVertical();
         } else {
             this.chooseNewWords(cell);
