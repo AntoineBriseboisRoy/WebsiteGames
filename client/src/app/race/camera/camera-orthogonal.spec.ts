@@ -13,7 +13,6 @@ const ITERATION_NUMBER: number =  5;
 const ZOOM_IN_ITERATION_NUMBER: number = 10;
 const ZOOM_OUT_ITERATION_NUMBER: number = 30;
 
-
 describe("CameraOrthogonal", () => {
     let camera: TopViewCamera;
     let car: Car = new Car();
