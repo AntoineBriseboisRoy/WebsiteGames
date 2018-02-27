@@ -82,7 +82,7 @@ export class MouseManagerService {
     }
 
     private isClosingTrackClick(): boolean {
-        return this.selectedPoint === 0 && !this.moveStartPoint && this.points.length > 1;
+        return this.selectedPoint === 0 && !this.moveStartPoint && this.points.length > 1 && !this.trackComplete;
     }
 
     private isDraggingSelectedPointOnEndPoint(event: MouseEvent): boolean {
