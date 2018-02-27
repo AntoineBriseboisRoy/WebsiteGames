@@ -33,7 +33,7 @@ export class DifficultyMenuComponent implements OnInit {
         }
     }
 
-    public activeDifficulty(difficulty: Difficulty): void {
+    public activateDifficulty(difficulty: Difficulty): void {
         this.gameManager.setDifficulty(difficulty);
         this.isActiveDifficulty = true;
     }
