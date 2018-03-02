@@ -50,17 +50,4 @@ describe("Verifying BlackSquare generation.", () => {
         }
         expect(enoughRoom).to.equal(true);
     });
-    it ("Should create BlackSquares that are symmetrical with the diagonal.", () => {
-        const generator: BlackSquareGenerator = BlackSquareGenerator.getInstance(cst.STANDARD_SIDE_SIZE, cst.PERCENTAGE_BLACK_SQUARES);
-        const blackSquares: string[][] = generator.generateBlackSquares();
-        let symmetrical: boolean = true;
-        for (let i: number = 0; i < cst.STANDARD_SIDE_SIZE; i++) {
-            for (let j: number = 0; j < cst.STANDARD_SIDE_SIZE; j++) {
-                if (blackSquares[i][j] !== blackSquares[j][i]) {
-                    symmetrical = false;
-                }
-            }
-        }
-        expect(symmetrical).to.equal(true);
-      });
 });
