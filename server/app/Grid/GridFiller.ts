@@ -40,7 +40,6 @@ export class GridFiller {
         while (!this.fillGridWithWords()) { /* Do nothing */ }
         this.fillRemainingSpacesWithBlacksquares();
         console.log(this.grid);
-        console.log(this.Words);
 
         return this.grid;
     }
@@ -107,8 +106,6 @@ export class GridFiller {
     }
 
     private fillGridWithWords(): boolean {
-        console.log(this.grid);
-        console.log("Words: " + this.words.length + "   WordsLength: " + this.wordsLengths.length);
         if (this.gridFilled()) {
             return true;
         }
@@ -141,8 +138,6 @@ export class GridFiller {
         if (this.gridFilled()) {
             return true;
         }
-        console.log(this.grid);
-        console.log("Words: " + this.words.length + "   WordsLength: " + this.wordsLengths.length);
 
         const longestFreeSpace: Word = this.wordsLengths.pop();
         const entry: DictionaryEntry = this.findWordsWithConstraints(longestFreeSpace.Length,
@@ -262,7 +257,7 @@ export class GridFiller {
         do {
             word = this.searchWordsTemporaryDB(length, constraints);
             if (word.word === cst.NOT_FOUND) {
-                return { word: cst.NOT_FOUND, definition: "", field3: "" };
+                return word;
             }
             ++nAttempts;
         } while (this.verifyAlreadyUsedWord(word.word) && nAttempts < cst.MAX_WORD_QUERY_ATTEMPS);
