@@ -16,28 +16,36 @@ describe("Verifying BlackSquare generation.", () => {
         });
         expect(nBlackSquares).to.equal(cst.PERCENTAGE_BLACK_SQUARES * cst.STANDARD_SIDE_SIZE * cst.STANDARD_SIDE_SIZE);
     });
+    // tslint:disable-next-line:max-func-body-length
     it("Should have room for at least one word per row/column.", () => {
         const generator: BlackSquareGenerator = BlackSquareGenerator.getInstance(cst.STANDARD_SIDE_SIZE, cst.PERCENTAGE_BLACK_SQUARES);
-        const blackSquares: string[][] = generator.generateBlackSquares();
+        const grid: string[][] = generator.generateBlackSquares();
         let enoughRoom: boolean = true;
-
         for (let i: number = 0; i < cst.STANDARD_SIDE_SIZE; i++) {
-            let previousBlackSquarePosRow: number = 0, previousBlackSquarePosCol: number = 0,
+            let previousBlackSquarePosRow: number = -1, previousBlackSquarePosCol: number = -1,
                 nWordsOnRow: number = 0, nWordsOnCol: number = 0;
             for (let j: number = 0; j < cst.STANDARD_SIDE_SIZE; j++) {
-                if (blackSquares[i][j] === cst.BLACKSQUARE_CHARACTER) {
+                if (grid[i][j] === cst.BLACKSQUARE_CHARACTER) {
+                    if (previousBlackSquarePosRow < j - cst.MIN_LETTERS_FOR_WORD) {
+                        ++nWordsOnRow;
+                    }
                     previousBlackSquarePosRow = j;
-                } else if (previousBlackSquarePosRow >= j - cst.MIN_LETTERS_FOR_WORD) {
-                    ++nWordsOnRow;
                 }
-                if (blackSquares[j][i] === cst.BLACKSQUARE_CHARACTER) {
-                    previousBlackSquarePosCol = i;
-                } else if (previousBlackSquarePosCol >= i - cst.MIN_LETTERS_FOR_WORD) {
-                    ++nWordsOnCol;
+                if (grid[j][i] === cst.BLACKSQUARE_CHARACTER) {
+                    if (previousBlackSquarePosCol < j - cst.MIN_LETTERS_FOR_WORD) {
+                        ++nWordsOnCol;
+                    }
+                    previousBlackSquarePosCol = j;
                 }
             }
+            if (previousBlackSquarePosCol < grid[0].length - cst.MIN_LETTERS_FOR_WORD) {
+                ++nWordsOnCol;
+            }
+            if (previousBlackSquarePosRow < grid[0].length - cst.MIN_LETTERS_FOR_WORD) {
+                ++nWordsOnRow;
+            }
             if ((nWordsOnCol < cst.MIN_WORDS_PER_LINE) || (nWordsOnRow < cst.MIN_WORDS_PER_LINE)) {
-               enoughRoom = false;
+                enoughRoom = false;
             }
         }
         expect(enoughRoom).to.equal(true);
