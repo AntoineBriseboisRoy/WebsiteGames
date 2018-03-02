@@ -21,6 +21,7 @@ import { APP_BASE_HREF } from "@angular/common";
 import { TrackViewComponent } from "./race/track-view/track-view.component";
 import { GridService } from "./crossword/grid.service";
 import { WordTransmitterService } from "./crossword/game-view/wordTransmitter.service";
+import { PlayerMenuComponent } from './crossword/player-menu/player-menu.component';
 
 @NgModule({
     declarations: [
@@ -34,7 +35,8 @@ import { WordTransmitterService } from "./crossword/game-view/wordTransmitter.se
         DifficultyMenuComponent,
         EditTrackComponent,
         AdminSectionComponent,
-        TrackViewComponent
+        TrackViewComponent,
+        PlayerMenuComponent
     ],
     imports: [
         BrowserModule,
