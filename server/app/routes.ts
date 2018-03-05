@@ -20,7 +20,7 @@ export class Routes {
 
         router.get("/getWords",
                    (req: Request, res: Response, next: NextFunction) => this.index.getWords(req, res, next));
-                   
+
         router.get("/getTrack",
                    (req: Request, res: Response, next: NextFunction) => this.index.getTrack(req, res, next));
 

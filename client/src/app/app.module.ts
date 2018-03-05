@@ -43,7 +43,7 @@ import { MongoQueryService } from "./mongo-query.service";
         FormsModule,
         AppRoutingModule
     ],
-    providers: [BasicService, GridService, WordTransmitterService, MongoQueryService, {provide: APP_BASE_HREF, useValue : "/" }],
+    providers: [{provide: APP_BASE_HREF, useValue : "/" }, BasicService, MongoQueryService, GridService, WordTransmitterService],
     bootstrap: [AppComponent]
 })
 export class AppModule { }
