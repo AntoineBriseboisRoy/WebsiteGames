@@ -19,6 +19,7 @@ import { DifficultyMenuComponent } from "./crossword/difficulty-menu/difficulty-
 import { AdminSectionComponent } from "./admin-section/admin-section.component";
 import { APP_BASE_HREF } from "@angular/common";
 import { TrackViewComponent } from "./race/track-view/track-view.component";
+import { MongoQueryService } from "./mongo-query.service";
 
 @NgModule({
     declarations: [
@@ -39,7 +40,7 @@ import { TrackViewComponent } from "./race/track-view/track-view.component";
         FormsModule,
         AppRoutingModule
     ],
-    providers: [{provide: APP_BASE_HREF, useValue : "/" }, BasicService],
+    providers: [{provide: APP_BASE_HREF, useValue : "/" }, BasicService, MongoQueryService],
     bootstrap: [AppComponent]
 })
 export class AppModule { }

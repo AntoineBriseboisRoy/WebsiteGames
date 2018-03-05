@@ -23,7 +23,7 @@ export class DbClient {
             .then((client: MongoClient) => {
                 this.db = client.db(DB_NAME);
             }).catch((error: Error) => {
-                console.log(error);
+                console.error(error);
             });
     }
 }
