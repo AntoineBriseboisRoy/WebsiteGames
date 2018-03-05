@@ -36,15 +36,6 @@ module Route {
             console.log(req);
             res.send(JSON.stringify(req));
         }
-
-        public getTrack(req: Request, res: Response, next: NextFunction): void {
-            res.send(JSON.stringify(new Track("test Track", "this is a test", 0, ["0:00"], TrackType.RAIN)));
-        }
-
-        public postTrack(req: Request, res: Response, next: NextFunction): void {
-            console.log(req);
-            res.send(JSON.stringify(req));
-        }
     }
 }
 
