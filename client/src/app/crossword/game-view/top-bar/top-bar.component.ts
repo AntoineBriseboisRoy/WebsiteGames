@@ -10,7 +10,7 @@ export class TopBarComponent implements OnInit {
     private gameManager: GameManager;
 
     public constructor() {
-        this.gameManager = GameManager.getInstance();
+        this.gameManager = GameManager.Instance;
     }
 
     public ngOnInit(): void {

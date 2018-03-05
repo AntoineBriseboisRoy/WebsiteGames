@@ -5,6 +5,14 @@ import { Euler } from "three";
 
 const MS_BETWEEN_FRAMES: number = 16.6667;
 
+const ZOOM_INCREMENT: number = 0.05;
+const INITIAL_ZOOM_FACTOR: number = 1;
+const MAX_ZOOM: number = 3;
+const MIN_ZOOM: number = 0.5;
+const ITERATION_NUMBER: number =  5;
+const ZOOM_IN_ITERATION_NUMBER: number = 10;
+const ZOOM_OUT_ITERATION_NUMBER: number = 30;
+
 describe("CameraOrthogonal", () => {
     let camera: TopViewCamera;
     let car: Car = new Car();
@@ -61,4 +69,31 @@ describe("CameraOrthogonal", () => {
         expect(camera.right + camera.left).toBe(0);
         expect(camera.top + camera.bottom).toBe(0);
     });
+    it("should zoomOut at a constant rate", () => {
+        for (let i: number = 0; i < ITERATION_NUMBER; i++) {
+            camera.zoomOut();
+        }
+        const totalZoom: number = ITERATION_NUMBER * ZOOM_INCREMENT;
+        expect(camera.zoom).toEqual( INITIAL_ZOOM_FACTOR - totalZoom);
+    });
+    it("should zoomIn at a constant rate", () => {
+        for (let i: number = 0; i < ITERATION_NUMBER; i++) {
+            camera.zoomIn();
+        }
+        const totalZoom: number = ITERATION_NUMBER * ZOOM_INCREMENT;
+        expect(camera.zoom).toEqual(totalZoom + INITIAL_ZOOM_FACTOR);
+    });
+    it("should not exceed the maximum zoom factor", () => {
+        for (let i: number = 0; i < ITERATION_NUMBER * ZOOM_IN_ITERATION_NUMBER; i++) {
+            camera.zoomIn();
+        }
+        expect(camera.zoom).toEqual(MAX_ZOOM);
+    });
+    it("should not exceed the minimum zoom factor", () => {
+        for (let i: number = 0; i < ITERATION_NUMBER * ZOOM_OUT_ITERATION_NUMBER; i++) {
+            camera.zoomOut();
+        }
+        expect(camera.zoom).toEqual(MIN_ZOOM);
+    });
+
 });

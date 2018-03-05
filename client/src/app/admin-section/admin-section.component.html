@@ -1,0 +1,23 @@
+<div id="admin-page" class="container-fluid">
+    <div class="container">
+        <div class="row title-box">
+            <h1 id="main-title">{{title}}</h1>
+            <h2>Choose a track to edit or to delete.</h2>
+        </div>
+        <div class="container">
+            <ul class="track-list">
+                <button type="button" class="btn btn-lg btn-block mt-4" id="button-edit" routerLink="/edit">Create a new track</button>
+                <div *ngFor="let track of tracks">
+                    <li class="track-info row">
+                        <h3>{{track.Name}}</h3>
+                        <p>{{track.Description}}</p>
+                        <div class="track-actions">
+                            <button (click)="onButtonClick(track.Name, 'edit')" type="button" class="btn btn-outline-success">Edit</button>
+                            <button (click)="onButtonClick(track.Name, 'delete')" type="button" class="btn btn-outline-danger">Delete</button>
+                        </div>
+                    </li>
+                </div>
+            </ul>
+        </div>
+    </div>
+</div>

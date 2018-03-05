@@ -1,43 +1,46 @@
 import { OnInit } from "@angular/core";
-import { Difficulty } from "../constants";
+import { Difficulty, DIFFICULTY_LENGHT } from "../constants";
 import { Player } from "./player";
 
-// Singleton class
 export class GameManager implements OnInit {
     private static instance: GameManager;
     private difficulty: Difficulty;
     private isMultiplayer: boolean;
 
-    public playerOne: Player;
-    public playerTwo: Player;
+    private playerOne: Player;
+    private playerTwo: Player;
 
-    public static getInstance(): GameManager {
+    public static get Instance(): GameManager {
         return this.instance || (this.instance = new this());
     }
 
     private constructor() {
-        this.playerOne = {
-            name: "Claudia",
-            point: 0
-        };
-        this.playerTwo = {
-            name: "Antoine",
-            point: 100
-        };
+        this.playerOne = new Player("Claudia", 0);
+        this.playerTwo = new Player("Antoine", 0);
         this.difficulty = Difficulty.Easy;
-        this.isMultiplayer = true;
+        this.isMultiplayer = false;
     }
 
     public ngOnInit(): void {
-        this.difficulty = Difficulty.Easy;
-        this.isMultiplayer = true;
     }
 
     public getDifficulty(): string {
-        return this.difficulty;
+        return this.difficulty.slice(DIFFICULTY_LENGHT); // Delete the "Difficulty." before the difficulty type
+    }
+
+    public setDifficulty(difficulty: Difficulty): void {
+        this.difficulty = difficulty;
     }
 
     public get IsMultiplayer(): boolean {
         return this.isMultiplayer;
+    }
+
+    public get PlayerOne(): Player {
+        return this.playerOne;
+    }
+
+    public get PlayerTwo(): Player {
+        return this.playerTwo;
     }
 }

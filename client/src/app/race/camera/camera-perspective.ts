@@ -1,11 +1,16 @@
 import { PerspectiveCamera, Vector3 } from "three";
 import { Car } from "../car/car";
+import { CameraState } from "./camera-state";
 
 const RELATIVE_CAMERA_OFFSET_X: number = 0;
 const RELATIVE_CAMERA_OFFSET_Y: number = 2;
 const RELATIVE_CAMERA_OFFSET_Z: number = 5;
 
-export class ThirdPersonCamera extends PerspectiveCamera {
+const ZOOM_INCREMENT: number = 0.05;
+const MAX_ZOOM: number = 2.5;
+const MIN_ZOOM: number = 0.7;
+
+export class ThirdPersonCamera extends PerspectiveCamera implements CameraState {
 
     private static getAspectRatio(clientWidth: number, clientHeight: number): number {
         return clientWidth / clientHeight;
@@ -19,8 +24,8 @@ export class ThirdPersonCamera extends PerspectiveCamera {
 
     public init(lookAt: Vector3): void {
         this.position.set(RELATIVE_CAMERA_OFFSET_X + lookAt.x,
-                          RELATIVE_CAMERA_OFFSET_Y + lookAt.x,
-                          RELATIVE_CAMERA_OFFSET_Z + lookAt.x);
+                          RELATIVE_CAMERA_OFFSET_Y + lookAt.y,
+                          RELATIVE_CAMERA_OFFSET_Z + lookAt.z);
         this.lookAt(lookAt);
     }
 
@@ -39,5 +44,45 @@ export class ThirdPersonCamera extends PerspectiveCamera {
     public onResize(clientWidth: number, clientHeight: number): void {
         this.aspect = ThirdPersonCamera.getAspectRatio(clientWidth, clientHeight);
         this.updateProjectionMatrix();
+    }
+
+    public zoomIn(): void {
+        if (this. isGreaterEqualThanMinZoom()) {
+            this.zoom += ZOOM_INCREMENT;
+            if (this.isGreaterThanMaxZoom()) {
+                this.zoom = MAX_ZOOM;
+            }
+            this.zoom = this.roundZoom(this.zoom);
+            this.updateProjectionMatrix();
+        } else {
+            this.zoom = MIN_ZOOM;
+        }
+    }
+
+    public zoomOut(): void {
+        if (this. isGreaterEqualThanMinZoom()) {
+            this.zoom -= ZOOM_INCREMENT;
+            if (this.isGreaterThanMaxZoom()) {
+                this.zoom = MAX_ZOOM;
+            }
+            this.zoom = this.roundZoom(this.zoom);
+            this.updateProjectionMatrix();
+        } else {
+            this.zoom = MIN_ZOOM;
+        }
+    }
+
+    private isGreaterEqualThanMinZoom(): boolean {
+        return (this.zoom >= MIN_ZOOM);
+    }
+
+    private isGreaterThanMaxZoom(): boolean {
+        return (this.zoom > MAX_ZOOM);
+    }
+
+    private roundZoom(zoomFactor: number): number {
+        const SECOND_DECIMAL_ROUND: number = 100;
+
+        return (Math.round(zoomFactor * SECOND_DECIMAL_ROUND) / SECOND_DECIMAL_ROUND);
     }
 }

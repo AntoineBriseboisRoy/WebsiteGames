@@ -1,4 +1,5 @@
 .square {
+    z-index: 0;
     height: 3.8vw;
     width: 3.8vw;
     border: 1px solid black;
@@ -12,6 +13,16 @@
 .white-square {
     background-color: white;
     height: 100%;
+    border: thin solid rgba(173, 216, 230, 0);
+}
+
+.white-square > div {
+    height: 100%;
+    border: thin solid rgb(107, 107, 107)
+}
+
+.white-square:hover {
+    background-color: rgb(234, 234, 245);
 }
 
 .clear {
@@ -19,9 +30,8 @@
 }
 
 .cell-main-content {
-    font-size: 2.7vw;
+    font-size: 2.5vw;
     text-align: center;
-    /* padding-right: 0.5vw; */
 }
 
 .black-square {
@@ -32,5 +42,48 @@
 
 .cell-index {
     float: left;
+    top:0;
+    margin:0;
+    padding: 0;
     font-size: 1vw;
+}
+
+.focus {
+    background-color: lightblue;
+}
+
+.horizontal-border {
+    border-top: 3px dashed rgb(3, 109, 167);
+    border-bottom: 3px dashed rgb(3, 109, 167);
+    /* background-color: violet; */
+}
+
+.vertical-border {
+    border-left: 3px dashed rgb(3, 109, 167);
+    border-right: 3px dashed rgb(3, 109, 167);
+    /* background-color: violet; */
+}
+
+.first-case-border-horizontal {
+    border-left: 3px dashed rgb(3, 109, 167);
+    /* background-color: violet; */
+}
+
+.last-case-border-horizontal {
+    border-right: 3px dashed rgb(3, 109, 167);
+    /* background-color: violet; */
+}
+
+.first-case-border-vertical {
+    border-top: 3px dashed rgb(3, 109, 167);
+    /* background-color: violet; */
+}
+
+.last-case-border-vertical {
+    border-bottom: 3px dashed rgb(3, 109, 167);
+    /* background-color: violet; */
+}
+
+.isFoundCell {
+    background-color: #0796E5;
 }

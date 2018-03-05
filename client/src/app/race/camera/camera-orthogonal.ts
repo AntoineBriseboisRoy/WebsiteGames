@@ -1,8 +1,13 @@
 import { OrthographicCamera, Vector3 } from "three";
 import { Car } from "../car/car";
 import { INITIAL_CAMERA_POSITION_Y, FRUSTUM_RATIO } from "../../constants";
+import { CameraState } from "./camera-state";
 
-export class TopViewCamera extends OrthographicCamera {
+const ZOOM_INCREMENT: number = 0.05;
+const MAX_ZOOM: number = 3;
+const MIN_ZOOM: number = 0.5;
+
+export class TopViewCamera extends OrthographicCamera implements CameraState {
 
     public constructor(left: number, right: number, top: number,
                        bottom: number, near: number, far: number) {
@@ -25,5 +30,45 @@ export class TopViewCamera extends OrthographicCamera {
         this.top = clientHeight / FRUSTUM_RATIO;
         this.bottom = -clientHeight / FRUSTUM_RATIO;
         this.updateProjectionMatrix();
+    }
+
+    public zoomIn(): void {
+        if (this. isGreaterEqualThanMinZoom()) {
+            this.zoom += ZOOM_INCREMENT;
+            if (this.isGreaterThanMaxZoom()) {
+                this.zoom = MAX_ZOOM;
+            }
+            this.zoom = this.roundZoom(this.zoom);
+            this.updateProjectionMatrix();
+        } else {
+            this.zoom = MIN_ZOOM;
+        }
+    }
+
+    public zoomOut(): void {
+        if (this. isGreaterEqualThanMinZoom()) {
+            this.zoom -= ZOOM_INCREMENT;
+            if (this.isGreaterThanMaxZoom()) {
+                this.zoom = MAX_ZOOM;
+            }
+            this.zoom = this.roundZoom(this.zoom);
+            this.updateProjectionMatrix();
+        } else {
+            this.zoom = MIN_ZOOM;
+        }
+    }
+
+    private isGreaterEqualThanMinZoom(): boolean {
+        return (this.zoom >= MIN_ZOOM);
+    }
+
+    private isGreaterThanMaxZoom(): boolean {
+        return (this.zoom > MAX_ZOOM);
+    }
+
+    private roundZoom(zoomFactor: number): number {
+        const SECOND_DECIMAL_ROUND: number = 100;
+
+        return (Math.round(zoomFactor * SECOND_DECIMAL_ROUND) / SECOND_DECIMAL_ROUND);
     }
 }

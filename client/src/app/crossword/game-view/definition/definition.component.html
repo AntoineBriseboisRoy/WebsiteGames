@@ -5,7 +5,17 @@
   <form>
     <div class="form-group">
       <select multiple class="form-control word-definition">
-        <option *ngFor="let definition of horizontalDefinitions">{{definition}}</option>
+        <div *ngIf="!cheatModeActive;then showDefinitionsHorizontal else cheatModeHorizontal"></div>
+        <ng-template #showDefinitionsHorizontal>
+          <option class="definition-for-click" *ngFor="let word of gridWordsHorizontal" [class.word-definition-found] = "word.isFound" (click)="focusOnCell(word.definition)">
+            {{word.cells[0].index +". "+ word.definition}}
+          </option>
+        </ng-template>
+        <ng-template #cheatModeHorizontal>
+          <option class="definition-for-click" *ngFor="let word of gridWordsHorizontal" [class.word-definition-found] = "word.isFound" (click)="focusOnCell(word.definition)">
+            {{word.cells[0].index +". "+ word.correctAnswer}}
+          </option>
+        </ng-template>
       </select>
     </div>
   </form>
@@ -17,8 +27,19 @@
   <form>
     <div class="form-group">
       <select multiple class="form-control word-definition">
-        <option *ngFor="let definition of verticalDefinitions">{{definition}}</option>
+        <div *ngIf="!cheatModeActive;then showDefinitionsVertical else cheatModeVertical"></div>
+        <ng-template #showDefinitionsVertical>
+          <option class="definition-for-click" *ngFor="let word of gridWordsVertical" [class.word-definition-found] = "word.isFound" (click)="focusOnCell(word.definition)">
+            {{word.cells[0].index +". "+ word.definition}}
+          </option>
+        </ng-template>
+        <ng-template #cheatModeVertical>
+          <option class="definition-for-click" *ngFor="let word of gridWordsVertical" [class.word-definition-found] = "word.isFound" (click)="focusOnCell(word.definition)">
+            {{word.cells[0].index +". "+ word.correctAnswer}}
+          </option>
+        </ng-template>
       </select>
     </div>
   </form>
 </div>
+<button id="cheat-button" (click)="toogleCheatMode()" type="button" class="btn btn-lg btn-block">{{cheatModeToString()}}</button>
