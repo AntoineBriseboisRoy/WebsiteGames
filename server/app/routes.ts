@@ -7,7 +7,7 @@ import { Index } from "./routes/index";
 @injectable()
 export class Routes {
 
-    public constructor(@inject(Types.Index) private index: Index) {}
+    public constructor(@inject(Types.Index) private index: Index) { }
 
     public get routes(): Router {
         const router: Router = Router();
@@ -20,6 +20,12 @@ export class Routes {
 
         router.get("/getWords",
                    (req: Request, res: Response, next: NextFunction) => this.index.getWords(req, res, next));
+                   
+        router.get("/getTrack",
+                   (req: Request, res: Response, next: NextFunction) => this.index.getTrack(req, res, next));
+
+        router.post("/postTrack",
+                    (req: Request, res: Response, next: NextFunction) => this.index.postTrack(req, res, next));
 
         return router;
     }

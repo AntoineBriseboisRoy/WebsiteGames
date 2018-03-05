@@ -4,6 +4,7 @@ import { IWord } from "../../../common/interfaces/IWord";
 import "reflect-metadata";
 import { injectable, } from "inversify";
 import { GridGeneratorService } from "../Grid/GridGeneratorService";
+import { Track, TrackType } from "../../../client/src/app/admin-section/track";
 
 module Route {
 
@@ -25,6 +26,15 @@ module Route {
         public getWords(req: Request, res: Response, next: NextFunction): void {
             const words: Array<IWord> = GridGeneratorService.Instance.getFakeGridWords();
             res.send(JSON.stringify(words));
+        }
+
+        public getTrack(req: Request, res: Response, next: NextFunction): void {
+            res.send(JSON.stringify(new Track("test Track", "this is a test", 0, ["0:00"], TrackType.RAIN)));
+        }
+
+        public postTrack(req: Request, res: Response, next: NextFunction): void {
+            console.log(req);
+            res.send(JSON.stringify(req));
         }
     }
 }
