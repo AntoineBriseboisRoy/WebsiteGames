@@ -41,14 +41,18 @@ export class AdminSectionComponent implements OnInit {
     private createArtificialTracks(): void {
 
         console.log(this.mongoQueryService.getTrack());
-        // this.tracks.push(new Track("Laguna Seca", "A great American track with a corkscrew.", 0, ["0:00"], TrackType.DESERT));
-        // this.tracks.push(new Track("Monza", "The best Italian chicane.", 0, ["0:00"], TrackType.DESERT));
-        // this.tracks.push(new Track("Nürburgring Nordschleife", "Pure German madness.", 0, ["0:00"], TrackType.DESERT));
-        // this.tracks.push(new Track("La Sarthe", "24 hours of French adrenaline.", 0, ["0:00"], TrackType.DESERT));
-        // this.tracks.push(new Track("Monaco", "A street racing circuit.", 0, ["0:00"], TrackType.DESERT));
+        this.tracks.push(new Track("Laguna Seca", "A great American track with a corkscrew.", 0, ["0:00"], TrackType.DESERT));
+        this.tracks.push(new Track("Monza", "The best Italian chicane.", 0, ["0:00"], TrackType.DESERT));
+        this.tracks.push(new Track("Nürburgring Nordschleife", "Pure German madness.", 0, ["0:00"], TrackType.DESERT));
+        this.tracks.push(new Track("La Sarthe", "24 hours of French adrenaline.", 0, ["0:00"], TrackType.DESERT));
+        this.tracks.push(new Track("Monaco", "A street racing circuit.", 0, ["0:00"], TrackType.DESERT));
 
+        this.mongoQueryService.postTrack(this.tracks[0]);
         // this.tracks.forEach((track: Track) => {
-        //     this.mongoQueryService.postTrack(track);
+        //     this.mongoQueryService.postTrack(track)
+        //     .then()
+        //     .catch((err: Error) => { console.error(err); }
+        //     );
         // });
     }
 }

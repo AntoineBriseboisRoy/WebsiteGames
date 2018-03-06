@@ -10,15 +10,11 @@ const DB_URL: string = "mongodb://" + DB_USER + ":" + DB_PASSWD + "@" + DB_HOST_
 export class DbClient {
     private db: Db;
 
-    public constructor() {
-        this.connect();
-    }
-
     public get DB(): Db {
         return this.db;
     }
 
-    private connect(): Promise<void> {
+    public connect(): Promise<void> {
         return MongoClient.connect(DB_URL)
             .then((client: MongoClient) => {
                 this.db = client.db(DB_NAME);

@@ -5,6 +5,7 @@ import "reflect-metadata";
 import { injectable, } from "inversify";
 import { GridGeneratorService } from "../Grid/GridGeneratorService";
 import { Track, TrackType } from "../../../client/src/app/admin-section/track";
+import { TrackSaver } from "../mongo/track-saver";
 
 module Route {
 
@@ -33,8 +34,8 @@ module Route {
         }
 
         public postTrack(req: Request, res: Response, next: NextFunction): void {
-            console.log(req);
-            res.send(JSON.stringify(req));
+            const trackSaver: TrackSaver = new TrackSaver();
+            trackSaver.postTrack(req.body as Track);
         }
     }
 }
