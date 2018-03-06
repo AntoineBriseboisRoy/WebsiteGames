@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { Point } from "./Geometry";
-import * as cst from "../../constants";
+import { NO_SELECTED_POINT, TWICE_DEFAULT_CIRCLE_RADIUS } from "../../constants";
 
 @Injectable()
 export class MouseManagerService {
@@ -59,26 +59,30 @@ export class MouseManagerService {
     }
 
     private resetMouseAttributes(): void {
-        this.selectedPoint = cst.NO_SELECTED_POINT;
+        this.selectedPoint = NO_SELECTED_POINT;
         this.mousePressed = false;
         this.moveStartPoint = false;
     }
 
+    private getDistance(index: number, x: number, y: number): number {
+        const xDistance: number = x - this.points[index].x;
+        const yDistance: number = y - this.points[index].y;
+
+        return Math.sqrt(Math.pow(xDistance, 2) + Math.pow(yDistance, 2));
+    }
+
     private isOnOtherPoint(x: number, y: number): number {
         for (let i: number = 0; i < this.points.length; ++i) {
-            if (this.points[i].x + cst.TWICE_DEFAULT_CIRCLE_RADIUS > x &&
-                this.points[i].x - cst.TWICE_DEFAULT_CIRCLE_RADIUS < x &&
-                this.points[i].y + cst.TWICE_DEFAULT_CIRCLE_RADIUS > y &&
-                this.points[i].y - cst.TWICE_DEFAULT_CIRCLE_RADIUS < y) {
+            if (this.getDistance(i, x, y) < TWICE_DEFAULT_CIRCLE_RADIUS) {
                 return i;
             }
         }
 
-        return cst.NO_SELECTED_POINT;
+        return NO_SELECTED_POINT;
     }
 
     private isAnOutsideClick(): boolean {
-        return this.selectedPoint === cst.NO_SELECTED_POINT && !this.trackComplete;
+        return this.selectedPoint === NO_SELECTED_POINT && !this.trackComplete;
     }
 
     private isClosingTrackClick(): boolean {
@@ -90,7 +94,7 @@ export class MouseManagerService {
     }
 
     private isMovingSelectedPoint(): boolean {
-        return this.mousePressed && this.selectedPoint !== cst.NO_SELECTED_POINT;
+        return this.mousePressed && this.selectedPoint !== NO_SELECTED_POINT;
     }
 
     private isMovingStartPoint(): boolean {

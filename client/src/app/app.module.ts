@@ -1,6 +1,7 @@
 import { BrowserModule } from "@angular/platform-browser";
 import { NgModule } from "@angular/core";
 import { HttpClientModule } from "@angular/common/http";
+import { NgbModule } from "@ng-bootstrap/ng-bootstrap";
 
 import { AppComponent } from "./app.component";
 import { GameComponent } from "./race/game-component/game.component";
@@ -40,7 +41,8 @@ import { WordTransmitterService } from "./crossword/game-view/wordTransmitter.se
         BrowserModule,
         HttpClientModule,
         FormsModule,
-        AppRoutingModule
+        AppRoutingModule,
+        NgbModule.forRoot()
     ],
     providers: [BasicService, GridService, WordTransmitterService, {provide: APP_BASE_HREF, useValue : "/" }],
     bootstrap: [AppComponent]
