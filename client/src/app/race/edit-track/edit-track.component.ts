@@ -1,8 +1,8 @@
 import { Component, OnInit, HostListener } from "@angular/core";
 import { Point, Segment } from "./Geometry";
-import * as cst from "../../constants";
+import { TRACK_WIDTH, DEFAULT_LINE_WIDTH, FULL_CIRCLE_RAD,
+         DEFAULT_CIRCLE_RADIUS, RIGHT_MOUSE_BUTTON } from "../../constants";
 import { Constraints } from "./constraints";
-import * as $ from "jquery";
 import { MouseManagerService } from "./mouse-manager.service";
 
 @Component({
@@ -30,7 +30,7 @@ export class EditTrackComponent implements OnInit {
         this.resizeWindow();
 
         this.canvas.addEventListener("mousedown", (event: MouseEvent) => {
-            if (event.button === cst.RIGHT_MOUSE_BUTTON) {
+            if (event.button === RIGHT_MOUSE_BUTTON) {
                 this.mouseManagerService.handleDeleteLastPoint(event);
             } else {
                 this.mouseManagerService.handleLeftMouseDown(event);
@@ -74,24 +74,17 @@ export class EditTrackComponent implements OnInit {
                this.getInputElement("Name").value !== this.getInputElement("Name").defaultValue;
     }
 
-    public showPopover(target: HTMLElement): void {
-        // tslint:disable-next-line:no-any
-        const $j: any = jQuery.noConflict();
-        $j(target).popover({
-            title: "Can't save track",
-            content: (() => {
-                let content: string = "";
-                if (!this.mouseManagerService.trackComplete) {
-                    content += "The current track is incomplete.";
-                } else if (this.constraints.isBroken) {
-                    content += "Some constraints have been broken.";
-                } else if (!this.areFieldsComplete) {
-                    content += "Please write a track name and description.";
-                }
+    public getPopoverContent(): string {
+        let content: string = "";
+        if (!this.mouseManagerService.trackComplete) {
+            content += "The current track is incomplete.";
+        } else if (this.constraints.isBroken) {
+            content += "Some constraints have been broken.";
+        } else if (!this.areFieldsComplete) {
+            content += "Please write a track name and description.";
+        }
 
-                return content;
-            })
-        });
+        return content;
     }
 
     private redrawCanvas(): void {
@@ -103,7 +96,7 @@ export class EditTrackComponent implements OnInit {
     private drawRoads(): void {
         this.constraints.checkConstraints(this.points, this.mouseManagerService.trackComplete);
         const segments: Segment[] = this.constraints.Segments;
-        this.context.lineWidth = cst.TRACK_WIDTH;
+        this.context.lineWidth = TRACK_WIDTH;
         this.context.beginPath();
 
         for (let i: number = 0; i < segments.length; ++i) {
@@ -119,10 +112,10 @@ export class EditTrackComponent implements OnInit {
     private drawPoints(): void {
         for (const iterator of this.points) {
             this.context.beginPath();
-            this.context.lineWidth = cst.DEFAULT_LINE_WIDTH;
+            this.context.lineWidth = DEFAULT_LINE_WIDTH;
             this.context.lineJoin = "round";
             this.context.fillStyle = "black";
-            this.context.arc(iterator.x, iterator.y, cst.DEFAULT_CIRCLE_RADIUS, 0, cst.FULL_CIRCLE_RAD, false);
+            this.context.arc(iterator.x, iterator.y, DEFAULT_CIRCLE_RADIUS, 0, FULL_CIRCLE_RAD, false);
             this.context.strokeStyle = (iterator.start || iterator.end) ? "green" : "blue";
             this.context.stroke();
             this.context.fill();

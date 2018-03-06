@@ -12,7 +12,7 @@
         <input class="form-control mr-sm-2" id="Description" type="name" placeholder="Description" aria-label="Description">
       </div>
       <div class="col-2">
-          <span *ngIf = "!canBeSaved; else submit" id="popover"class="d-inline-block" data-toggle="popover" data-trigger="hover" data-placement="bottom" (mouseover)="showPopover($event.currentTarget)">
+          <span *ngIf = "!canBeSaved; else submit" class="d-inline-block" popoverTitle="Can't save track" [ngbPopover]="getPopoverContent()" triggers="mouseenter:mouseleave" placement="bottom" container="body">
               <button type="submit" class="btn btn-primary" style="pointer-events: none;" disabled>Save</button>
           </span>
           <ng-template #submit>
