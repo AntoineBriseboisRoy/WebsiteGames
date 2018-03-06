@@ -4,9 +4,8 @@ import { Player } from "./player";
 
 export class GameManager implements OnInit {
     private static instance: GameManager;
+    public isMultiplayer: boolean;
     private difficulty: Difficulty;
-    private isMultiplayer: boolean;
-
     private playerOne: Player;
     private playerTwo: Player;
 
@@ -31,11 +30,6 @@ export class GameManager implements OnInit {
     public setDifficulty(difficulty: Difficulty): void {
         this.difficulty = difficulty;
     }
-
-    public get IsMultiplayer(): boolean {
-        return this.isMultiplayer;
-    }
-
     public get PlayerOne(): Player {
         return this.playerOne;
     }

@@ -17,6 +17,6 @@ export class TopBarComponent implements OnInit {
     }
 
     public modeToString(): string {
-        return this.gameManager.IsMultiplayer ? "Two Players" : "Single Player";
+        return this.gameManager.isMultiplayer ? "Two Players" : "Single Player";
     }
 }

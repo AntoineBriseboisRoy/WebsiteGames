@@ -1,8 +1,8 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed } from "@angular/core/testing";
 
-import { PlayerMenuComponent } from './player-menu.component';
+import { PlayerMenuComponent } from "./player-menu.component";
 
-describe('PlayerMenuComponent', () => {
+describe("PlayerMenuComponent", () => {
   let component: PlayerMenuComponent;
   let fixture: ComponentFixture<PlayerMenuComponent>;
 
@@ -19,7 +19,7 @@ describe('PlayerMenuComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it("should create", () => {
     expect(component).toBeTruthy();
   });
 });
