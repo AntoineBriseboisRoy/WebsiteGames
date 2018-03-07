@@ -22,6 +22,7 @@ import { TrackViewComponent } from "./race/track-view/track-view.component";
 import { GridService } from "./crossword/grid.service";
 import { WordTransmitterService } from "./crossword/game-view/wordTransmitter.service";
 import { PlayerMenuComponent } from "./crossword/player-menu/player-menu.component";
+import { MultiplayerMenuComponent } from './crossword/multiplayer-menu/multiplayer-menu.component';
 
 @NgModule({
     declarations: [
@@ -36,7 +37,8 @@ import { PlayerMenuComponent } from "./crossword/player-menu/player-menu.compone
         EditTrackComponent,
         AdminSectionComponent,
         TrackViewComponent,
-        PlayerMenuComponent
+        PlayerMenuComponent,
+        MultiplayerMenuComponent
     ],
     imports: [
         BrowserModule,
