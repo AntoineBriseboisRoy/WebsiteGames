@@ -21,11 +21,20 @@ export class Routes {
         router.get("/getWords",
                    (req: Request, res: Response, next: NextFunction) => this.index.getWords(req, res, next));
 
+        router.post("/postTrack",
+                    (req: Request, res: Response, next: NextFunction) => this.index.postTrack(req, res, next));
+
+        router.put("/putTrack",
+                   (req: Request, res: Response, next: NextFunction) => this.index.putTrack(req, res, next));
+
+        router.post("/deleteTrack",
+                    (req: Request, res: Response, next: NextFunction) => this.index.deleteTrack(req, res, next));
+
         router.get("/getTrack",
                    (req: Request, res: Response, next: NextFunction) => this.index.getTrack(req, res, next));
 
-        router.post("/postTrack",
-                    (req: Request, res: Response, next: NextFunction) => this.index.postTrack(req, res, next));
+        router.get("/getAllTracks",
+                   (req: Request, res: Response, next: NextFunction) => this.index.getAllTracks(req, res, next));
 
         return router;
     }

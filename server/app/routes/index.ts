@@ -1,11 +1,12 @@
+import "reflect-metadata";
 import { Request, Response, NextFunction } from "express";
 import { Message } from "../../../common/communication/message";
 import { IWord } from "../../../common/interfaces/IWord";
-import "reflect-metadata";
 import { injectable, } from "inversify";
 import { GridGeneratorService } from "../Grid/GridGeneratorService";
-import { Track, TrackType } from "../../../client/src/app/admin-section/track";
+import { Track } from "../../../client/src/app/admin-section/track";
 import { TrackSaver } from "../mongo/track-saver";
+import { IBasicTrackInfo } from "../../../common/interfaces/IBasicTrackInfo";
 
 module Route {
 
@@ -29,13 +30,31 @@ module Route {
             res.send(JSON.stringify(words));
         }
 
-        public getTrack(req: Request, res: Response, next: NextFunction): void {
-            res.send(JSON.stringify(new Track("test Track", "this is a test", 0, ["0:00"], TrackType.RAIN)));
-        }
-
         public postTrack(req: Request, res: Response, next: NextFunction): void {
             const trackSaver: TrackSaver = new TrackSaver();
-            trackSaver.postTrack(req.body as Track);
+            res.send(trackSaver.postTrack(req.body as Track));
+        }
+
+        public putTrack(req: Request, res: Response, next: NextFunction): void {
+            const trackSaver: TrackSaver = new TrackSaver();
+            res.send(trackSaver.putTrack(req.body as IBasicTrackInfo));
+        }
+
+        public deleteTrack(req: Request, res: Response, next: NextFunction): void {
+            const trackSaver: TrackSaver = new TrackSaver();
+            res.send(trackSaver.deleteTrack(req.body));
+        }
+
+        public getTrack(req: Request, res: Response, next: NextFunction): void {
+            const trackSaver: TrackSaver = new TrackSaver();
+            res.send(trackSaver.getTrack(req.body));
+        }
+
+        public getAllTracks(req: Request, res: Response, next: NextFunction): void {
+            const trackSaver: TrackSaver = new TrackSaver();
+            trackSaver.getAllTracks().then((tracks: Track[]) => {
+                res.send(tracks);
+            });
         }
     }
 }

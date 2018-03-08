@@ -1,6 +1,7 @@
 import { DbClient } from "./db-client";
-import { Collection, InsertOneWriteOpResult, DeleteWriteOpResultObject, ReplaceWriteOpResult, ObjectId } from "mongodb";
+import { Collection, ObjectId } from "mongodb";
 import { Track } from "../../../client/src/app/admin-section/track";
+import { IBasicTrackInfo } from "../../../common/interfaces/IBasicTrackInfo";
 
 const TRACKS: string = "tracks";
 
@@ -13,24 +14,30 @@ export class TrackSaver {
         this.dbClient = new DbClient();
     }
 
-    public postTrack(track: Track): Promise<InsertOneWriteOpResult> {
+    public postTrack(track: Track): Promise<Track> {
         return this.connectToClient()
         .then(() => {
-            return this.collection.insertOne(track);
+            this.collection.insertOne(track);
+
+            return track;
         });
     }
 
-    public putTrack(name: string, track: Track): Promise<ReplaceWriteOpResult> {
+    public putTrack(info: IBasicTrackInfo): Promise<Track> {
         return this.connectToClient()
         .then(() => {
-            return this.collection.replaceOne({_id: new ObjectId(name)}, track);
+            this.collection.replaceOne({_id: new ObjectId(info.name)}, info.track);
+
+            return info.track;
         });
     }
 
-    public deleteTrack(name: string): Promise<DeleteWriteOpResultObject> {
+    public deleteTrack(name: string): Promise<string> {
         return this.connectToClient()
         .then(() => {
-            return this.collection.deleteOne(name);
+            this.collection.deleteOne(name);
+
+            return name;
         });
     }
 
@@ -44,7 +51,7 @@ export class TrackSaver {
     public getAllTracks(): Promise<Track[]> {
         return this.connectToClient()
         .then(() => {
-            return this.collection.find<Track>({}).toArray();
+            return this.collection.find<Track>().toArray();
         });
     }
 

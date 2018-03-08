@@ -15,12 +15,12 @@ export class AdminSectionComponent implements OnInit {
     public readonly title: string;
     public constructor(private mongoQueryService: MongoQueryService) {
         this.tracks = new Array<Track>();
-        this.activeTrack = new Track("", "", 0, ["0:00"], TrackType.DESERT);
+        this.activeTrack = new Track("", "", "", 0, ["0:00"], TrackType.DESERT);
         this.title = "Welcome to the admistration section!";
     }
 
     public ngOnInit(): void {
-        this.createArtificialTracks();
+        this.getTracksFromServer();
     }
 
     public onButtonClick(name: string, action: string): void {
@@ -38,21 +38,12 @@ export class AdminSectionComponent implements OnInit {
         alert("Can't yet " + action + " \"" + this.activeTrack.Name + "\" because the track editor is not implemented.");
     }
 
-    private createArtificialTracks(): void {
-
-        console.log(this.mongoQueryService.getTrack());
-        this.tracks.push(new Track("Laguna Seca", "A great American track with a corkscrew.", 0, ["0:00"], TrackType.DESERT));
-        this.tracks.push(new Track("Monza", "The best Italian chicane.", 0, ["0:00"], TrackType.DESERT));
-        this.tracks.push(new Track("Nürburgring Nordschleife", "Pure German madness.", 0, ["0:00"], TrackType.DESERT));
-        this.tracks.push(new Track("La Sarthe", "24 hours of French adrenaline.", 0, ["0:00"], TrackType.DESERT));
-        this.tracks.push(new Track("Monaco", "A street racing circuit.", 0, ["0:00"], TrackType.DESERT));
-
-        this.mongoQueryService.postTrack(this.tracks[0]);
-        // this.tracks.forEach((track: Track) => {
-        //     this.mongoQueryService.postTrack(track)
-        //     .then()
-        //     .catch((err: Error) => { console.error(err); }
-        //     );
-        // });
+    private getTracksFromServer(): void {
+        this.mongoQueryService.getAllTracks()
+        .then((tracks: Array<Track>) => {
+            this.tracks = tracks;
+        })
+        .catch((err: Error) => { console.error(err); }
+        );
     }
 }

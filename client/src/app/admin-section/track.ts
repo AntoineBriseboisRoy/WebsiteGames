@@ -7,7 +7,7 @@ export enum TrackType {
 
 export class Track {
 
-    public constructor(private name: string, private description: string, private nTimesPlayed: number,
+    public constructor(private _id: string, private name: string, private description: string, private nTimesPlayed: number,
                        private bestTimes: string[], private type: TrackType) {
         this.name = (name.length > 0) ? name : UNDEFINED_NAME;
         this.description = (description.length > 0) ? description : UNDEFINED_DESCRIPTION;
