@@ -1,6 +1,6 @@
-import { Track } from '../../client/src/app/admin-section/track';
+import { ITrack } from "./ITrack";
 
 export interface IBasicTrackInfo {
     name: string;
-    track: Track;
+    track: ITrack;
 }

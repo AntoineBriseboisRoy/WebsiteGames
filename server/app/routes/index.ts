@@ -4,9 +4,9 @@ import { Message } from "../../../common/communication/message";
 import { IWord } from "../../../common/interfaces/IWord";
 import { injectable, } from "inversify";
 import { GridGeneratorService } from "../Grid/GridGeneratorService";
-import { Track } from "../../../client/src/app/admin-section/track";
 import { TrackSaver } from "../mongo/track-saver";
 import { IBasicTrackInfo } from "../../../common/interfaces/IBasicTrackInfo";
+import { ITrack } from "../../../common/interfaces/ITrack";
 
 module Route {
 
@@ -32,7 +32,7 @@ module Route {
 
         public postTrack(req: Request, res: Response, next: NextFunction): void {
             const trackSaver: TrackSaver = new TrackSaver();
-            res.send(trackSaver.postTrack(req.body as Track));
+            res.send(trackSaver.postTrack(req.body as ITrack));
         }
 
         public putTrack(req: Request, res: Response, next: NextFunction): void {
@@ -52,7 +52,7 @@ module Route {
 
         public getAllTracks(req: Request, res: Response, next: NextFunction): void {
             const trackSaver: TrackSaver = new TrackSaver();
-            trackSaver.getAllTracks().then((tracks: Track[]) => {
+            trackSaver.getAllTracks().then((tracks: ITrack[]) => {
                 res.send(tracks);
             });
         }

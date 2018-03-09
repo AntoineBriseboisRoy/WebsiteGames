@@ -1,7 +1,7 @@
 import { DbClient } from "./db-client";
 import { Collection, ObjectId } from "mongodb";
-import { Track } from "../../../client/src/app/admin-section/track";
 import { IBasicTrackInfo } from "../../../common/interfaces/IBasicTrackInfo";
+import { ITrack } from "../../../common/interfaces/ITrack";
 
 const TRACKS: string = "tracks";
 
@@ -14,7 +14,7 @@ export class TrackSaver {
         this.dbClient = new DbClient();
     }
 
-    public postTrack(track: Track): Promise<Track> {
+    public postTrack(track: ITrack): Promise<ITrack> {
         return this.connectToClient()
         .then(() => {
             this.collection.insertOne(track);
@@ -23,7 +23,7 @@ export class TrackSaver {
         });
     }
 
-    public putTrack(info: IBasicTrackInfo): Promise<Track> {
+    public putTrack(info: IBasicTrackInfo): Promise<ITrack> {
         return this.connectToClient()
         .then(() => {
             this.collection.replaceOne({_id: new ObjectId(info.name)}, info.track);
@@ -41,17 +41,17 @@ export class TrackSaver {
         });
     }
 
-    public getTrack(name: string): Promise<Track> {
+    public getTrack(name: string): Promise<ITrack> {
         return this.connectToClient()
         .then(() => {
             return this.collection.findOne({_id: new Object(name)});
         });
     }
 
-    public getAllTracks(): Promise<Track[]> {
+    public getAllTracks(): Promise<ITrack[]> {
         return this.connectToClient()
         .then(() => {
-            return this.collection.find<Track>().toArray();
+            return this.collection.find<ITrack>().toArray();
         });
     }
 

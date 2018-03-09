@@ -1,8 +1,8 @@
 import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
-import { Track } from "./admin-section/track";
 import { IBasicTrackInfo } from "../../../common/interfaces/IBasicTrackInfo";
 import { plainToClass, deserialize, deserializeArray } from "class-transformer";
+import { ITrack } from "../../../common/interfaces/ITrack";
 
 @Injectable()
 export class MongoQueryService {
@@ -10,18 +10,18 @@ export class MongoQueryService {
     private readonly BASE_URL: string = "http://localhost:3000/";
     public constructor(private http: HttpClient) { }
 
-    public postTrack(track: Track): Promise<void | Track> {
+    public postTrack(track: ITrack): Promise<void | ITrack> {
 
-        return this.http.post(this.BASE_URL + "postTrack", track).toPromise().then((data: Track) => {
+        return this.http.post(this.BASE_URL + "postTrack", track).toPromise().then((data: ITrack) => {
             return data;
         }).catch((error: Error) => {
             console.error(error);
         });
     }
 
-    public putTrack(basicTrackInfo: IBasicTrackInfo): Promise<void | Track> {
+    public putTrack(basicTrackInfo: IBasicTrackInfo): Promise<void | ITrack> {
 
-        return this.http.put(this.BASE_URL + "putTrack", basicTrackInfo).toPromise().then((data: Track) => {
+        return this.http.put(this.BASE_URL + "putTrack", basicTrackInfo).toPromise().then((data: ITrack) => {
             return data;
         }).catch((error: Error) => {
             console.error(error);
@@ -37,21 +37,21 @@ export class MongoQueryService {
         });
     }
 
-    public getTrack(name: string): Promise<void | Track> {
+    public getTrack(name: string): Promise<void | ITrack> {
 
-        return this.http.get<Track>(this.BASE_URL + "getTrack").toPromise().then((track: Track) => {
+        return this.http.get<ITrack>(this.BASE_URL + "getTrack").toPromise().then((track: ITrack) => {
             return track;
         }).catch((error: Error) => {
            console.error(error);
         });
     }
 
-    public getAllTracks(): Promise<void | Track[]> {
+    public getAllTracks(): Promise<void | ITrack[]> {
 
-        return this.http.get<Track[]>(this.BASE_URL + "getAllTracks").toPromise()
-        .then((tracks: Track[]) => {
+        return this.http.get<ITrack[]>(this.BASE_URL + "getAllTracks").toPromise()
+        .then((tracks: ITrack[]) => {
 
-            return tracks as Track[];
+            return tracks as ITrack[];
         })
         .catch((error: Error) => {
            console.error(error);
