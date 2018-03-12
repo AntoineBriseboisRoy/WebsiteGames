@@ -1,6 +1,7 @@
 import { Component, OnInit } from "@angular/core";
 import { ITrack, TrackType } from "./../../../../common/interfaces/ITrack";
 import { MongoQueryService } from "../mongo-query.service";
+import { IBasicTrackInfo } from "../../../../common/interfaces/IBasicTrackInfo";
 
 @Component({
     selector: "app-admin-section",
@@ -43,7 +44,6 @@ export class AdminSectionComponent implements OnInit {
         .then((tracks: Array<ITrack>) => {
             this.tracks = tracks;
         })
-        .catch((err: Error) => { console.error(err); }
-        );
+        .catch((err: Error) => { console.error(err); });
     }
 }

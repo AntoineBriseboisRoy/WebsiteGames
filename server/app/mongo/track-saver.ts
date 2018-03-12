@@ -17,6 +17,7 @@ export class TrackSaver {
     public postTrack(track: ITrack): Promise<ITrack> {
         return this.connectToClient()
         .then(() => {
+            delete track._id;
             this.collection.insertOne(track);
 
             return track;
@@ -26,7 +27,8 @@ export class TrackSaver {
     public putTrack(info: IBasicTrackInfo): Promise<ITrack> {
         return this.connectToClient()
         .then(() => {
-            this.collection.replaceOne({_id: new ObjectId(info.name)}, info.track);
+            delete info.track._id;
+            this.collection.replaceOne({}, info.track);
 
             return info.track;
         });
