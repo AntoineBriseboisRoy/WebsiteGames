@@ -1,4 +1,4 @@
-import { Component, OnInit, HostListener } from "@angular/core";
+import { Component, OnInit, HostListener, ElementRef, ViewChild } from "@angular/core";
 import { Point, Segment } from "./Geometry";
 import { TRACK_WIDTH, DEFAULT_LINE_WIDTH, FULL_CIRCLE_RAD,
          DEFAULT_CIRCLE_RADIUS, RIGHT_MOUSE_BUTTON } from "../../constants";
@@ -13,9 +13,14 @@ import { MouseManagerService } from "./mouse-manager.service";
 })
 export class EditTrackComponent implements OnInit {
     private constraints: Constraints;
-    private canvas: HTMLCanvasElement;
+    @ViewChild("mycanvas")
+    private canvas: ElementRef;
     private context: CanvasRenderingContext2D;
     private points: Point[];
+
+    private get Canvas(): HTMLCanvasElement {
+        return this.canvas.nativeElement as HTMLCanvasElement;
+    }
 
     public constructor(public mouseManagerService: MouseManagerService) {
         this.constraints = new Constraints();
@@ -23,13 +28,12 @@ export class EditTrackComponent implements OnInit {
      }
 
     public ngOnInit(): void {
-        this.canvas = document.getElementById("edit") as HTMLCanvasElement;
-        this.context = this.canvas.getContext("2d");
+        this.context = this.Canvas.getContext("2d");
         this.mouseManagerService.init(this.points);
-        this.canvas.oncontextmenu = () => false;
+        this.Canvas.oncontextmenu = () => false;
         this.resizeWindow();
 
-        this.canvas.addEventListener("mousedown", (event: MouseEvent) => {
+        this.Canvas.addEventListener("mousedown", (event: MouseEvent) => {
             if (event.button === RIGHT_MOUSE_BUTTON) {
                 this.mouseManagerService.handleDeleteLastPoint(event);
             } else {
@@ -38,12 +42,12 @@ export class EditTrackComponent implements OnInit {
             this.redrawCanvas();
         });
 
-        this.canvas.addEventListener("mouseup", (event: MouseEvent) => {
+        this.Canvas.addEventListener("mouseup", (event: MouseEvent) => {
              this.mouseManagerService.handleMouseUp(event);
              this.redrawCanvas();
         });
 
-        this.canvas.addEventListener("mousemove", (event: MouseEvent) => {
+        this.Canvas.addEventListener("mousemove", (event: MouseEvent) => {
             this.mouseManagerService.handleMouseMove(event);
             this.redrawCanvas();
         });
@@ -51,8 +55,8 @@ export class EditTrackComponent implements OnInit {
 
     @HostListener("window:resize", ["$event"])
     private resizeWindow(): void {
-        this.canvas.width = window.innerWidth;
-        this.canvas.height = window.innerHeight;
+        this.Canvas.width = window.innerWidth;
+        this.Canvas.height = window.innerHeight;
         this.drawRoads();
         this.drawPoints();
     }
@@ -88,7 +92,7 @@ export class EditTrackComponent implements OnInit {
     }
 
     private redrawCanvas(): void {
-        this.context.clearRect(0, 0, this.canvas.getBoundingClientRect().width, this.canvas.getBoundingClientRect().width);
+        this.context.clearRect(0, 0, this.Canvas.getBoundingClientRect().width, this.Canvas.getBoundingClientRect().width);
         this.drawRoads();
         this.drawPoints();
     }
