@@ -72,7 +72,6 @@ export class RenderService {
         this.lastDate = Date.now();
     }
 
-    // tslint:disable-next-line:max-func-body-length
     private async createScene(): Promise<void> {
         this.scene = new Scene();
         this.cameraContext = new CameraContext();
@@ -101,13 +100,13 @@ export class RenderService {
     }
 
     private generateTrack(): void {
-        const trackTexture: Texture = new TextureLoader().load("/assets/camero/road.jpg");
-        trackTexture.wrapS = trackTexture.wrapT = RepeatWrapping;
-        trackTexture.repeat.set(1, 1);
         for (let i: number = 0; i < this.points.length - 1; ++i) {
+            const trackTexture: Texture = new TextureLoader().load("/assets/camero/road.jpg");
+            trackTexture.wrapS = trackTexture.wrapT = RepeatWrapping;
             let vector: Vector2 = new Vector2(this.points[i + 1].x - this.points[i].x, this.points[i + 1].y - this.points[i].y);
-            const mesh: Mesh = new Mesh(new PlaneBufferGeometry(vector.length() * TEXTURE_SIZE, 10),
-                                        new MeshBasicMaterial({ map: trackTexture, side: BackSide }));
+            const plane: PlaneBufferGeometry = new PlaneBufferGeometry(vector.length() * TEXTURE_SIZE, 10);
+            const mesh: Mesh = new Mesh(plane, new MeshBasicMaterial({ map: trackTexture, side: BackSide }));
+            trackTexture.repeat.set(vector.length() * 25, 1);
             mesh.position.x = -(this.points[i].y + vector.y / 2) * TEXTURE_SIZE;
             mesh.position.z = -(this.points[i].x + vector.x / 2) * TEXTURE_SIZE;
             mesh.rotation.x = PI_OVER_2;
