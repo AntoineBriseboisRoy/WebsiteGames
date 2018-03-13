@@ -1,5 +1,5 @@
 import { DbClient } from "./db-client";
-import { Collection, ObjectId } from "mongodb";
+import { Collection } from "mongodb";
 import { IBasicTrackInfo } from "../../../common/interfaces/IBasicTrackInfo";
 import { ITrack } from "../../../common/interfaces/ITrack";
 
@@ -46,7 +46,7 @@ export class TrackSaver {
     public getTrack(name: string): Promise<ITrack> {
         return this.connectToClient()
         .then(() => {
-            return this.collection.findOne({_id: new Object(name)});
+            return this.collection.findOne({name: name});
         });
     }
 

@@ -1,5 +1,6 @@
-import { Injectable } from "@angular/core";
-import { HttpClient } from "@angular/common/http";
+import { Injectable, HostListener } from "@angular/core";
+import { HttpClient, HttpParams, HttpHeaders } from "@angular/common/http";
+import { RequestOptions } from "@angular/http";
 import { IBasicTrackInfo } from "../../../common/interfaces/IBasicTrackInfo";
 import { plainToClass, deserialize, deserializeArray } from "class-transformer";
 import { ITrack } from "../../../common/interfaces/ITrack";
@@ -38,8 +39,7 @@ export class MongoQueryService {
     }
 
     public getTrack(name: string): Promise<void | ITrack> {
-
-        return this.http.get<ITrack>(this.BASE_URL + "getTrack").toPromise().then((track: ITrack) => {
+        return this.http.get<ITrack>(`${this.BASE_URL}getTrack?name=${name}`).toPromise().then((track: ITrack) => {
             return track;
         }).catch((error: Error) => {
            console.error(error);
