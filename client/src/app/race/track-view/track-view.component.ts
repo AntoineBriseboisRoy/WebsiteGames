@@ -1,5 +1,6 @@
 import { Component, OnInit } from "@angular/core";
-import { Track, TrackType } from "../../admin-section/track";
+import { ITrack } from "../../../../../common/interfaces/ITrack";
+import { MongoQueryService } from "../../mongo-query.service";
 
 @Component({
     selector: "app-track-view",
@@ -7,23 +8,23 @@ import { Track, TrackType } from "../../admin-section/track";
     styleUrls: ["./track-view.component.css"]
 })
 export class TrackViewComponent implements OnInit {
-    private tracks: Track[];
+    private tracks: ITrack[];
 
     public readonly title: string = "Welcome to track list!";
-    public constructor() {
-        this.tracks = new Array<Track>();
+    public constructor(private mongoQueryService: MongoQueryService) {
+        this.tracks = new Array<ITrack>();
     }
 
     public ngOnInit(): void {
-        this.createArtificialTracks();
+        this.getAllTracks();
     }
 
-    private createArtificialTracks(): void {
-        this.tracks.push(new Track("Laguna Seca", "A great American track with a corkscrew.", 0,
-                                   ["0:00", "0:00", "0:00"], TrackType.DESERT));
-        this.tracks.push(new Track("Monza", "The best Italian chicane.", 0, ["0:00", "0:00", "0:00"], TrackType.DESERT));
-        this.tracks.push(new Track("Nürburgring Nordschleife", "Pure German madness.", 0, ["0:00", "0:00", "0:00"], TrackType.DESERT));
-        this.tracks.push(new Track("La Sarthe", "24 hours of French adrenaline.", 0, ["0:00", "0:00", "0:00"], TrackType.DESERT));
-        this.tracks.push(new Track("Monaco", "A street racing circuit.", 0, ["0:00", "0:00", "0:00"], TrackType.DESERT));
+    private getAllTracks(): void {
+        this.mongoQueryService.getAllTracks()
+        .then((tracks: Array<ITrack>) => {
+            this.tracks = tracks;
+        })
+        .catch((err: Error) => { console.error(err); }
+        );
     }
 }
