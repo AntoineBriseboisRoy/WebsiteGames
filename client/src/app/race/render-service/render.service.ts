@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core";
 import Stats = require("stats.js");
 import { WebGLRenderer, Scene, AmbientLight,
          Mesh, PlaneBufferGeometry, MeshBasicMaterial,
-         DoubleSide, Texture, RepeatWrapping, TextureLoader } from "three";
+         DoubleSide, Texture, RepeatWrapping, TextureLoader, Vector3, Box3, BoundingBoxHelper, BoxHelper, Object3D, Raycaster, ArrowHelper } from "three";
 import { Car } from "../car/car";
 import { ThirdPersonCamera } from "../camera/camera-perspective";
 import { TopViewCamera } from "../camera/camera-orthogonal";
@@ -24,6 +24,7 @@ export class RenderService {
     private cameraContext: CameraContext;
     private container: HTMLDivElement;
     private _car: Car;
+    private dummyCar: Car;
     private renderer: WebGLRenderer;
     private scene: THREE.Scene;
     private stats: Stats;
@@ -39,6 +40,7 @@ export class RenderService {
 
     public constructor() {
         this._car = new Car();
+        this.dummyCar = new Car();
     }
 
     public async initialize(container: HTMLDivElement): Promise<void> {
@@ -65,10 +67,12 @@ export class RenderService {
     private update(): void {
         const timeSinceLastFrame: number = Date.now() - this.lastDate;
         this._car.update(timeSinceLastFrame);
+        this.dummyCar.update(timeSinceLastFrame);
         this.cameraContext.update(this._car);
         this.lastDate = Date.now();
     }
 
+    // tslint:disable-next-line:max-func-body-length
     private async createScene(): Promise<void> {
         this.scene = new Scene();
         this.cameraContext = new CameraContext();
@@ -85,9 +89,17 @@ export class RenderService {
                                                       1, INITIAL_CAMERA_POSITION_Y + 1)); // Add 1 to see the floor
 
         await this._car.init();
+        await this.dummyCar.init();
+
         this.cameraContext.initStates(this._car.getPosition());
         this.cameraContext.setInitialState();
         this.scene.add(this._car);
+        // this.scene.add(this.dummyCar);
+
+        this._car.RayCasters.forEach((rayCaster: Raycaster) => {
+            this.scene.add(new ArrowHelper(rayCaster.ray.direction, rayCaster.ray.origin, 2, 0xff0000, 0.5, 0.1));
+        });
+
         this.scene.add(new AmbientLight(WHITE, AMBIENT_LIGHT_OPACITY));
 
         const skybox: Skybox = new Skybox();
