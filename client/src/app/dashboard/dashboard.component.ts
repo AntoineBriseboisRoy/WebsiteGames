@@ -1,14 +1,13 @@
-import { Component, OnInit } from "@angular/core";
+import { Component } from "@angular/core";
 
 @Component({
     selector: "app-dashboard",
     templateUrl: "./dashboard.component.html",
     styleUrls: ["./dashboard.component.css"]
 })
-export class DashboardComponent implements OnInit {
-    public readonly title: string = "Welcome to our fabulous gaming website!";
-    public constructor() { }
-
-    public ngOnInit(): void {
+export class DashboardComponent {
+    public readonly title: string;
+    public constructor() {
+        this.title = "Welcome to our fabulous gaming website!";
     }
 }

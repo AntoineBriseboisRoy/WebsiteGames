@@ -1,7 +1,6 @@
 import { Component, OnInit } from "@angular/core";
 import { ITrack, TrackType } from "./../../../../common/interfaces/ITrack";
 import { MongoQueryService } from "../mongo-query.service";
-import { IBasicTrackInfo } from "../../../../common/interfaces/IBasicTrackInfo";
 
 @Component({
     selector: "app-admin-section",

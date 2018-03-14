@@ -1,8 +1,7 @@
-import { OnInit } from "@angular/core";
 import { Difficulty, DIFFICULTY_LENGHT } from "../constants";
 import { Player } from "./player";
 
-export class GameManager implements OnInit {
+export class GameManager {
     private static instance: GameManager;
     private difficulty: Difficulty;
     private isMultiplayer: boolean;
@@ -19,9 +18,6 @@ export class GameManager implements OnInit {
         this.playerTwo = new Player("Antoine", 0);
         this.difficulty = Difficulty.Easy;
         this.isMultiplayer = false;
-    }
-
-    public ngOnInit(): void {
     }
 
     public getDifficulty(): string {

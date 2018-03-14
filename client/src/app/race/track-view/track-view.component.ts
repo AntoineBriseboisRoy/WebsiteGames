@@ -8,10 +8,11 @@ import { MongoQueryService } from "../../mongo-query.service";
     styleUrls: ["./track-view.component.css"]
 })
 export class TrackViewComponent implements OnInit {
-    private tracks: ITrack[];
+    public tracks: ITrack[];
 
-    public readonly title: string = "Welcome to track list!";
+    public readonly title: string;
     public constructor(private mongoQueryService: MongoQueryService) {
+        this.title = "Welcome to track list!";
         this.tracks = new Array<ITrack>();
     }
 

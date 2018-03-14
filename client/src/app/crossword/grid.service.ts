@@ -10,8 +10,10 @@ import { IWord } from "../../../../common/interfaces/IWord";
 @Injectable()
 export class GridService {
 
-    private readonly BASE_URL: string = "http://localhost:3000/";
-    public constructor(private http: HttpClient) { }
+    private readonly BASE_URL: string;
+    public constructor(private http: HttpClient) {
+        this.BASE_URL = "http://localhost:3000/";
+    }
 
     public getGrid(): Observable<String> {
         const gridURL: string = this.BASE_URL + "getGrid";

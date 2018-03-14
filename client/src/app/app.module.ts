@@ -6,7 +6,6 @@ import { NgbModule } from "@ng-bootstrap/ng-bootstrap";
 import { AppComponent } from "./app.component";
 import { GameComponent } from "./race/game-component/game.component";
 
-import { BasicService } from "./basic.service";
 import { CrosswordViewComponent } from "./crossword/game-view/crossword-view.component";
 import { TopBarComponent } from "./crossword/game-view/top-bar/top-bar.component";
 import { GridComponent } from "./crossword/game-view/grid/grid.component";
@@ -45,7 +44,7 @@ import { MongoQueryService } from "./mongo-query.service";
         AppRoutingModule,
         NgbModule.forRoot()
     ],
-    providers: [{provide: APP_BASE_HREF, useValue : "/" }, BasicService, MongoQueryService, GridService, WordTransmitterService],
+    providers: [{provide: APP_BASE_HREF, useValue : "/" }, MongoQueryService, GridService, WordTransmitterService],
     bootstrap: [AppComponent]
 })
 export class AppModule { }
