@@ -1,6 +1,5 @@
 import { DbClient } from "./db-client";
 import { Collection } from "mongodb";
-import { IBasicTrackInfo } from "../../../common/interfaces/IBasicTrackInfo";
 import { ITrack } from "../../../common/interfaces/ITrack";
 
 const TRACKS: string = "tracks";
@@ -24,13 +23,13 @@ export class TrackSaver {
         });
     }
 
-    public putTrack(info: IBasicTrackInfo): Promise<ITrack> {
+    public putTrack(name: string, track: ITrack): Promise<ITrack> {
         return this.connectToClient()
         .then(() => {
-            delete info.track._id;
-            this.collection.replaceOne({}, info.track);
+            delete track._id;
+            this.collection.replaceOne({"name": name}, track);
 
-            return info.track;
+            return track;
         });
     }
 

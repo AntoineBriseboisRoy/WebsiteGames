@@ -1,6 +1,5 @@
 import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
-import { IBasicTrackInfo } from "../../../common/interfaces/IBasicTrackInfo";
 import { ITrack } from "../../../common/interfaces/ITrack";
 
 @Injectable()
@@ -19,8 +18,8 @@ export class MongoQueryService {
         });
     }
 
-    public putTrack(basicTrackInfo: IBasicTrackInfo): Promise<void | ITrack> {
-        return this.http.put(`${this.BASE_URL}putTrack`, basicTrackInfo).toPromise().then((data: ITrack) => {
+    public putTrack(name: string, track: ITrack): Promise<void | ITrack> {
+        return this.http.put(`${this.BASE_URL}putTrack?name=${name}`, track).toPromise().then((data: ITrack) => {
             return data;
         }).catch((error: Error) => {
             console.error(error);

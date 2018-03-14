@@ -15,7 +15,7 @@ export class AdminSectionComponent implements OnInit {
     public readonly title: string;
     public constructor(private mongoQueryService: MongoQueryService) {
         this.tracks = new Array<ITrack>();
-        this.activeTrack = {_id: "", name: "", description: "", nTimesPlayed: 0, bestTimes: ["0:00"], type: TrackType.DESERT} as ITrack;
+        this.activeTrack = { _id: "", name: "", description: "", nTimesPlayed: 0, bestTimes: ["0:00"], type: TrackType.DESERT } as ITrack;
         this.title = "Welcome to the admistration section!";
     }
 
@@ -40,9 +40,9 @@ export class AdminSectionComponent implements OnInit {
 
     private getITracksFromServer(): void {
         this.mongoQueryService.getAllTracks()
-        .then((tracks: Array<ITrack>) => {
-            this.tracks = tracks;
-        })
-        .catch((err: Error) => { console.error(err); });
+            .then((tracks: Array<ITrack>) => {
+                this.tracks = tracks;
+            })
+            .catch((err: Error) => { console.error(err); });
     }
 }

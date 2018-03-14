@@ -5,7 +5,6 @@ import { IWord } from "../../../common/interfaces/IWord";
 import { injectable, } from "inversify";
 import { GridGeneratorService } from "../Grid/GridGeneratorService";
 import { TrackSaver } from "../mongo/track-saver";
-import { IBasicTrackInfo } from "../../../common/interfaces/IBasicTrackInfo";
 import { ITrack } from "../../../common/interfaces/ITrack";
 
 module Route {
@@ -36,18 +35,20 @@ module Route {
         }
 
         public putTrack(req: Request, res: Response, next: NextFunction): void {
+            const name: string = req.query.name;
             const trackSaver: TrackSaver = new TrackSaver();
-            res.send(trackSaver.putTrack(req.body as IBasicTrackInfo));
+            if (name !== null) {
+                res.send(trackSaver.putTrack(name, req.body as ITrack));
+            }
         }
 
         public deleteTrack(req: Request, res: Response, next: NextFunction): void {
-            const trackSaver: TrackSaver =  new TrackSaver();
+            const trackSaver: TrackSaver = new TrackSaver();
             res.send(trackSaver.deleteTrack(req.body));
         }
 
         public getTrack(req: Request, res: Response, next: NextFunction): void {
             const name: string = req.query.name;
-
             if (name !== null) {
                 const trackSaver: TrackSaver = new TrackSaver();
                 trackSaver.getTrack(name).then((track: ITrack) => res.send(track));
