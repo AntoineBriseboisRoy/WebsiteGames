@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core";
 import Stats = require("stats.js");
 import { WebGLRenderer, Scene, AmbientLight,
          Mesh, PlaneBufferGeometry, MeshBasicMaterial,
-         DoubleSide, Texture, RepeatWrapping, TextureLoader, Vector3, Box3, BoundingBoxHelper, BoxHelper, Object3D, Raycaster, ArrowHelper } from "three";
+         DoubleSide, Texture, RepeatWrapping, TextureLoader, Raycaster, ArrowHelper } from "three";
 import { Car } from "../car/car";
 import { ThirdPersonCamera } from "../camera/camera-perspective";
 import { TopViewCamera } from "../camera/camera-orthogonal";
@@ -30,6 +30,8 @@ export class RenderService {
     private stats: Stats;
     private lastDate: number;
 
+    private arrows: ArrowHelper[];
+
     public get car(): Car {
         return this._car;
     }
@@ -41,6 +43,7 @@ export class RenderService {
     public constructor() {
         this._car = new Car();
         this.dummyCar = new Car();
+        this.arrows = new Array<ArrowHelper>();
     }
 
     public async initialize(container: HTMLDivElement): Promise<void> {
@@ -70,6 +73,20 @@ export class RenderService {
         this.dummyCar.update(timeSinceLastFrame);
         this.cameraContext.update(this._car);
         this.lastDate = Date.now();
+
+        this.updateArrowHelpers();
+    }
+
+    // Temporary method, for debugging only
+    private updateArrowHelpers(): void {
+        const raycasters: Array<Raycaster> = this._car.RayCasters;
+        while (this.arrows.length > 0) {
+            this.scene.remove(this.arrows.pop());
+        }
+        for (let i: number = 0; i < raycasters.length; i++) {
+            this.arrows.push(new ArrowHelper(raycasters[i].ray.direction, raycasters[i].ray.origin, 2, 0xff0000, 0.5, 0.1));
+            this.scene.add(this.arrows[i]);
+        }
     }
 
     // tslint:disable-next-line:max-func-body-length
@@ -95,9 +112,8 @@ export class RenderService {
         this.cameraContext.setInitialState();
         this.scene.add(this._car);
         // this.scene.add(this.dummyCar);
-
         this._car.RayCasters.forEach((rayCaster: Raycaster) => {
-            this.scene.add(new ArrowHelper(rayCaster.ray.direction, rayCaster.ray.origin, 2, 0xff0000, 0.5, 0.1));
+            this.arrows.push(new ArrowHelper(rayCaster.ray.direction, rayCaster.ray.origin, 2, 0xff0000, 0.5, 0.1));
         });
 
         this.scene.add(new AmbientLight(WHITE, AMBIENT_LIGHT_OPACITY));

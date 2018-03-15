@@ -1,4 +1,4 @@
-import { Vector3, Matrix4, Object3D, ObjectLoader, Euler, Quaternion, Raycaster, BoxHelper, Box3 } from "three";
+import { Vector3, Matrix4, Object3D, ObjectLoader, Euler, Quaternion, Raycaster, Box3 } from "three";
 import { Engine } from "./engine";
 import { MS_TO_SECONDS, GRAVITY, PI_OVER_2, RAD_TO_DEG } from "../../constants";
 import { Wheel } from "./wheel";
@@ -49,6 +49,10 @@ export class Car extends Object3D {
 
     public get angle(): number {
         return this.mesh.rotation.y * RAD_TO_DEG;
+    }
+
+    public get RayCasters(): Array<Raycaster> {
+        return this.rayCasters;
     }
 
     public getWorldMatrix(): Matrix4 {
@@ -147,10 +151,6 @@ export class Car extends Object3D {
         this.rayCasters.push(new Raycaster(backRight, new Vector3(0, 1, 0)));
     }
 
-    public get RayCasters(): Array<Raycaster> {
-        return this.rayCasters;
-    }
-
     public steerLeft(): void {
         this.steeringWheelDirection = MAXIMUM_STEERING_ANGLE;
     }
@@ -184,11 +184,14 @@ export class Car extends Object3D {
         // Physics calculations
         this.physicsUpdate(deltaTime);
 
+        const R: number = DEFAULT_WHEELBASE / Math.sin(this.steeringWheelDirection * deltaTime);
+        const theta: number = this.speed.length() / R;
+        this.updateRaycasters(deltaTime, theta);
+
         // Move back to world coordinates
         this._speed = this.speed.applyQuaternion(rotationQuaternion.inverse());
 
         // Angular rotation of the car
-        const R: number = DEFAULT_WHEELBASE / Math.sin(this.steeringWheelDirection * deltaTime);
         const omega: number = this._speed.length() / R;
         this.mesh.rotateY(omega);
     }
@@ -201,6 +204,17 @@ export class Car extends Object3D {
         this._speed.setLength(this._speed.length() <= MINIMUM_SPEED ? 0 : this._speed.length());
         this.mesh.position.add(this.getDeltaPosition(deltaTime));
         this.rearWheel.update(this._speed.length());
+    }
+
+    private updateRaycasters(deltaTime: number, omega: number): void {
+        const rotationMatrix: Matrix4 = new Matrix4().makeRotationY(omega);
+
+        this.rayCasters.forEach((rayCaster: Raycaster) => {
+            rayCaster.ray.origin = rayCaster.ray.origin.add(this.getDeltaPosition(deltaTime));
+            rayCaster.ray.origin = rayCaster.ray.origin.sub(this.getPosition());
+            rayCaster.ray.applyMatrix4(rotationMatrix);
+            rayCaster.ray.origin.add(this.getPosition());
+        });
     }
 
     private getWeightDistribution(): number {
