@@ -12,7 +12,7 @@ import { GameManager } from "../../game-manager";
     selector: "app-crossword-grid",
     templateUrl: "./grid.component.html",
     styleUrls: ["./grid.component.css"],
-    providers: [KeyboardInputManagerService]
+    providers: [KeyboardInputManagerService, WordTransmitterService]
 })
 
 export class GridComponent implements OnInit {
