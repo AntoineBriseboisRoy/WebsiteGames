@@ -14,11 +14,19 @@ export class LetterCommand extends AbsGridCommand {
     public execute(): void {
         if (FocusCell.Instance.Cell !== undefined) {
             FocusCell.Instance.Cell.content = this.letter;
+            const initialCell: ICell = FocusCell.Instance.Cell;
             if (!this.isLastCellOfSelection()) {
                 do {
                     this.nextCell();
-                } while (FocusCell.Instance.Cell.isFound);
+                } while (FocusCell.Instance.Cell.isFound && !this.isLastCellOfSelection());
             }
+            this.replaceCellIfAllFound(initialCell);
+        }
+    }
+
+    private replaceCellIfAllFound(cell: ICell): void {
+        if (FocusCell.Instance.Cell.isFound) {
+            FocusCell.Instance.Cell = cell;
         }
     }
 
