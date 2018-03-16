@@ -1,4 +1,4 @@
-import { Vector3, Matrix4, Object3D, ObjectLoader, Euler, Quaternion, Box3 } from "three";
+import { Vector3, Matrix4, Object3D, ObjectLoader, Euler, Quaternion, Box3, BoxHelper } from "three";
 import { Engine } from "./engine";
 import { MS_TO_SECONDS, GRAVITY, PI_OVER_2, RAD_TO_DEG } from "../../constants";
 import { Wheel } from "./wheel";
@@ -29,6 +29,7 @@ export class Car extends Object3D {
     private steeringWheelDirection: number;
     private weightRear: number;
 
+    private boundingBox: Box3;
     public get speed(): Vector3 {
         return this._speed.clone();
     }
@@ -96,6 +97,8 @@ export class Car extends Object3D {
         this.steeringWheelDirection = 0;
         this.weightRear = INITIAL_WEIGHT_DISTRIBUTION;
         this._speed = new Vector3(0, 0, 0);
+
+        this.boundingBox = new Box3();
     }
 
     // tslint:disable-next-line:no-suspicious-comment
@@ -111,14 +114,15 @@ export class Car extends Object3D {
 
     public async init(): Promise<void> {
         this.mesh = await this.load();
-        this.mesh.setRotationFromEuler(INITIAL_MODEL_ROTATION);
         this.add(this.mesh);
+        this.InitBoundingBox();
+        this.mesh.setRotationFromEuler(INITIAL_MODEL_ROTATION);
     }
 
-    private initRayCasters(): void {
-
-        const box: Box3 = new Box3();
-        box.setFromObject(this);
+    private InitBoundingBox(): void {
+        const helper: BoxHelper =  new BoxHelper(this);
+        this.boundingBox.setFromObject(helper);
+        this.mesh.add(helper);
     }
 
     public steerLeft(): void {
