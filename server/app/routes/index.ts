@@ -1,9 +1,11 @@
+import "reflect-metadata";
 import { Request, Response, NextFunction } from "express";
 import { Message } from "../../../common/communication/message";
 import { IWord } from "../../../common/interfaces/IWord";
-import "reflect-metadata";
 import { injectable, } from "inversify";
 import { GridGeneratorService } from "../Grid/GridGeneratorService";
+import { TrackSaver } from "../mongo/track-saver";
+import { ITrack } from "../../../common/interfaces/ITrack";
 
 module Route {
 
@@ -25,6 +27,37 @@ module Route {
         public getWords(req: Request, res: Response, next: NextFunction): void {
             const words: Array<IWord> = GridGeneratorService.Instance.getFakeGridWords();
             res.send(JSON.stringify(words));
+        }
+
+        public postTrack(req: Request, res: Response, next: NextFunction): void {
+            const trackSaver: TrackSaver = new TrackSaver();
+            res.send(trackSaver.postTrack(req.body as ITrack));
+        }
+
+        public putTrack(req: Request, res: Response, next: NextFunction): void {
+            const name: string = req.query.name;
+            const trackSaver: TrackSaver = new TrackSaver();
+            if (name !== null) {
+                res.send(trackSaver.putTrack(name, req.body as ITrack));
+            }
+        }
+
+        public deleteTrack(req: Request, res: Response, next: NextFunction): void {
+            const trackSaver: TrackSaver = new TrackSaver();
+            res.send(trackSaver.deleteTrack(req.body));
+        }
+
+        public getTrack(req: Request, res: Response, next: NextFunction): void {
+            const name: string = req.query.name;
+            if (name !== null) {
+                const trackSaver: TrackSaver = new TrackSaver();
+                trackSaver.getTrack(name).then((track: ITrack) => res.send(track));
+            }
+        }
+
+        public getAllTracks(req: Request, res: Response, next: NextFunction): void {
+            const trackSaver: TrackSaver = new TrackSaver();
+            trackSaver.getAllTracks().then((tracks: ITrack[]) => res.send(tracks));
         }
     }
 }

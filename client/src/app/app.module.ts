@@ -1,11 +1,11 @@
 import { BrowserModule } from "@angular/platform-browser";
 import { NgModule } from "@angular/core";
 import { HttpClientModule } from "@angular/common/http";
+import { NgbModule } from "@ng-bootstrap/ng-bootstrap";
 
 import { AppComponent } from "./app.component";
 import { GameComponent } from "./race/game-component/game.component";
 
-import { BasicService } from "./basic.service";
 import { CrosswordViewComponent } from "./crossword/game-view/crossword-view.component";
 import { TopBarComponent } from "./crossword/game-view/top-bar/top-bar.component";
 import { GridComponent } from "./crossword/game-view/grid/grid.component";
@@ -22,7 +22,8 @@ import { TrackViewComponent } from "./race/track-view/track-view.component";
 import { GridService } from "./crossword/grid.service";
 import { WordTransmitterService } from "./crossword/game-view/wordTransmitter.service";
 import { PlayerMenuComponent } from "./crossword/player-menu/player-menu.component";
-import { MultiplayerMenuComponent } from './crossword/multiplayer-menu/multiplayer-menu.component';
+import { MultiplayerMenuComponent } from "./crossword/multiplayer-menu/multiplayer-menu.component";
+import { MongoQueryService } from "./mongo-query.service";
 
 @NgModule({
     declarations: [
@@ -44,9 +45,10 @@ import { MultiplayerMenuComponent } from './crossword/multiplayer-menu/multiplay
         BrowserModule,
         HttpClientModule,
         FormsModule,
-        AppRoutingModule
+        AppRoutingModule,
+        NgbModule.forRoot()
     ],
-    providers: [BasicService, GridService, WordTransmitterService, {provide: APP_BASE_HREF, useValue : "/" }],
+    providers: [{provide: APP_BASE_HREF, useValue : "/" }, MongoQueryService, GridService, WordTransmitterService],
     bootstrap: [AppComponent]
 })
 export class AppModule { }

@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { Component } from "@angular/core";
 import { GameManager } from "../../game-manager";
 
 @Component({
@@ -6,14 +6,11 @@ import { GameManager } from "../../game-manager";
     templateUrl: "./top-bar.component.html",
     styleUrls: ["./top-bar.component.css"]
 })
-export class TopBarComponent implements OnInit {
+export class TopBarComponent {
     private gameManager: GameManager;
 
     public constructor() {
         this.gameManager = GameManager.Instance;
-    }
-
-    public ngOnInit(): void {
     }
 
     public modeToString(): string {

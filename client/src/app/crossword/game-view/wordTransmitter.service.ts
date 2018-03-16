@@ -96,21 +96,36 @@ export class WordTransmitterService {
     }
 
     private containsIndex(i: number): boolean {
-        return !this.isABlackSquare(this.gridContent[i]) &&              // the cell isn't black
-            (i < GRID_WIDTH && !this.isABlackSquare(this.gridContent[i + GRID_WIDTH]) || // first line
-                this.isABlackSquare(this.gridContent[i - 1]) &&
-                !this.isABlackSquare(this.gridContent[i + 1]) ||          // right side of a black square
-                this.isABlackSquare(this.gridContent[i - GRID_WIDTH])
-                && !this.isABlackSquare(this.gridContent[i + GRID_WIDTH]) && // below a black square
-                i < GRID_WIDTH * GRID_WIDTH - GRID_WIDTH ||
-                i % GRID_WIDTH === 0 && !this.isABlackSquare(this.gridContent[i + 1])); // first column
+        return !this.isABlackSquare(this.gridContent[i]) &&
+               (this.isFirstLineIndex(i) ||
+                this.isRightToBlackSquare(i) ||
+                this.isBelowBlackSquare(i) ||
+                this.isFirstColumnIndex(i));
+    }
+
+    private isFirstLineIndex(i: number): boolean {
+        return i < GRID_WIDTH && !this.isABlackSquare(this.gridContent[i + GRID_WIDTH]);
+    }
+
+    private isRightToBlackSquare(i: number): boolean {
+        return this.isABlackSquare(this.gridContent[i - 1]) && !this.isABlackSquare(this.gridContent[i + 1]);
+    }
+
+    private isBelowBlackSquare(i: number): boolean {
+        return this.isABlackSquare(this.gridContent[i - GRID_WIDTH]) &&
+               !this.isABlackSquare(this.gridContent[i + GRID_WIDTH]) &&
+               i < GRID_WIDTH * GRID_WIDTH - GRID_WIDTH;
+    }
+
+    private isFirstColumnIndex(i: number): boolean {
+        return i % GRID_WIDTH === 0 && !this.isABlackSquare(this.gridContent[i + 1]);
     }
 
     private createWords(): void {
         let mockCells: Array<ICell> = new Array();
         this.words.forEach((word: IWord, index: number) => {
             const startPosition: number = this.convertPositionToCellIndex(word.position.x, word.position.y);
-            if (word.orientation === Orientation.Vertical) { // Vertical
+            if (word.orientation === Orientation.Vertical) {
                 for (let i: number = startPosition, j: number = 0; j < word.content.length; i = i + GRID_WIDTH, j++) {
                     mockCells.push(this.cells[i]);
                 }

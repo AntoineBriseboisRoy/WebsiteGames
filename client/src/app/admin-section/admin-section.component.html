@@ -9,8 +9,8 @@
                 <button type="button" class="btn btn-lg btn-block mt-4" id="button-edit" routerLink="/edit">Create a new track</button>
                 <div *ngFor="let track of tracks">
                     <li class="track-info row">
-                        <h3>{{track.Name}}</h3>
-                        <p>{{track.Description}}</p>
+                        <h3>{{track.name}}</h3>
+                        <p>{{track.description}}</p>
                         <div class="track-actions">
                             <button (click)="onButtonClick(track.Name, 'edit')" type="button" class="btn btn-outline-success">Edit</button>
                             <button (click)="onButtonClick(track.Name, 'delete')" type="button" class="btn btn-outline-danger">Delete</button>
