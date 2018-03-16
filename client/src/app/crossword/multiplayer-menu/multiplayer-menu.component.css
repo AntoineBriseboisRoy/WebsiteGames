@@ -1,0 +1,16 @@
+.background {
+    width:50%;
+    background-color: white;
+}
+
+#easy-button:hover{
+    background-color: green;
+}
+
+#normal-button:hover{
+    background-color: yellow;
+}
+
+#hard-button:hover{
+    background-color: red;
+}

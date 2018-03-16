@@ -3,7 +3,7 @@ import { Component, OnInit } from "@angular/core";
 @Component({
     selector: "app-multiplayer-menu",
     templateUrl: "./multiplayer-menu.component.html",
-    styleUrls: ["./multiplayer-menu.component.css"]
+    styleUrls: ["./multiplayer-menu.component.css",  "../game-view/crossword-view.component.css"]
 })
 export class MultiplayerMenuComponent implements OnInit {
 
