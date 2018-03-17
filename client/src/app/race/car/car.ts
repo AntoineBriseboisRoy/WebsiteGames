@@ -1,4 +1,4 @@
-import { Vector3, Matrix4, Object3D, ObjectLoader, Euler, Quaternion, Box3, BoxHelper } from "three";
+import { Vector3, Matrix4, Object3D, ObjectLoader, Euler, Quaternion, Box3, BoxHelper, /*BoxHelper*/ } from "three";
 import { Engine } from "./engine";
 import { MS_TO_SECONDS, GRAVITY, PI_OVER_2, RAD_TO_DEG } from "../../constants";
 import { Wheel } from "./wheel";
@@ -23,6 +23,8 @@ export class Car extends Object3D {
     private readonly wheelbase: number;
     private readonly dragCoefficient: number;
 
+    private readonly initialPosition: Vector3;
+
     private _speed: Vector3;
     private isBraking: boolean;
     private mesh: Object3D;
@@ -30,8 +32,17 @@ export class Car extends Object3D {
     private weightRear: number;
 
     private boundingBox: Box3;
+
+    public get Mass(): number {
+        return this.mass;
+    }
+
     public get speed(): Vector3 {
         return this._speed.clone();
+    }
+
+    public set speed(newSpeed: Vector3) {
+        this._speed = newSpeed;
     }
 
     public get currentGear(): number {
@@ -40,6 +51,10 @@ export class Car extends Object3D {
 
     public get rpm(): number {
         return this.engine.rpm;
+    }
+
+    public get BoundingBox(): Box3 {
+        return this.boundingBox;
     }
 
     public get angle(): number {
@@ -54,6 +69,10 @@ export class Car extends Object3D {
       return this.mesh.position;
     }
 
+    public getMeshMatrix(): Matrix4 {
+        return this.mesh.matrix;
+    }
+
     private get direction(): Vector3 {
         const rotationMatrix: Matrix4 = new Matrix4();
         const carDirection: Vector3 = new Vector3(0, 0, -1);
@@ -65,6 +84,7 @@ export class Car extends Object3D {
     }
 
     public constructor(
+        initialPosition: Vector3 = new Vector3(),
         engine: Engine = new Engine(),
         rearWheel: Wheel = new Wheel(),
         wheelbase: number = DEFAULT_WHEELBASE,
@@ -76,12 +96,10 @@ export class Car extends Object3D {
             console.error("Wheelbase should be greater than 0.");
             wheelbase = DEFAULT_WHEELBASE;
         }
-
         if (mass <= 0) {
             console.error("Mass should be greater than 0.");
             mass = DEFAULT_MASS;
         }
-
         if (dragCoefficient <= 0) {
             console.error("Drag coefficient should be greater than 0.");
             dragCoefficient = DEFAULT_DRAG_COEFFICIENT;
@@ -92,6 +110,7 @@ export class Car extends Object3D {
         this.wheelbase = wheelbase;
         this.mass = mass;
         this.dragCoefficient = dragCoefficient;
+        this.initialPosition = initialPosition;
 
         this.isBraking = false;
         this.steeringWheelDirection = 0;
@@ -116,11 +135,12 @@ export class Car extends Object3D {
         this.mesh = await this.load();
         this.add(this.mesh);
         this.InitBoundingBox();
+        this.mesh.position.add(this.initialPosition);
         this.mesh.setRotationFromEuler(INITIAL_MODEL_ROTATION);
     }
 
     private InitBoundingBox(): void {
-        const helper: BoxHelper =  new BoxHelper(this);
+        const helper: BoxHelper =  new BoxHelper(this.mesh);
         this.boundingBox.setFromObject(helper);
         this.mesh.add(helper);
     }
@@ -159,6 +179,7 @@ export class Car extends Object3D {
         this.physicsUpdate(deltaTime);
 
         // Move back to world coordinates
+        this.updateBoundingBox();
         this._speed = this.speed.applyQuaternion(rotationQuaternion.inverse());
 
         // Angular rotation of the car
@@ -175,6 +196,10 @@ export class Car extends Object3D {
         this._speed.setLength(this._speed.length() <= MINIMUM_SPEED ? 0 : this._speed.length());
         this.mesh.position.add(this.getDeltaPosition(deltaTime));
         this.rearWheel.update(this._speed.length());
+    }
+
+    private updateBoundingBox(): void {
+        this.boundingBox.setFromObject(this.mesh);
     }
 
     private getWeightDistribution(): number {

@@ -1,5 +1,5 @@
 import { Car } from "./car";
-import { Object3D } from "three";
+import { Object3D, Vector3, Matrix4, Quaternion } from "three";
 
 export class CollisionManager {
 
@@ -25,11 +25,45 @@ export class CollisionManager {
     }
 
     private verifyCollision(): void {
+        if (this.cars[0].BoundingBox.intersectsBox(this.cars[1].BoundingBox)) {
+            this.collision(this.cars[0], this.cars[1]);
+        }
     }
 
+    // tslint:disable-next-line:max-func-body-length
     private collision(carA: Car, carB: Car): void {
-        // Find which raycaster detected the collision
-        // Calculate the physics for the collision as a whole (total energy, etc.)
-        // Apply physics to each car
+        const massA: number = carA.Mass;
+        const massB: number = carB.Mass;
+        const speedA: Vector3 = carA.speed;
+        const speedB: Vector3 = carB.speed;
+
+        const rotationA: Matrix4 = new Matrix4();
+        rotationA.extractRotation(carA.getMeshMatrix());
+        const rotationQuaternionA: Quaternion = new Quaternion();
+        rotationQuaternionA.setFromRotationMatrix(rotationA);
+        console.log(speedA);
+        speedA.applyMatrix4(rotationA);
+        console.log(speedA);
+
+        const rotationB: Matrix4 = new Matrix4();
+        rotationB.extractRotation(carB.getMeshMatrix());
+        const rotationQuaternionB: Quaternion = new Quaternion();
+        rotationQuaternionB.setFromRotationMatrix(rotationB);
+        speedB.applyMatrix4(rotationB);
+
+        const totalSystemMomentum: Vector3 = speedA.multiplyScalar(massA).add(speedB.multiplyScalar(massB));
+
+        let carANewSpeed: Vector3 = new Vector3(totalSystemMomentum.x / massA / 2,
+                                                totalSystemMomentum.y / massA / 2,
+                                                totalSystemMomentum.z / massA / 2);
+        let carBNewSpeed: Vector3 = new Vector3(totalSystemMomentum.x / massB / 2,
+                                                totalSystemMomentum.y / massB / 2,
+                                                totalSystemMomentum.z / massB / 2);
+
+        carANewSpeed = carANewSpeed.applyQuaternion(rotationQuaternionA.inverse());
+        carBNewSpeed = carBNewSpeed.applyQuaternion(rotationQuaternionB.inverse());
+
+        carA.speed = carANewSpeed;
+        carB.speed = carBNewSpeed;
     }
 }

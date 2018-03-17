@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core";
 import Stats = require("stats.js");
 import { WebGLRenderer, Scene, AmbientLight,
          Mesh, PlaneBufferGeometry, MeshBasicMaterial,
-         DoubleSide, Texture, RepeatWrapping, TextureLoader, BoxHelper } from "three";
+         DoubleSide, Texture, RepeatWrapping, TextureLoader, Vector3 } from "three";
 import { Car } from "../car/car";
 import { ThirdPersonCamera } from "../camera/camera-perspective";
 import { TopViewCamera } from "../camera/camera-orthogonal";
@@ -43,7 +43,7 @@ export class RenderService {
 
     public constructor() {
         this._car = new Car();
-        this.dummyCar = new Car();
+        this.dummyCar = new Car(new Vector3(-15, 0, 0));
         this.collisionManager = new CollisionManager();
     }
 
