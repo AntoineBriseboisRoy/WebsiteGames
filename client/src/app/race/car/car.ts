@@ -212,13 +212,13 @@ export class Car extends Object3D {
         /* tslint:enable:no-magic-numbers */
     }
 
-    private getLongitudinalForce(): Vector3 {
+    private getForces(): Vector3 {
         const resultingForce: Vector3 = new Vector3();
 
         if (this._speed.length() >= MINIMUM_SPEED) {
             const dragForce: Vector3 = this.getDragForce();
             const rollingResistance: Vector3 = this.getRollingResistance();
-            const friction: Vector3 = this.getFrictionForce();
+            const friction: Vector3 = this.getLatteralFrictionForce();
             resultingForce.add(dragForce).add(rollingResistance).add(friction);
         }
 
@@ -235,11 +235,12 @@ export class Car extends Object3D {
         return resultingForce;
     }
 
-    private getFrictionForce(): Vector3 {
+    private getLatteralFrictionForce(): Vector3 {
         const frictionCoefficient: number = 0.05;
-        const normalForce: number = GRAVITY * this.mass;
+        const sideways: Vector3 = this.direction.cross(this.up);
+        const sidewaysSpeed: Vector3 = sideways.normalize().multiplyScalar(this.speed.dot(sideways));
 
-        return this.speed.normalize().multiplyScalar(frictionCoefficient * normalForce);
+        return sidewaysSpeed.normalize().multiplyScalar(frictionCoefficient * GRAVITY * this.mass);
     }
 
     private getRollingResistance(): Vector3 {
@@ -299,7 +300,7 @@ export class Car extends Object3D {
     }
 
     private getAcceleration(): Vector3 {
-        return this.getLongitudinalForce().divideScalar(this.mass);
+        return this.getForces().divideScalar(this.mass);
     }
 
     private getDeltaSpeed(deltaTime: number): Vector3 {
