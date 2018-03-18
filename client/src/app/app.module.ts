@@ -24,6 +24,8 @@ import { WordTransmitterService } from "./crossword/game-view/wordTransmitter.se
 import { PlayerMenuComponent } from "./crossword/player-menu/player-menu.component";
 import { MultiplayerMenuComponent } from "./crossword/multiplayer-menu/multiplayer-menu.component";
 import { MongoQueryService } from "./mongo-query.service";
+import { SocketIoService } from "./crossword/socket-io.service";
+import { WaitingGamesService } from "./crossword/multiplayer-menu/waiting-games.service";
 
 @NgModule({
     declarations: [
@@ -48,7 +50,14 @@ import { MongoQueryService } from "./mongo-query.service";
         AppRoutingModule,
         NgbModule.forRoot()
     ],
-    providers: [{provide: APP_BASE_HREF, useValue : "/" }, MongoQueryService, GridService, WordTransmitterService],
+    providers: [
+        {provide: APP_BASE_HREF, useValue : "/" },
+        MongoQueryService,
+        GridService,
+        WordTransmitterService,
+        SocketIoService,
+        WaitingGamesService
+    ],
     bootstrap: [AppComponent]
 })
 export class AppModule { }
