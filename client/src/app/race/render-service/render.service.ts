@@ -2,12 +2,11 @@ import { Injectable } from "@angular/core";
 import Stats = require("stats.js");
 import { WebGLRenderer, Scene, AmbientLight,
          Mesh, PlaneBufferGeometry, MeshBasicMaterial,
-         DoubleSide, Texture, RepeatWrapping, TextureLoader, Vector2, BackSide, Vector3, ClampToEdgeWrapping,
-         CircleBufferGeometry } from "three";
+         Texture, RepeatWrapping, TextureLoader, Vector2, BackSide, CircleBufferGeometry } from "three";
 import { Car } from "../car/car";
 import { ThirdPersonCamera } from "../camera/camera-perspective";
 import { TopViewCamera } from "../camera/camera-orthogonal";
-import { INITIAL_CAMERA_POSITION_Y, FRUSTUM_RATIO, PI_OVER_2, PI_OVER_4, HALF } from "../../constants";
+import { INITIAL_CAMERA_POSITION_Y, FRUSTUM_RATIO, PI_OVER_2, HALF } from "../../constants";
 import { Skybox } from "../skybox/skybox";
 import { CameraContext } from "../camera/camera-context";
 import { Point } from "../edit-track/Geometry";
