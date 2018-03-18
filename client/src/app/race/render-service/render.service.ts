@@ -2,11 +2,12 @@ import { Injectable } from "@angular/core";
 import Stats = require("stats.js");
 import { WebGLRenderer, Scene, AmbientLight,
          Mesh, PlaneBufferGeometry, MeshBasicMaterial,
-         DoubleSide, Texture, RepeatWrapping, TextureLoader, Vector2, BackSide, Vector3 } from "three";
+         DoubleSide, Texture, RepeatWrapping, TextureLoader, Vector2, BackSide, Vector3, ClampToEdgeWrapping,
+         CircleBufferGeometry } from "three";
 import { Car } from "../car/car";
 import { ThirdPersonCamera } from "../camera/camera-perspective";
 import { TopViewCamera } from "../camera/camera-orthogonal";
-import { INITIAL_CAMERA_POSITION_Y, FRUSTUM_RATIO, PI_OVER_2, PI_OVER_4 } from "../../constants";
+import { INITIAL_CAMERA_POSITION_Y, FRUSTUM_RATIO, PI_OVER_2, PI_OVER_4, HALF } from "../../constants";
 import { Skybox } from "../skybox/skybox";
 import { CameraContext } from "../camera/camera-context";
 import { Point } from "../edit-track/Geometry";
@@ -18,7 +19,9 @@ export const FIELD_OF_VIEW: number = 70;
 const WHITE: number = 0xFFFFFF;
 const AMBIENT_LIGHT_OPACITY: number = 0.5;
 const TEXTURE_TILE_REPETIONS: number = 100;
-const TEXTURE_SIZE: number = 1000;
+const WORLD_SIZE: number = 1000;
+const ROAD_WIDTH: number = 10;
+const SUPERPOSITION: number = 0.001;
 
 @Injectable()
 export class RenderService {
@@ -30,6 +33,7 @@ export class RenderService {
     private stats: Stats;
     private lastDate: number;
     private points: Point[];
+    private superposition: number;
 
     public get car(): Car {
         return this._car;
@@ -41,6 +45,7 @@ export class RenderService {
 
     public constructor() {
         this._car = new Car();
+        this.superposition = 0;
     }
 
     public async initialize(container: HTMLDivElement, points: Point[]): Promise<void> {
@@ -101,28 +106,49 @@ export class RenderService {
 
     private generateTrack(): void {
         for (let i: number = 0; i < this.points.length - 1; ++i) {
-            const trackTexture: Texture = new TextureLoader().load("/assets/camero/road.jpg");
-            trackTexture.wrapS = trackTexture.wrapT = RepeatWrapping;
-            let vector: Vector2 = new Vector2(this.points[i + 1].x - this.points[i].x, this.points[i + 1].y - this.points[i].y);
-            const plane: PlaneBufferGeometry = new PlaneBufferGeometry(vector.length() * TEXTURE_SIZE, 10);
-            const mesh: Mesh = new Mesh(plane, new MeshBasicMaterial({ map: trackTexture, side: BackSide }));
-            trackTexture.repeat.set(vector.length() * 25, 1);
-            mesh.position.x = -(this.points[i].y + vector.y / 2) * TEXTURE_SIZE;
-            mesh.position.z = -(this.points[i].x + vector.x / 2) * TEXTURE_SIZE;
-            mesh.rotation.x = PI_OVER_2;
-            mesh.rotation.z = vector.y === 0 ? PI_OVER_2 : Math.atan(vector.x / vector.y);
-            this.scene.add(mesh);
+            this.scene.add(this.createRoad(i));
+            this.scene.add(this.createIntersection(i));
         }
     }
 
+    private createRoad(index: number): Mesh {
+        const trackTexture: Texture = new TextureLoader().load("/assets/camero/road.jpg");
+        trackTexture.wrapS = RepeatWrapping;
+        const vector: Vector2 = new Vector2(this.points[index + 1].x - this.points[index].x, this.points[index + 1].y
+                                                                                               - this.points[index].y);
+        const plane: PlaneBufferGeometry = new PlaneBufferGeometry(vector.length() * WORLD_SIZE, ROAD_WIDTH);
+        const mesh: Mesh = new Mesh(plane, new MeshBasicMaterial({ map: trackTexture, side: BackSide }));
+        trackTexture.repeat.set(vector.length() * TEXTURE_TILE_REPETIONS, 1);
+        mesh.position.x = -(this.points[index].y + vector.y * HALF) * WORLD_SIZE;
+        mesh.position.z = -(this.points[index].x + vector.x * HALF) * WORLD_SIZE;
+        mesh.rotation.x = PI_OVER_2;
+        mesh.rotation.z = vector.y === 0 ? PI_OVER_2 : Math.atan(vector.x / vector.y);
+        this.superposition += SUPERPOSITION;
+        mesh.position.y = this.superposition;
+
+        return mesh;
+    }
+
+    private createIntersection(index: number): Mesh {
+        const POLYGONS_NUMBER: number = 32;
+        const trackTexture: Texture = new TextureLoader().load("/assets/camero/road.jpg");
+        const circle: CircleBufferGeometry = new CircleBufferGeometry(ROAD_WIDTH * HALF, POLYGONS_NUMBER);
+        const mesh: Mesh = new Mesh(circle, new MeshBasicMaterial({ map: trackTexture, side: BackSide }));
+        mesh.position.x = -(this.points[index].y) * WORLD_SIZE;
+        mesh.position.z = -(this.points[index].x) * WORLD_SIZE;
+        mesh.rotation.x = PI_OVER_2;
+        this.superposition += SUPERPOSITION;
+        mesh.position.y = this.superposition;
+
+        return mesh;
+    }
     private createFloorMesh(): Mesh {
         const floorTexture: Texture = new TextureLoader().load("/assets/camero/floor-texture.jpg");
         floorTexture.wrapS = floorTexture.wrapT = RepeatWrapping;
         floorTexture.repeat.set(TEXTURE_TILE_REPETIONS, TEXTURE_TILE_REPETIONS);
-        const mesh: Mesh = new Mesh(new PlaneBufferGeometry(TEXTURE_SIZE, TEXTURE_SIZE, 1, 1),
+        const mesh: Mesh = new Mesh(new PlaneBufferGeometry(WORLD_SIZE, WORLD_SIZE, 1, 1),
                                     new MeshBasicMaterial({ map: floorTexture, side: BackSide }));
         mesh.rotation.x = PI_OVER_2;
-        mesh.position.y = -0.01;
 
         return mesh;
     }
