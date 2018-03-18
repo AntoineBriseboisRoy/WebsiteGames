@@ -21,6 +21,7 @@ export class SocketIoService {
         const observer: Observer<INewGame> = {
             next: (data: INewGame) => {
                 this.socket.emit("new-game", JSON.stringify(data));
+                console.log(data);
             },
             error: (err: string) => {
                 console.error("Error: Cannot send new game to other players");
@@ -31,7 +32,7 @@ export class SocketIoService {
         // Observes the incoming messages from the server (new games)
         const observable: Observable<INewGame> = new Observable<INewGame>((obs) => {
             // ajouter à la liste de parties en attente d'un autre joueur
-            this.socket.on("new-game", (data: INewGame) => {
+            this.socket.on("join-game", (data: INewGame) => {
                 this.waitingGameService.pushNewGame(data);
                 obs.next(data);
             });

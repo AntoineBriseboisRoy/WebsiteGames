@@ -11,9 +11,9 @@
             <button type="button" id="hard-button" class="btn btn-lg btn-outline-danger background btn-block left-side">Hard</button>
           </div>
           <h4 class="mt-5">Enter a username</h4>
-          <input class="form-control left-side" placeholder="username">
+          <input class="form-control left-side" placeholder="username" [(ngModel)]="username">
           <div class="text-center mt-2">
-            <button type="button" class="btn btn-lg btn-primary btn-block left-side">Easy</button>
+            <button type="button" class="btn btn-lg btn-primary btn-block left-side" on-click="createNewGame()">Easy</button>
           </div>
         </div>
         <div class="col-6 text-center">
@@ -25,7 +25,7 @@
             <div class="card-body">
               <h5 class="card-title">Special title treatment</h5>
               <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
-              <a href="#" class="btn btn-primary">Go somewhere</a>
+              <button type="button" class="btn btn-primary" on-click="test()">Go somewhere</button>
             </div>
           </div>
         </div>
