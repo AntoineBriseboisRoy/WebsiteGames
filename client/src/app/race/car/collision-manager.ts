@@ -27,6 +27,10 @@ export class CollisionManager {
     private verifyCollision(): void {
         if (this.cars[0].BoundingBox.intersectsBox(this.cars[1].BoundingBox)) {
             this.collision(this.cars[0], this.cars[1]);
+            console.log("moving car..");
+            console.log(this.cars[0].BoundingBox.getSize());
+            console.log("static car");
+            console.log(this.cars[1].BoundingBox.getSize());
         }
     }
 
@@ -51,9 +55,9 @@ export class CollisionManager {
 
         const totalSystemMomentum: Vector3 = speedA.multiplyScalar(massA).add(speedB.multiplyScalar(massB));
 
-        let carANewSpeed: Vector3 = new Vector3(totalSystemMomentum.x / massA / 2,
-                                                totalSystemMomentum.y / massA / 2,
-                                                totalSystemMomentum.z / massA / 2);
+        let carANewSpeed: Vector3 = new Vector3(totalSystemMomentum.x / massA / 2.05,
+                                                totalSystemMomentum.y / massA / 2.05,
+                                                totalSystemMomentum.z / massA / 2.05);
         let carBNewSpeed: Vector3 = new Vector3(totalSystemMomentum.x / massB / 1.95,
                                                 totalSystemMomentum.y / massB / 1.95,
                                                 totalSystemMomentum.z / massB / 1.95);
