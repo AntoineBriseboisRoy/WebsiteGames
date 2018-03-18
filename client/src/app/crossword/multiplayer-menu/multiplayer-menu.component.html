@@ -13,19 +13,28 @@
           <h4 class="mt-5">Enter a username</h4>
           <input class="form-control left-side" placeholder="username" [(ngModel)]="username">
           <div class="text-center mt-2">
-            <button type="button" class="btn btn-lg btn-primary btn-block left-side" on-click="createNewGame()">Easy</button>
+            <button type="button" class="btn btn-lg btn-primary btn-block left-side" on-click="createNewGame()">Create game</button>
           </div>
         </div>
         <div class="col-6 text-center">
           <h2 id="main-title" class="text-center">Join a game</h2>
           <div class="card">
             <div class="card-header">
-              Featured
+              List of games created!
             </div>
-            <div class="card-body">
-              <h5 class="card-title">Special title treatment</h5>
-              <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
-              <button type="button" class="btn btn-primary" on-click="test()">Go somewhere</button>
+            <div *ngIf="!this.waitingGames.Games.length">
+                <p class="card-text my-5">There's no game at the moment</p>
+            </div>
+            <div *ngFor="let game of waitingGames.Games">
+              <div class="card-body">
+                <h5 class="card-title">{{game.userCreator}} is waiting for an opponent : {{game.difficulty}}</h5>
+                <form class="form-inline ">
+                  <div class="form-group mx-sm-3 mb-2">
+                    <input class="form-control" placeholder="Username">
+                  </div>
+                  <button type="submit" class="btn btn-primary mb-2">Start game!</button>
+                </form>
+              </div>
             </div>
           </div>
         </div>

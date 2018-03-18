@@ -3,17 +3,17 @@ import { INewGame } from "../../../../../common/interfaces/INewGame";
 
 @Injectable()
 export class WaitingGamesService {
-    private waitingGames: Array<INewGame>;
+    private games: Array<INewGame>;
 
     public constructor() {
-        this.waitingGames = new Array<INewGame>();
+        this.games = new Array<INewGame>();
     }
 
-    public get WaitingGames(): Array<INewGame> {
-        return this.waitingGames;
+    public get Games(): Array<INewGame> {
+        return this.games;
     }
 
     public pushNewGame(game: INewGame): void {
-        this.waitingGames.push(game);
+        this.games.push(game);
     }
 }

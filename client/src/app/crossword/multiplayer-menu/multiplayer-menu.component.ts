@@ -24,8 +24,4 @@ export class MultiplayerMenuComponent {
         this.waitingGames.pushNewGame({ userCreator: this.username, difficulty: Difficulty.Easy });
         this.gamesService.next({ userCreator: this.username, difficulty: Difficulty.Easy });
     }
-
-    public test():void {
-        console.log(this.waitingGames.WaitingGames);
-    }
 }
