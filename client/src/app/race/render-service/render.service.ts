@@ -133,7 +133,7 @@ export class RenderService {
         const trackTexture: Texture = new TextureLoader().load("/assets/camero/road.jpg");
         const circle: CircleBufferGeometry = new CircleBufferGeometry(ROAD_WIDTH * HALF, POLYGONS_NUMBER);
         const mesh: Mesh = new Mesh(circle, new MeshBasicMaterial({ map: trackTexture, side: BackSide }));
-        mesh.position.x = (this.points[index].y) * WORLD_SIZE + WORLD_SIZE * HALF;
+        mesh.position.x = -(this.points[index].y) * WORLD_SIZE + WORLD_SIZE * HALF;
         mesh.position.z = -(this.points[index].x) * WORLD_SIZE + WORLD_SIZE * HALF;
         mesh.rotation.x = PI_OVER_2;
         this.superimpose(mesh);
