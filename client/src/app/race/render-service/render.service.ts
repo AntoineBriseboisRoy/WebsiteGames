@@ -18,8 +18,9 @@ export const FIELD_OF_VIEW: number = 70;
 
 const WHITE: number = 0xFFFFFF;
 const AMBIENT_LIGHT_OPACITY: number = 0.5;
-const TEXTURE_TILE_REPETIONS: number = 100;
+const TEXTURE_TILE_REPETIONS: number = 200;
 const WORLD_SIZE: number = 1000;
+const FLOOR_SIZE: number = WORLD_SIZE * 2;
 const ROAD_WIDTH: number = 10;
 const SUPERPOSITION: number = 0.001;
 
@@ -119,12 +120,11 @@ export class RenderService {
         const plane: PlaneBufferGeometry = new PlaneBufferGeometry(vector.length() * WORLD_SIZE, ROAD_WIDTH);
         const mesh: Mesh = new Mesh(plane, new MeshBasicMaterial({ map: trackTexture, side: BackSide }));
         trackTexture.repeat.set(vector.length() * TEXTURE_TILE_REPETIONS, 1);
-        mesh.position.x = -(this.points[index].y + vector.y * HALF) * WORLD_SIZE;
-        mesh.position.z = -(this.points[index].x + vector.x * HALF) * WORLD_SIZE;
+        mesh.position.x = -(this.points[index].y + vector.y * HALF) * WORLD_SIZE + WORLD_SIZE * HALF;
+        mesh.position.z = -(this.points[index].x + vector.x * HALF) * WORLD_SIZE + WORLD_SIZE * HALF;
         mesh.rotation.x = PI_OVER_2;
         mesh.rotation.z = vector.y === 0 ? PI_OVER_2 : Math.atan(vector.x / vector.y);
-        this.superposition += SUPERPOSITION;
-        mesh.position.y = this.superposition;
+        this.superimpose(mesh);
 
         return mesh;
     }
@@ -134,11 +134,10 @@ export class RenderService {
         const trackTexture: Texture = new TextureLoader().load("/assets/camero/road.jpg");
         const circle: CircleBufferGeometry = new CircleBufferGeometry(ROAD_WIDTH * HALF, POLYGONS_NUMBER);
         const mesh: Mesh = new Mesh(circle, new MeshBasicMaterial({ map: trackTexture, side: BackSide }));
-        mesh.position.x = -(this.points[index].y) * WORLD_SIZE;
-        mesh.position.z = -(this.points[index].x) * WORLD_SIZE;
+        mesh.position.x = (this.points[index].y) * WORLD_SIZE + WORLD_SIZE * HALF;
+        mesh.position.z = -(this.points[index].x) * WORLD_SIZE + WORLD_SIZE * HALF;
         mesh.rotation.x = PI_OVER_2;
-        this.superposition += SUPERPOSITION;
-        mesh.position.y = this.superposition;
+        this.superimpose(mesh);
 
         return mesh;
     }
@@ -146,11 +145,16 @@ export class RenderService {
         const floorTexture: Texture = new TextureLoader().load("/assets/camero/floor-texture.jpg");
         floorTexture.wrapS = floorTexture.wrapT = RepeatWrapping;
         floorTexture.repeat.set(TEXTURE_TILE_REPETIONS, TEXTURE_TILE_REPETIONS);
-        const mesh: Mesh = new Mesh(new PlaneBufferGeometry(WORLD_SIZE, WORLD_SIZE, 1, 1),
+        const mesh: Mesh = new Mesh(new PlaneBufferGeometry(FLOOR_SIZE, FLOOR_SIZE, 1, 1),
                                     new MeshBasicMaterial({ map: floorTexture, side: BackSide }));
         mesh.rotation.x = PI_OVER_2;
 
         return mesh;
+    }
+
+    private superimpose(mesh: Mesh): void {
+        this.superposition += SUPERPOSITION;
+        mesh.position.y = this.superposition;
     }
 
     private startRenderingLoop(): void {
