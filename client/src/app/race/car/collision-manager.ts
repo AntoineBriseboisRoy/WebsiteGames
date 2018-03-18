@@ -41,9 +41,7 @@ export class CollisionManager {
         rotationA.extractRotation(carA.getMeshMatrix());
         const rotationQuaternionA: Quaternion = new Quaternion();
         rotationQuaternionA.setFromRotationMatrix(rotationA);
-        console.log(speedA);
         speedA.applyMatrix4(rotationA);
-        console.log(speedA);
 
         const rotationB: Matrix4 = new Matrix4();
         rotationB.extractRotation(carB.getMeshMatrix());
@@ -56,14 +54,15 @@ export class CollisionManager {
         let carANewSpeed: Vector3 = new Vector3(totalSystemMomentum.x / massA / 2,
                                                 totalSystemMomentum.y / massA / 2,
                                                 totalSystemMomentum.z / massA / 2);
-        let carBNewSpeed: Vector3 = new Vector3(totalSystemMomentum.x / massB / 2,
-                                                totalSystemMomentum.y / massB / 2,
-                                                totalSystemMomentum.z / massB / 2);
+        let carBNewSpeed: Vector3 = new Vector3(totalSystemMomentum.x / massB / 1.95,
+                                                totalSystemMomentum.y / massB / 1.95,
+                                                totalSystemMomentum.z / massB / 1.95);
 
         carANewSpeed = carANewSpeed.applyQuaternion(rotationQuaternionA.inverse());
         carBNewSpeed = carBNewSpeed.applyQuaternion(rotationQuaternionB.inverse());
 
         carA.speed = carANewSpeed;
+
         carB.speed = carBNewSpeed;
     }
 }

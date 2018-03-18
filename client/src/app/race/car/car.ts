@@ -218,7 +218,8 @@ export class Car extends Object3D {
         if (this._speed.length() >= MINIMUM_SPEED) {
             const dragForce: Vector3 = this.getDragForce();
             const rollingResistance: Vector3 = this.getRollingResistance();
-            resultingForce.add(dragForce).add(rollingResistance);
+            const friction: Vector3 = this.getFrictionForce();
+            resultingForce.add(dragForce).add(rollingResistance).add(friction);
         }
 
         if (this.isAcceleratorPressed) {
@@ -234,6 +235,13 @@ export class Car extends Object3D {
         return resultingForce;
     }
 
+    private getFrictionForce(): Vector3 {
+        const frictionCoefficient: number = 0.05;
+        const normalForce: number = GRAVITY * this.mass;
+
+        return this.speed.normalize().multiplyScalar(frictionCoefficient * normalForce);
+    }
+
     private getRollingResistance(): Vector3 {
         const tirePressure: number = 1;
         // formula taken from: https://www.engineeringtoolbox.com/rolling-friction-resistance-d_1303.html
@@ -241,16 +249,21 @@ export class Car extends Object3D {
         // tslint:disable-next-line:no-magic-numbers
         const rollingCoefficient: number = (1 / tirePressure) * (Math.pow(this.speed.length() * 3.6 / 100, 2) * 0.0095 + 0.01) + 0.005;
 
-        return this.direction.multiplyScalar(rollingCoefficient * this.mass * GRAVITY);
+        return this.direction.multiplyScalar(rollingCoefficient * this.mass * GRAVITY * this.goingBackwards());
     }
 
     private getDragForce(): Vector3 {
         const carSurface: number = 3;
         const airDensity: number = 1.2;
         const resistance: Vector3 = this.direction;
-        resistance.multiplyScalar(airDensity * carSurface * -this.dragCoefficient * this.speed.length() * this.speed.length());
+        resistance.multiplyScalar(airDensity * carSurface * -this.dragCoefficient *
+                                  this.speed.length() * this.speed.length() * this.goingBackwards());
 
         return resistance;
+    }
+
+    private goingBackwards(): number {
+        return Math.sign(this._speed.dot(this.direction.normalize()));
     }
 
     private getTractionForce(): number {
