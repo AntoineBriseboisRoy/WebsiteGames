@@ -72,31 +72,27 @@ export class BlackSquareGenerator {
         return (this.countConnectedWords() === this.nTotalWords);
     }
 
-    private findFirstWord(): { coord: ICoordXY, direction: Orientation } {
+    private findFirstWord(): IWord {
         for (let i: number = 0; i < this.sideSize; ++i) {
             for (let j: number = 0; j < this.sideSize; ++j) {
                 if (this.grid[i][j] === EMPTY_SQUARE) {
                     let nLettersRow: number = 0;
                     while (++nLettersRow + j < this.sideSize && this.grid[i][j + nLettersRow] === EMPTY_SQUARE) {
                         if (nLettersRow >= MIN_LETTERS_FOR_WORD - 1) {
-                            return { coord: { x: Math.abs(Math.floor(i)),
-                                              y: Math.abs(Math.floor(j))} as ICoordXY,
-                                     direction: Orientation.Vertical };
+                            return { position: { x: i, y: j} as ICoordXY,
+                                     orientation: Orientation.Vertical, content: "", definition: "" } as IWord;
                         }
                     }
                     let nLettersCol: number = 0;
                     while (++nLettersCol + i < this.sideSize && this.grid[i + nLettersCol][j] === EMPTY_SQUARE) {
                         if (nLettersCol >= MIN_LETTERS_FOR_WORD - 1) {
-                            return { coord: { x: Math.abs(Math.floor(i)),
-                                              y: Math.abs(Math.floor(j))} as ICoordXY,
-                                     direction: Orientation.Horizontal };
+                            return { position: { x: i, y: j} as ICoordXY,
+                                     orientation: Orientation.Horizontal, content: "", definition: "" } as IWord;
                         }
                     }
                 }
             }
         }
-
-        return { coord: { x: 0, y: 0} as ICoordXY, direction: Orientation.Horizontal };
     }
 
     private countConnectedWords(): number {
@@ -106,86 +102,81 @@ export class BlackSquareGenerator {
     }
 
     // tslint:disable-next-line:max-func-body-length
-    private countConnectedWordsRecursive(currChar: { coord: ICoordXY, direction: Orientation }): number {
+    private countConnectedWordsRecursive(currChar: IWord): number {
         if (this.charBelongsToAlreadyCheckedWord(currChar)) {
             return 0;
         }
 
-        const charsToCheck: { coord: ICoordXY, direction: Orientation }[] = new Array<{ coord: ICoordXY, direction: Orientation }>();
+        const charsToCheck: IWord[] = new Array<IWord>();
         let nWordsConnected: number = 1;
         let currWordPosition: ICoordXY, currWordLength: number = 0;
 
-        if (currChar.direction === Orientation.Horizontal) {
-            let i: number = currChar.coord.x;
-            while (--i >= 0 && this.grid[i][currChar.coord.y] === EMPTY_SQUARE) {
+        if (currChar.orientation === Orientation.Horizontal) {
+            let i: number = currChar.position.x;
+            while (--i >= 0 && this.grid[i][currChar.position.y] === EMPTY_SQUARE) {
                 if (this.checkAdjacentSquares({ x: Math.abs(Math.floor(i)),
-                                                y: Math.abs(Math.floor(currChar.coord.y))} as ICoordXY,
-                                              currChar.direction)) {
-                    charsToCheck.push({ coord: { x: Math.abs(Math.floor(i)),
-                                                 y: Math.abs(Math.floor(currChar.coord.y))} as ICoordXY,
-                                        direction: Orientation.Vertical });
+                                                y: Math.abs(Math.floor(currChar.position.y))} as ICoordXY,
+                                              currChar.orientation)) {
+                    charsToCheck.push({ position: { x: i, y: currChar.position.y} as ICoordXY,
+                                        orientation: Orientation.Vertical, content: "", definition: "" });
                 }
             }
             currWordPosition = { x: Math.abs(Math.floor(i + 1)),
-                                 y: Math.abs(Math.floor(currChar.coord.y))} as ICoordXY;
-            i = currChar.coord.x;
-            while (++i < this.sideSize && this.grid[i][currChar.coord.y] === EMPTY_SQUARE) {
+                                 y: Math.abs(Math.floor(currChar.position.y))} as ICoordXY;
+            i = currChar.position.x;
+            while (++i < this.sideSize && this.grid[i][currChar.position.y] === EMPTY_SQUARE) {
                 if (this.checkAdjacentSquares({ x: Math.abs(Math.floor(i)),
-                                                y: Math.abs(Math.floor(currChar.coord.y))} as ICoordXY,
-                                              currChar.direction)) {
-                    charsToCheck.push({ coord: { x: Math.abs(Math.floor(i)),
-                                                 y: Math.abs(Math.floor(currChar.coord.y))} as ICoordXY,
-                                        direction: Orientation.Vertical });
+                                                y: Math.abs(Math.floor(currChar.position.y))} as ICoordXY,
+                                              currChar.orientation)) {
+                    charsToCheck.push({ position: { x: i, y: currChar.position.y} as ICoordXY,
+                                        orientation: Orientation.Vertical, content: "", definition: "" });
                 }
             }
             currWordLength = i - currWordPosition.x;
         } else {
-            let i: number = currChar.coord.y;
-            while (--i >= 0 && this.grid[currChar.coord.x][i] === EMPTY_SQUARE) {
-                if (this.checkAdjacentSquares({ x: Math.abs(Math.floor(currChar.coord.x)),
+            let i: number = currChar.position.y;
+            while (--i >= 0 && this.grid[currChar.position.x][i] === EMPTY_SQUARE) {
+                if (this.checkAdjacentSquares({ x: Math.abs(Math.floor(currChar.position.x)),
                                                 y: Math.abs(Math.floor(i))} as ICoordXY,
-                                              currChar.direction)) {
-                    charsToCheck.push({ coord: { x: Math.abs(Math.floor(currChar.coord.x)),
-                                                 y: Math.abs(Math.floor(i))} as ICoordXY,
-                                        direction: Orientation.Horizontal });
+                                              currChar.orientation)) {
+                    charsToCheck.push({ position: { x: currChar.position.x, y: i} as ICoordXY,
+                                        orientation: Orientation.Horizontal, content: "", definition: "" });
                 }
             }
-            currWordPosition = { x: Math.abs(Math.floor(currChar.coord.x)),
-                                 y: Math.abs(Math.floor(i + 1))} as ICoordXY;
-            i = currChar.coord.y;
-            while (++i < this.sideSize && this.grid[currChar.coord.x][i] === EMPTY_SQUARE) {
-                if (this.checkAdjacentSquares({ x: Math.abs(Math.floor(currChar.coord.x)),
+            currWordPosition = { x: currChar.position.x, y: i + 1} as ICoordXY;
+            i = currChar.position.y;
+            while (++i < this.sideSize && this.grid[currChar.position.x][i] === EMPTY_SQUARE) {
+                if (this.checkAdjacentSquares({ x: Math.abs(Math.floor(currChar.position.x)),
                                                 y: Math.abs(Math.floor(i))} as ICoordXY,
-                                              currChar.direction)) {
-                    charsToCheck.push({ coord: { x: Math.abs(Math.floor(currChar.coord.x)),
-                                                 y: Math.abs(Math.floor(i))} as ICoordXY,
-                                        direction: Orientation.Horizontal });
+                                              currChar.orientation)) {
+                    charsToCheck.push({ position: { x: currChar.position.x, y: i} as ICoordXY,
+                                        orientation: Orientation.Horizontal, content: "", definition: "" });
                 }
             }
             currWordLength = i - currWordPosition.y;
         }
-        this.connectedWordsFound.push({position: currWordPosition, orientation: currChar.direction,
+        this.connectedWordsFound.push({position: currWordPosition, orientation: currChar.orientation,
                                        content: StringService.generateDefaultString(currWordLength), definition: ""});
 
-        charsToCheck.forEach((char: { coord: ICoordXY, direction: Orientation }) => {
+        charsToCheck.forEach((char: IWord) => {
             nWordsConnected += this.countConnectedWordsRecursive(char);
         });
 
         return nWordsConnected;
     }
 
-    private charBelongsToAlreadyCheckedWord(currChar: { coord: ICoordXY, direction: Orientation }): boolean {
+    private charBelongsToAlreadyCheckedWord(currChar: IWord): boolean {
         let alreadyConnected: boolean = false;
         this.connectedWordsFound.forEach((word: IWord) => {
-            if (currChar.direction === word.orientation) {
-                if (currChar.direction === Orientation.Horizontal) {
-                    if (word.position.y === currChar.coord.y && word.position.x <= currChar.coord.x
-                        && word.position.x + word.content.length >= currChar.coord.x) {
+            if (currChar.orientation === word.orientation) {
+                if (currChar.orientation === Orientation.Horizontal) {
+                    if (word.position.y === currChar.position.y && word.position.x <= currChar.position.x
+                        && word.position.x + word.content.length >= currChar.position.x) {
                         alreadyConnected = true;
                     }
                 } else {
-                    if (word.position.x === currChar.coord.x && word.position.y <= currChar.coord.y
-                        && word.position.y + word.content.length >= currChar.coord.y) {
+                    if (word.position.x === currChar.position.x && word.position.y <= currChar.position.y
+                        && word.position.y + word.content.length >= currChar.position.y) {
                         alreadyConnected = true;
                     }
                 }
@@ -198,24 +189,28 @@ export class BlackSquareGenerator {
     private checkAdjacentSquares(currSquare: ICoordXY, orientation: Orientation): boolean {
         if (orientation === Orientation.Vertical) {
             if (currSquare.x < this.sideSize - 1 && this.grid[currSquare.x + 1][currSquare.y] === EMPTY_SQUARE) {
-                if (!this.charBelongsToAlreadyCheckedWord({ coord: currSquare, direction: Orientation.Horizontal })) {
+                if (!this.charBelongsToAlreadyCheckedWord({ position: currSquare, orientation: Orientation.Horizontal,
+                                                            content: "", definition: "" })) {
                     return true;
                 }
             }
             if (currSquare.x > 0 && this.grid[currSquare.x - 1][currSquare.y] === EMPTY_SQUARE) {
-                if (!this.charBelongsToAlreadyCheckedWord({ coord: currSquare, direction: Orientation.Horizontal })) {
+                if (!this.charBelongsToAlreadyCheckedWord({ position: currSquare, orientation: Orientation.Horizontal,
+                                                            content: "", definition: "" })) {
                     return true;
                 }
             }
         } else {
             if (currSquare.y < this.sideSize - 1 && this.grid[currSquare.x][currSquare.y + 1] === EMPTY_SQUARE) {
-                if (!this.charBelongsToAlreadyCheckedWord({ coord: currSquare, direction: Orientation.Vertical })) {
+                if (!this.charBelongsToAlreadyCheckedWord({ position: currSquare, orientation: Orientation.Vertical,
+                                                            content: "", definition: "" })) {
                     return true;
                 }
             }
             if (currSquare.y > 0 && this.grid[currSquare.x][currSquare.y - 1] === EMPTY_SQUARE) {
-                if (!this.charBelongsToAlreadyCheckedWord({ coord: currSquare, direction: Orientation.Vertical })) {
-                    return true;
+                if (!this.charBelongsToAlreadyCheckedWord({ position: currSquare, orientation: Orientation.Horizontal,
+                                                            content: "", definition: "" })) {
+                        return true;
                 }
             }
         }
