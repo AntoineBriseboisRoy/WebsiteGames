@@ -1,18 +1,18 @@
-import { BlackSquare } from "./BlackSquare";
 import { ICoordXY } from "../../../common/interfaces/ICoordXY";
 import { Orientation, IWord } from "../../../common/interfaces/IWord";
 import { StringService } from "./StringService";
-import { EMPTY_SQUARE, BLACKSQUARE_CHARACTER, MIN_LETTERS_FOR_WORD, MIN_WORDS_PER_LINE, MAX_WORDS_PER_LINE, MAX_BLACKSQUARE_RATIO } from "./Constants";
+import { EMPTY_SQUARE, BLACKSQUARE_CHARACTER, MIN_LETTERS_FOR_WORD, MIN_WORDS_PER_LINE,
+         MAX_WORDS_PER_LINE, MAX_BLACKSQUARE_RATIO } from "./Constants";
 export class BlackSquareGenerator {
 
     private static instance: BlackSquareGenerator;
-    private blackSquares: BlackSquare[];
+    private blackSquares: ICoordXY[];
     private grid: string[][];
     private nTotalWords: number;
     private connectedWordsFound: IWord[];
 
     private constructor(private sideSize: number, private percentageOfBlackSquares: number) {
-        this.blackSquares = new Array<BlackSquare>();
+        this.blackSquares = new Array<ICoordXY>();
         this.grid = this.initializeEmptyGrid();
     }
 
@@ -49,7 +49,7 @@ export class BlackSquareGenerator {
             for (let i: number = 0; i < this.sideSize; i++) {
                 for (let j: number = 0; j < numberOfBlackSquaresPerLine; j++) {
                     const tempPosition: ICoordXY = this.randomPositionGenerator();
-                    this.blackSquares.push(new BlackSquare(tempPosition));
+                    this.blackSquares.push(tempPosition);
                     this.grid[tempPosition.x][tempPosition.y] = BLACKSQUARE_CHARACTER;
                 }
             }

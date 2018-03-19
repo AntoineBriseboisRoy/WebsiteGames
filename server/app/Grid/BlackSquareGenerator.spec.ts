@@ -1,6 +1,7 @@
 import { expect } from "chai";
 import { BlackSquareGenerator } from "./BlackSquareGenerator";
-import { STANDARD_SIDE_SIZE, PERCENTAGE_BLACK_SQUARES, BLACKSQUARE_CHARACTER, MIN_LETTERS_FOR_WORD, MIN_WORDS_PER_LINE } from "./Constants";
+import { STANDARD_SIDE_SIZE, PERCENTAGE_BLACK_SQUARES, BLACKSQUARE_CHARACTER, MIN_LETTERS_FOR_WORD,
+         MIN_WORDS_PER_LINE } from "./Constants";
 
 describe("Verifying BlackSquare generation.", () => {
     it ("Should have the correct percentage of BlackSquares.", () => {
