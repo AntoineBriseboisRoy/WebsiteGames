@@ -13,6 +13,8 @@ import { MultiplayerGamesService } from "./multiplayer-games.service";
 export class MultiplayerMenuComponent {
     public username: string;
     private gamesService: Subject<INewGame>;
+    private difficulty: Difficulty;
+
     public constructor(private socketService: SocketIoService, public waitingGames: MultiplayerGamesService) {
         this.gamesService = this.socketService.connect();
         this.gamesService.subscribe((newGame: INewGame) => {
@@ -20,8 +22,27 @@ export class MultiplayerMenuComponent {
         });
     }
 
+    public onButtonGroupClick($event: Event): void {
+        const clickedElement: Element = $event.srcElement;
+        if (clickedElement.nodeName === "BUTTON") {
+            const button: Element = this.alreadySelectedButton(clickedElement);
+            if (button) {
+                button.classList.remove("active");
+            }
+            clickedElement.className += " active";
+        }
+    }
+
+    private alreadySelectedButton(clickedElement: Element): Element {
+        return clickedElement.parentElement.parentElement.querySelector(".active");
+    }
+
+    public difficultySelected(eventTarget: EventTarget): void {
+        this.difficulty = ((eventTarget as HTMLButtonElement).value as Difficulty);
+    }
+
     public createNewGame(): void {
-        this.waitingGames.push({ userCreator: this.username, difficulty: Difficulty.Easy });
-        this.gamesService.next({ userCreator: this.username, difficulty: Difficulty.Easy });
+        this.waitingGames.push({ userCreator: this.username, difficulty: this.difficulty });
+        this.gamesService.next({ userCreator: this.username, difficulty: this.difficulty });
     }
 }
