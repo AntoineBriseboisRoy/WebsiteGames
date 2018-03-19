@@ -6,17 +6,17 @@
   <form class="navbar-form">
     <div class="form-row">
       <div class="col-4">
-        <input class="form-control mr-sm-2" id="Name" type="name" placeholder="Track Name" aria-label="Name">
+        <input class="form-control mr-sm-2" id="Name" type="name" placeholder="Track Name" aria-label="Name" [(ngModel)]="this.track.name" name="NAME" #ctrl="ngModel" required>
       </div>
       <div class="col-6">
-        <input class="form-control mr-sm-2" id="Description" type="name" placeholder="Description" aria-label="Description">
+        <input class="form-control mr-sm-2" id="Description" type="name" placeholder="Description" aria-label="Description" [(ngModel)]="this.track.description" name="DESCRIPTION" #ctrl="ngModel" required>
       </div>
       <div class="col-2">
           <span *ngIf = "!canBeSaved; else submit" class="d-inline-block" popoverTitle="Can't save track" [ngbPopover]="getPopoverContent()" triggers="mouseenter:mouseleave" placement="bottom" container="body">
               <button type="submit" class="btn btn-primary" style="pointer-events: none;" disabled>Save</button>
           </span>
           <ng-template #submit>
-            <button type="submit" class="btn btn-primary" routerLink="/admin">Save</button>
+            <button (click) = "saveTrack()" type="submit" class="btn btn-primary" routerLink="/admin">Save</button>
           </ng-template>
       </div>
     </div>

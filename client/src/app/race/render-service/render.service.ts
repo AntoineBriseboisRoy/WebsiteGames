@@ -140,6 +140,7 @@ export class RenderService {
 
         return mesh;
     }
+
     private createFloorMesh(): Mesh {
         const floorTexture: Texture = new TextureLoader().load("/assets/camero/floor-texture.jpg");
         floorTexture.wrapS = floorTexture.wrapT = RepeatWrapping;
