@@ -25,7 +25,7 @@ import { PlayerMenuComponent } from "./crossword/player-menu/player-menu.compone
 import { MultiplayerMenuComponent } from "./crossword/multiplayer-menu/multiplayer-menu.component";
 import { MongoQueryService } from "./mongo-query.service";
 import { SocketIoService } from "./crossword/socket-io.service";
-import { WaitingGamesService } from "./crossword/multiplayer-menu/waiting-games.service";
+import { MultiplayerGamesService } from "./crossword/multiplayer-menu/multiplayer-games.service";
 
 @NgModule({
     declarations: [
@@ -55,8 +55,8 @@ import { WaitingGamesService } from "./crossword/multiplayer-menu/waiting-games.
         MongoQueryService,
         GridService,
         WordTransmitterService,
-        SocketIoService,
-        WaitingGamesService
+        MultiplayerGamesService,
+        SocketIoService
     ],
     bootstrap: [AppComponent]
 })

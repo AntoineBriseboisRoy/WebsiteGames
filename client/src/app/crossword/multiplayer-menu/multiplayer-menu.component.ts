@@ -2,8 +2,8 @@ import { Component } from "@angular/core";
 import { SocketIoService } from "../socket-io.service";
 import { Subject } from "rxjs/Subject";
 import { INewGame } from "../../../../../common/interfaces/INewGame";
-import { WaitingGamesService } from "./waiting-games.service";
 import { Difficulty } from "../../constants";
+import { MultiplayerGamesService } from "./multiplayer-games.service";
 
 @Component({
     selector: "app-multiplayer-menu",
@@ -13,15 +13,15 @@ import { Difficulty } from "../../constants";
 export class MultiplayerMenuComponent {
     public username: string;
     private gamesService: Subject<INewGame>;
-    public constructor(private sokectService: SocketIoService, public waitingGames: WaitingGamesService) {
-        this.gamesService = this.sokectService.connect();
-        this.gamesService.subscribe((msg: INewGame) => {
-            console.log(msg);
+    public constructor(private socketService: SocketIoService, public waitingGames: MultiplayerGamesService) {
+        this.gamesService = this.socketService.connect();
+        this.gamesService.subscribe((newGame: INewGame) => {
+            this.waitingGames.push(newGame);
         });
     }
 
     public createNewGame(): void {
-        this.waitingGames.pushNewGame({ userCreator: this.username, difficulty: Difficulty.Easy });
+        this.waitingGames.push({ userCreator: this.username, difficulty: Difficulty.Easy });
         this.gamesService.next({ userCreator: this.username, difficulty: Difficulty.Easy });
     }
 }

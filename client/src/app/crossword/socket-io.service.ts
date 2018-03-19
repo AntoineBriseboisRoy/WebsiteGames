@@ -4,16 +4,17 @@ import { Subject } from "rxjs/Subject";
 import { Observer } from "rxjs/Observer";
 import { Observable } from "rxjs/Observable";
 import { INewGame } from "../../../../common/interfaces/INewGame";
-import { WaitingGamesService } from "./multiplayer-menu/waiting-games.service";
+import { MultiplayerGamesService } from "./multiplayer-menu/multiplayer-games.service";
 
 @Injectable()
 export class SocketIoService {
     private socket: SocketIOClient.Socket;
-    public constructor(private waitingGameService: WaitingGamesService) { }
+    public constructor(private multiplayerGames: MultiplayerGamesService) { }
 
     public connect(): Subject<INewGame> {
         this.socket = io("http://localhost:3000/");
 
+        this.socket.on("connect", () =>  this.multiplayerGames.init());
         // observer subscribes to an Observable. Then that observer reacts to whatever
         // item or sequence of items the Observable emits.
 
@@ -33,7 +34,6 @@ export class SocketIoService {
         const observable: Observable<INewGame> = new Observable<INewGame>((obs) => {
             // ajouter à la liste de parties en attente d'un autre joueur
             this.socket.on("join-game", (data: INewGame) => {
-                this.waitingGameService.pushNewGame(data);
                 obs.next(data);
             });
             // ?? pas sûre

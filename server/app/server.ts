@@ -5,6 +5,7 @@ import { injectable, inject } from "inversify";
 import { IServerAddress } from "./iserver.address";
 import * as io from "socket.io";
 import { INewGame } from "../../common/interfaces/INewGame";
+import { WaitingGamesService } from "./Services/Multiplayer-menu-service/waiting-games.service";
 
 @injectable()
 export class Server {
@@ -29,8 +30,9 @@ export class Server {
         this.socketIo.on("connection", (socket: SocketIO.Socket) => {
             console.log("Connected");
             socket.on("new-game", (data: string) => {
-                const subject: INewGame = JSON.parse(data);
-                socket.broadcast.emit("join-game", subject);
+                const game: INewGame = JSON.parse(data);
+                WaitingGamesService.Instance.pushNewGame(game);
+                socket.broadcast.emit("join-game", game);
             });
             socket.on("disconnect", () => {
                 console.log("Disconnected");
