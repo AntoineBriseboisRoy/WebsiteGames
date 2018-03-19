@@ -35,7 +35,7 @@ div {
     right: 7%;
 }
 
-.rpm {
+#rpm-background {
     position: fixed;
     bottom: 15%;
     right: 1%;
@@ -45,12 +45,16 @@ div {
     background: rgba(64, 64, 64, 0.5);
 }
 
-#rpm-background {
+#rpm-bar {
     position: fixed;
     bottom: 15%;
     right: 1%;
     height: 3%;
     background: rgb(253, 192, 47);
+}
+
+#rpm-text {
+    font-size: 2vh;
 }
 
 #lap {
@@ -80,12 +84,9 @@ div {
 }
 
 #time {
-    position: fixed;
     font-size: 3vh;
     top: 4%;
     left: 1%;
-    z-index: 1;
-    color: rgb(253, 192, 47);
 }
 
 #lap-time-background {
@@ -99,12 +100,9 @@ div {
 }
 
 #lap-time {
-    position: fixed;
     font-size: 3vh;
     top: 10%;
     left: 1%;
-    z-index: 1;
-    color: rgb(253, 192, 47);
 }
 
 #best-time-background {
@@ -118,10 +116,7 @@ div {
 }
 
 #best-time {
-    position: fixed;
     font-size: 3vh;
     top: 16%;
     left: 1%;
-    z-index: 1;
-    color: rgb(253, 192, 47);
 }

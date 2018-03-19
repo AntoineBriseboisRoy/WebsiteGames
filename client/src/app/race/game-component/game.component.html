@@ -16,8 +16,8 @@
     <span id="best-time" class="text"> Best time: 00:00:00 </span>
   </span>
 
-  <div class="rpm">
-    <div id="rpm-background"  [style.width.%]="this.rpmRatio()"></div>
-    <span class="justify-content-center d-flex position-absolute w-100">{{this.car.rpm | number:'2.0-0'}} RPM</span>
+  <div id="rpm-background">
+    <div id="rpm-bar"  [style.width.%]="this.rpmRatio()"></div>
+    <span id="rpm-text" class="justify-content-center d-flex position-absolute w-100">{{this.car.rpm | number:'2.0-0'}} RPM</span>
   </div>
 </div>
