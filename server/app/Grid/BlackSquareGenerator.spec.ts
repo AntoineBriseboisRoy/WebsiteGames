@@ -3,7 +3,7 @@ import { BlackSquareGenerator } from "./BlackSquareGenerator";
 import { STANDARD_SIDE_SIZE, PERCENTAGE_BLACK_SQUARES, BLACKSQUARE_CHARACTER, MIN_LETTERS_FOR_WORD,
          MIN_WORDS_PER_LINE } from "./Constants";
 
-describe.only("Verifying BlackSquare generation.", () => {
+describe("Verifying BlackSquare generation.", () => {
     it ("Should have the correct percentage of BlackSquares.", () => {
         const grid: string[][] = new BlackSquareGenerator(STANDARD_SIDE_SIZE, PERCENTAGE_BLACK_SQUARES).generateBlackSquares();
         let nBlackSquares: number = 0;

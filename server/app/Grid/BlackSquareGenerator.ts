@@ -2,7 +2,7 @@ import { ICoordXY } from "../../../common/interfaces/ICoordXY";
 import { Orientation, IWord } from "../../../common/interfaces/IWord";
 import { StringService } from "./StringService";
 import { EMPTY_SQUARE, BLACKSQUARE_CHARACTER, MIN_LETTERS_FOR_WORD, MIN_WORDS_PER_LINE,
-         MAX_WORDS_PER_LINE, MAX_BLACKSQUARE_RATIO } from "./Constants";
+         MAX_WORDS_PER_LINE } from "./Constants";
 export class BlackSquareGenerator {
 
     private blackSquares: ICoordXY[];
@@ -40,7 +40,6 @@ export class BlackSquareGenerator {
                     this.grid[tempPosition.x][tempPosition.y] = BLACKSQUARE_CHARACTER;
                 }
             }
-            console.log(this.grid);
         } while (!this.verifyBlackSquareGrid());
 
         return this.grid;
@@ -156,19 +155,15 @@ export class BlackSquareGenerator {
                 ++nLettersRow;
             } else if (this.grid[i][row] === BLACKSQUARE_CHARACTER) {
                 if (nLettersRow >= MIN_LETTERS_FOR_WORD) {
-                    wordsToFill.push({ position: { x: i - nLettersRow, y: row } as ICoordXY,
-                                       orientation: Orientation.Horizontal,
-                                       content: StringService.generateDefaultString(nLettersRow),
-                                       definition: "" } as IWord);
+                    wordsToFill.push(this.createEmptyWord(i - nLettersRow, row,
+                                                          Orientation.Horizontal, nLettersRow));
                 }
                 nLettersRow = 0;
             }
         }
         if (nLettersRow >= MIN_LETTERS_FOR_WORD) {
-            wordsToFill.push({ position: { x: this.sideSize - nLettersRow, y: row } as ICoordXY,
-                               orientation: Orientation.Horizontal,
-                               content: StringService.generateDefaultString(nLettersRow),
-                               definition: "" } as IWord);
+            wordsToFill.push(this.createEmptyWord(this.sideSize - nLettersRow, row,
+                                                  Orientation.Horizontal, nLettersRow));
 
         }
 
@@ -183,23 +178,25 @@ export class BlackSquareGenerator {
                 ++nLettersCol;
             } else if (this.grid[column][i] === BLACKSQUARE_CHARACTER) {
                 if (nLettersCol >= MIN_LETTERS_FOR_WORD) {
-                    wordsToFill.push({ position: { x: column, y: i - nLettersCol } as ICoordXY,
-                                       orientation: Orientation.Vertical,
-                                       content: StringService.generateDefaultString(nLettersCol),
-                                       definition: "" } as IWord);
-                }
+                    wordsToFill.push(this.createEmptyWord(i - nLettersCol, column,
+                                                          Orientation.Vertical, nLettersCol));
+}
                 nLettersCol = 0;
             }
         }
         if (nLettersCol >= MIN_LETTERS_FOR_WORD) {
-            wordsToFill.push({ position: { x: column, y: this.sideSize - nLettersCol } as ICoordXY,
-                               orientation: Orientation.Vertical,
-                               content: StringService.generateDefaultString(nLettersCol),
-                               definition: "" } as IWord);
-
+            wordsToFill.push(this.createEmptyWord(this.sideSize - nLettersCol, column,
+                                                  Orientation.Vertical, nLettersCol));
         }
 
         return wordsToFill;
+    }
+
+    private createEmptyWord(x: number, y: number, orientation: Orientation, length: number): IWord {
+        return { position: { x: x, y: y } as ICoordXY,
+                 orientation: orientation,
+                 content: StringService.generateDefaultString(length),
+                 definition: "" } as IWord;
     }
 
     private correctNumberWordsPerRowColumn(): boolean {
