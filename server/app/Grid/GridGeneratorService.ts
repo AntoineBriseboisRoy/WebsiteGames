@@ -4,19 +4,10 @@ import { ICoordXY } from "../../../common/interfaces/ICoordXY";
 
 export class GridGeneratorService {
 
-    private static instance: GridGeneratorService;
     private grid: Grid;
 
-    private constructor() {
+    public constructor() {
         this.grid = new Grid();
-    }
-
-    public static get Instance(): GridGeneratorService {
-        if (!this.instance) {
-            this.instance = new GridGeneratorService();
-        }
-
-        return this.instance;
     }
 
     public get Grid(): string {

@@ -10,9 +10,8 @@ export class Grid {
     private words: IWord[];
 
     public constructor(private sideSize: number = STANDARD_SIDE_SIZE, private percentageOfBlackSquares: number = PERCENTAGE_BLACK_SQUARES) {
-        this.gridContent = BlackSquareGenerator.getInstance(this.sideSize, this.percentageOfBlackSquares).generateBlackSquares();
-        GridFiller.Instance.fillWords(this.gridContent, this.sideSize);
-        this.words = GridFiller.Instance.Words;
+        this.gridContent = new BlackSquareGenerator(this.sideSize, this.percentageOfBlackSquares).generateBlackSquares();
+        this.words = new GridFiller().fillWords(this.gridContent, this.sideSize);
         this.cleanGrid();
      }
 

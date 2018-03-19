@@ -6,32 +6,23 @@ import { EMPTY_SQUARE, MIN_LETTERS_FOR_WORD, NOT_FOUND, BLACKSQUARE_CHARACTER, M
 
 export class GridFiller {
 
-    private static instance: GridFiller;
     private grid: string[][];
     private words: IWord[];
     private wordsLengths: IWord[];
     private sideSize: number;
 
-    private constructor() {
+    public constructor() {
         this.sideSize = 0;
         this.grid = new Array<Array<string>>();
         this.words = new Array<IWord>();
         this.wordsLengths = new Array<IWord>();
     }
 
-    public static get Instance(): GridFiller {
-        if (this.instance === null || this.instance === undefined) {
-            this.instance = new GridFiller();
-        }
-
-        return this.instance;
-    }
-
     public get Words(): IWord[] {
         return this.words;
     }
 
-    public fillWords(grid: string[][], sideSize: number): string[][] {
+    public fillWords(grid: string[][], sideSize: number): IWord[] {
         this.sideSize = sideSize;
         this.grid = grid;
 
@@ -41,7 +32,7 @@ export class GridFiller {
         this.fillRemainingSpacesWithBlacksquares();
         console.log(this.grid);
 
-        return this.grid;
+        return this.words;
     }
 
     private sortWordLengths(): void {

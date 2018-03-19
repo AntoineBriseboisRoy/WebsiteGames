@@ -5,28 +5,14 @@ import { EMPTY_SQUARE, BLACKSQUARE_CHARACTER, MIN_LETTERS_FOR_WORD, MIN_WORDS_PE
          MAX_WORDS_PER_LINE, MAX_BLACKSQUARE_RATIO } from "./Constants";
 export class BlackSquareGenerator {
 
-    private static instance: BlackSquareGenerator;
     private blackSquares: ICoordXY[];
     private grid: string[][];
     private nTotalWords: number;
     private connectedWordsFound: IWord[];
 
-    private constructor(private sideSize: number, private percentageOfBlackSquares: number) {
+    public constructor(private sideSize: number, private percentageOfBlackSquares: number) {
         this.blackSquares = new Array<ICoordXY>();
         this.grid = this.initializeEmptyGrid();
-    }
-
-    public static getInstance(sideSize: number, percentageOfBlackSquares: number): BlackSquareGenerator {
-        if (this.mustCreateNewInstance(sideSize, percentageOfBlackSquares)) {
-            this.instance = new BlackSquareGenerator(sideSize, percentageOfBlackSquares);
-        }
-
-        return this.instance;
-    }
-
-    private static mustCreateNewInstance(sideSize: number, percentageOfBlackSquares: number): boolean {
-        return this.instance === null || this.instance === undefined || this.instance.sideSize !== sideSize ||
-               this.instance.percentageOfBlackSquares !== percentageOfBlackSquares;
     }
 
     private initializeEmptyGrid(): string[][] {
