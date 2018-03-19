@@ -11,9 +11,9 @@
       <h5 class="card-title">{{game.userCreator}} is waiting for an opponent : {{game.difficulty}}</h5>
       <form class="form-inline ">
         <div class="form-group mx-sm-3 mb-2">
-          <input class="form-control" placeholder="Username">
+          <input class="form-control" placeholder="Username" [disabled]="this.waitingGames.isWaiting()">
         </div>
-        <button type="submit" class="btn btn-primary mb-2">Start game!</button>
+        <button type="submit" class="btn btn-primary mb-2" [disabled]="this.waitingGames.isWaiting()">Start game!</button>
       </form>
     </div>
   </div>

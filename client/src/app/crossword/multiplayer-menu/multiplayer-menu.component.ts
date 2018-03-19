@@ -42,11 +42,13 @@ export class MultiplayerMenuComponent {
     }
 
     public hasCompletedForm(): boolean {
-        return this.difficulty !== undefined && this.username !== undefined && this.username !== "";
+        return this.difficulty !== undefined && this.username !== undefined && this.username !== "" &&
+               !this.waitingGames.isWaiting();
     }
 
     public createNewGame(): void {
-        this.waitingGames.push({ userCreator: this.username, difficulty: this.difficulty });
-        this.gamesService.next({ userCreator: this.username, difficulty: this.difficulty });
+        this.waitingGames.createdGame = { userCreator: this.username, difficulty: this.difficulty };
+        this.waitingGames.push(this.waitingGames.createdGame);
+        this.gamesService.next(this.waitingGames.createdGame);
     }
 }

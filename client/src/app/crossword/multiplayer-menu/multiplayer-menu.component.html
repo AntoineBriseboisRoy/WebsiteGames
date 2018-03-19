@@ -2,18 +2,26 @@
   <div class="container">
     <div class="container">
       <div class="row">
-        <div class="col-6">
+        <div class="col-6" align="center">
           <h2 id="main-title" class="text-center">Create a game</h2>
           <h4 class="mt-5">Choose a difficulty</h4>
           <div class="text-center" (click)="onButtonGroupClick($event)">
-            <button type="button" id="easy-button" class="btn btn-lg btn-outline-success background btn-block left-side" value="Easy" on-click="difficultySelected($event.currentTarget)">Easy</button>
-            <button type="button" id="normal-button" class="btn btn-lg btn-outline-warning background btn-block left-side" value="Normal" on-click="difficultySelected($event.currentTarget)">Normal</button>
-            <button type="button" id="hard-button" class="btn btn-lg btn-outline-danger background btn-block left-side" value="Hard" on-click="difficultySelected($event.currentTarget)">Hard</button>
+            <button type="button" id="easy-button" class="btn btn-lg btn-outline-success background button-layout" value="Easy" on-click="difficultySelected($event.currentTarget)" [disabled]="this.waitingGames.isWaiting()">Easy</button>
+            <button type="button" id="normal-button" class="btn btn-lg btn-outline-warning background button-layout" value="Normal" on-click="difficultySelected($event.currentTarget)" [disabled]="this.waitingGames.isWaiting()">Normal</button>
+            <button type="button" id="hard-button" class="btn btn-lg btn-outline-danger background button-layout" value="Hard" on-click="difficultySelected($event.currentTarget)" [disabled]="this.waitingGames.isWaiting()">Hard</button>
           </div>
           <h4 class="mt-5">Enter a username</h4>
-          <input class="form-control left-side" placeholder="username" [(ngModel)]="username">
+          <input class="form-control form-username" placeholder="username" [(ngModel)]="username" [disabled]="this.waitingGames.isWaiting()">
           <div class="text-center mt-2">
-            <button type="button" class="btn btn-lg btn-primary btn-block left-side" on-click="createNewGame()" [disabled]="!hasCompletedForm()">Create game</button>
+            <button type="button" class="btn btn-lg btn-primary button-layout" on-click="createNewGame()" [disabled]="!hasCompletedForm()">Create game</button>
+          </div>
+          <div *ngIf="this.waitingGames.createdGame">
+            <div class="alert alert-danger my-3 left-side" role="alert">
+              <button type="button" class="close" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+              <strong>Waiting for an opponent...</strong>
+            </div>
           </div>
         </div>
         <div class="col-6 text-center">

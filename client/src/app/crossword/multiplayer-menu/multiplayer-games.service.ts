@@ -9,6 +9,7 @@ import { INewGame } from "../../../../../common/interfaces/INewGame";
 export class MultiplayerGamesService {
     private readonly BASE_URL: string;
     private games: Array<INewGame>;
+    public createdGame: INewGame;
 
     public constructor(private http: HttpClient) {
         this.BASE_URL = "http://localhost:3000/";
@@ -21,8 +22,8 @@ export class MultiplayerGamesService {
         });
     }
 
-    public pop(game: INewGame): void {
-        this.games.splice(this.games.indexOf(game), 1);
+    public pop(): void {
+        this.games.splice(this.games.indexOf(this.createdGame), 1);
     }
 
     public push(game: INewGame): void {
@@ -31,6 +32,10 @@ export class MultiplayerGamesService {
 
     public get Games(): Array<INewGame> {
         return this.games;
+    }
+
+    public isWaiting(): boolean {
+        return this.createdGame !== undefined;
     }
 
     private getGamesServer(): Observable<Array<INewGame>> {
