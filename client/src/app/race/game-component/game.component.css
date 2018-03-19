@@ -9,3 +9,33 @@ ul, li {
     top: 40px;
     color: orange;
 }
+
+#speedBackground {
+    position: fixed;
+    bottom: 0px;
+    right: 0px;
+    width: 30%;
+    height: 15%;
+}
+
+#speed {
+    position: fixed;
+    font-size: 8vh;
+    bottom: 2%;
+    right: 15%;
+    z-index: 1;
+    color: yellow;
+}
+
+#speed-unit {
+    position: fixed;
+}
+
+#gear {
+    position: fixed;
+    font-size: 8vh;
+    bottom: 2%;
+    right: 6%;
+    z-index: 1;
+    color: yellow;
+}
