@@ -3,39 +3,36 @@ div {
     height: 800px;
 }
 
+.text {
+    position: fixed;
+    z-index: 1;
+    color: rgb(253, 192, 47);
+}
+
 #speed-background {
     position: fixed;
-    bottom: 0px;
-    right: 0px;
+    bottom: 0%;
+    right: 0%;
     width: 35%;
     height: 15%;
 }
 
 #speed {
-    position: fixed;
     font-size: 8vh;
     bottom: 2%;
     right: 17%;
-    z-index: 1;
-    color: rgb(253, 192, 47);;
 }
 
 #speed-unit {
-    position: fixed;
     font-size: 3vh;
     bottom: 7%;
     right: 13%;
-    z-index: 1;
-    color: rgb(253, 192, 47);
 }
 
 #gear {
-    position: fixed;
     font-size: 8vh;
     bottom: 2%;
     right: 7%;
-    z-index: 1;
-    color: rgb(253, 192, 47);
 }
 
 .rpm {
@@ -57,12 +54,9 @@ div {
 }
 
 #lap {
-    position: fixed;
     font-size: 8vh;
     top: 4%;
     right: 7%;
-    z-index: 1;
-    color: rgb(253, 192, 47);
 }
 
 #lap-background {
