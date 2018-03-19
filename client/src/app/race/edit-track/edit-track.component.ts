@@ -151,6 +151,6 @@ export class EditTrackComponent implements OnInit {
     }
 
     private saveTrack(): void {
-        this.mongoQueryService.postTrack(this.track);
+        this.mongoQueryService.putTrack(this.track.name, this.track);
     }
 }
