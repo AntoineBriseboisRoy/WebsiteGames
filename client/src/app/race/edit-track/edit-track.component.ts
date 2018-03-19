@@ -71,7 +71,6 @@ export class EditTrackComponent implements OnInit {
     }
 
     private initializeMouseEvents(): void {
-        console.log(this.track);
         this.mouseManagerService.init(this.track.points);
         this.Canvas.addEventListener("mousedown", (event: MouseEvent) => {
             if (event.button === RIGHT_MOUSE_BUTTON) {

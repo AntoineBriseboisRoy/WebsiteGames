@@ -17,6 +17,7 @@ export class MouseManagerService {
      }
 
     public init(points: Point[]): void {
+        this.trackComplete = (points.length !== 0);
         this.points = points;
     }
 
