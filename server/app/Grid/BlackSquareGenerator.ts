@@ -1,8 +1,8 @@
 import { BlackSquare } from "./BlackSquare";
 import { ICoordXY } from "../../../common/interfaces/ICoordXY";
-import * as cst from "./Constants";
 import { Orientation, IWord } from "../../../common/interfaces/IWord";
 import { StringService } from "./StringService";
+import { EMPTY_SQUARE, BLACKSQUARE_CHARACTER, MIN_LETTERS_FOR_WORD, MIN_WORDS_PER_LINE, MAX_WORDS_PER_LINE, MAX_BLACKSQUARE_RATIO } from "./Constants";
 export class BlackSquareGenerator {
 
     private static instance: BlackSquareGenerator;
@@ -34,7 +34,7 @@ export class BlackSquareGenerator {
         for (let i: number = 0; i < this.sideSize; i++) {
             emptyGrid[i] = new Array<string>();
             for (let j: number = 0; j < this.sideSize; j++) {
-                emptyGrid[i][j] = cst.EMPTY_SQUARE;
+                emptyGrid[i][j] = EMPTY_SQUARE;
             }
         }
 
@@ -50,7 +50,7 @@ export class BlackSquareGenerator {
                 for (let j: number = 0; j < numberOfBlackSquaresPerLine; j++) {
                     const tempPosition: ICoordXY = this.randomPositionGenerator();
                     this.blackSquares.push(new BlackSquare(tempPosition));
-                    this.grid[tempPosition.x][tempPosition.y] = cst.BLACKSQUARE_CHARACTER;
+                    this.grid[tempPosition.x][tempPosition.y] = BLACKSQUARE_CHARACTER;
                 }
             }
         } while (!this.verifyBlackSquareGrid());
@@ -59,7 +59,7 @@ export class BlackSquareGenerator {
     }
 
     private isOccupiedPosition(position: ICoordXY): boolean {
-        return !(this.grid[position.x][position.y] === cst.EMPTY_SQUARE);
+        return !(this.grid[position.x][position.y] === EMPTY_SQUARE);
     }
 
     private randomIntGenerator(): number {
@@ -89,18 +89,18 @@ export class BlackSquareGenerator {
     private findFirstWord(): { coord: ICoordXY, direction: Orientation } {
         for (let i: number = 0; i < this.sideSize; ++i) {
             for (let j: number = 0; j < this.sideSize; ++j) {
-                if (this.grid[i][j] === cst.EMPTY_SQUARE) {
+                if (this.grid[i][j] === EMPTY_SQUARE) {
                     let nLettersRow: number = 0;
-                    while (++nLettersRow + j < this.sideSize && this.grid[i][j + nLettersRow] === cst.EMPTY_SQUARE) {
-                        if (nLettersRow >= cst.MIN_LETTERS_FOR_WORD - 1) {
+                    while (++nLettersRow + j < this.sideSize && this.grid[i][j + nLettersRow] === EMPTY_SQUARE) {
+                        if (nLettersRow >= MIN_LETTERS_FOR_WORD - 1) {
                             return { coord: { x: Math.abs(Math.floor(i)),
                                               y: Math.abs(Math.floor(j))} as ICoordXY,
                                      direction: Orientation.Vertical };
                         }
                     }
                     let nLettersCol: number = 0;
-                    while (++nLettersCol + i < this.sideSize && this.grid[i + nLettersCol][j] === cst.EMPTY_SQUARE) {
-                        if (nLettersCol >= cst.MIN_LETTERS_FOR_WORD - 1) {
+                    while (++nLettersCol + i < this.sideSize && this.grid[i + nLettersCol][j] === EMPTY_SQUARE) {
+                        if (nLettersCol >= MIN_LETTERS_FOR_WORD - 1) {
                             return { coord: { x: Math.abs(Math.floor(i)),
                                               y: Math.abs(Math.floor(j))} as ICoordXY,
                                      direction: Orientation.Horizontal };
@@ -131,7 +131,7 @@ export class BlackSquareGenerator {
 
         if (currChar.direction === Orientation.Horizontal) {
             let i: number = currChar.coord.x;
-            while (--i >= 0 && this.grid[i][currChar.coord.y] === cst.EMPTY_SQUARE) {
+            while (--i >= 0 && this.grid[i][currChar.coord.y] === EMPTY_SQUARE) {
                 if (this.checkAdjacentSquares({ x: Math.abs(Math.floor(i)),
                                                 y: Math.abs(Math.floor(currChar.coord.y))} as ICoordXY,
                                               currChar.direction)) {
@@ -143,7 +143,7 @@ export class BlackSquareGenerator {
             currWordPosition = { x: Math.abs(Math.floor(i + 1)),
                                  y: Math.abs(Math.floor(currChar.coord.y))} as ICoordXY;
             i = currChar.coord.x;
-            while (++i < this.sideSize && this.grid[i][currChar.coord.y] === cst.EMPTY_SQUARE) {
+            while (++i < this.sideSize && this.grid[i][currChar.coord.y] === EMPTY_SQUARE) {
                 if (this.checkAdjacentSquares({ x: Math.abs(Math.floor(i)),
                                                 y: Math.abs(Math.floor(currChar.coord.y))} as ICoordXY,
                                               currChar.direction)) {
@@ -155,7 +155,7 @@ export class BlackSquareGenerator {
             currWordLength = i - currWordPosition.x;
         } else {
             let i: number = currChar.coord.y;
-            while (--i >= 0 && this.grid[currChar.coord.x][i] === cst.EMPTY_SQUARE) {
+            while (--i >= 0 && this.grid[currChar.coord.x][i] === EMPTY_SQUARE) {
                 if (this.checkAdjacentSquares({ x: Math.abs(Math.floor(currChar.coord.x)),
                                                 y: Math.abs(Math.floor(i))} as ICoordXY,
                                               currChar.direction)) {
@@ -167,7 +167,7 @@ export class BlackSquareGenerator {
             currWordPosition = { x: Math.abs(Math.floor(currChar.coord.x)),
                                  y: Math.abs(Math.floor(i + 1))} as ICoordXY;
             i = currChar.coord.y;
-            while (++i < this.sideSize && this.grid[currChar.coord.x][i] === cst.EMPTY_SQUARE) {
+            while (++i < this.sideSize && this.grid[currChar.coord.x][i] === EMPTY_SQUARE) {
                 if (this.checkAdjacentSquares({ x: Math.abs(Math.floor(currChar.coord.x)),
                                                 y: Math.abs(Math.floor(i))} as ICoordXY,
                                               currChar.direction)) {
@@ -211,23 +211,23 @@ export class BlackSquareGenerator {
 
     private checkAdjacentSquares(currSquare: ICoordXY, orientation: Orientation): boolean {
         if (orientation === Orientation.Vertical) {
-            if (currSquare.x < this.sideSize - 1 && this.grid[currSquare.x + 1][currSquare.y] === cst.EMPTY_SQUARE) {
+            if (currSquare.x < this.sideSize - 1 && this.grid[currSquare.x + 1][currSquare.y] === EMPTY_SQUARE) {
                 if (!this.charBelongsToAlreadyCheckedWord({ coord: currSquare, direction: Orientation.Horizontal })) {
                     return true;
                 }
             }
-            if (currSquare.x > 0 && this.grid[currSquare.x - 1][currSquare.y] === cst.EMPTY_SQUARE) {
+            if (currSquare.x > 0 && this.grid[currSquare.x - 1][currSquare.y] === EMPTY_SQUARE) {
                 if (!this.charBelongsToAlreadyCheckedWord({ coord: currSquare, direction: Orientation.Horizontal })) {
                     return true;
                 }
             }
         } else {
-            if (currSquare.y < this.sideSize - 1 && this.grid[currSquare.x][currSquare.y + 1] === cst.EMPTY_SQUARE) {
+            if (currSquare.y < this.sideSize - 1 && this.grid[currSquare.x][currSquare.y + 1] === EMPTY_SQUARE) {
                 if (!this.charBelongsToAlreadyCheckedWord({ coord: currSquare, direction: Orientation.Vertical })) {
                     return true;
                 }
             }
-            if (currSquare.y > 0 && this.grid[currSquare.x][currSquare.y - 1] === cst.EMPTY_SQUARE) {
+            if (currSquare.y > 0 && this.grid[currSquare.x][currSquare.y - 1] === EMPTY_SQUARE) {
                 if (!this.charBelongsToAlreadyCheckedWord({ coord: currSquare, direction: Orientation.Vertical })) {
                     return true;
                 }
@@ -244,31 +244,31 @@ export class BlackSquareGenerator {
         for (let i: number = 0; i < this.sideSize; ++i) {
             let nLettersRow: number = 0, nLettersCol: number = 0, nWordsCol: number = 0, nWordsRow: number = 0;
             for (let j: number = 0; j < this.sideSize; ++j) {
-                if (this.grid[i][j] === cst.EMPTY_SQUARE) {
+                if (this.grid[i][j] === EMPTY_SQUARE) {
                     ++nLettersCol;
                 } else {
-                    if (nLettersCol >= cst.MIN_LETTERS_FOR_WORD) {
+                    if (nLettersCol >= MIN_LETTERS_FOR_WORD) {
                         ++nWordsCol;
                     }
                     nLettersCol = 0;
                 }
-                if (this.grid[j][i] === cst.EMPTY_SQUARE) {
+                if (this.grid[j][i] === EMPTY_SQUARE) {
                     ++nLettersRow;
                 } else {
-                    if (nLettersRow >= cst.MIN_LETTERS_FOR_WORD) {
+                    if (nLettersRow >= MIN_LETTERS_FOR_WORD) {
                         ++nWordsRow;
                     }
                     nLettersRow = 0;
                 }
             }
-            if (nLettersCol >= cst.MIN_LETTERS_FOR_WORD) {
+            if (nLettersCol >= MIN_LETTERS_FOR_WORD) {
                 ++nWordsCol;
             }
-            if (nLettersRow >= cst.MIN_LETTERS_FOR_WORD) {
+            if (nLettersRow >= MIN_LETTERS_FOR_WORD) {
                 ++nWordsRow;
             }
-            if (!(nWordsRow >= cst.MIN_WORDS_PER_LINE && nWordsRow <= cst.MAX_WORDS_PER_LINE
-                && nWordsCol >= cst.MIN_WORDS_PER_LINE && nWordsCol <= cst.MAX_WORDS_PER_LINE)) {
+            if (!(nWordsRow >= MIN_WORDS_PER_LINE && nWordsRow <= MAX_WORDS_PER_LINE
+                && nWordsCol >= MIN_WORDS_PER_LINE && nWordsCol <= MAX_WORDS_PER_LINE)) {
                     correctRatio = false;
             }
             this.nTotalWords += nWordsRow + nWordsCol;
@@ -281,10 +281,10 @@ export class BlackSquareGenerator {
         for (let i: number = 0; i < this.sideSize; i++) {
             let nBlackSquaresRow: number = 0, nBlackSquaresCol: number = 0;
             for (let j: number = 0; j < this.sideSize; j++) {
-                if (this.grid[i][j] === cst.BLACKSQUARE_CHARACTER) {
+                if (this.grid[i][j] === BLACKSQUARE_CHARACTER) {
                     ++nBlackSquaresRow;
                 }
-                if (this.grid[j][i] === cst.BLACKSQUARE_CHARACTER) {
+                if (this.grid[j][i] === BLACKSQUARE_CHARACTER) {
                     ++nBlackSquaresCol;
                 }
             }
@@ -297,7 +297,7 @@ export class BlackSquareGenerator {
     }
 
     private tooManyBlackSquares(nBlackSquaresCol: number, nBlackSquaresRow: number): boolean {
-        return nBlackSquaresCol / this.sideSize > cst.MAX_BLACKSQUARE_RATIO || nBlackSquaresRow / this.sideSize > cst.MAX_BLACKSQUARE_RATIO;
+        return nBlackSquaresCol / this.sideSize > MAX_BLACKSQUARE_RATIO || nBlackSquaresRow / this.sideSize > MAX_BLACKSQUARE_RATIO;
     }
 // tslint:disable-next-line:max-file-line-count
 }

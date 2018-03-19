@@ -1,8 +1,8 @@
 import { ICoordXY } from "../../../common/interfaces/ICoordXY";
-import * as cst from "./Constants";
 import { IWord, Orientation } from "../../../common/interfaces/IWord";
 import { DictionaryEntry, Constraint } from "./Interfaces";
 import { StringService } from "./StringService";
+import { EMPTY_SQUARE, MIN_LETTERS_FOR_WORD, NOT_FOUND, BLACKSQUARE_CHARACTER, MAX_WORD_QUERY_ATTEMPS, DICTIONNARY } from "./Constants";
 
 export class GridFiller {
 
@@ -78,20 +78,20 @@ export class GridFiller {
         for (let i: number = 0; i < this.sideSize; i++) {
             let nLettersCol: number = 0, nLettersRow: number = 0;
             for (let j: number = 0; j < this.sideSize; j++) {
-                if (this.grid[j][i] === cst.EMPTY_SQUARE) {
+                if (this.grid[j][i] === EMPTY_SQUARE) {
                     ++nLettersCol;
                 } else {
-                    if (nLettersCol >= cst.MIN_LETTERS_FOR_WORD) {
+                    if (nLettersCol >= MIN_LETTERS_FOR_WORD) {
                         this.wordsLengths.push({ position: { x: Math.abs(Math.floor(j - nLettersCol)), y: i } as ICoordXY,
                                                  orientation: Orientation.Horizontal,
                                                  content: StringService.generateDefaultString(nLettersCol), definition: ""} as IWord);
                     }
                     nLettersCol = 0;
                 }
-                if (this.grid[i][j] === cst.EMPTY_SQUARE) {
+                if (this.grid[i][j] === EMPTY_SQUARE) {
                     ++nLettersRow;
                 } else {
-                    if (nLettersRow >= cst.MIN_LETTERS_FOR_WORD) {
+                    if (nLettersRow >= MIN_LETTERS_FOR_WORD) {
                         this.wordsLengths.push( { position: { x: i, y:  Math.abs(Math.floor(j - nLettersRow)) } as ICoordXY,
                                                   orientation: Orientation.Vertical,
                                                   content: StringService.generateDefaultString(nLettersRow), definition: ""} as IWord);
@@ -99,12 +99,12 @@ export class GridFiller {
                     nLettersRow = 0;
                 }
             }
-            if (nLettersCol >= cst.MIN_LETTERS_FOR_WORD) {
+            if (nLettersCol >= MIN_LETTERS_FOR_WORD) {
                 this.wordsLengths.push({ position: { x: Math.abs(Math.floor(this.sideSize - nLettersCol)), y: i } as ICoordXY,
                                          orientation: Orientation.Horizontal,
                                          content: StringService.generateDefaultString(nLettersCol), definition: "" } as IWord);
             }
-            if (nLettersRow >= cst.MIN_LETTERS_FOR_WORD) {
+            if (nLettersRow >= MIN_LETTERS_FOR_WORD) {
                 this.wordsLengths.push({ position: { x: i, y:  Math.abs(Math.floor(this.sideSize - nLettersRow)) } as ICoordXY,
                                          orientation: Orientation.Vertical,
                                          content: StringService.generateDefaultString(nLettersRow), definition: "" } as IWord);
@@ -119,7 +119,7 @@ export class GridFiller {
         const longestFreeSpace: IWord = this.wordsLengths.pop();
         const entry: DictionaryEntry = this.findWordsWithConstraints(longestFreeSpace.content.length,
                                                                      this.establishConstraints(longestFreeSpace));
-        if (entry.word === cst.NOT_FOUND) {
+        if (entry.word === NOT_FOUND) {
             this.wordsLengths.push(longestFreeSpace);
 
             return false;
@@ -150,7 +150,7 @@ export class GridFiller {
         const longestFreeSpace: IWord = this.wordsLengths.pop();
         const entry: DictionaryEntry = this.findWordsWithConstraints(longestFreeSpace.content.length,
                                                                      this.establishConstraints(longestFreeSpace));
-        if (entry.word === cst.NOT_FOUND) {
+        if (entry.word === NOT_FOUND) {
             this.wordsLengths.push(longestFreeSpace);
 
             return false;
@@ -172,8 +172,8 @@ export class GridFiller {
     private fillRemainingSpacesWithBlacksquares(): void {
         for (let i: number = 0; i < this.sideSize; ++i) {
             for (let j: number = 0; j < this.sideSize; ++j) {
-                if (this.grid[i][j] === cst.EMPTY_SQUARE) {
-                    this.grid[i][j] = cst.BLACKSQUARE_CHARACTER;
+                if (this.grid[i][j] === EMPTY_SQUARE) {
+                    this.grid[i][j] = BLACKSQUARE_CHARACTER;
                 }
             }
         }
@@ -253,7 +253,7 @@ export class GridFiller {
             const currentChar: string = (nextWord.orientation === Orientation.Vertical) ?
                 this.grid[nextWord.position.x][i + nextWord.position.y] :
                 this.grid[nextWord.position.x + i][nextWord.position.y];
-            if (currentChar !== cst.EMPTY_SQUARE) {
+            if (currentChar !== EMPTY_SQUARE) {
                 constraints.push({position: i, letter: currentChar});
             }
         }
@@ -267,11 +267,11 @@ export class GridFiller {
 
         do {
             word = this.searchWordsTemporaryDB(length, constraints);
-            if (word.word === cst.NOT_FOUND) {
+            if (word.word === NOT_FOUND) {
                 return word;
             }
             ++nAttempts;
-        } while (this.verifyAlreadyUsedWord(word.word) && nAttempts < cst.MAX_WORD_QUERY_ATTEMPS);
+        } while (this.verifyAlreadyUsedWord(word.word) && nAttempts < MAX_WORD_QUERY_ATTEMPS);
 
         return word;
     }
@@ -282,12 +282,12 @@ export class GridFiller {
 
     // Temporary, to be replaced when we can establish a proper link with the lexical service
     private searchWordsTemporaryDB(length: number, requiredLettersPositions: Constraint[]): DictionaryEntry {
-        const searchResults: DictionaryEntry[] = cst.DICTIONNARY.filter((entry: DictionaryEntry) => {
+        const searchResults: DictionaryEntry[] = DICTIONNARY.filter((entry: DictionaryEntry) => {
             return this.constraintFilter(entry, length, requiredLettersPositions); }
         );
         const randomInt: number =  Math.floor(Math.random() * searchResults.length);
 
-        return searchResults.length === 0 ? { word: cst.NOT_FOUND, definition: "", field3: "" } :
+        return searchResults.length === 0 ? { word: NOT_FOUND, definition: "", field3: "" } :
             {word: StringService.eliminateSpecialChars(StringService.replaceAccentedChars(searchResults[randomInt].word)).toUpperCase(),
              definition: searchResults[randomInt].definition, field3: ""};
     }
@@ -331,12 +331,12 @@ export class GridFiller {
             if (lastWord.orientation === Orientation.Horizontal) {
                 if (!this.letterBelongsOtherWord({ x: Math.abs(Math.floor(lastWord.position.x + i)),
                                                    y: Math.abs(Math.floor(lastWord.position.y))} as ICoordXY)) {
-                    this.grid[lastWord.position.x + i][lastWord.position.y] = cst.EMPTY_SQUARE;
+                    this.grid[lastWord.position.x + i][lastWord.position.y] = EMPTY_SQUARE;
                 }
             } else {
                 if (!this.letterBelongsOtherWord({ x: Math.abs(Math.floor(lastWord.position.x)),
                                                    y: Math.abs(Math.floor(lastWord.position.y + i))} as ICoordXY)) {
-                    this.grid[lastWord.position.x][lastWord.position.y + i] = cst.EMPTY_SQUARE;
+                    this.grid[lastWord.position.x][lastWord.position.y + i] = EMPTY_SQUARE;
                 }
             }
         }

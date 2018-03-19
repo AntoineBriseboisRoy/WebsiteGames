@@ -1,4 +1,4 @@
-import * as cst from "./Constants";
+import { EMPTY_SQUARE } from "./Constants";
 
 export class StringService {
 
@@ -22,7 +22,7 @@ export class StringService {
     public static generateDefaultString(length: number): string {
         let newStr: string = "";
         for (let i: number = 0; i < length; i++) {
-            newStr += (cst.EMPTY_SQUARE);
+            newStr += (EMPTY_SQUARE);
         }
 
         return newStr;
