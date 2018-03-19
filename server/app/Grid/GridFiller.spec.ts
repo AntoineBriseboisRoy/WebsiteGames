@@ -43,7 +43,7 @@ describe("Verifying 2x2 Grid (no black squares)", () => {
     }).timeout(EXTENDED_TIMEOUT);
 });
 
-describe.only("Verifying 10x10 Grid", () => {
+describe("Verifying 10x10 Grid", () => {
     it("Should be full (All letters except for blacksquares)", () => {
         let nEmptySquares: number = 0;
         const EXPECTED_EMPTY_SQUARES: number = 0;
