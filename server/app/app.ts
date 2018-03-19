@@ -16,9 +16,7 @@ export class Application {
 
     constructor(@inject(Types.Routes) private api: Routes) {
         this.app = express();
-
         this.config();
-
         this.routes();
     }
 

@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { Component } from "@angular/core";
 import { GameManager } from "../game-manager";
 import { Difficulty } from "../../constants";
 
@@ -7,7 +7,7 @@ import { Difficulty } from "../../constants";
     templateUrl: "./difficulty-menu.component.html",
     styleUrls: ["./difficulty-menu.component.css", "../game-view/crossword-view.component.css"]
 })
-export class DifficultyMenuComponent implements OnInit {
+export class DifficultyMenuComponent {
     public readonly title: string = "Choose wisely your difficulty, smarty!";
     public isActiveDifficulty: boolean;
 
@@ -16,9 +16,6 @@ export class DifficultyMenuComponent implements OnInit {
     public constructor() {
         this.gameManager = GameManager.Instance;
         this.isActiveDifficulty = false;
-    }
-
-    public ngOnInit(): void {
     }
 
     public onButtonGroupClick($event: Event): void {

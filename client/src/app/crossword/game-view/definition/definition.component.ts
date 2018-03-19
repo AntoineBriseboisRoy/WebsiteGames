@@ -12,10 +12,6 @@ import { ICell } from "../../interfaces/ICell";
 })
 
 export class DefinitionComponent implements OnInit {
-    public readonly horizontalDefinitions: string[];
-    public readonly verticalDefinitions: string[];
-    public readonly mockCheatModeWordsVertical: string[];
-    public readonly mockCheatModeWordsHorizontal: string[];
     public choosedDefinition: string;
     public cheatModeActive: boolean;
     public gridWordsHorizontal: Array<IGridWord>;
@@ -26,10 +22,6 @@ export class DefinitionComponent implements OnInit {
     private focusCell: FocusCell;
 
     public constructor(private wordTransmitterService: WordTransmitterService) {
-        this.horizontalDefinitions = [];
-        this.verticalDefinitions = [];
-        this.mockCheatModeWordsVertical = [];
-        this.mockCheatModeWordsHorizontal = [];
         this.choosedDefinition = "";
         this.cheatModeActive = false;
         this.gridWordsHorizontal = [];
@@ -79,7 +71,7 @@ export class DefinitionComponent implements OnInit {
             }
         }
 
-        return -1;
+        return 0;
     }
 
     private isAlreadyFoundWord(): boolean {

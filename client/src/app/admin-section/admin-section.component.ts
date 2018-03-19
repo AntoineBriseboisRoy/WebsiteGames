@@ -1,5 +1,6 @@
 import { Component, OnInit } from "@angular/core";
-import { Track, TrackType } from "./track";
+import { ITrack, TrackType } from "./../../../../common/interfaces/ITrack";
+import { MongoQueryService } from "../mongo-query.service";
 
 @Component({
     selector: "app-admin-section",
@@ -8,40 +9,27 @@ import { Track, TrackType } from "./track";
 })
 export class AdminSectionComponent implements OnInit {
 
-    private tracks: Track[];
-    private activeTrack: Track;
-
+    private tracks: ITrack[];
     public readonly title: string;
-    public constructor() {
-        this.tracks = new Array<Track>();
-        this.activeTrack = new Track("", "", 0, ["0:00"], TrackType.DESERT);
+    public constructor(private mongoQueryService: MongoQueryService) {
+        this.tracks = new Array<ITrack>();
         this.title = "Welcome to the admistration section!";
     }
 
     public ngOnInit(): void {
-        this.createArtificialTracks();
+        this.getITracksFromServer();
     }
 
-    public onButtonClick(name: string, action: string): void {
-        const selectedTrack: Track = this.tracks.find((track: Track) => {
-            return track.Name === name;
-        });
-        if (selectedTrack) {
-            this.activeTrack = selectedTrack;
-        }
-
-        this.showNotImplementedMessage(action); // This will be replaced by a call to the track editor.
+    public deleteTrack(name: string): void {
+        console.log(name);
+        this.mongoQueryService.deleteTrack(name);
     }
 
-    private showNotImplementedMessage(action: string): void {
-        alert("Can't yet " + action + " \"" + this.activeTrack.Name + "\" because the track editor is not implemented.");
-    }
-
-    private createArtificialTracks(): void {
-        this.tracks.push(new Track("Laguna Seca", "A great American track with a corkscrew.", 0, ["0:00"], TrackType.DESERT));
-        this.tracks.push(new Track("Monza", "The best Italian chicane.", 0, ["0:00"], TrackType.DESERT));
-        this.tracks.push(new Track("Nürburgring Nordschleife", "Pure German madness.", 0, ["0:00"], TrackType.DESERT));
-        this.tracks.push(new Track("La Sarthe", "24 hours of French adrenaline.", 0, ["0:00"], TrackType.DESERT));
-        this.tracks.push(new Track("Monaco", "A street racing circuit.", 0, ["0:00"], TrackType.DESERT));
+    private getITracksFromServer(): void {
+        this.mongoQueryService.getAllTracks()
+            .then((tracks: Array<ITrack>) => {
+                this.tracks = tracks;
+            })
+            .catch((err: Error) => { console.error(err); });
     }
 }

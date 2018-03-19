@@ -1,22 +1,22 @@
 <div id="canvas-container">
-  <canvas id="edit"></canvas>
+  <canvas id="edit" #mycanvas></canvas>
 </div>
 <nav class="navbar navbar-light bg-light" id="top-bar">
     <span class="navbar-brand mb-0 h1 col-sm-2">Edit a track!</span>
   <form class="navbar-form">
     <div class="form-row">
       <div class="col-4">
-        <input class="form-control mr-sm-2" id="Name" type="name" placeholder="Track Name" aria-label="Name">
+        <input class="form-control mr-sm-2" id="Name" type="name" placeholder="Track Name" aria-label="Name" [(ngModel)]="this.track.name" name="NAME" #ctrl="ngModel" required>
       </div>
       <div class="col-6">
-        <input class="form-control mr-sm-2" id="Description" type="name" placeholder="Description" aria-label="Description">
+        <input class="form-control mr-sm-2" id="Description" type="name" placeholder="Description" aria-label="Description" [(ngModel)]="this.track.description" name="DESCRIPTION" #ctrl="ngModel" required>
       </div>
       <div class="col-2">
-          <span *ngIf = "!canBeSaved; else submit" id="popover"class="d-inline-block" data-toggle="popover" data-trigger="hover" data-placement="bottom" (mouseover)="showPopover($event.currentTarget)">
+          <span *ngIf = "!canBeSaved; else submit" class="d-inline-block" popoverTitle="Can't save track" [ngbPopover]="getPopoverContent()" triggers="mouseenter:mouseleave" placement="bottom" container="body">
               <button type="submit" class="btn btn-primary" style="pointer-events: none;" disabled>Save</button>
           </span>
           <ng-template #submit>
-            <button type="submit" class="btn btn-primary" routerLink="/admin">Save</button>
+            <button (click) = "saveTrack()" type="submit" class="btn btn-primary" routerLink="/admin">Save</button>
           </ng-template>
       </div>
     </div>

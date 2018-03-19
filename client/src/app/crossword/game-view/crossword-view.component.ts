@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { Component } from "@angular/core";
 import { FocusCell } from "./focusCell";
 
 @Component({
@@ -6,12 +6,7 @@ import { FocusCell } from "./focusCell";
     templateUrl: "./crossword-view.component.html",
     styleUrls: ["./crossword-view.component.css"],
 })
-export class CrosswordViewComponent implements OnInit {
-
-    public constructor() { }
-
-    public ngOnInit(): void {
-    }
+export class CrosswordViewComponent {
 
     public clickHandler(event: Event): void {
         if (this.isOutsideClick(event)) {
