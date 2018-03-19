@@ -67,7 +67,7 @@ export class BlackSquareGenerator {
     }
 
     private verifyBlackSquareGrid(): boolean {
-        return this.correctBlackSquareRatio() && this.correctNumberWordsPerRowColumn() && this.allWordsConnected();
+        return this.correctNumberWordsPerRowColumn() && this.allWordsConnected();
     }
 
     private allWordsConnected(): boolean {
@@ -214,29 +214,5 @@ export class BlackSquareGenerator {
         }
 
         return correctRatio;
-    }
-
-    private correctBlackSquareRatio(): boolean {
-        for (let i: number = 0; i < this.sideSize; i++) {
-            let nBlackSquaresRow: number = 0, nBlackSquaresCol: number = 0;
-            for (let j: number = 0; j < this.sideSize; j++) {
-                if (this.grid[i][j] === BLACKSQUARE_CHARACTER) {
-                    ++nBlackSquaresRow;
-                }
-                if (this.grid[j][i] === BLACKSQUARE_CHARACTER) {
-                    ++nBlackSquaresCol;
-                }
-            }
-            if (this.tooManyBlackSquares(nBlackSquaresCol, nBlackSquaresRow)) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    private tooManyBlackSquares(nBlackSquaresCol: number, nBlackSquaresRow: number): boolean {
-        return nBlackSquaresCol / this.sideSize > MAX_BLACKSQUARE_RATIO
-               || nBlackSquaresRow / this.sideSize > MAX_BLACKSQUARE_RATIO;
     }
 }
