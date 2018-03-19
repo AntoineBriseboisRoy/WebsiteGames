@@ -1,10 +1,23 @@
 <div #container>
-  <span id="speed">{{this.renderService.car.speed.length() * 3.6 | number :'2.2-2'}}</span>>
+  <span id="speed">{{this.renderService.car.speed.length() * 3.6 | number :'2.2-2'}}</span>
+  <span id="speed-unit">km/h</span>
   <span id="gear">{{this.renderService.car.currentGear + 1}}</span>
-  <img id="speedBackground" src="../../assets/camero/HUD_Speed.png">
+  <span id="lap-background">
+    <span id="lap">Lap: 0 / 3</span>
+  </span>
+  <span id="time-background">
+    <span id="time">Total time: 00:00:00</span>
+  </span>
+  <span id="lap-time-background"> 
+    <span id="lap-time"> Lap time: 00:00:00</span>
+  </span>
+  <span id="best-time-background">
+    <span id="best-time"> Best time: 00:00:00 </span>
+  </span>
+  <img id="speed-background" src="../../assets/camero/HUD_Speed.png">
 
   <div class="rpm">
-    <div id="rpm-bar"  [style.width.%]="this.rpmRatio()"></div>
+    <div id="rpm-background"  [style.width.%]="this.rpmRatio()"></div>
     <span class="justify-content-center d-flex position-absolute w-100">{{this.car.rpm | number:'2.0-0'}} RPM</span>
   </div>
 </div>

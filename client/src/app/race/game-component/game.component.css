@@ -3,7 +3,7 @@ div {
     height: 800px;
 }
 
-#speedBackground {
+#speed-background {
     position: fixed;
     bottom: 0px;
     right: 0px;
@@ -22,6 +22,11 @@ div {
 
 #speed-unit {
     position: fixed;
+    font-size: 3vh;
+    bottom: 7%;
+    right: 13%;
+    z-index: 1;
+    color: rgb(253, 192, 47);
 }
 
 #gear {
@@ -43,10 +48,86 @@ div {
     background: rgba(64, 64, 64, 0.5);
 }
 
-#rpm-bar {
+#rpm-background {
     position: fixed;
     bottom: 15%;
     right: 1%;
     height: 3%;
     background: rgb(253, 192, 47);
+}
+
+#lap {
+    position: fixed;
+    font-size: 8vh;
+    top: 4%;
+    right: 7%;
+    z-index: 1;
+    color: rgb(253, 192, 47);
+}
+
+#lap-background {
+    position: fixed;
+    top: 5%;
+    right: 0%;
+    height: 12%;
+    width: 25%;
+    background: rgba(64, 64, 64);
+    background: rgba(64, 64, 64, 0.5);
+}
+
+#time-background {
+    position: fixed;
+    top: 4%;
+    left: 0%;
+    height: 5%;
+    width: 15%;
+    background: rgba(64, 64, 64);
+    background: rgba(64, 64, 64, 0.5);
+}
+
+#time {
+    position: fixed;
+    font-size: 3vh;
+    top: 4%;
+    left: 1%;
+    z-index: 1;
+    color: rgb(253, 192, 47);
+}
+
+#lap-time-background {
+    position: fixed;
+    top: 10%;
+    left: 0%;
+    height: 5%;
+    width: 15%;
+    background: rgba(64, 64, 64);
+    background: rgba(64, 64, 64, 0.5);
+}
+
+#lap-time {
+    position: fixed;
+    font-size: 3vh;
+    top: 10%;
+    left: 1%;
+    z-index: 1;
+    color: rgb(253, 192, 47);
+}
+
+#best-time-background {
+    position: fixed;
+    top: 16%;
+    left: 0%;
+    height: 5%;
+    width: 15%;
+    background: rgba(64, 64, 64);
+    background: rgba(64, 64, 64, 0.5);
+}
+
+#best-time {
+    position: fixed;
+    font-size: 3vh;
+    top: 16%;
+    left: 1%;
+    z-index: 1;
+    color: rgb(253, 192, 47);
 }
