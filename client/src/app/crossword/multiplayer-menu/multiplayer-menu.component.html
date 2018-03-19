@@ -17,26 +17,7 @@
           </div>
         </div>
         <div class="col-6 text-center">
-          <h2 id="main-title" class="text-center">Join a game</h2>
-          <div class="card">
-            <div class="card-header">
-              List of games created!
-            </div>
-            <div *ngIf="!this.waitingGames.Games.length">
-                <p class="card-text my-5">There's no game at the moment</p>
-            </div>
-            <div *ngFor="let game of waitingGames.Games">
-              <div class="card-body">
-                <h5 class="card-title">{{game.userCreator}} is waiting for an opponent : {{game.difficulty}}</h5>
-                <form class="form-inline ">
-                  <div class="form-group mx-sm-3 mb-2">
-                    <input class="form-control" placeholder="Username">
-                  </div>
-                  <button type="submit" class="btn btn-primary mb-2">Start game!</button>
-                </form>
-              </div>
-            </div>
-          </div>
+          <app-waiting-games></app-waiting-games>
         </div>
       </div>
     </div>
