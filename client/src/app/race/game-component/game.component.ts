@@ -4,6 +4,9 @@ import { Car } from "../car/car";
 import { InputManagerService } from "../input-manager-service/input-manager.service";
 import { CameraContext } from "../camera/camera-context";
 import { Point } from "../edit-track/Geometry";
+import { DEFAULT_SHIFT_RPM } from "../car/engine";
+
+const MAX_GEAR_BAR_WIDTH: number = 27;
 
 @Component({
     moduleId: module.id,
@@ -45,13 +48,6 @@ export class GameComponent implements AfterViewInit {
                                      { x: 0.6, y: 0.6, start: false, end: false},
                                      { x: 0.6, y: 0.5, start: false, end: false},
                                      { x: 0.5, y: 0.5, start: false, end: true}];
-        /*mockPoints.push({ x: 0, y: 0, start: true, end: false});
-        mockPoints.push({ x: 0.2, y: 0.1, start: false, end: false});
-        mockPoints.push({ x: 0.04, y: 0.9, start: false, end: false });
-        mockPoints.push({ x: 0.4, y: 0.8, start: false, end: true});
-        mockPoints.push({ x: 0.3, y: 0.5, start: false, end: true});
-        mockPoints.push({ x: 0.4, y: 0, start: false, end: true});
-        mockPoints.push({ x: 0, y: 0, start: false, end: true});*/
 
         this.renderService
             .initialize(this.containerRef.nativeElement, mockPoints)
@@ -66,5 +62,9 @@ export class GameComponent implements AfterViewInit {
 
     public get CameraContext(): CameraContext {
         return this.renderService.CameraContext;
+    }
+
+    public rpmRatio(): number {
+        return (this.car.rpm / DEFAULT_SHIFT_RPM) * MAX_GEAR_BAR_WIDTH;
     }
 }

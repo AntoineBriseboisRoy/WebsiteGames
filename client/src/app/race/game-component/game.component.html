@@ -1,8 +1,10 @@
 <div #container>
-  <ul>
-    <li>RPM: {{this.renderService.car.rpm | number:'2.0-0'}}</li>
-  </ul>
   <span id="speed">{{this.renderService.car.speed.length() * 3.6 | number :'2.2-2'}}</span>>
   <span id="gear">{{this.renderService.car.currentGear + 1}}</span>
   <img id="speedBackground" src="../../assets/camero/HUD_Speed.png">
+
+  <div class="rpm">
+    <div id="rpm-bar"  [style.width.%]="this.rpmRatio()"></div>
+    <span class="justify-content-center d-flex position-absolute w-100">{{this.car.rpm | number:'2.0-0'}} RPM</span>
+  </div>
 </div>

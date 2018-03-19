@@ -3,18 +3,11 @@ div {
     height: 800px;
 }
 
-ul, li {
-    position: relative;
-    margin: 0;
-    top: 40px;
-    color: orange;
-}
-
 #speedBackground {
     position: fixed;
     bottom: 0px;
     right: 0px;
-    width: 30%;
+    width: 35%;
     height: 15%;
 }
 
@@ -22,9 +15,9 @@ ul, li {
     position: fixed;
     font-size: 8vh;
     bottom: 2%;
-    right: 15%;
+    right: 17%;
     z-index: 1;
-    color: yellow;
+    color: rgb(253, 192, 47);;
 }
 
 #speed-unit {
@@ -35,7 +28,25 @@ ul, li {
     position: fixed;
     font-size: 8vh;
     bottom: 2%;
-    right: 6%;
+    right: 7%;
     z-index: 1;
-    color: yellow;
+    color: rgb(253, 192, 47);
+}
+
+.rpm {
+    position: fixed;
+    bottom: 15%;
+    right: 1%;
+    width: 27%;
+    height: 3%;
+    background: rgba(64, 64, 64);
+    background: rgba(64, 64, 64, 0.5);
+}
+
+#rpm-bar {
+    position: fixed;
+    bottom: 15%;
+    right: 1%;
+    height: 3%;
+    background: rgb(253, 192, 47);
 }
