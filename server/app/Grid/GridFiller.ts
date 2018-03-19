@@ -113,6 +113,7 @@ export class GridFiller {
     }
 
     private fillGridWithWords(): boolean {
+        console.log(this.grid);
         if (this.gridFilled()) {
             return true;
         }
@@ -126,6 +127,7 @@ export class GridFiller {
         }
         const wordAdded: IWord = { position: longestFreeSpace.position, orientation: longestFreeSpace.orientation,
                                    content: entry.word, definition: entry.definition };
+        console.log(wordAdded);
         this.addNewWord(wordAdded);
         this.sortWordLengthsByCommonLetters();
 
@@ -143,6 +145,7 @@ export class GridFiller {
     }
 
     private fillGridWithWordsNextTry(): boolean {
+        console.log(this.grid);
         if (this.gridFilled()) {
             return true;
         }
@@ -183,9 +186,9 @@ export class GridFiller {
         this.words.push(newWord);
         for (let i: number = 0; i < newWord.content.length; i++) {
             if (newWord.orientation === Orientation.Horizontal) {
-                this.grid[newWord.position.x + i][newWord.position.y] = newWord.content.length[i];
+                this.grid[newWord.position.x + i][newWord.position.y] = newWord.content[i];
             } else {
-                this.grid[newWord.position.x][newWord.position.y + i] = newWord.content.length[i];
+                this.grid[newWord.position.x][newWord.position.y + i] = newWord.content[i];
             }
         }
     }

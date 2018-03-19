@@ -6,7 +6,7 @@ import * as cst from "./Constants";
 
 const EXTENDED_TIMEOUT: number = 30000;
 
-describe("Verifying 2x2 Grid (no black squares)", () => {
+describe.only("Verifying 2x2 Grid (no black squares)", () => {
     it("Should be full (4 letters)", () => {
         let nLetters: number = 0;
         const SIDE_SIZE: number = 2, BLACK_SQUARE_RATIO: number = 0, SQUARE: number = 2;
@@ -42,7 +42,7 @@ describe("Verifying 2x2 Grid (no black squares)", () => {
     }).timeout(EXTENDED_TIMEOUT);
 });
 
-describe("Verifying 10x10 Grid", () => {
+describe.skip("Verifying 10x10 Grid", () => {
     it("Should be full (All letters except for blacksquares)", () => {
         let nEmptySquares: number = 0;
         const EXPECTED_EMPTY_SQUARES: number = 0;

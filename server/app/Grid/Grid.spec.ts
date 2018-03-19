@@ -43,7 +43,7 @@ describe.skip("Verifying letter validity.", () => {
     });
 });
 
-describe("Verifying grid difficulty.", () => {
+describe.skip("Verifying grid difficulty.", () => {
     // Our grid does not yet have the difficulty level functionality, and we do not yet know how to test it,
     // but we know we should test it, hence the three following "empty" tests.
     it ("Should be able to generate an easy grid correctly", () => {
