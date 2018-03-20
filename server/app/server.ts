@@ -31,7 +31,7 @@ export class Server {
             socket.on("new-game", (data: string) => {
                 const game: INewGame = JSON.parse(data);
                 WaitingGamesService.Instance.pushNewGame(game);
-                socket.broadcast.emit("join-game", game);
+                socket.broadcast.emit("new-game", game);
             });
             socket.on("delete-game", (data: string) => {
                 const game: INewGame = JSON.parse(data);

@@ -1,6 +1,5 @@
 import { Component, HostListener } from "@angular/core";
 import { SocketIoService } from "../socket-io.service";
-import { Subject } from "rxjs/Subject";
 import { INewGame } from "../../../../../common/interfaces/INewGame";
 import { Difficulty } from "../../constants";
 import { MultiplayerGamesService } from "./multiplayer-games.service";
@@ -12,19 +11,18 @@ import { MultiplayerGamesService } from "./multiplayer-games.service";
 })
 export class MultiplayerMenuComponent {
     public username: string;
-    private createdGameSubject: Subject<INewGame>;
-    private deletedGameSubject: Subject<INewGame>;
     private difficulty: Difficulty;
 
     public constructor(private socketService: SocketIoService, public waitingGames: MultiplayerGamesService) {
-        this.createdGameSubject = this.socketService.createNewGame();
-        this.createdGameSubject.subscribe((newGame: INewGame) => {
+        this.socketService.init();
+        this.socketService.PlayGameSubject.subscribe((newGame: INewGame) => {
             this.waitingGames.push(newGame);
         });
-        this.deletedGameSubject = this.socketService.deleteCreatedGame();
-        this.deletedGameSubject.subscribe((deletedGame: INewGame) => {
+
+        this.socketService.DeletedGameSubject.subscribe((deletedGame: INewGame) => {
             this.waitingGames.remove(deletedGame);
         });
+
     }
 
     @HostListener("window:beforeunload", ["$event"])
@@ -62,7 +60,7 @@ export class MultiplayerMenuComponent {
         if (this.waitingGames.isUsernameUnique(this.username)) {
             this.waitingGames.createdGame = { userCreator: this.username, difficulty: this.difficulty };
             this.waitingGames.push(this.waitingGames.createdGame);
-            this.createdGameSubject.next(this.waitingGames.createdGame);
+            this.socketService.CreatedGameSubject.next(this.waitingGames.createdGame);
         } else {
             console.error("problem creating a game");
         }
@@ -70,7 +68,7 @@ export class MultiplayerMenuComponent {
 
     public deleteGame(): void {
         this.waitingGames.remove(this.waitingGames.createdGame);
-        this.deletedGameSubject.next(this.waitingGames.createdGame);
+        this.socketService.DeletedGameSubject.next(this.waitingGames.createdGame);
         this.waitingGames.createdGame = undefined;
     }
 }
