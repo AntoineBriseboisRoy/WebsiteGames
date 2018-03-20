@@ -11,10 +11,7 @@ export class DifficultyMenuComponent {
     public readonly title: string = "Choose wisely your difficulty, smarty!";
     public isActiveDifficulty: boolean;
 
-    private gameManager: GameManager;
-
     public constructor() {
-        this.gameManager = GameManager.Instance;
         this.isActiveDifficulty = false;
     }
 
