@@ -23,7 +23,8 @@ export class MultiplayerGamesService {
     }
 
     public remove(game: INewGame): void {
-        const index: number = this.games.findIndex((waitingGame: INewGame) => waitingGame.userCreator === game.userCreator);
+        const index: number = this.games.findIndex((waitingGame: INewGame) =>
+            waitingGame.userCreator === game.userCreator);
         this.games.splice(index, 1);
     }
 
@@ -37,6 +38,16 @@ export class MultiplayerGamesService {
 
     public isWaiting(): boolean {
         return this.createdGame !== undefined;
+    }
+
+    public isUsernameUnique(username: string): boolean {
+        const foundGame: INewGame = this.games.find((game: INewGame) =>
+            this.deleteWhiteSpace(game.userCreator) === this.deleteWhiteSpace(username));
+
+        return (foundGame === undefined);
+    }
+    private deleteWhiteSpace(word: string): string {
+        return word.replace(/\s/g, "");
     }
     private getGamesServer(): Observable<Array<INewGame>> {
         const gridURL: string = this.BASE_URL + "getGames";

@@ -55,13 +55,17 @@ export class MultiplayerMenuComponent {
 
     public hasCompletedForm(): boolean {
         return this.difficulty !== undefined && this.username !== undefined && this.username !== "" &&
-               !this.waitingGames.isWaiting();
+            !this.waitingGames.isWaiting();
     }
 
     public createNewGame(): void {
-        this.waitingGames.createdGame = { userCreator: this.username, difficulty: this.difficulty };
-        this.waitingGames.push(this.waitingGames.createdGame);
-        this.createdGameSubject.next(this.waitingGames.createdGame);
+        if (this.waitingGames.isUsernameUnique(this.username)) {
+            this.waitingGames.createdGame = { userCreator: this.username, difficulty: this.difficulty };
+            this.waitingGames.push(this.waitingGames.createdGame);
+            this.createdGameSubject.next(this.waitingGames.createdGame);
+        } else {
+            console.error("problem creating a game");
+        }
     }
 
     public deleteGame(): void {

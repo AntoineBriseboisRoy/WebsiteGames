@@ -28,8 +28,6 @@ export class Server {
         this.server.on("listening", () => this.onListening());
 
         this.socketIo.on("connection", (socket: SocketIO.Socket) => {
-            // tslint:disable-next-line
-            console.log("Connected");
             socket.on("new-game", (data: string) => {
                 const game: INewGame = JSON.parse(data);
                 WaitingGamesService.Instance.pushNewGame(game);
@@ -40,12 +38,7 @@ export class Server {
                 WaitingGamesService.Instance.remove(game);
                 socket.broadcast.emit("delete-game", game);
             });
-            socket.on("disconnect", () => {
-                // tslint:disable-next-line
-                console.log("Disconnected");
-            });
         });
-
     }
 
     private normalizePort(val: number | string): number | string | boolean {
