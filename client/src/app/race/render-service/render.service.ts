@@ -2,7 +2,8 @@ import { Injectable } from "@angular/core";
 import Stats = require("stats.js");
 import { WebGLRenderer, Scene, AmbientLight,
          Mesh, PlaneBufferGeometry, MeshBasicMaterial,
-         Texture, RepeatWrapping, TextureLoader, Vector2, BackSide, CircleBufferGeometry } from "three";
+         Vector2, BackSide, CircleBufferGeometry,
+         DoubleSide, Texture, RepeatWrapping, TextureLoader, Vector3 } from "three";
 import { Car } from "../car/car";
 import { ThirdPersonCamera } from "../camera/camera-perspective";
 import { TopViewCamera } from "../camera/camera-orthogonal";
@@ -10,6 +11,7 @@ import { INITIAL_CAMERA_POSITION_Y, FRUSTUM_RATIO, PI_OVER_2, HALF } from "../..
 import { Skybox } from "../skybox/skybox";
 import { CameraContext } from "../camera/camera-context";
 import { ITrack, TrackType } from "../../../../../common/interfaces/ITrack";
+import { CollisionManager } from "../car/collision-manager";
 
 export const FAR_CLIPPING_PLANE: number = 1000;
 export const NEAR_CLIPPING_PLANE: number = 1;
@@ -19,7 +21,7 @@ const WHITE: number = 0xFFFFFF;
 const AMBIENT_LIGHT_OPACITY: number = 0.5;
 const TEXTURE_TILE_REPETIONS: number = 200;
 const WORLD_SIZE: number = 1000;
-const FLOOR_SIZE: number = WORLD_SIZE * 2;
+const FLOOR_SIZE: number = WORLD_SIZE / HALF;
 const ROAD_WIDTH: number = 10;
 const SUPERPOSITION: number = 0.001;
 
@@ -28,6 +30,7 @@ export class RenderService {
     private cameraContext: CameraContext;
     private container: HTMLDivElement;
     private _car: Car;
+    private dummyCar: Car;
     private renderer: WebGLRenderer;
     private scene: THREE.Scene;
     private stats: Stats;
@@ -35,6 +38,8 @@ export class RenderService {
     private superposition: number;
     private activeTrack: ITrack;
     private floorTextures: Map<TrackType, Texture>;
+
+    private collisionManager: CollisionManager;
 
     public get car(): Car {
         return this._car;
@@ -48,6 +53,8 @@ export class RenderService {
         this._car = new Car();
         this.floorTextures = new Map<TrackType, Texture>();
         this.superposition = 0;
+        this.dummyCar = new Car(new Vector3(-15, 0, 0));
+        this.collisionManager = new CollisionManager();
     }
 
     public async initialize(container: HTMLDivElement, track: ITrack): Promise<void> {
@@ -82,10 +89,14 @@ export class RenderService {
     private update(): void {
         const timeSinceLastFrame: number = Date.now() - this.lastDate;
         this._car.update(timeSinceLastFrame);
+        this.dummyCar.update(timeSinceLastFrame);
         this.cameraContext.update(this._car);
         this.lastDate = Date.now();
+
+        this.collisionManager.update();
     }
 
+    // tslint:disable-next-line:max-func-body-length
     private async createScene(): Promise<void> {
         this.scene = new Scene();
         this.cameraContext = new CameraContext();
@@ -102,9 +113,16 @@ export class RenderService {
                                                       1, INITIAL_CAMERA_POSITION_Y + 1)); // Add 1 to see the floor
 
         await this._car.init();
+        await this.dummyCar.init();
+
         this.cameraContext.initStates(this._car.getPosition());
         this.cameraContext.setInitialState();
+        this.collisionManager.addCar(this._car);
+        this.collisionManager.addCar(this.dummyCar);
+
         this.scene.add(this._car);
+        this.scene.add(this.dummyCar);
+
         this.scene.add(new AmbientLight(WHITE, AMBIENT_LIGHT_OPACITY));
 
         const skybox: Skybox = new Skybox();
