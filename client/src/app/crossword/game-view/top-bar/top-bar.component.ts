@@ -14,6 +14,6 @@ export class TopBarComponent {
     }
 
     public modeToString(): string {
-        return this.gameManager.IsMultiplayer ? "Two Players" : "Single Player";
+        return this.gameManager.isMultiplayer ? "Two Players" : "Single Player";
     }
 }

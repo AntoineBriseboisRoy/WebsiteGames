@@ -12,7 +12,7 @@ import { GameManager } from "../../game-manager";
     selector: "app-crossword-grid",
     templateUrl: "./grid.component.html",
     styleUrls: ["./grid.component.css"],
-    providers: [KeyboardInputManagerService]
+    providers: [KeyboardInputManagerService, WordTransmitterService]
 })
 
 export class GridComponent implements OnInit {
@@ -117,7 +117,7 @@ export class GridComponent implements OnInit {
             }
             if (userAnswer === correctAnswer) {
                 this.setCellsToFound(word);
-                GameManager.Instance.PlayerOne.addPoint(word.cells.length);
+                GameManager.Instance.playerOne.addPoint(word.cells.length);
                 word.isFound = true;
             }
             userAnswer = "";

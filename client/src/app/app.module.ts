@@ -21,8 +21,13 @@ import { APP_BASE_HREF } from "@angular/common";
 import { TrackViewComponent } from "./race/track-view/track-view.component";
 import { GridService } from "./crossword/grid.service";
 import { WordTransmitterService } from "./crossword/game-view/wordTransmitter.service";
+import { PlayerMenuComponent } from "./crossword/player-menu/player-menu.component";
+import { MultiplayerMenuComponent } from "./crossword/multiplayer-menu/multiplayer-menu.component";
 import { MongoQueryService } from "./mongo-query.service";
 import { TrackParserService } from "./race/track-parser.service";
+import { SocketIoService } from "./crossword/socket-io.service";
+import { MultiplayerGamesService } from "./crossword/multiplayer-menu/multiplayer-games.service";
+import { WaitingGamesComponent } from "./crossword/multiplayer-menu/waiting-games/waiting-games.component";
 
 @NgModule({
     declarations: [
@@ -36,7 +41,10 @@ import { TrackParserService } from "./race/track-parser.service";
         DifficultyMenuComponent,
         EditTrackComponent,
         AdminSectionComponent,
-        TrackViewComponent
+        TrackViewComponent,
+        PlayerMenuComponent,
+        MultiplayerMenuComponent,
+        WaitingGamesComponent
     ],
     imports: [
         BrowserModule,
@@ -45,7 +53,15 @@ import { TrackParserService } from "./race/track-parser.service";
         AppRoutingModule,
         NgbModule.forRoot()
     ],
-    providers: [{provide: APP_BASE_HREF, useValue : "/" }, MongoQueryService, GridService, WordTransmitterService, TrackParserService],
+    providers: [
+        {provide: APP_BASE_HREF, useValue : "/" },
+        MongoQueryService,
+        GridService,
+        WordTransmitterService,
+        MultiplayerGamesService,
+        SocketIoService,
+        TrackParserService
+    ],
     bootstrap: [AppComponent]
 })
 export class AppModule { }
