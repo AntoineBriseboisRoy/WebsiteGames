@@ -5,6 +5,7 @@ import { InputManagerService } from "../input-manager-service/input-manager.serv
 import { CameraContext } from "../camera/camera-context";
 import { Point } from "../edit-track/Geometry";
 import { DEFAULT_SHIFT_RPM } from "../car/engine";
+import { ITrack, TrackType } from "../../../../../common/interfaces/ITrack";
 
 const MAX_GEAR_BAR_WIDTH: number = 27;
 
@@ -43,14 +44,21 @@ export class GameComponent implements AfterViewInit {
     }
 
     public ngAfterViewInit(): void {
-        // TODO: Mettre le GET des points de la track a load ici
-        const mockPoints: Point[] = [{ x: 0.5, y: 0.5, start: true, end: false},
-                                     { x: 0.6, y: 0.6, start: false, end: false},
-                                     { x: 0.6, y: 0.5, start: false, end: false},
-                                     { x: 0.5, y: 0.5, start: false, end: true}];
+
+        const mockTrack: ITrack = { _id: "", name: "mock",
+                                    description: "test track",
+                                    nTimesPlayed: 0, bestTimes: ["0:00"],
+                                    type: TrackType.REGULAR, points: mockPoints };
+        /*mockPoints.push({ x: 0, y: 0, start: true, end: false});
+        mockPoints.push({ x: 0.2, y: 0.1, start: false, end: false});
+        mockPoints.push({ x: 0.04, y: 0.9, start: false, end: false });
+        mockPoints.push({ x: 0.4, y: 0.8, start: false, end: true});
+        mockPoints.push({ x: 0.3, y: 0.5, start: false, end: true});
+        mockPoints.push({ x: 0.4, y: 0, start: false, end: true});
+        mockPoints.push({ x: 0, y: 0, start: false, end: true});*/
 
         this.renderService
-            .initialize(this.containerRef.nativeElement, mockPoints)
+            .initialize(this.containerRef.nativeElement, mockTrack)
             .then(/* do nothing */)
             .catch((err) => console.error(err));
         this.inputManagerService.init(this.car, this.CameraContext);

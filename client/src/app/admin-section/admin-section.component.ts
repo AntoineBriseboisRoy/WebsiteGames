@@ -1,5 +1,5 @@
 import { Component, OnInit } from "@angular/core";
-import { ITrack, TrackType } from "./../../../../common/interfaces/ITrack";
+import { ITrack } from "./../../../../common/interfaces/ITrack";
 import { MongoQueryService } from "../mongo-query.service";
 
 @Component({
