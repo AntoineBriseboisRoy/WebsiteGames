@@ -1,4 +1,4 @@
-import { Component } from "@angular/core";
+import { Component, HostListener } from "@angular/core";
 import { SocketIoService } from "../socket-io.service";
 import { Subject } from "rxjs/Subject";
 import { INewGame } from "../../../../../common/interfaces/INewGame";
@@ -25,6 +25,13 @@ export class MultiplayerMenuComponent {
         this.deletedGameSubject.subscribe((deletedGame: INewGame) => {
             this.waitingGames.remove(deletedGame);
         });
+    }
+
+    @HostListener("window:beforeunload", ["$event"])
+    public handleDestroyedComponent(): void {
+        if (this.waitingGames.isWaiting()) {
+            this.deleteGame();
+        }
     }
 
     public onButtonGroupClick($event: Event): void {
