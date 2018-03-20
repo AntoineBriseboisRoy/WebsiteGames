@@ -112,7 +112,7 @@ export class RenderService {
     }
 
     private createRoad(index: number): Mesh {
-        const trackTexture: Texture = new TextureLoader().load("/assets/camero/road.jpg");
+        const trackTexture: Texture = new TextureLoader().load("/assets/road.jpg");
         trackTexture.wrapS = RepeatWrapping;
         const vector: Vector2 = new Vector2(this.points[index + 1].x - this.points[index].x, this.points[index + 1].y
                                                                                                - this.points[index].y);
@@ -130,7 +130,7 @@ export class RenderService {
 
     private createIntersection(index: number): Mesh {
         const POLYGONS_NUMBER: number = 32;
-        const trackTexture: Texture = new TextureLoader().load("/assets/camero/road.jpg");
+        const trackTexture: Texture = new TextureLoader().load("/assets/road.jpg");
         const circle: CircleBufferGeometry = new CircleBufferGeometry(ROAD_WIDTH * HALF, POLYGONS_NUMBER);
         const mesh: Mesh = new Mesh(circle, new MeshBasicMaterial({ map: trackTexture, side: BackSide }));
         mesh.position.x = -(this.points[index].y) * WORLD_SIZE + WORLD_SIZE * HALF;
@@ -142,7 +142,7 @@ export class RenderService {
     }
 
     private createFloorMesh(): Mesh {
-        const floorTexture: Texture = new TextureLoader().load("/assets/camero/floor-texture.jpg");
+        const floorTexture: Texture = new TextureLoader().load("/assets/floor-texture.jpg");
         floorTexture.wrapS = floorTexture.wrapT = RepeatWrapping;
         floorTexture.repeat.set(TEXTURE_TILE_REPETIONS, TEXTURE_TILE_REPETIONS);
         const mesh: Mesh = new Mesh(new PlaneBufferGeometry(FLOOR_SIZE, FLOOR_SIZE, 1, 1),
