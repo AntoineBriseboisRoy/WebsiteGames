@@ -17,7 +17,7 @@
           </div>
           <div *ngIf="this.waitingGames.createdGame">
             <div class="alert alert-danger my-3 left-side" role="alert">
-              <button type="button" class="close" aria-label="Close">
+              <button type="button" class="close" aria-label="Close" (click)="deleteGame()">
                 <span aria-hidden="true">&times;</span>
               </button>
               <strong>Waiting for an opponent...</strong>

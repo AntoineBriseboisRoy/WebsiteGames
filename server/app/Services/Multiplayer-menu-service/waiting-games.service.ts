@@ -24,4 +24,9 @@ export class WaitingGamesService {
     public pushNewGame(game: INewGame): void {
         this.games.push(game);
     }
+
+    public remove(game: INewGame): void {
+        const index: number = this.games.findIndex((waitingGame: INewGame) => waitingGame.userCreator === game.userCreator);
+        this.games.splice(index, 1);
+    }
 }

@@ -12,13 +12,18 @@ import { MultiplayerGamesService } from "./multiplayer-games.service";
 })
 export class MultiplayerMenuComponent {
     public username: string;
-    private gamesService: Subject<INewGame>;
+    private createdGameSubject: Subject<INewGame>;
+    private deletedGameSubject: Subject<INewGame>;
     private difficulty: Difficulty;
 
     public constructor(private socketService: SocketIoService, public waitingGames: MultiplayerGamesService) {
-        this.gamesService = this.socketService.connect();
-        this.gamesService.subscribe((newGame: INewGame) => {
+        this.createdGameSubject = this.socketService.createNewGame();
+        this.createdGameSubject.subscribe((newGame: INewGame) => {
             this.waitingGames.push(newGame);
+        });
+        this.deletedGameSubject = this.socketService.deleteCreatedGame();
+        this.deletedGameSubject.subscribe((deletedGame: INewGame) => {
+            this.waitingGames.remove(deletedGame);
         });
     }
 
@@ -49,6 +54,12 @@ export class MultiplayerMenuComponent {
     public createNewGame(): void {
         this.waitingGames.createdGame = { userCreator: this.username, difficulty: this.difficulty };
         this.waitingGames.push(this.waitingGames.createdGame);
-        this.gamesService.next(this.waitingGames.createdGame);
+        this.createdGameSubject.next(this.waitingGames.createdGame);
+    }
+
+    public deleteGame(): void {
+        this.waitingGames.remove(this.waitingGames.createdGame);
+        this.deletedGameSubject.next(this.waitingGames.createdGame);
+        this.waitingGames.createdGame = undefined;
     }
 }
