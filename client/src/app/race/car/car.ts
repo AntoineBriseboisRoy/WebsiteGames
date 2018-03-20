@@ -111,6 +111,7 @@ export class Car extends Object3D {
     public async init(): Promise<void> {
         this.mesh = await this.load();
         this.mesh.setRotationFromEuler(INITIAL_MODEL_ROTATION);
+        this.mesh.position.y = 20;
         this.add(this.mesh);
     }
 
