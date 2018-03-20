@@ -38,6 +38,11 @@ export class Server {
                 WaitingGamesService.Instance.remove(game);
                 socket.broadcast.emit("delete-game", game);
             });
+            socket.on("play-game", (data: string) => {
+                const game: INewGame = JSON.parse(data);
+                WaitingGamesService.Instance.remove(game);
+                socket.broadcast.emit("play-game", game);
+            });
         });
     }
 

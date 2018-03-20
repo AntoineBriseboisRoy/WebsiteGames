@@ -21,5 +21,8 @@ export class WaitingGamesComponent {
         return this.isJoinerDefined(index) && !this.waitingGames.isWaiting();
     }
     public joinGame(index: number): void {
+        this.socketIO.PlayGameSubject.next({ userCreator: this.waitingGames.Games[index].userCreator,
+                                             difficulty: this.waitingGames.Games[index].difficulty,
+                                             userJoiner: this.userJoiner[index]});
     }
 }

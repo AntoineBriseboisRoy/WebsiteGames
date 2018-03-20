@@ -49,6 +49,11 @@ export class MultiplayerGamesService {
     private deleteWhiteSpace(word: string): string {
         return word.replace(/\s/g, "");
     }
+
+    public canJoinGame(gameToPlay: INewGame): boolean {
+        return this.isWaiting() && this.createdGame.userCreator === gameToPlay.userCreator;
+    }
+
     private getGamesServer(): Observable<Array<INewGame>> {
         const gridURL: string = this.BASE_URL + "getGames";
 

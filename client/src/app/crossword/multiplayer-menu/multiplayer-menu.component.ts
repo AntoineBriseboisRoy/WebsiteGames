@@ -15,14 +15,18 @@ export class MultiplayerMenuComponent {
 
     public constructor(private socketService: SocketIoService, public waitingGames: MultiplayerGamesService) {
         this.socketService.init();
-        this.socketService.PlayGameSubject.subscribe((newGame: INewGame) => {
+        this.socketService.CreatedGameSubject.subscribe((newGame: INewGame) => {
             this.waitingGames.push(newGame);
         });
 
         this.socketService.DeletedGameSubject.subscribe((deletedGame: INewGame) => {
             this.waitingGames.remove(deletedGame);
         });
-
+        this.socketService.PlayGameSubject.subscribe((gameToPlay: INewGame) => {
+            if (this.waitingGames.canJoinGame(gameToPlay)) {
+                console.warn("start game");
+            }
+        });
     }
 
     @HostListener("window:beforeunload", ["$event"])
