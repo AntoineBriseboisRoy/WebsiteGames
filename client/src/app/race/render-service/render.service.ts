@@ -9,7 +9,6 @@ import { TopViewCamera } from "../camera/camera-orthogonal";
 import { INITIAL_CAMERA_POSITION_Y, FRUSTUM_RATIO, PI_OVER_2, HALF } from "../../constants";
 import { Skybox } from "../skybox/skybox";
 import { CameraContext } from "../camera/camera-context";
-import { Point } from "../edit-track/Geometry";
 import { ITrack, TrackType } from "../../../../../common/interfaces/ITrack";
 
 export const FAR_CLIPPING_PLANE: number = 1000;
