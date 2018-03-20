@@ -40,6 +40,7 @@ export class BlackSquareGenerator {
                     this.grid[tempPosition.x][tempPosition.y] = BLACKSQUARE_CHARACTER;
                 }
             }
+            console.log(this.grid);
         } while (!this.verifyBlackSquareGrid());
 
         return this.grid;
@@ -178,14 +179,14 @@ export class BlackSquareGenerator {
                 ++nLettersCol;
             } else if (this.grid[column][i] === BLACKSQUARE_CHARACTER) {
                 if (nLettersCol >= MIN_LETTERS_FOR_WORD) {
-                    wordsToFill.push(this.createEmptyWord(i - nLettersCol, column,
+                    wordsToFill.push(this.createEmptyWord(column, i - nLettersCol,
                                                           Orientation.Vertical, nLettersCol));
 }
                 nLettersCol = 0;
             }
         }
         if (nLettersCol >= MIN_LETTERS_FOR_WORD) {
-            wordsToFill.push(this.createEmptyWord(this.sideSize - nLettersCol, column,
+            wordsToFill.push(this.createEmptyWord(column, this.sideSize - nLettersCol,
                                                   Orientation.Vertical, nLettersCol));
         }
 
