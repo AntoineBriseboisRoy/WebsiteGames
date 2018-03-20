@@ -7,7 +7,7 @@ import { DEFAULT_SHIFT_RPM } from "../car/engine";
 import { ITrack } from "../../../../../common/interfaces/ITrack";
 import { ActivatedRoute, Params } from "@angular/router";
 import { MongoQueryService } from "../../mongo-query.service";
-import { TimerService } from "../timer-service/timer.service";
+import { TimerService, TEN_MILLISECONDS } from "../timer-service/timer.service";
 import { Subscription } from "rxjs/Subscription";
 
 const MAX_GEAR_BAR_WIDTH: number = 27;
@@ -28,13 +28,20 @@ export class GameComponent implements AfterViewInit {
 
     @ViewChild("container")
     private containerRef: ElementRef;
-
     public startingText: string;
+    public lap: number;
+    public totalTime: Date;
+    public lapTime: Date;
+    public bestTime: Date;
 
     public constructor(private renderService: RenderService, private inputManagerService: InputManagerService,
                        private mongoQueryService: MongoQueryService , private route: ActivatedRoute, private timer: TimerService) {
         this.containerRef = undefined;
         this.startingText = "";
+        this.lap = 0;
+        this.totalTime = new Date(0, 0, 0, 0, 0, 0, 0);
+        this.lapTime = new Date(0, 0, 0, 0, 0, 0, 0);
+        this.bestTime = new Date(0, 0, 0, 0, 0, 0, 0);
     }
 
     @HostListener("window:resize", ["$event"])
@@ -78,18 +85,27 @@ export class GameComponent implements AfterViewInit {
         startingSequence.src = "../../../assets/sounds/countdown.ogg";
         startingSequence.load();
         let counter: number = 3;
-        const subscription: Subscription = this.timer.getTime().subscribe((time: Date) => {
+        const subscription: Subscription = this.timer.getTimeSecond().subscribe((time: Date) => {
             startingSequence.play();
             if (counter > 0) {
                 this.startingText = (counter).toString();
             } else {
                 this.inputManagerService.init(this.car, this.CameraContext);
+                this.startTimer();
                 this.startingText = "Start!";
             }
             if (counter-- < -1) {
                 this.startingText = "";
                 subscription.unsubscribe();
             }
+        });
+    }
+
+    private startTimer(): void {
+        this.timer.getHundredthSecond().subscribe((time: Date) => {
+            this.totalTime.setMilliseconds(time.getMilliseconds());
+            this.totalTime.setMinutes(time.getMinutes());
+            this.lapTime.setMilliseconds(this.lapTime.getMilliseconds() + TEN_MILLISECONDS);
         });
     }
     public rpmRatio(): number {
