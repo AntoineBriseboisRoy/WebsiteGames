@@ -58,10 +58,9 @@ export class GameComponent implements AfterViewInit {
                 this.renderService
                 .initialize(this.containerRef.nativeElement, track)
                 .then((data) => {
-                    this.startupSequence();
+                    this.startingSequence();
                 })
                 .catch((err) => console.error(err));
-                this.inputManagerService.init(this.car, this.CameraContext);
             });
         });
     }
@@ -74,17 +73,24 @@ export class GameComponent implements AfterViewInit {
         return this.renderService.CameraContext;
     }
 
-    private startupSequence(): void {
-        // Bloquer contrôles de la voiture
-        let counter: number = 4;
+    private startingSequence(): void {
+        const startingSequence: HTMLAudioElement = new Audio();
+        startingSequence.src = "../../../assets/sounds/countdown.ogg";
+        startingSequence.load();
+        let counter: number = 3;
         const subscription: Subscription = this.timer.getTime().subscribe((time: Date) => {
-            this.startingText = counter > 1 ? (counter - 1).toString() : "Start!";
-            if (counter-- < 1) {
+            startingSequence.play();
+            if (counter > 0) {
+                this.startingText = (counter).toString();
+            } else {
+                this.inputManagerService.init(this.car, this.CameraContext);
+                this.startingText = "Start!";
+            }
+            if (counter-- < -1) {
                 this.startingText = "";
                 subscription.unsubscribe();
             }
         });
-        // Débloquer contrôles de la voiture
     }
     public rpmRatio(): number {
         return (this.car.rpm / DEFAULT_SHIFT_RPM) * MAX_GEAR_BAR_WIDTH;
