@@ -24,7 +24,6 @@ import { WordTransmitterService } from "./crossword/game-view/wordTransmitter.se
 import { PlayerMenuComponent } from "./crossword/player-menu/player-menu.component";
 import { MultiplayerMenuComponent } from "./crossword/multiplayer-menu/multiplayer-menu.component";
 import { MongoQueryService } from "./mongo-query.service";
-import { TrackParserService } from "./race/track-parser.service";
 import { SocketIoService } from "./crossword/socket-io.service";
 import { MultiplayerGamesService } from "./crossword/multiplayer-menu/multiplayer-games.service";
 import { WaitingGamesComponent } from "./crossword/multiplayer-menu/waiting-games/waiting-games.component";
@@ -60,7 +59,6 @@ import { WaitingGamesComponent } from "./crossword/multiplayer-menu/waiting-game
         WordTransmitterService,
         MultiplayerGamesService,
         SocketIoService,
-        TrackParserService
     ],
     bootstrap: [AppComponent]
 })
