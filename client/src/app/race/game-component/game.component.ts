@@ -3,8 +3,8 @@ import { RenderService } from "../render-service/render.service";
 import { Car } from "../car/car";
 import { InputManagerService } from "../input-manager-service/input-manager.service";
 import { CameraContext } from "../camera/camera-context";
-import { Point } from "../edit-track/Geometry";
 import { DEFAULT_SHIFT_RPM } from "../car/engine";
+import { TrackParserService } from "../track-parser.service";
 
 const MAX_GEAR_BAR_WIDTH: number = 27;
 
@@ -24,7 +24,8 @@ export class GameComponent implements AfterViewInit {
     @ViewChild("container")
     private containerRef: ElementRef;
 
-    public constructor(private renderService: RenderService, private inputManagerService: InputManagerService) {
+    public constructor(private renderService: RenderService, private inputManagerService: InputManagerService,
+                       private trackParserService: TrackParserService) {
     }
 
     @HostListener("window:resize", ["$event"])
@@ -43,14 +44,8 @@ export class GameComponent implements AfterViewInit {
     }
 
     public ngAfterViewInit(): void {
-        // TODO: Mettre le GET des points de la track a load ici
-        const mockPoints: Point[] = [{ x: 0.5, y: 0.5, start: true, end: false},
-                                     { x: 0.6, y: 0.6, start: false, end: false},
-                                     { x: 0.6, y: 0.5, start: false, end: false},
-                                     { x: 0.5, y: 0.5, start: false, end: true}];
-
         this.renderService
-            .initialize(this.containerRef.nativeElement, mockPoints)
+            .initialize(this.containerRef.nativeElement, this.trackParserService.track)
             .then(/* do nothing */)
             .catch((err) => console.error(err));
         this.inputManagerService.init(this.car, this.CameraContext);
