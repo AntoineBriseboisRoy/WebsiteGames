@@ -22,6 +22,7 @@ import { TrackViewComponent } from "./race/track-view/track-view.component";
 import { GridService } from "./crossword/grid.service";
 import { WordTransmitterService } from "./crossword/game-view/wordTransmitter.service";
 import { MongoQueryService } from "./mongo-query.service";
+import { TrackParserService } from "./race/track-parser.service";
 
 @NgModule({
     declarations: [
@@ -44,7 +45,7 @@ import { MongoQueryService } from "./mongo-query.service";
         AppRoutingModule,
         NgbModule.forRoot()
     ],
-    providers: [{provide: APP_BASE_HREF, useValue : "/" }, MongoQueryService, GridService, WordTransmitterService],
+    providers: [{provide: APP_BASE_HREF, useValue : "/" }, MongoQueryService, GridService, WordTransmitterService, TrackParserService],
     bootstrap: [AppComponent]
 })
 export class AppModule { }

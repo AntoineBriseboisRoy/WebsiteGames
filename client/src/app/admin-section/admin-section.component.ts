@@ -21,7 +21,6 @@ export class AdminSectionComponent implements OnInit {
     }
 
     public deleteTrack(name: string): void {
-        console.log(name);
         this.mongoQueryService.deleteTrack(name);
     }
 

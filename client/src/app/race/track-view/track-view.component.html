@@ -22,7 +22,7 @@
                                 </li>
                             </ul>
                         </div>
-                        <a routerLink="/race/play" class="play-btn btn btn-success">Play this track</a>
+                        <a (click)="this.parseTrack(track)" routerLink="/race/play" class="play-btn btn btn-success">Play this track</a>
                     </li>
                 </div>
             </ul>

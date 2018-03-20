@@ -12,8 +12,6 @@
                         <h3>{{track.name}}</h3>
                         <p>{{track.description}}</p>
                         <div class="track-actions">
-                            <!--><button (click)="onButtonClick(track.name, 'edit')" type="button" class="btn btn-outline-success">Edit</button>
-                            <button (click)="onButtonClick(track.name, 'delete')" type="button" class="btn btn-outline-danger">Delete</button></!-->
                             <button type="button" class="btn btn-outline-success" [routerLink]="['/edit']" [queryParams]=" { name: track.name }">Edit</button>
                             <button (click)="deleteTrack(track.name)" type="button" class="btn btn-outline-danger">Delete</button>
                         </div>

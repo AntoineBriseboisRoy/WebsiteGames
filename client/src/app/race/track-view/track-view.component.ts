@@ -1,6 +1,7 @@
 import { Component, OnInit } from "@angular/core";
 import { ITrack } from "../../../../../common/interfaces/ITrack";
 import { MongoQueryService } from "../../mongo-query.service";
+import { TrackParserService } from "../track-parser.service";
 
 @Component({
     selector: "app-track-view",
@@ -11,7 +12,7 @@ export class TrackViewComponent implements OnInit {
     public tracks: ITrack[];
 
     public readonly title: string;
-    public constructor(private mongoQueryService: MongoQueryService) {
+    public constructor(private mongoQueryService: MongoQueryService, private trackParserService: TrackParserService) {
         this.title = "Welcome to track list!";
         this.tracks = new Array<ITrack>();
     }
@@ -27,5 +28,9 @@ export class TrackViewComponent implements OnInit {
         })
         .catch((err: Error) => { console.error(err); }
         );
+    }
+
+    public parseTrack(track: ITrack): void {
+        this.trackParserService.track = track;
     }
 }
