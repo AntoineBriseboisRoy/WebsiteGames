@@ -3,6 +3,7 @@ import { SocketIoService } from "../socket-io.service";
 import { INewGame } from "../../../../../common/interfaces/INewGame";
 import { Difficulty } from "../../constants";
 import { MultiplayerGamesService } from "./multiplayer-games.service";
+import { Router } from "@angular/router";
 
 @Component({
     selector: "app-multiplayer-menu",
@@ -13,7 +14,8 @@ export class MultiplayerMenuComponent {
     public username: string;
     private difficulty: Difficulty;
 
-    public constructor(private socketService: SocketIoService, public waitingGames: MultiplayerGamesService) {
+    public constructor(private socketService: SocketIoService, public waitingGames: MultiplayerGamesService,
+                       private router: Router) {
         this.socketService.init();
         this.socketService.CreatedGameSubject.subscribe((newGame: INewGame) => {
             this.waitingGames.push(newGame);
@@ -24,7 +26,8 @@ export class MultiplayerMenuComponent {
         });
         this.socketService.PlayGameSubject.subscribe((gameToPlay: INewGame) => {
             if (this.waitingGames.canJoinGame(gameToPlay)) {
-                console.warn("start game");
+                this.waitingGames.setGame(gameToPlay);
+                this.router.navigate(["/crossword/play"]);
             }
         });
     }

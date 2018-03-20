@@ -31,7 +31,7 @@ export class DifficultyMenuComponent {
     }
 
     public activateDifficulty(difficulty: Difficulty): void {
-        this.gameManager.setDifficulty(difficulty);
+        GameManager.Instance.difficulty = difficulty;
         this.isActiveDifficulty = true;
     }
 }

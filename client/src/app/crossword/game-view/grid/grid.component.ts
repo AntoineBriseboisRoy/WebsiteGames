@@ -117,7 +117,7 @@ export class GridComponent implements OnInit {
             }
             if (userAnswer === correctAnswer) {
                 this.setCellsToFound(word);
-                GameManager.Instance.PlayerOne.addPoint(word.cells.length);
+                GameManager.Instance.playerOne.addPoint(word.cells.length);
                 word.isFound = true;
             }
             userAnswer = "";

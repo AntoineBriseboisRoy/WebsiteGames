@@ -4,6 +4,7 @@ import { Observable } from "rxjs/Observable";
 import { catchError } from "rxjs/operators";
 import { of } from "rxjs/observable/of";
 import { INewGame } from "../../../../../common/interfaces/INewGame";
+import { GameManager } from "../game-manager";
 
 @Injectable()
 export class MultiplayerGamesService {
@@ -52,6 +53,13 @@ export class MultiplayerGamesService {
 
     public canJoinGame(gameToPlay: INewGame): boolean {
         return this.isWaiting() && this.createdGame.userCreator === gameToPlay.userCreator;
+    }
+
+    public setGame(gameToPlay: INewGame): void {
+        GameManager.Instance.difficulty = gameToPlay.difficulty;
+        GameManager.Instance.isMultiplayer = true;
+        GameManager.Instance.playerOne.name = gameToPlay.userCreator;
+        GameManager.Instance.playerTwo.name = gameToPlay.userJoiner;
     }
 
     private getGamesServer(): Observable<Array<INewGame>> {
