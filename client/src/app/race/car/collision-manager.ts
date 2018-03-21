@@ -1,5 +1,5 @@
 import { Car } from "./car";
-import { Object3D, Vector3, Matrix4, Quaternion, Box3 } from "three";
+import { Vector3, Matrix4, Quaternion, Box3, Mesh, Object3D } from "three";
 
 const CAR_A_MOMENTUM_FACTOR: number = 2.1;
 const CAR_B_MOMENTUM_FACTOR: number = 1.9;
@@ -9,39 +9,44 @@ const FRONT_SECTION: number = 1.79;
 export class CollisionManager {
 
     private cars: Car[];
-    private collisionables: Object3D[]; // In the optic that cars, walls and different floor types can create collisions.
+    private collisionables: Mesh[]; // In the optic that cars, walls and different floor types can create collisions.
 
     public constructor() {
         this.cars = new Array<Car>();
-        this.collisionables = new Array<Object3D>();
+        this.collisionables = new Array<Mesh>();
     }
 
     public addCar(car: Car): void {
         this.cars.push(car);
-        this.addCollisionable(car);
     }
 
-    public addCollisionable(collisionable: Object3D): void {
+    public addWall(collisionable: Mesh): void {
         this.collisionables.push(collisionable);
+        this.collisionables[this.collisionables.length - 1].name = "Wall";
+        console.log(this.collisionables[this.collisionables.length - 1].name);
     }
 
     public update(): void {
-        this.verifyCollision();
+        this.verifyCarCollision();
+        this.verifyWallCollision();
     }
 
-    private verifyCollision(): void {
+    private verifyCarCollision(): void {
         // tslint:disable-next-line:prefer-for-of
         for (let i: number = 0; i < this.cars.length; ++i) {
             for (let j: number = i + 1; j < this.cars.length; ++j) {
                 if (this.cars[i].BoundingBox.intersectsBox(this.cars[j].BoundingBox)) {
-                    this.collision(this.cars[i], this.cars[j]);
+                    this.carCollision(this.cars[i], this.cars[j]);
                 }
             }
         }
     }
 
+    private verifyWallCollision(): void {
+    }
+
     // tslint:disable-next-line:max-func-body-length
-    private collision(carA: Car, carB: Car): void {
+    private carCollision(carA: Car, carB: Car): void {
         const massA: number = carA.Mass;
         const massB: number = carB.Mass;
         const speedA: Vector3 = carA.speed;

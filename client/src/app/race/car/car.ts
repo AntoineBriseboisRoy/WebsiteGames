@@ -133,7 +133,7 @@ export class Car extends Object3D {
 
     public async init(): Promise<void> {
         this.mesh = await this.load();
-        this.mesh.position.y = 20;
+        // this.mesh.position.y = 20;
         this.add(this.mesh);
         this.InitBoundingBox();
         this.mesh.position.add(this.initialPosition);

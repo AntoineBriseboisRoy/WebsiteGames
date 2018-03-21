@@ -2,8 +2,8 @@ import { Injectable } from "@angular/core";
 import Stats = require("stats.js");
 import { WebGLRenderer, Scene, AmbientLight,
          Mesh, PlaneBufferGeometry, MeshBasicMaterial,
-         Vector2, BackSide, CircleBufferGeometry,
-         DoubleSide, Texture, RepeatWrapping, TextureLoader, Vector3 } from "three";
+         Vector2, BackSide,
+         DoubleSide, Texture, RepeatWrapping, TextureLoader, Vector3, CircleBufferGeometry, Box3, BoxHelper } from "three";
 import { Car } from "../car/car";
 import { ThirdPersonCamera } from "../camera/camera-perspective";
 import { TopViewCamera } from "../camera/camera-orthogonal";
@@ -133,10 +133,10 @@ export class RenderService {
 
     private generateTrack(): void {
         for (let i: number = 0; i < this.activeTrack.points.length - 1; ++i) {
-            this.scene.add(this.createRoad(i));
-            // this.scene.add(this.createIntersection(i));
             this.scene.add(this.createWall(i)[0]);
-            // this.scene.add(this.createWall(i)[1]);
+            this.scene.add(this.createWall(i)[1]);
+            this.scene.add(this.createRoad(i));
+            this.scene.add(this.createIntersection(i));
         }
     }
 
@@ -158,28 +158,37 @@ export class RenderService {
 
         return mesh;
     }
+    // tslint:disable-next-line:max-func-body-length
     private createWall(index: number): Mesh[] {
         const trackTexture: Texture = new TextureLoader().load("/assets/road.jpg");
         trackTexture.wrapS = RepeatWrapping;
-        const vector: Vector3 = new Vector3(this.activeTrack.points[index + 1].x -
+        const vector: Vector3 = new Vector3(this.activeTrack.points[(index + 1) % this.activeTrack.points.length].x -
                                             this.activeTrack.points[index].x,
-                                            this.activeTrack.points[index + 1].y -
-                                            this.activeTrack.points[index].y,
-                                            0);
+                                            0,
+                                            this.activeTrack.points[(index + 1) % this.activeTrack.points.length].y -
+                                            this.activeTrack.points[index].y);
         const direction: Vector3 = new Vector3(0, 1, 0).cross(vector);
-        const plane: PlaneBufferGeometry = new PlaneBufferGeometry(vector.length() * WORLD_SIZE, ROAD_WIDTH);
-        const mesh: Mesh[] = new Array<Mesh>();
-        mesh.push(new Mesh(plane, new MeshBasicMaterial({ map: trackTexture, side: DoubleSide })));
-        mesh.push(new Mesh(plane, new MeshBasicMaterial({ map: trackTexture, side: DoubleSide })));
-        mesh[0].position.x = -(this.activeTrack.points[index].y + vector.y * HALF) * WORLD_SIZE + WORLD_SIZE * HALF;
-                            //  - direction.normalize().x * ROAD_WIDTH * HALF;
-        mesh[0].position.z = -(this.activeTrack.points[index].x + vector.x * HALF) * WORLD_SIZE + WORLD_SIZE * HALF
-                             - direction.normalize().z * ROAD_WIDTH * HALF;
-        mesh[0].rotation.y = vector.y === 0 ? PI_OVER_2 : Math.atan(vector.y / vector.x) + PI_OVER_2;
 
-        // mesh[1].position.x = -(this.activeTrack.points[index].y + vector.y * HALF - vector.y * ROAD_WIDTH) * WORLD_SIZE + WORLD_SIZE * HALF;
-        // mesh[1].position.z = -(this.activeTrack.points[index].x + vector.x * HALF - vector.x * ROAD_WIDTH) * WORLD_SIZE + WORLD_SIZE * HALF;
-        // mesh[1].rotation.y = vector.y === 0 ? PI_OVER_2 : Math.atan(vector.y / vector.x) + PI_OVER_2;
+        const planeInside: PlaneBufferGeometry = new PlaneBufferGeometry(vector.length() * WORLD_SIZE - ROAD_WIDTH, ROAD_WIDTH);
+        const planeOutside: PlaneBufferGeometry = new PlaneBufferGeometry(vector.length() * WORLD_SIZE - ROAD_WIDTH, ROAD_WIDTH);
+
+        const mesh: Mesh[] = new Array<Mesh>();
+        mesh.push(new Mesh(planeInside, new MeshBasicMaterial({ map: trackTexture, side: DoubleSide })));
+        mesh.push(new Mesh(planeOutside, new MeshBasicMaterial({ map: trackTexture, side: DoubleSide })));
+        mesh[0].position.x = -(this.activeTrack.points[index].y + vector.z * HALF) * WORLD_SIZE + WORLD_SIZE * HALF
+                             - direction.normalize().z * ROAD_WIDTH * HALF;
+        mesh[0].position.z = -(this.activeTrack.points[index].x + vector.x * HALF) * WORLD_SIZE + WORLD_SIZE * HALF
+                             - direction.normalize().x * ROAD_WIDTH * HALF;
+        mesh[0].rotation.y = vector.x === 0 ? 0 : Math.atan(vector.z / vector.x) + PI_OVER_2;
+
+        mesh[1].position.x = -(this.activeTrack.points[index].y + vector.z * HALF) * WORLD_SIZE + WORLD_SIZE * HALF
+                             + direction.normalize().z * ROAD_WIDTH * HALF;
+        mesh[1].position.z = -(this.activeTrack.points[index].x + vector.x * HALF) * WORLD_SIZE + WORLD_SIZE * HALF
+                             + direction.normalize().x * ROAD_WIDTH * HALF;
+        mesh[1].rotation.y = vector.x === 0 ? 0 : Math.atan(vector.z / vector.x) + PI_OVER_2;
+
+        this.collisionManager.addWall(mesh[0]);
+        this.collisionManager.addWall(mesh[1]);
 
         return mesh;
     }
