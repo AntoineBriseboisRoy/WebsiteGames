@@ -3,7 +3,7 @@ import Stats = require("stats.js");
 import { WebGLRenderer, Scene, AmbientLight,
          Mesh, PlaneBufferGeometry, MeshBasicMaterial,
          Vector2, BackSide,
-         DoubleSide, Texture, RepeatWrapping, TextureLoader, Vector3, CircleBufferGeometry, Box3, BoxHelper } from "three";
+         DoubleSide, Texture, RepeatWrapping, TextureLoader, Vector3, CircleBufferGeometry, Box3, BoxHelper, ArrowHelper, Raycaster } from "three";
 import { Car } from "../car/car";
 import { ThirdPersonCamera } from "../camera/camera-perspective";
 import { TopViewCamera } from "../camera/camera-orthogonal";
@@ -41,6 +41,8 @@ export class RenderService {
 
     private collisionManager: CollisionManager;
 
+    private arrows: ArrowHelper[];
+
     public get car(): Car {
         return this._car;
     }
@@ -55,6 +57,7 @@ export class RenderService {
         this.superposition = 0;
         this.dummyCar = new Car(new Vector3(-15, 0, 0));
         this.collisionManager = new CollisionManager();
+        this.arrows = new Array<ArrowHelper>();
     }
 
     public async initialize(container: HTMLDivElement, track: ITrack): Promise<void> {
@@ -67,6 +70,7 @@ export class RenderService {
         await this.createScene();
         this.initStats();
         this.startRenderingLoop();
+        this.updateArrows();
     }
 
     public onResize(): void {
@@ -84,6 +88,17 @@ export class RenderService {
         const textureLoader: TextureLoader = new TextureLoader();
         this.floorTextures.set(TrackType.DESERT, textureLoader.load("/assets/desert.jpg"));
         this.floorTextures.set(TrackType.REGULAR, textureLoader.load("/assets/grass.jpg"));
+    }
+
+    private updateArrows(): void {
+        const raycasters: Array<Raycaster> = this._car.Raycasters;
+        while (this.arrows.length > 0) {
+            this.scene.remove(this.arrows.pop());
+        }
+        for (let i: number = 0; i < raycasters.length; i++) {
+            this.arrows.push(new ArrowHelper(raycasters[i].ray.direction, raycasters[i].ray.origin, 2, 0xff0000, 0.5, 0.1));
+            this.scene.add(this.arrows[i]);
+        }
     }
 
     private update(): void {
@@ -122,6 +137,10 @@ export class RenderService {
 
         this.scene.add(this._car);
         this.scene.add(this.dummyCar);
+
+        this._car.Raycasters.forEach((rayCaster: Raycaster) => {
+            this.scene.add(new ArrowHelper(rayCaster.ray.direction, rayCaster.ray.origin, 2, 0xff0000, 0.5, 0.1));
+        });
 
         this.scene.add(new AmbientLight(WHITE, AMBIENT_LIGHT_OPACITY));
 

@@ -1,4 +1,4 @@
-import { Vector3, Matrix4, Object3D, ObjectLoader, Euler, Quaternion, Box3, BoxHelper, /*BoxHelper*/ } from "three";
+import { Vector3, Matrix4, Object3D, ObjectLoader, Euler, Quaternion, Box3, BoxHelper, Raycaster } from "three";
 import { Engine } from "./engine";
 import { MS_TO_SECONDS, GRAVITY, PI_OVER_2, RAD_TO_DEG } from "../../constants";
 import { Wheel } from "./wheel";
@@ -13,6 +13,8 @@ const INITIAL_WEIGHT_DISTRIBUTION: number = 0.5;
 const MINIMUM_SPEED: number = 0.05;
 const NUMBER_REAR_WHEELS: number = 2;
 const NUMBER_WHEELS: number = 4;
+
+const RAYCASTER_ANGLE: number = Math.PI / 8;
 
 export class Car extends Object3D {
     public isAcceleratorPressed: boolean;
@@ -32,6 +34,7 @@ export class Car extends Object3D {
     private weightRear: number;
 
     private boundingBox: Box3;
+    private raycasters: Raycaster[];
 
     public get Mass(): number {
         return this.mass;
@@ -59,6 +62,10 @@ export class Car extends Object3D {
 
     public get angle(): number {
         return this.mesh.rotation.y * RAD_TO_DEG;
+    }
+
+    public get Raycasters(): Array<Raycaster> {
+        return this.raycasters;
     }
 
     public getWorldMatrix(): Matrix4 {
@@ -118,6 +125,7 @@ export class Car extends Object3D {
         this._speed = new Vector3(0, 0, 0);
 
         this.boundingBox = new Box3();
+        this.raycasters = new Array<Raycaster>();
     }
 
     // tslint:disable-next-line:no-suspicious-comment
@@ -135,15 +143,25 @@ export class Car extends Object3D {
         this.mesh = await this.load();
         // this.mesh.position.y = 20;
         this.add(this.mesh);
-        this.InitBoundingBox();
+        this.initBoundingBox();
+        this.initRaycasters();
         this.mesh.position.add(this.initialPosition);
         this.mesh.setRotationFromEuler(INITIAL_MODEL_ROTATION);
     }
 
-    private InitBoundingBox(): void {
+    private initBoundingBox(): void {
         const helper: BoxHelper =  new BoxHelper(this.mesh);
         this.boundingBox.setFromObject(helper);
         this.mesh.add(helper);
+    }
+
+    private initRaycasters(): void {
+        this.raycasters.push(new Raycaster(this.getPosition(), new Vector3(1, 0, 0)));
+        this.raycasters.push(new Raycaster(this.getPosition(), new Vector3(Math.cos(RAYCASTER_ANGLE), 0, Math.sin(RAYCASTER_ANGLE))));
+        this.raycasters.push(new Raycaster(this.getPosition(), new Vector3(Math.cos(RAYCASTER_ANGLE), 0, -Math.sin(RAYCASTER_ANGLE))));
+        this.raycasters.push(new Raycaster(this.getPosition(), new Vector3(-1, 0, 0)));
+        this.raycasters.push(new Raycaster(this.getPosition(), new Vector3(-Math.cos(RAYCASTER_ANGLE), 0, Math.sin(RAYCASTER_ANGLE))));
+        this.raycasters.push(new Raycaster(this.getPosition(), new Vector3(-Math.cos(RAYCASTER_ANGLE), 0, -Math.sin(RAYCASTER_ANGLE))));
     }
 
     public steerLeft(): void {
