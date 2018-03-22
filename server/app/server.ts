@@ -28,20 +28,22 @@ export class Server {
         this.server.on("listening", () => this.onListening());
 
         this.socketIo.on("connection", (socket: SocketIO.Socket) => {
+            socket.on("waiting-room", () => socket.join("waiting-room"));
             socket.on("new-game", (data: string) => {
                 const game: INewGame = JSON.parse(data);
                 WaitingGamesService.Instance.pushNewGame(game);
-                socket.broadcast.emit("new-game", game);
+                socket.in("waiting-room").broadcast.emit("new-game", game);
             });
             socket.on("delete-game", (data: string) => {
                 const game: INewGame = JSON.parse(data);
                 WaitingGamesService.Instance.remove(game);
-                socket.broadcast.emit("delete-game", game);
+                socket.in("waiting-room").broadcast.emit("delete-game", game);
             });
             socket.on("play-game", (data: string) => {
+                socket.join("game-room");
                 const game: INewGame = JSON.parse(data);
                 WaitingGamesService.Instance.remove(game);
-                socket.broadcast.emit("play-game", game);
+                socket.in("waiting-room").broadcast.emit("play-game", game);
             });
         });
     }

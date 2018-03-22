@@ -15,7 +15,10 @@ export class SocketIoService {
 
     public constructor(private gameRoomManager: GameRoomManagerService) {
         this.socket = io("http://localhost:3000/");
-        this.socket.on("connect", () => this.gameRoomManager.init());
+        this.socket.on("connect", () => {
+            this.gameRoomManager.init();
+            this.socket.emit("waiting-room");
+        });
     }
 
     public init(): void {
