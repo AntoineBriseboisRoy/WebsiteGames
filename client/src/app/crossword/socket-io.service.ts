@@ -4,7 +4,7 @@ import { Subject } from "rxjs/Subject";
 import { Observer } from "rxjs/Observer";
 import { Observable } from "rxjs/Observable";
 import { INewGame } from "../../../../common/interfaces/INewGame";
-import { MultiplayerGamesService } from "./multiplayer-menu/multiplayer-games.service";
+import { GameRoomManagerService } from "./multiplayer-mode/GameRoomManagerService.service";
 
 @Injectable()
 export class SocketIoService {
@@ -13,9 +13,9 @@ export class SocketIoService {
     private deletedGameSubject: Subject<INewGame>;
     private playGameSubject: Subject<INewGame>;
 
-    public constructor(private multiplayerGames: MultiplayerGamesService) {
+    public constructor(private gameRoomManager: GameRoomManagerService) {
         this.socket = io("http://localhost:3000/");
-        this.socket.on("connect", () => this.multiplayerGames.init());
+        this.socket.on("connect", () => this.gameRoomManager.init());
     }
 
     public init(): void {

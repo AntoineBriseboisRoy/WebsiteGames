@@ -9,7 +9,7 @@ import { AdminSectionComponent } from "./admin-section/admin-section.component";
 import { TrackViewComponent } from "./race/track-view/track-view.component";
 import { PlayerMenuComponent } from "./crossword/player-menu/player-menu.component";
 import { DifficultyMenuComponent } from "./crossword/difficulty-menu/difficulty-menu.component";
-import { MultiplayerMenuComponent } from "./crossword/multiplayer-menu/multiplayer-menu.component";
+import { MultiplayerMenuComponent } from "./crossword/multiplayer-mode/multiplayer-menu.component";
 
 const routes: Routes = [
     { path: "", component: DashboardComponent },

@@ -1,33 +1,33 @@
 import { Component } from "@angular/core";
-import { MultiplayerGamesService } from "../multiplayer-games.service";
+import { GameRoomManagerService } from "../GameRoomManagerService.service";
 import { SocketIoService } from "../../socket-io.service";
 import { INewGame } from "../../../../../../common/interfaces/INewGame";
 import { Router } from "@angular/router";
 
 @Component({
     selector: "app-waiting-games",
-    templateUrl: "./waiting-games.component.html",
-    styleUrls: ["./waiting-games.component.css"]
+    templateUrl: "./GameList.component.html",
+    styleUrls: ["./GameList.component.css"]
 })
-export class WaitingGamesComponent {
+export class GameListComponent {
 
     public userJoiner: Array<string>;
-    public constructor(public waitingGames: MultiplayerGamesService, private socketIO: SocketIoService,
+    public constructor(public gameRooms: GameRoomManagerService, private socketIO: SocketIoService,
                        private router: Router) {
-        this.userJoiner = new Array<string>(this.waitingGames.Games.length);
+        this.userJoiner = new Array<string>(this.gameRooms.Games.length);
     }
 
     private isJoinerDefined(index: number): boolean {
         return this.userJoiner[index] !== undefined && this.userJoiner[index] !== "";
     }
     public canJoinGame(index: number): boolean {
-        return this.isJoinerDefined(index) && !this.waitingGames.isWaiting();
+        return this.isJoinerDefined(index) && !this.gameRooms.isDefined();
     }
     public joinGame(index: number): void {
-        const gameToPlay: INewGame = { userCreator: this.waitingGames.Games[index].userCreator,
-                                       difficulty: this.waitingGames.Games[index].difficulty,
+        const gameToPlay: INewGame = { userCreator: this.gameRooms.Games[index].userCreator,
+                                       difficulty: this.gameRooms.Games[index].difficulty,
                                        userJoiner: this.userJoiner[index]};
-        this.waitingGames.setGame(gameToPlay);
+        this.gameRooms.setGame(gameToPlay);
         this.socketIO.PlayGameSubject.next(gameToPlay);
         this.router.navigate(["/crossword/play"]);
     }

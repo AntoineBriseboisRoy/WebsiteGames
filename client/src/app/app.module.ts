@@ -22,11 +22,11 @@ import { TrackViewComponent } from "./race/track-view/track-view.component";
 import { GridService } from "./crossword/grid.service";
 import { WordTransmitterService } from "./crossword/game-view/wordTransmitter.service";
 import { PlayerMenuComponent } from "./crossword/player-menu/player-menu.component";
-import { MultiplayerMenuComponent } from "./crossword/multiplayer-menu/multiplayer-menu.component";
+import { MultiplayerMenuComponent } from "./crossword/multiplayer-mode/multiplayer-menu.component";
 import { MongoQueryService } from "./mongo-query.service";
 import { SocketIoService } from "./crossword/socket-io.service";
-import { MultiplayerGamesService } from "./crossword/multiplayer-menu/multiplayer-games.service";
-import { WaitingGamesComponent } from "./crossword/multiplayer-menu/waiting-games/waiting-games.component";
+import { GameRoomManagerService } from "./crossword/multiplayer-mode/GameRoomManagerService.service";
+import { GameListComponent } from "./crossword/multiplayer-mode/GameList/GameList.component";
 
 @NgModule({
     declarations: [
@@ -43,7 +43,7 @@ import { WaitingGamesComponent } from "./crossword/multiplayer-menu/waiting-game
         TrackViewComponent,
         PlayerMenuComponent,
         MultiplayerMenuComponent,
-        WaitingGamesComponent
+        GameListComponent
     ],
     imports: [
         BrowserModule,
@@ -57,7 +57,7 @@ import { WaitingGamesComponent } from "./crossword/multiplayer-menu/waiting-game
         MongoQueryService,
         GridService,
         WordTransmitterService,
-        MultiplayerGamesService,
+        GameRoomManagerService,
         SocketIoService
     ],
     bootstrap: [AppComponent]

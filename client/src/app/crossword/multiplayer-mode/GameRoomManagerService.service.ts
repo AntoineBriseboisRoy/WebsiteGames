@@ -7,7 +7,7 @@ import { INewGame } from "../../../../../common/interfaces/INewGame";
 import { GameManager } from "../game-manager";
 
 @Injectable()
-export class MultiplayerGamesService {
+export class GameRoomManagerService {
     private readonly BASE_URL: string;
     private games: Array<INewGame>;
     public createdGame: INewGame;
@@ -37,7 +37,7 @@ export class MultiplayerGamesService {
         return this.games;
     }
 
-    public isWaiting(): boolean {
+    public isDefined(): boolean {
         return this.createdGame !== undefined;
     }
 
@@ -52,7 +52,7 @@ export class MultiplayerGamesService {
     }
 
     public canJoinGame(gameToPlay: INewGame): boolean {
-        return this.isWaiting() && this.createdGame.userCreator === gameToPlay.userCreator;
+        return this.isDefined() && this.createdGame.userCreator === gameToPlay.userCreator;
     }
 
     public setGame(gameToPlay: INewGame): void {

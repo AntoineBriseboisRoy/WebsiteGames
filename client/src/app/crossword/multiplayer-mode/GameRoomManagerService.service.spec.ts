@@ -1,15 +1,15 @@
 import { TestBed, inject } from "@angular/core/testing";
 
-import { MultiplayerGamesService } from "./multiplayer-games.service";
+import { GameRoomManagerService } from "./GameRoomManagerService.service";
 
 describe("MultiplayerGamesService", () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [MultiplayerGamesService]
+      providers: [GameRoomManagerService]
     });
   });
 
-  it("should be created", inject([MultiplayerGamesService], (service: MultiplayerGamesService) => {
+  it("should be created", inject([GameRoomManagerService], (service: GameRoomManagerService) => {
     expect(service).toBeTruthy();
   }));
 });

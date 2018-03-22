@@ -2,7 +2,7 @@ import { Component, HostListener } from "@angular/core";
 import { SocketIoService } from "../socket-io.service";
 import { INewGame } from "../../../../../common/interfaces/INewGame";
 import { Difficulty } from "../../constants";
-import { MultiplayerGamesService } from "./multiplayer-games.service";
+import { GameRoomManagerService } from "./GameRoomManagerService.service";
 import { Router } from "@angular/router";
 
 @Component({
@@ -14,19 +14,19 @@ export class MultiplayerMenuComponent {
     public username: string;
     private difficulty: Difficulty;
 
-    public constructor(private socketService: SocketIoService, public waitingGames: MultiplayerGamesService,
+    public constructor(private socketService: SocketIoService, public gameRooms: GameRoomManagerService,
                        private router: Router) {
         this.socketService.init();
         this.socketService.CreatedGameSubject.subscribe((newGame: INewGame) => {
-            this.waitingGames.push(newGame);
+            this.gameRooms.push(newGame);
         });
 
         this.socketService.DeletedGameSubject.subscribe((deletedGame: INewGame) => {
-            this.waitingGames.remove(deletedGame);
+            this.gameRooms.remove(deletedGame);
         });
         this.socketService.PlayGameSubject.subscribe((gameToPlay: INewGame) => {
-            if (this.waitingGames.canJoinGame(gameToPlay)) {
-                this.waitingGames.setGame(gameToPlay);
+            if (this.gameRooms.canJoinGame(gameToPlay)) {
+                this.gameRooms.setGame(gameToPlay);
                 this.router.navigate(["/crossword/play"]);
             }
         });
@@ -34,7 +34,7 @@ export class MultiplayerMenuComponent {
 
     @HostListener("window:beforeunload", ["$event"])
     public handleDestroyedComponent(): void {
-        if (this.waitingGames.isWaiting()) {
+        if (this.gameRooms.isDefined()) {
             this.deleteGame();
         }
     }
@@ -60,22 +60,20 @@ export class MultiplayerMenuComponent {
 
     public hasCompletedForm(): boolean {
         return this.difficulty !== undefined && this.username !== undefined && this.username !== "" &&
-            !this.waitingGames.isWaiting();
+            !this.gameRooms.isDefined();
     }
 
     public createNewGame(): void {
-        if (this.waitingGames.isUsernameUnique(this.username)) {
-            this.waitingGames.createdGame = { userCreator: this.username, difficulty: this.difficulty };
-            this.waitingGames.push(this.waitingGames.createdGame);
-            this.socketService.CreatedGameSubject.next(this.waitingGames.createdGame);
-        } else {
-            console.error("problem creating a game");
+        if (this.gameRooms.isUsernameUnique(this.username)) {
+            this.gameRooms.createdGame = { userCreator: this.username, difficulty: this.difficulty };
+            this.gameRooms.push(this.gameRooms.createdGame);
+            this.socketService.CreatedGameSubject.next(this.gameRooms.createdGame);
         }
     }
 
     public deleteGame(): void {
-        this.waitingGames.remove(this.waitingGames.createdGame);
-        this.socketService.DeletedGameSubject.next(this.waitingGames.createdGame);
-        this.waitingGames.createdGame = undefined;
+        this.gameRooms.remove(this.gameRooms.createdGame);
+        this.socketService.DeletedGameSubject.next(this.gameRooms.createdGame);
+        this.gameRooms.createdGame = undefined;
     }
 }
