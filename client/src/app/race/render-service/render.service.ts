@@ -82,7 +82,6 @@ export class RenderService {
 
     private initFloorTextures(): void {
         const textureLoader: TextureLoader = new TextureLoader();
-        this.floorTextures.set(TrackType.DESERT, textureLoader.load("/assets/desert.jpg"));
         this.floorTextures.set(TrackType.REGULAR, textureLoader.load("/assets/grass.jpg"));
     }
 

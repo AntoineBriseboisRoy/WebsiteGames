@@ -120,3 +120,12 @@ div {
     top: 16%;
     left: 1%;
 }
+
+#starting-text {
+    position: fixed;
+    font-size: 12vh;
+    font-weight: bold;
+    top: 25%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
