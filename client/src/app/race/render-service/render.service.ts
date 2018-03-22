@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core";
 import Stats = require("stats.js");
 import { WebGLRenderer, Scene, AmbientLight,
          Mesh, PlaneBufferGeometry, MeshBasicMaterial,
-         Texture, RepeatWrapping, TextureLoader, Vector2, BackSide, CircleBufferGeometry, AudioListener } from "three";
+         Texture, RepeatWrapping, TextureLoader, Vector2, BackSide, CircleBufferGeometry } from "three";
 import { Car } from "../car/car";
 import { ThirdPersonCamera } from "../camera/camera-perspective";
 import { TopViewCamera } from "../camera/camera-orthogonal";
@@ -86,7 +86,6 @@ export class RenderService {
     }
 
     private async createScene(): Promise<void> {
-        const listener: AudioListener = new AudioListener();
         this.scene = new Scene();
         this.cameraContext = new CameraContext();
         this.cameraContext.addState(new ThirdPersonCamera(FIELD_OF_VIEW,

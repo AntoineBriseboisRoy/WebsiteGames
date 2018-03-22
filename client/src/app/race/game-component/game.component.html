@@ -7,13 +7,13 @@
     <span id="lap" class="text">Lap: {{this.lap}} / 3</span>
   </span>
   <span id="time-background">
-    <span id="time" class="text">Total time: {{this.totalTime.getMinutes() | number: '2.0'}}:{{this.totalTime.getSeconds() | number: '2.0'}}:{{this.totalTime.getMilliseconds().toString() | slice:0:2}}</span>
+    <span id="time" class="text">Total time: {{this.totalTime.getTime() | date: 'mm:ss:SS'}}</span>
   </span>
   <span id="lap-time-background"> 
-    <span id="lap-time" class="text"> Lap time: {{this.lapTime.getMinutes() | number: '2.0'}}:{{this.lapTime.getSeconds() | number: '2.0'}}:{{this.lapTime.getMilliseconds().toString() | slice:0:2}}</span>
+    <span id="lap-time" class="text"> Lap time: {{this.lapTime.getTime() | date: 'mm:ss:SS'}}</span>
   </span>
   <span id="best-time-background">
-    <span id="best-time" class="text"> Best time: {{this.bestTime.getMinutes() | number: '2.0'}}:{{this.bestTime.getSeconds() | number: '2.0'}}:{{this.bestTime.getMilliseconds().toString() | slice:0:2}} </span>
+    <span id="best-time" class="text"> Best time: {{this.bestTime.getTime() | date: 'mm:ss:SS'}}</span>
   </span>
 
   <div id="rpm-background">

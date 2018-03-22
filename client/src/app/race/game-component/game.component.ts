@@ -7,7 +7,7 @@ import { DEFAULT_SHIFT_RPM } from "../car/engine";
 import { ITrack } from "../../../../../common/interfaces/ITrack";
 import { ActivatedRoute, Params } from "@angular/router";
 import { MongoQueryService } from "../../mongo-query.service";
-import { TimerService, TEN_MILLISECONDS } from "../timer-service/timer.service";
+import { TimerService } from "../timer-service/timer.service";
 import { Subscription } from "rxjs/Subscription";
 
 const MAX_GEAR_BAR_WIDTH: number = 27;
@@ -81,20 +81,24 @@ export class GameComponent implements AfterViewInit {
     }
 
     private startingSequence(): void {
+        const COUNTDOWN: number = 3;
         const startingSequence: HTMLAudioElement = new Audio();
         startingSequence.src = "../../../assets/sounds/countdown.ogg";
         startingSequence.load();
-        let counter: number = 3;
-        const subscription: Subscription = this.timer.getTimeSecond().subscribe((time: Date) => {
-            startingSequence.play();
-            if (counter > 0) {
-                this.startingText = (counter).toString();
-            } else {
+        let countdown: number = COUNTDOWN;
+        const subscription: Subscription = this.timer.Seconds.subscribe((time: number) => {
+            if (countdown === COUNTDOWN) {
+                startingSequence.play();
+            }
+            if (countdown > 0) {
+                this.startingText = (countdown).toString();
+            } else if (countdown > -1) {
                 this.inputManagerService.init(this.car, this.CameraContext);
+                this.timer.initialize();
                 this.startTimer();
                 this.startingText = "Start!";
             }
-            if (counter-- < -1) {
+            if (countdown-- < -1) {
                 this.startingText = "";
                 subscription.unsubscribe();
             }
@@ -102,10 +106,9 @@ export class GameComponent implements AfterViewInit {
     }
 
     private startTimer(): void {
-        this.timer.getHundredthSecond().subscribe((time: Date) => {
-            this.totalTime.setMilliseconds(time.getMilliseconds());
-            this.totalTime.setMinutes(time.getMinutes());
-            this.lapTime.setMilliseconds(this.lapTime.getMilliseconds() + TEN_MILLISECONDS);
+        this.timer.Time.subscribe((time: number) => {
+            this.totalTime.setTime(time);
+            this.lapTime.setTime(time); // À modifier lorsque les tours de piste seront implémenté.
         });
     }
     public rpmRatio(): number {
