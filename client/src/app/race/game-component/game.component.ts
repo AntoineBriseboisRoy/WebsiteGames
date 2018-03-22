@@ -3,6 +3,12 @@ import { RenderService } from "../render-service/render.service";
 import { Car } from "../car/car";
 import { InputManagerService } from "../input-manager-service/input-manager.service";
 import { CameraContext } from "../camera/camera-context";
+import { DEFAULT_SHIFT_RPM } from "../car/engine";
+import { ITrack } from "../../../../../common/interfaces/ITrack";
+import { ActivatedRoute, Params } from "@angular/router";
+import { MongoQueryService } from "../../mongo-query.service";
+
+const MAX_GEAR_BAR_WIDTH: number = 27;
 
 @Component({
     moduleId: module.id,
@@ -20,7 +26,8 @@ export class GameComponent implements AfterViewInit {
     @ViewChild("container")
     private containerRef: ElementRef;
 
-    public constructor(private renderService: RenderService, private inputManagerService: InputManagerService) {
+    public constructor(private renderService: RenderService, private inputManagerService: InputManagerService,
+                       private mongoQueryService: MongoQueryService ,private route: ActivatedRoute) {
     }
 
     @HostListener("window:resize", ["$event"])
@@ -39,11 +46,15 @@ export class GameComponent implements AfterViewInit {
     }
 
     public ngAfterViewInit(): void {
-        this.renderService
-            .initialize(this.containerRef.nativeElement)
-            .then(/* do nothing */)
-            .catch((err) => console.error(err));
-        this.inputManagerService.init(this.car, this.CameraContext);
+        this.route.queryParams.subscribe((params: Params) => {
+            this.mongoQueryService.getTrack(params["name"]).then((track: ITrack) => {
+                this.renderService
+                .initialize(this.containerRef.nativeElement, track)
+                .then(/* do nothing */)
+                .catch((err) => console.error(err));
+                this.inputManagerService.init(this.car, this.CameraContext);
+            });
+        });
     }
 
     public get car(): Car {
@@ -52,5 +63,9 @@ export class GameComponent implements AfterViewInit {
 
     public get CameraContext(): CameraContext {
         return this.renderService.CameraContext;
+    }
+
+    public rpmRatio(): number {
+        return (this.car.rpm / DEFAULT_SHIFT_RPM) * MAX_GEAR_BAR_WIDTH;
     }
 }

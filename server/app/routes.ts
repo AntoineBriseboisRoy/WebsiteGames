@@ -30,8 +30,8 @@ export class Routes {
         router.put("/putTrack",
                    (req: Request, res: Response, next: NextFunction) => this.index.putTrack(req, res, next));
 
-        router.post("/deleteTrack",
-                    (req: Request, res: Response, next: NextFunction) => this.index.deleteTrack(req, res, next));
+        router.delete("/deleteTrack",
+                      (req: Request, res: Response, next: NextFunction) => this.index.deleteTrack(req, res, next));
 
         router.get("/getTrack",
                    (req: Request, res: Response, next: NextFunction) => this.index.getTrack(req, res, next));

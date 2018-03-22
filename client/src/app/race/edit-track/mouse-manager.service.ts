@@ -9,6 +9,7 @@ export class MouseManagerService {
     private selectedPoint: number;
     private mousePressed: boolean;
     private moveStartPoint: boolean;
+    private clientRect: ClientRect;
 
     public constructor() {
         this.resetMouseAttributes();
@@ -16,6 +17,7 @@ export class MouseManagerService {
      }
 
     public init(points: Point[]): void {
+        this.trackComplete = (points.length !== 0);
         this.points = points;
     }
 
@@ -24,11 +26,13 @@ export class MouseManagerService {
         this.trackComplete = false;
     }
 
-    public handleLeftMouseDown(event: MouseEvent): void {
-        this.selectedPoint = this.isOnOtherPoint(event.x, event.y);
+    public handleLeftMouseDown(event: MouseEvent, clientRect: ClientRect): void {
+        this.clientRect = clientRect;
+        this.selectedPoint = this.isOnOtherPoint(event.x / this.clientRect.width, event.y / this.clientRect.height);
         this.mousePressed = true;
         if (this.isAnOutsideClick()) {
-            this.points.push({ x: event.x, y: event.y, start: (this.points.length === 0), end: this.trackComplete });
+            this.points.push({ x: event.x / this.clientRect.width, y: event.y / this.clientRect.height,
+                               start: (this.points.length === 0), end: this.trackComplete });
             this.selectedPoint = this.points.length - 1;
         }
     }
@@ -38,7 +42,7 @@ export class MouseManagerService {
             this.trackComplete = true;
             this.points.push({ x: this.points[0].x, y: this.points[0].y, start: false, end: this.trackComplete });
         }
-        if (this.isDraggingSelectedPointOnEndPoint(event)) {
+        if (this.isDraggingSelectedPointOnEndPoint(event.x / this.clientRect.width, event.y / this.clientRect.height)) {
             this.trackComplete = true;
             this.points.pop();
             this.points.push({ x: this.points[0].x, y: this.points[0].y, start: false, end: this.trackComplete });
@@ -49,11 +53,11 @@ export class MouseManagerService {
     public handleMouseMove(event: MouseEvent): void {
         if (this.isMovingSelectedPoint()) {
             if (this.isMovingStartPoint()) {
-                this.points[this.points.length - 1].x = event.x;
-                this.points[this.points.length - 1].y = event.y;
+                this.points[this.points.length - 1].x = event.x / this.clientRect.width;
+                this.points[this.points.length - 1].y = event.y / this.clientRect.height;
             }
-            this.points[this.selectedPoint].x = event.x;
-            this.points[this.selectedPoint].y = event.y;
+            this.points[this.selectedPoint].x = event.x / this.clientRect.width;
+            this.points[this.selectedPoint].y = event.y / this.clientRect.height;
             this.moveStartPoint = this.selectedPoint === 0;
         }
     }
@@ -73,7 +77,7 @@ export class MouseManagerService {
 
     private isOnOtherPoint(x: number, y: number): number {
         for (let i: number = 0; i < this.points.length; ++i) {
-            if (this.getDistance(i, x, y) < TWICE_DEFAULT_CIRCLE_RADIUS) {
+            if (this.getDistance(i, x, y) < TWICE_DEFAULT_CIRCLE_RADIUS / this.clientRect.width) {
                 return i;
             }
         }
@@ -89,8 +93,8 @@ export class MouseManagerService {
         return this.selectedPoint === 0 && !this.moveStartPoint && this.points.length > 1 && !this.trackComplete;
     }
 
-    private isDraggingSelectedPointOnEndPoint(event: MouseEvent): boolean {
-        return this.points.length > 1 && this.selectedPoint === this.points.length - 1 && this.isOnOtherPoint(event.x, event.y) === 0;
+    private isDraggingSelectedPointOnEndPoint(x: number, y: number): boolean {
+        return this.points.length > 1 && this.selectedPoint === this.points.length - 1 && this.isOnOtherPoint(x, y) === 0;
     }
 
     private isMovingSelectedPoint(): boolean {

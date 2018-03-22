@@ -22,7 +22,7 @@
                                 </li>
                             </ul>
                         </div>
-                        <a routerLink="/race/play" class="play-btn btn btn-success">Play this track</a>
+                        <a class="play-btn btn btn-success" [routerLink]="['/race/play']" [queryParams]=" { name: track.name }">Play this track</a>
                     </li>
                 </div>
             </ul>

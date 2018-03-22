@@ -1,8 +1,15 @@
-/* AppComponent's private CSS styles */
-
+#main-page {
+    background-image: url("Blue-Blured-dashboard.jpg");
+    height: 100%;
+    width: 100%;
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
+}
 #main-title {
     font-size: 5vw;
-    color: #999;
+    color: rgb(114, 110, 110);
     margin-bottom: 0;
     text-align: center;
     text-transform: capitalize;

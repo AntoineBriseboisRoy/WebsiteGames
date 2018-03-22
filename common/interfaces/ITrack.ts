@@ -1,5 +1,6 @@
+import { Point } from "../../client/src/app/race/edit-track/Geometry";
 export enum TrackType {
-    DESERT = "Desert", RAIN = "Rain", F1 = "F1", REGULAR = "Regular"
+    DESERT = "Desert", REGULAR = "Regular"
 }
 
 export interface ITrack {
@@ -9,4 +10,5 @@ export interface ITrack {
     nTimesPlayed: number;
     bestTimes: string[];
     type: TrackType;
+    points: Array<Point>;
 }

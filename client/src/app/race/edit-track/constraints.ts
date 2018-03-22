@@ -4,6 +4,7 @@ export class Constraints {
 
     private segments: Segment[];
     private points: Point[];
+    private clientRect: ClientRect;
     private trackComplete: boolean;
 
     public get Segments(): Segment[] {
@@ -22,8 +23,9 @@ export class Constraints {
 
     public constructor() { }
 
-    public checkConstraints(points: Point[], trackComplete: boolean): void {
+    public checkConstraints(points: Point[], trackComplete: boolean, clientRect: ClientRect): void {
         this.points = points;
+        this.clientRect = clientRect;
         this.trackComplete = trackComplete;
         this.instantiateSegmentArray();
 
@@ -72,7 +74,7 @@ export class Constraints {
 
     private checkSegmentLength(): void {
         for (const segment of this.segments) {
-            if (segment.getLength() < cst.TWICE_TRACK_WIDTH) {
+            if (segment.getLength() < cst.TWICE_TRACK_WIDTH / this.clientRect.width) {
                 segment.broken = true;
             }
         }
@@ -117,7 +119,7 @@ export class Constraints {
     }
 
     private isWithinInterval(x: number, interval: Interval): boolean {
-        return (x - cst.PRECISION_PIXELS <= interval.max && x + cst.PRECISION_PIXELS >= interval.min);
+        return (x <= interval.max && x >= interval.min);
     }
 
     private getInteresectionIntervalX(segment1: Segment, segment2: Segment): Interval {
@@ -146,6 +148,7 @@ export class Constraints {
     }
 
     private getXElongated(currPos: number, otherPos: number): number {
-        return currPos + ((Math.max(currPos, otherPos) === currPos) ? cst.DEFAULT_CIRCLE_RADIUS : -cst.DEFAULT_CIRCLE_RADIUS);
+        return currPos + ((Math.max(currPos, otherPos) === currPos) ? cst.DEFAULT_CIRCLE_RADIUS / this.clientRect.width
+                : -cst.DEFAULT_CIRCLE_RADIUS / this.clientRect.width);
     }
 }

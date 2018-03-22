@@ -50,7 +50,10 @@ module Route {
 
         public deleteTrack(req: Request, res: Response, next: NextFunction): void {
             const trackSaver: TrackSaver = new TrackSaver();
-            res.send(trackSaver.deleteTrack(req.body));
+            const name: string = req.query.name;
+            if (name !== null) {
+                res.send(trackSaver.deleteTrack(name));
+            }
         }
 
         public getTrack(req: Request, res: Response, next: NextFunction): void {

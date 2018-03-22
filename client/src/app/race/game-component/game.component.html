@@ -1,7 +1,23 @@
 <div #container>
-  <ul>
-    <li>Speed: {{this.renderService.car.speed.length() * 3.6 | number :'2.2-2'}} km/h</li>
-    <li>Gear: {{this.renderService.car.currentGear + 1}}</li>
-    <li>RPM: {{this.renderService.car.rpm | number:'2.0-0'}}</li>
-  </ul>
+  <span id="speed" class="text">{{this.renderService.car.speed.length() * 3.6 | number :'2.2-2'}}</span>
+  <span id="speed-unit" class="text">km/h</span>
+  <span id="gear" class="text">{{this.renderService.car.currentGear + 1}}</span>
+  <img id="speed-background" src="../../assets/HUD_Speed.png">
+  <span id="lap-background">
+    <span id="lap" class="text">Lap: 0 / 3</span>
+  </span>
+  <span id="time-background">
+    <span id="time" class="text">Total time: 00:00:00</span>
+  </span>
+  <span id="lap-time-background"> 
+    <span id="lap-time" class="text"> Lap time: 00:00:00</span>
+  </span>
+  <span id="best-time-background">
+    <span id="best-time" class="text"> Best time: 00:00:00 </span>
+  </span>
+
+  <div id="rpm-background">
+    <div id="rpm-bar"  [style.width.%]="this.rpmRatio()"></div>
+    <span id="rpm-text" class="justify-content-center d-flex position-absolute w-100">{{this.car.rpm | number:'2.0-0'}} RPM</span>
+  </div>
 </div>

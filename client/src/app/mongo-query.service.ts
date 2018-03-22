@@ -27,7 +27,7 @@ export class MongoQueryService {
     }
 
     public deleteTrack(name: string): Promise<void | string> {
-        return this.http.post(`${this.BASE_URL}deleteTrack`, name).toPromise().then((data: string) => {
+        return this.http.delete(`${this.BASE_URL}deleteTrack?name=${name}`).toPromise().then((data: string) => {
             return data;
         }).catch((error: Error) => {
             console.error(error);

@@ -27,7 +27,7 @@ export class TrackSaver {
         return this.connectToClient()
         .then(() => {
             delete track._id;
-            this.collection.replaceOne({"name": name}, track);
+            this.collection.replaceOne({name: name}, track, { upsert: true });
 
             return track;
         });
@@ -36,7 +36,7 @@ export class TrackSaver {
     public deleteTrack(name: string): Promise<string> {
         return this.connectToClient()
         .then(() => {
-            this.collection.deleteOne(name);
+            this.collection.deleteOne({name: name});
 
             return name;
         });

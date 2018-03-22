@@ -29,7 +29,7 @@ export class LexicalService {
     private sendGetRequest(searchedTemplate: string): Promise<void|JSON> {
         this.options.qs.sp = searchedTemplate;
 
-        return requestPromise(this.options)
+        return requestPromise(this.options).promise()
             .then( (data: JSON) => {
                 this.requestResult = data;
                 if (Object.keys(data).length === 0) {
@@ -41,8 +41,8 @@ export class LexicalService {
                 throw reject;
             })
             .catch((error: Error) => {
-                // Gérer les erreurs ici. (Erreur http et erreur Datamuse return nothing).
-        });
+                console.error(error);
+            });
     }
 
     private hasDefinition(index: number): boolean {
@@ -69,7 +69,11 @@ export class LexicalService {
             const wordFrequency: number = parseFloat(this.requestResult[index].tags[0].substr(BEG_FREQUENCY_STR, END_FREQUENCY_STR));
 
             return (this.isInFrequencyInterval(wordFrequency));
-        } catch (err) { return false; }
+        } catch (err) {
+            console.error(err);
+
+            return false;
+        }
     }
 
     private getWordAndDefinition(index: number): WordAndDefinition {
@@ -98,7 +102,7 @@ export class LexicalService {
                     filteredWords.push(this.getWordAndDefinition(i));
                 }
             }
-        } catch (err) { /*Gérer l'erreur ici*/ }
+        } catch (err) { console.error(err); }
 
         return filteredWords;
     }
