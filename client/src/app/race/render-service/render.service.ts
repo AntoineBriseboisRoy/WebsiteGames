@@ -3,7 +3,7 @@ import Stats = require("stats.js");
 import { WebGLRenderer, Scene, AmbientLight,
          Mesh, PlaneBufferGeometry, MeshBasicMaterial,
          Vector2, BackSide, CircleBufferGeometry,
-         DoubleSide, Texture, RepeatWrapping, TextureLoader, Vector3 } from "three";
+         DoubleSide, Texture, RepeatWrapping, TextureLoader, Vector3, OBJLoader, ObjectLoader, Object3D, Object3DIdCount } from "three";
 import { Car } from "../car/car";
 import { ThirdPersonCamera } from "../camera/camera-perspective";
 import { TopViewCamera } from "../camera/camera-orthogonal";
@@ -137,6 +137,16 @@ export class RenderService {
         }
     }
 
+    private generateStartLine(vector: Vector2): void {
+            const loader: ObjectLoader = new ObjectLoader;
+            loader.load("../../assets/startLine.json", (startLine: Object3D) => {
+                startLine.position.x = -(this.activeTrack.points[0].y + vector.y * HALF) * WORLD_SIZE + WORLD_SIZE * HALF;
+                startLine.position.z = -(this.activeTrack.points[0].x + vector.x * HALF) * WORLD_SIZE + WORLD_SIZE * HALF;
+                startLine.rotation.y = vector.x === 0 ? PI_OVER_2 : Math.atan(vector.y / vector.x);
+                this.scene.add(startLine);
+            });
+    }
+
     private createRoad(index: number): Mesh {
         const trackTexture: Texture = new TextureLoader().load("/assets/road.jpg");
         trackTexture.wrapS = RepeatWrapping;
@@ -144,6 +154,9 @@ export class RenderService {
                                             this.activeTrack.points[index].x,
                                             this.activeTrack.points[index + 1].y -
                                             this.activeTrack.points[index].y);
+        if (index === 0) {
+            this.generateStartLine(vector);
+        }
         const plane: PlaneBufferGeometry = new PlaneBufferGeometry(vector.length() * WORLD_SIZE, ROAD_WIDTH);
         const mesh: Mesh = new Mesh(plane, new MeshBasicMaterial({ map: trackTexture, side: BackSide }));
         trackTexture.repeat.set(vector.length() * TEXTURE_TILE_REPETIONS, 1);
