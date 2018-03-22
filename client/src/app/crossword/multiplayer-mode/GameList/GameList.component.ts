@@ -5,7 +5,7 @@ import { INewGame } from "../../../../../../common/interfaces/INewGame";
 import { Router } from "@angular/router";
 
 @Component({
-    selector: "app-waiting-games",
+    selector: "app-game-list",
     templateUrl: "./GameList.component.html",
     styleUrls: ["./GameList.component.css"]
 })
