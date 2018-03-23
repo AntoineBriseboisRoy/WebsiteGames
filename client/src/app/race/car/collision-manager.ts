@@ -1,5 +1,5 @@
 import { Car } from "./car";
-import { Vector3, Matrix4, Quaternion, Box3, Mesh, Object3D } from "three";
+import { Vector3, Matrix4, Quaternion, Box3, Mesh } from "three";
 
 const CAR_A_MOMENTUM_FACTOR: number = 2.1;
 const CAR_B_MOMENTUM_FACTOR: number = 1.9;
@@ -23,12 +23,11 @@ export class CollisionManager {
     public addWall(collisionable: Mesh): void {
         this.collisionables.push(collisionable);
         this.collisionables[this.collisionables.length - 1].name = "Wall";
-        console.log(this.collisionables[this.collisionables.length - 1].name);
     }
 
     public update(): void {
         this.verifyCarCollision();
-        this.verifyWallCollision();
+        // this.verifyWallCollision();
     }
 
     private verifyCarCollision(): void {

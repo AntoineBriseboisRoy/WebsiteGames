@@ -3,7 +3,8 @@ import Stats = require("stats.js");
 import { WebGLRenderer, Scene, AmbientLight,
          Mesh, PlaneBufferGeometry, MeshBasicMaterial,
          Vector2, BackSide,
-         DoubleSide, Texture, RepeatWrapping, TextureLoader, Vector3, CircleBufferGeometry, Box3, BoxHelper, ArrowHelper, Raycaster } from "three";
+         DoubleSide, Texture, RepeatWrapping, TextureLoader, Vector3,
+         CircleBufferGeometry, ArrowHelper, Raycaster } from "three";
 import { Car } from "../car/car";
 import { ThirdPersonCamera } from "../camera/camera-perspective";
 import { TopViewCamera } from "../camera/camera-orthogonal";
@@ -109,6 +110,7 @@ export class RenderService {
         this.lastDate = Date.now();
 
         this.collisionManager.update();
+        this.updateArrows();
     }
 
     // tslint:disable-next-line:max-func-body-length
@@ -136,11 +138,7 @@ export class RenderService {
         this.collisionManager.addCar(this.dummyCar);
 
         this.scene.add(this._car);
-        this.scene.add(this.dummyCar);
-
-        this._car.Raycasters.forEach((rayCaster: Raycaster) => {
-            this.scene.add(new ArrowHelper(rayCaster.ray.direction, rayCaster.ray.origin, 2, 0xff0000, 0.5, 0.1));
-        });
+        // this.scene.add(this.dummyCar);
 
         this.scene.add(new AmbientLight(WHITE, AMBIENT_LIGHT_OPACITY));
 

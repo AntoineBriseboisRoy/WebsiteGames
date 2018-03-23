@@ -156,12 +156,12 @@ export class Car extends Object3D {
     }
 
     private initRaycasters(): void {
-        this.raycasters.push(new Raycaster(this.getPosition(), new Vector3(1, 0, 0)));
-        this.raycasters.push(new Raycaster(this.getPosition(), new Vector3(Math.cos(RAYCASTER_ANGLE), 0, Math.sin(RAYCASTER_ANGLE))));
-        this.raycasters.push(new Raycaster(this.getPosition(), new Vector3(Math.cos(RAYCASTER_ANGLE), 0, -Math.sin(RAYCASTER_ANGLE))));
-        this.raycasters.push(new Raycaster(this.getPosition(), new Vector3(-1, 0, 0)));
-        this.raycasters.push(new Raycaster(this.getPosition(), new Vector3(-Math.cos(RAYCASTER_ANGLE), 0, Math.sin(RAYCASTER_ANGLE))));
-        this.raycasters.push(new Raycaster(this.getPosition(), new Vector3(-Math.cos(RAYCASTER_ANGLE), 0, -Math.sin(RAYCASTER_ANGLE))));
+        this.raycasters.push(new Raycaster(this.getPosition().clone(), new Vector3(1, 0, 0)));
+        this.raycasters.push(new Raycaster(this.getPosition().clone(), new Vector3(Math.cos(RAYCASTER_ANGLE), 0, Math.sin(RAYCASTER_ANGLE))));
+        this.raycasters.push(new Raycaster(this.getPosition().clone(), new Vector3(Math.cos(RAYCASTER_ANGLE), 0, -Math.sin(RAYCASTER_ANGLE))));
+        this.raycasters.push(new Raycaster(this.getPosition().clone(), new Vector3(-1, 0, 0)));
+        this.raycasters.push(new Raycaster(this.getPosition().clone(), new Vector3(-Math.cos(RAYCASTER_ANGLE), 0, Math.sin(RAYCASTER_ANGLE))));
+        this.raycasters.push(new Raycaster(this.getPosition().clone(), new Vector3(-Math.cos(RAYCASTER_ANGLE), 0, -Math.sin(RAYCASTER_ANGLE))));
     }
 
     public steerLeft(): void {
@@ -197,14 +197,28 @@ export class Car extends Object3D {
         // Physics calculations
         this.physicsUpdate(deltaTime);
 
+        const R: number = DEFAULT_WHEELBASE / Math.sin(this.steeringWheelDirection * deltaTime);
+        const theta: number = this._speed.length() / R;
+        this.updateRaycasters(deltaTime, theta);
+
         // Move back to world coordinates
         this.updateBoundingBox();
         this._speed = this.speed.applyQuaternion(rotationQuaternion.inverse());
 
         // Angular rotation of the car
-        const R: number = DEFAULT_WHEELBASE / Math.sin(this.steeringWheelDirection * deltaTime);
         const omega: number = this._speed.length() / R;
         this.mesh.rotateY(omega);
+    }
+
+    private updateRaycasters(deltaTime: number, theta: number): void {
+        const rotationMatrix: Matrix4 = new Matrix4().makeRotationY(theta);
+
+        this.raycasters.forEach((raycaster: Raycaster) => {
+            raycaster.ray.origin = raycaster.ray.origin.add(this.getDeltaPosition(deltaTime));
+            raycaster.ray.origin = raycaster.ray.origin.sub(this.getPosition().clone());
+            raycaster.ray.applyMatrix4(rotationMatrix);
+            raycaster.ray.origin.add(this.getPosition().clone());
+        });
     }
 
     private physicsUpdate(deltaTime: number): void {
