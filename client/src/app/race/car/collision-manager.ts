@@ -1,19 +1,26 @@
 import { Car } from "./car";
-import { Vector3, Matrix4, Quaternion, Box3, Mesh, Object3D, Intersection, Raycaster } from "three";
+import { Vector3, Matrix4, Quaternion, Box3, Mesh, Raycaster, Intersection } from "three";
 
 const CAR_A_MOMENTUM_FACTOR: number = 2.1;
 const CAR_B_MOMENTUM_FACTOR: number = 1.9;
 const MIDDLE_SECTION: number = 0.5;
 const BACK_SECTION: number = -1.55;
 const FRONT_SECTION: number = 1.79;
+
+const TIME_THRESHHOLD: number = 200; // Milliseconds
 export class CollisionManager {
 
     private cars: Car[];
     private collisionables: Mesh[]; // In the optic that cars, walls and different floor types can create collisions.
 
+    private timeSinceLastCollision: number;
+    private lastDate: number;
+
     public constructor() {
         this.cars = new Array<Car>();
         this.collisionables = new Array<Mesh>();
+        this.timeSinceLastCollision = 0;
+        this.lastDate = 0;
     }
 
     public addCar(car: Car): void {
@@ -44,11 +51,39 @@ export class CollisionManager {
     private verifyWallCollision(): void {
         this.cars.forEach((car: Car) => {
             car.Raycasters.forEach((raycaster: Raycaster) => {
-                if (raycaster.intersectObjects(this.collisionables).length > 0) {
-                    console.log("Collision!!");
+                const intersections: Intersection[] = raycaster.intersectObjects(this.collisionables);
+                if (intersections.length > 0) {
+                    this.timeSinceLastCollision += Date.now() - this.lastDate;
+                    if (this.timeSinceLastCollision > TIME_THRESHHOLD) {
+                        this.timeSinceLastCollision = 0;
+                        const wall: Mesh = intersections[0].object as Mesh;
+                        this.wallCollision(car, wall.getWorldDirection());
+                    }
+                    this.lastDate = Date.now();
                 }
             });
         });
+    }
+
+    private wallCollision(car: Car, wallNormalVector: Vector3): void {
+        // if (this.isFrontalCollision(wallNormalVector)) { this.bounce(); }
+        car.speed = car.speed.multiplyScalar(0.5);
+        this.bounce(car, wallNormalVector);
+    }
+
+    private bounce(car: Car, wallNormalVector: Vector3): void {
+        const rectifiedCarDirection: Vector3 = car.direction.clone().cross(car.up);
+        const angleRatio: number = Math.abs(rectifiedCarDirection.dot(wallNormalVector));
+        if (angleRatio > 0.2) {
+            car.rotateMeshY(-angleRatio * Math.PI / 2);
+            // car.speed = car.speed.reflect(wallNormalVector);
+            // car.speed = new Vector3(-car.speed.x, car.speed.y, car.speed.z);
+            console.log(car.speed);
+            // Reflect component of speed that is not aligned with direction
+            // Rotate car's mesh;
+        } else {
+            car.speed = car.speed.negate();
+        }
     }
 
     // tslint:disable-next-line:max-func-body-length

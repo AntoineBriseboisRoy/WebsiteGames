@@ -81,7 +81,7 @@ export class Car extends Object3D {
         return this.mesh.matrix;
     }
 
-    private get direction(): Vector3 {
+    public get direction(): Vector3 {
         const rotationMatrix: Matrix4 = new Matrix4();
         const carDirection: Vector3 = new Vector3(0, 0, -1);
 
@@ -192,6 +192,10 @@ export class Car extends Object3D {
         this.isBraking = true;
     }
 
+    public rotateMeshY(omega: number): void {
+        this.mesh.rotateY(omega);
+    }
+
     public update(deltaTime: number): void {
         deltaTime = deltaTime / MS_TO_SECONDS;
 
@@ -215,7 +219,7 @@ export class Car extends Object3D {
 
         // Angular rotation of the car
         const omega: number = this._speed.length() / R;
-        this.mesh.rotateY(omega);
+        this.rotateMeshY(omega);
     }
 
     private updateRaycasters(deltaTime: number, theta: number): void {
