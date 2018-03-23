@@ -141,40 +141,43 @@ export class RenderService {
         }
     }
 
-    private generateStartLine(vector: Vector2): void {
+    private generateStartLine(firstRoad: Vector2): void {
         const loader: ObjectLoader = new ObjectLoader;
         loader.load("../../assets/startLine.json", (startLine: Object3D) => {
-            startLine.position.x = -(this.activeTrack.points[0].y + vector.y * HALF) * WORLD_SIZE + WORLD_SIZE * HALF;
-            startLine.position.z = -(this.activeTrack.points[0].x + vector.x * HALF) * WORLD_SIZE + WORLD_SIZE * HALF;
-            startLine.rotation.y = vector.x === 0 ? PI_OVER_2 : Math.atan(vector.y / vector.x);
+            startLine.position.x = -(this.activeTrack.points[0].y + firstRoad.y * HALF) * WORLD_SIZE + WORLD_SIZE * HALF;
+            startLine.position.z = -(this.activeTrack.points[0].x + firstRoad.x * HALF) * WORLD_SIZE + WORLD_SIZE * HALF;
+            startLine.rotation.y = firstRoad.x === 0 ? PI_OVER_2 : Math.atan(firstRoad.y / firstRoad.x);
             this.scene.add(startLine);
-            this.placeCarsBehindStartLine(vector, startLine);
-            this.setCarsInitialPosition(vector, startLine);
+            this.placeCarsBehindStartLine(firstRoad, startLine);
+            this.setCarsInitialPosition(firstRoad, startLine);
         });
     }
 
-    private placeCarsBehindStartLine(vector: Vector2, startLine: Object3D): void {
+    private placeCarsBehindStartLine(firstRoad: Vector2, startLine: Object3D): void {
         for (const car of this.cars) {
-            car.Mesh.position.x = startLine.position.x - ( CAR_OFFSET_FROM_STARTLINE * WORLD_SIZE ) * vector.y / vector.length();
-            car.Mesh.position.z = startLine.position.z - ( CAR_OFFSET_FROM_STARTLINE * WORLD_SIZE ) * vector.x / vector.length();
+            car.Mesh.position.x = startLine.position.x - ( CAR_OFFSET_FROM_STARTLINE * WORLD_SIZE ) * firstRoad.y / firstRoad.length();
+            car.Mesh.position.z = startLine.position.z - ( CAR_OFFSET_FROM_STARTLINE * WORLD_SIZE ) * firstRoad.x / firstRoad.length();
             car.Mesh.rotation.y = car.Mesh.position.length() < startLine.position.length() ?
                                   startLine.rotation.y + Math.PI : startLine.rotation.y;
         }
     }
 
-    private setCarsInitialPosition(vector: Vector2, startLine: Object3D): void {
+    private setCarsInitialPosition(firstRoad: Vector2, startLine: Object3D): void {
         const CAR_OFFSET_FROM_EACH_OTHER: number = 5;
+        const EVEN: number = 2;
         let row: number = 0 ;
         let column: number = 0;
-        let shuffledCars: Array<Car> = this.cars.slice();
-        shuffledCars = this.shuffleCars(shuffledCars);
-        const other: Vector2 = new Vector2(-vector.y, vector.x);
+        const shuffledCars: Array<Car> = this.cars.slice();
+        this.shuffleCars(shuffledCars);
+        const perpendicularDirection: Vector2 = new Vector2(-firstRoad.y, firstRoad.x);
         for (let i: number = 0; i < shuffledCars.length; i++) {
-            column = i % 2;
-            shuffledCars[i].Mesh.position.x += (row * CAR_OFFSET_FROM_EACH_OTHER - QUARTER_ROAD_WIDTH) * other.y / other.length();
-            shuffledCars[i].Mesh.position.z += (row * CAR_OFFSET_FROM_EACH_OTHER - QUARTER_ROAD_WIDTH) * other.x / other.length();
-            shuffledCars[i].Mesh.position.x += Math.pow(-1, column) * CAR_OFFSET_FROM_EACH_OTHER * vector.y / vector.length();
-            shuffledCars[i].Mesh.position.z += Math.pow(-1, column) * CAR_OFFSET_FROM_EACH_OTHER * vector.x / vector.length();
+            column = i % EVEN;
+            shuffledCars[i].Mesh.position.x += (row * CAR_OFFSET_FROM_EACH_OTHER - QUARTER_ROAD_WIDTH)
+            * perpendicularDirection.y / perpendicularDirection.length();
+            shuffledCars[i].Mesh.position.z += (row * CAR_OFFSET_FROM_EACH_OTHER - QUARTER_ROAD_WIDTH)
+            * perpendicularDirection.x / perpendicularDirection.length();
+            shuffledCars[i].Mesh.position.x += Math.pow(-1, column) * CAR_OFFSET_FROM_EACH_OTHER * firstRoad.y / firstRoad.length();
+            shuffledCars[i].Mesh.position.z += Math.pow(-1, column) * CAR_OFFSET_FROM_EACH_OTHER * firstRoad.x / firstRoad.length();
             if (column === 1) {
                 row++;
             }
@@ -182,7 +185,7 @@ export class RenderService {
     }
 
     // Fisher-Yates Algorithm
-    private shuffleCars(cars: Array<Car>): Array<Car> {
+    private shuffleCars(cars: Array<Car>): void {
         let currentIndex: number = cars.length;
         let temporaryValue: Car;
         let randomIndex: number;
@@ -193,27 +196,25 @@ export class RenderService {
             cars[currentIndex] = cars[randomIndex];
             cars[randomIndex] = temporaryValue;
         }
-
-        return cars;
     }
 
     private createRoad(index: number): Mesh {
         const trackTexture: Texture = new TextureLoader().load("/assets/road.jpg");
         trackTexture.wrapS = RepeatWrapping;
-        const vector: Vector2 = new Vector2(this.activeTrack.points[index + 1].x -
-                                            this.activeTrack.points[index].x,
-                                            this.activeTrack.points[index + 1].y -
-                                            this.activeTrack.points[index].y);
+        const road: Vector2 = new Vector2(this.activeTrack.points[index + 1].x -
+                                          this.activeTrack.points[index].x,
+                                          this.activeTrack.points[index + 1].y -
+                                          this.activeTrack.points[index].y);
         if (index === 0) {
-            this.generateStartLine(vector);
+            this.generateStartLine(road);
         }
-        const plane: PlaneBufferGeometry = new PlaneBufferGeometry(vector.length() * WORLD_SIZE, ROAD_WIDTH);
+        const plane: PlaneBufferGeometry = new PlaneBufferGeometry(road.length() * WORLD_SIZE, ROAD_WIDTH);
         const mesh: Mesh = new Mesh(plane, new MeshBasicMaterial({ map: trackTexture, side: BackSide }));
-        trackTexture.repeat.set(vector.length() * TEXTURE_TILE_REPETIONS, 1);
-        mesh.position.x = -(this.activeTrack.points[index].y + vector.y * HALF) * WORLD_SIZE + WORLD_SIZE * HALF;
-        mesh.position.z = -(this.activeTrack.points[index].x + vector.x * HALF) * WORLD_SIZE + WORLD_SIZE * HALF;
+        trackTexture.repeat.set(road.length() * TEXTURE_TILE_REPETIONS, 1);
+        mesh.position.x = -(this.activeTrack.points[index].y + road.y * HALF) * WORLD_SIZE + WORLD_SIZE * HALF;
+        mesh.position.z = -(this.activeTrack.points[index].x + road.x * HALF) * WORLD_SIZE + WORLD_SIZE * HALF;
         mesh.rotation.x = PI_OVER_2;
-        mesh.rotation.z = vector.y === 0 ? PI_OVER_2 : Math.atan(vector.x / vector.y);
+        mesh.rotation.z = road.y === 0 ? PI_OVER_2 : Math.atan(road.x / road.y);
         this.superimpose(mesh);
 
         return mesh;
