@@ -166,17 +166,35 @@ export class RenderService {
         const CAR_OFFSET_FROM_EACH_OTHER: number = 5;
         let row: number = 0 ;
         let column: number = 0;
+        let shuffledCars: Array<Car> = this.cars.slice();
+        shuffledCars = this.shuffleCars(shuffledCars);
         const other: Vector2 = new Vector2(-vector.y, vector.x);
-        for (let i: number = 0; i < this.cars.length; i++) {
+        for (let i: number = 0; i < shuffledCars.length; i++) {
             column = i % 2;
-            this.cars[i].Mesh.position.x += (row * CAR_OFFSET_FROM_EACH_OTHER - QUARTER_ROAD_WIDTH) * other.y / other.length();
-            this.cars[i].Mesh.position.z += (row * CAR_OFFSET_FROM_EACH_OTHER - QUARTER_ROAD_WIDTH) * other.x / other.length();
-            this.cars[i].Mesh.position.x += Math.pow(-1, column) * CAR_OFFSET_FROM_EACH_OTHER * vector.y / vector.length();
-            this.cars[i].Mesh.position.z += Math.pow(-1, column) * CAR_OFFSET_FROM_EACH_OTHER * vector.x / vector.length();
+            shuffledCars[i].Mesh.position.x += (row * CAR_OFFSET_FROM_EACH_OTHER - QUARTER_ROAD_WIDTH) * other.y / other.length();
+            shuffledCars[i].Mesh.position.z += (row * CAR_OFFSET_FROM_EACH_OTHER - QUARTER_ROAD_WIDTH) * other.x / other.length();
+            shuffledCars[i].Mesh.position.x += Math.pow(-1, column) * CAR_OFFSET_FROM_EACH_OTHER * vector.y / vector.length();
+            shuffledCars[i].Mesh.position.z += Math.pow(-1, column) * CAR_OFFSET_FROM_EACH_OTHER * vector.x / vector.length();
             if (column === 1) {
                 row++;
             }
         }
+    }
+
+    // Fisher-Yates Algorithm
+    private shuffleCars(cars: Array<Car>): Array<Car> {
+        let currentIndex: number = cars.length;
+        let temporaryValue: Car;
+        let randomIndex: number;
+        while (currentIndex !== 0) {
+            randomIndex = Math.floor(Math.random() * currentIndex);
+            currentIndex -= 1;
+            temporaryValue = cars[currentIndex];
+            cars[currentIndex] = cars[randomIndex];
+            cars[randomIndex] = temporaryValue;
+        }
+
+        return cars;
     }
 
     private createRoad(index: number): Mesh {
