@@ -43,8 +43,8 @@ export class DefinitionComponent implements OnInit {
     public focusOnCell(choosedDefinition: string): void {
         this.gridWords.forEach((word: IGridWord, index: number) => {
             if (word.definition === choosedDefinition) {
-                this.focusCell.Cell = word.cells[this.firstUnknownCell(word.cells)];
-                this.focusCell.Cells = word.cells;
+                this.focusCell.cell = word.cells[this.firstUnknownCell(word.cells)];
+                this.focusCell.cells = word.cells;
                 this.focusCell.Orientation = word.orientation;
                 this.choosedDefinition = word.definition;
                 if (this.isAlreadyFoundWord()) {
@@ -76,7 +76,7 @@ export class DefinitionComponent implements OnInit {
 
     private isAlreadyFoundWord(): boolean {
         let isFoundWord: boolean = true;
-        this.focusCell.Cells.forEach((cell: ICell) => {
+        this.focusCell.cells.forEach((cell: ICell) => {
             if (!cell.isFound) {
                 isFoundWord = false;
             }

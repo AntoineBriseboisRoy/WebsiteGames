@@ -51,7 +51,7 @@ export class GridComponent implements OnInit {
     }
 
     private isSameCell(cell: ICell): boolean {
-        return (this.clickedCell === cell && !cell.isFound && this.focusCell.Cell !== undefined);
+        return (this.clickedCell === cell && !cell.isFound && this.focusCell.cell !== undefined);
     }
 
     private addWordsToClickedWords(cell: ICell): void {
@@ -65,10 +65,10 @@ export class GridComponent implements OnInit {
 
     private invertOrientation(): void {
         if (this.clickedWords.length > 1) {
-            this.focusCell.Cell = this.isFocusCellinCells(this.clickedWords[0].cells) ?
+            this.focusCell.cell = this.isFocusCellinCells(this.clickedWords[0].cells) ?
                 this.clickedWords[1].cells[this.firstUnknownCell(this.clickedWords[1].cells)] :
                 this.clickedWords[0].cells[this.firstUnknownCell(this.clickedWords[0].cells)];
-            this.focusCell.Cells = this.focusCell.Cells === this.clickedWords[0].cells ?
+            this.focusCell.cells = this.focusCell.cells === this.clickedWords[0].cells ?
                 this.clickedWords[1].cells : this.clickedWords[0].cells;
             this.focusCell.invertOrientation();
         }
@@ -76,8 +76,8 @@ export class GridComponent implements OnInit {
     private chooseNewWord(cell: ICell): void {
         if (this.clickedWords.length !== 0) {
             this.clickedCell = cell;
-            this.focusCell.Cell = this.clickedWords[0].cells[this.firstUnknownCell(this.clickedWords[0].cells)];
-            this.focusCell.Cells = this.clickedWords[0].cells;
+            this.focusCell.cell = this.clickedWords[0].cells[this.firstUnknownCell(this.clickedWords[0].cells)];
+            this.focusCell.cells = this.clickedWords[0].cells;
             this.focusCell.Orientation = this.clickedWords[0].orientation;
         } else {
             this.focusCell.clear();
@@ -85,7 +85,7 @@ export class GridComponent implements OnInit {
     }
     private isFocusCellinCells(cells: Array<ICell>): boolean {
         for (const cell of cells) {
-            if (this.focusCell.Cell === cell && this.focusCell.Cells === cells) {
+            if (this.focusCell.cell === cell && this.focusCell.cells === cells) {
                 return true;
             }
         }
@@ -128,7 +128,7 @@ export class GridComponent implements OnInit {
         word.cells.forEach((cell) => {
             cell.isFound = true;
         });
-        if (FocusCell.Instance.Cells === word.cells) {
+        if (FocusCell.Instance.cells === word.cells) {
             FocusCell.Instance.clear();
         }
     }
@@ -142,12 +142,12 @@ export class GridComponent implements OnInit {
         return color === CellColor.Black ? "black-square" : "white-square";
     }
     public addHighlightOnFocus(cell: ICell): string {
-        return this.focusCell.Cell === cell ? "focus" : "";
+        return this.focusCell.cell === cell ? "focus" : "";
     }
 
     public addOrientationBorders(cell: ICell): string {
-        if (this.focusCell.Cells) {
-            if (this.focusCell.Cells.includes(cell)) {
+        if (this.focusCell.cells) {
+            if (this.focusCell.cells.includes(cell)) {
                 return this.focusCell.Orientation === Orientation.Vertical ?
                     "vertical-border" : "horizontal-border";
             }
@@ -157,8 +157,8 @@ export class GridComponent implements OnInit {
     }
 
     public addFirstCellBorder(cell: ICell): string {
-        if (this.focusCell.Cells) {
-            if (this.focusCell.Cells[0] === cell) {
+        if (this.focusCell.cells) {
+            if (this.focusCell.cells[0] === cell) {
                 return this.focusCell.Orientation === Orientation.Vertical ?
                     "first-case-border-vertical" : "first-case-border-horizontal";
             }
@@ -168,8 +168,8 @@ export class GridComponent implements OnInit {
     }
 
     public addLastCellBorder(cell: ICell): string {
-        if (this.focusCell.Cells) {
-            if (this.focusCell.Cells[this.focusCell.Cells.length - 1] === cell) {
+        if (this.focusCell.cells) {
+            if (this.focusCell.cells[this.focusCell.cells.length - 1] === cell) {
                 return this.focusCell.Orientation === Orientation.Vertical ?
                     "last-case-border-vertical" : "last-case-border-horizontal";
             }
@@ -184,7 +184,7 @@ export class GridComponent implements OnInit {
 
     @HostListener("window:keydown", ["$event"])
     public onKeyDown(event: KeyboardEvent): void {
-        const cell: ICell = this.focusCell.Cell;
+        const cell: ICell = this.focusCell.cell;
         this.keyboardInputManagerService.handleKeyDown(event.keyCode);
         this.verifyAnswers(cell);
     }

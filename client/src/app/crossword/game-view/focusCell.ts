@@ -3,8 +3,8 @@ import { Orientation } from "../../constants";
 
 export class FocusCell {
     private static instance: FocusCell;
-    private cell: ICell;
-    private cells: Array<ICell>;
+    public cell: ICell;
+    public cells: Array<ICell>;
     private orientation: Orientation;
 
     public static get Instance(): FocusCell {
@@ -12,23 +12,7 @@ export class FocusCell {
     }
 
     private constructor() {
-        this.cells = new Array();
-    }
-
-    public get Cell(): ICell {
-        return this.cell;
-    }
-
-    public set Cell(cell: ICell) {
-        this.cell = cell;
-    }
-
-    public get Cells(): Array<ICell> {
-        return this.cells;
-    }
-
-    public set Cells(cells: Array<ICell>) {
-        this.cells = cells;
+        this.cells = new Array<ICell>();
     }
 
     public get Orientation(): Orientation {
@@ -44,8 +28,8 @@ export class FocusCell {
     }
 
     public clear(): void {
-        this.Cell = undefined;
-        this.Cells = [];
+        this.cell = undefined;
+        this.cells = [];
         this.Orientation = undefined;
     }
 }

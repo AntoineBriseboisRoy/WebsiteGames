@@ -12,32 +12,32 @@ export class LetterCommand extends AbsGridCommand {
     }
 
     public execute(): void {
-        if (FocusCell.Instance.Cell !== undefined) {
-            FocusCell.Instance.Cell.content = this.letter;
-            const initialCell: ICell = FocusCell.Instance.Cell;
+        if (FocusCell.Instance.cell !== undefined) {
+            FocusCell.Instance.cell.content = this.letter;
+            const initialCell: ICell = FocusCell.Instance.cell;
             if (!this.isLastCellOfSelection()) {
                 do {
                     this.nextCell();
-                } while (FocusCell.Instance.Cell.isFound && !this.isLastCellOfSelection());
+                } while (FocusCell.Instance.cell.isFound && !this.isLastCellOfSelection());
             }
             this.replaceCellIfAllFound(initialCell);
         }
     }
 
     private replaceCellIfAllFound(cell: ICell): void {
-        if (FocusCell.Instance.Cell.isFound) {
-            FocusCell.Instance.Cell = cell;
+        if (FocusCell.Instance.cell.isFound) {
+            FocusCell.Instance.cell = cell;
         }
     }
 
     private nextCell(): void {
-        if (FocusCell.Instance.Cell.gridIndex !== (GRID_WIDTH * GRID_WIDTH - 1)) {
-            FocusCell.Instance.Cell = FocusCell.Instance.Orientation === Orientation.Horizontal ?
-                this.cells[FocusCell.Instance.Cell.gridIndex + 1] : this.cells[FocusCell.Instance.Cell.gridIndex + GRID_WIDTH];
+        if (FocusCell.Instance.cell.gridIndex !== (GRID_WIDTH * GRID_WIDTH - 1)) {
+            FocusCell.Instance.cell = FocusCell.Instance.Orientation === Orientation.Horizontal ?
+                this.cells[FocusCell.Instance.cell.gridIndex + 1] : this.cells[FocusCell.Instance.cell.gridIndex + GRID_WIDTH];
         }
     }
 
     private isLastCellOfSelection(): boolean {
-        return FocusCell.Instance.Cell === FocusCell.Instance.Cells[FocusCell.Instance.Cells.length - 1];
+        return FocusCell.Instance.cell === FocusCell.Instance.cells[FocusCell.Instance.cells.length - 1];
     }
 }

@@ -9,34 +9,34 @@ export class ClearLetterCommand extends AbsGridCommand {
     }
 
     public execute(): void {
-        if (FocusCell.Instance.Cell) {    // Does nothing if no cell is targeted by focus.
-            if (FocusCell.Instance.Cell.content === undefined) {
+        if (FocusCell.Instance.cell) {    // Does nothing if no cell is targeted by focus.
+            if (FocusCell.Instance.cell.content === undefined) {
                 this.nextCell();
-                FocusCell.Instance.Cell.content = undefined;
+                FocusCell.Instance.cell.content = undefined;
             } else {
-                FocusCell.Instance.Cell.content = undefined;
+                FocusCell.Instance.cell.content = undefined;
             }
         }
     }
 
     private nextCell(): void {
-        const currentGridIndex: number = FocusCell.Instance.Cell.gridIndex;
+        const currentGridIndex: number = FocusCell.Instance.cell.gridIndex;
         do {
             this.moveAccordingOnOrientation();
-        } while (FocusCell.Instance.Cell.isFound && !this.isFirstCellOfSelection());
-        if (FocusCell.Instance.Cell.isFound) {
-            FocusCell.Instance.Cell = this.cells[currentGridIndex];
+        } while (FocusCell.Instance.cell.isFound && !this.isFirstCellOfSelection());
+        if (FocusCell.Instance.cell.isFound) {
+            FocusCell.Instance.cell = this.cells[currentGridIndex];
         }
     }
 
     private moveAccordingOnOrientation(): void {
-        if (FocusCell.Instance.Cell.gridIndex !== 0 && !this.isFirstCellOfSelection()) {
-            FocusCell.Instance.Cell = (FocusCell.Instance.Orientation === Orientation.Horizontal) ?
-                this.cells[FocusCell.Instance.Cell.gridIndex - 1] : this.cells[FocusCell.Instance.Cell.gridIndex - GRID_WIDTH];
+        if (FocusCell.Instance.cell.gridIndex !== 0 && !this.isFirstCellOfSelection()) {
+            FocusCell.Instance.cell = (FocusCell.Instance.Orientation === Orientation.Horizontal) ?
+                this.cells[FocusCell.Instance.cell.gridIndex - 1] : this.cells[FocusCell.Instance.cell.gridIndex - GRID_WIDTH];
         }
     }
 
     private isFirstCellOfSelection(): boolean {
-        return FocusCell.Instance.Cell === FocusCell.Instance.Cells[0];
+        return FocusCell.Instance.cell === FocusCell.Instance.cells[0];
     }
 }
