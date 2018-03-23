@@ -155,9 +155,9 @@ export class RenderService {
 
     private placeCarsBehindStartLine(firstRoad: Vector2, startLine: Object3D): void {
         for (const car of this.cars) {
-            car.Mesh.position.x = startLine.position.x - ( CAR_OFFSET_FROM_STARTLINE * WORLD_SIZE ) * firstRoad.y / firstRoad.length();
-            car.Mesh.position.z = startLine.position.z - ( CAR_OFFSET_FROM_STARTLINE * WORLD_SIZE ) * firstRoad.x / firstRoad.length();
-            car.Mesh.rotation.y = car.Mesh.position.length() < startLine.position.length() ?
+            car.getPosition().x = startLine.position.x - ( CAR_OFFSET_FROM_STARTLINE * WORLD_SIZE ) * firstRoad.y / firstRoad.length();
+            car.getPosition().z = startLine.position.z - ( CAR_OFFSET_FROM_STARTLINE * WORLD_SIZE ) * firstRoad.x / firstRoad.length();
+            car.getRotation().y = car.getPosition().length() < startLine.position.length() ?
                                   startLine.rotation.y + Math.PI : startLine.rotation.y;
         }
     }
@@ -172,12 +172,12 @@ export class RenderService {
         const perpendicularDirection: Vector2 = new Vector2(-firstRoad.y, firstRoad.x);
         for (let i: number = 0; i < shuffledCars.length; i++) {
             column = i % EVEN;
-            shuffledCars[i].Mesh.position.x += (row * CAR_OFFSET_FROM_EACH_OTHER - QUARTER_ROAD_WIDTH)
+            shuffledCars[i].getPosition().x += (row * CAR_OFFSET_FROM_EACH_OTHER - QUARTER_ROAD_WIDTH)
             * perpendicularDirection.y / perpendicularDirection.length();
-            shuffledCars[i].Mesh.position.z += (row * CAR_OFFSET_FROM_EACH_OTHER - QUARTER_ROAD_WIDTH)
+            shuffledCars[i].getPosition().z += (row * CAR_OFFSET_FROM_EACH_OTHER - QUARTER_ROAD_WIDTH)
             * perpendicularDirection.x / perpendicularDirection.length();
-            shuffledCars[i].Mesh.position.x += Math.pow(-1, column) * CAR_OFFSET_FROM_EACH_OTHER * firstRoad.y / firstRoad.length();
-            shuffledCars[i].Mesh.position.z += Math.pow(-1, column) * CAR_OFFSET_FROM_EACH_OTHER * firstRoad.x / firstRoad.length();
+            shuffledCars[i].getPosition().x += Math.pow(-1, column) * CAR_OFFSET_FROM_EACH_OTHER * firstRoad.y / firstRoad.length();
+            shuffledCars[i].getPosition().z += Math.pow(-1, column) * CAR_OFFSET_FROM_EACH_OTHER * firstRoad.x / firstRoad.length();
             if (column === 1) {
                 row++;
             }
