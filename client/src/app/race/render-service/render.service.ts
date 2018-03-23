@@ -23,15 +23,17 @@ const TEXTURE_TILE_REPETIONS: number = 200;
 const WORLD_SIZE: number = 1000;
 const FLOOR_SIZE: number = WORLD_SIZE / HALF;
 const ROAD_WIDTH: number = 10;
+const QUARTER_ROAD_WIDTH: number = 2.5;
 const SUPERPOSITION: number = 0.001;
 const CAR_OFFSET_FROM_STARTLINE: number = 0.01;
+const PLAYER: number = 0;
+const NUMBER_OF_CARS: number = 4;
 
 @Injectable()
 export class RenderService {
     private cameraContext: CameraContext;
     private container: HTMLDivElement;
-    private _car: Car;
-    private dummyCar: Car;
+    private cars: Array<Car>;
     private renderer: WebGLRenderer;
     private scene: THREE.Scene;
     private stats: Stats;
@@ -43,7 +45,7 @@ export class RenderService {
     private collisionManager: CollisionManager;
 
     public get car(): Car {
-        return this._car;
+        return this.cars[PLAYER];
     }
 
     public get CameraContext(): CameraContext {
@@ -51,8 +53,10 @@ export class RenderService {
     }
 
     public constructor() {
-        this._car = new Car();
-        this.dummyCar = new Car();
+        this.cars = new Array<Car>();
+        for (let i: number = 0; i < NUMBER_OF_CARS; i++) {
+            this.cars.push(new Car());
+        }
         this.floorTextures = new Map<TrackType, Texture>();
         this.superposition = 0;
         this.collisionManager = new CollisionManager();
@@ -88,15 +92,12 @@ export class RenderService {
 
     private update(): void {
         const timeSinceLastFrame: number = Date.now() - this.lastDate;
-        this._car.update(timeSinceLastFrame);
-        this.dummyCar.update(timeSinceLastFrame);
-        this.cameraContext.update(this._car);
+        this.cars.forEach((car: Car) => car.update(timeSinceLastFrame));
+        this.cameraContext.update(this.cars[PLAYER]);
         this.lastDate = Date.now();
-
         this.collisionManager.update();
     }
 
-    // tslint:disable-next-line:max-func-body-length
     private async createScene(): Promise<void> {
         this.scene = new Scene();
         this.cameraContext = new CameraContext();
@@ -112,16 +113,10 @@ export class RenderService {
                                                       -this.container.clientHeight / FRUSTUM_RATIO,
                                                       1, INITIAL_CAMERA_POSITION_Y + 1)); // Add 1 to see the floor
 
-        await this._car.init();
-        await this.dummyCar.init();
+        await this.createCars();
 
-        this.cameraContext.initStates(this._car.getPosition());
+        this.cameraContext.initStates(this.cars[PLAYER].getPosition());
         this.cameraContext.setInitialState();
-        this.collisionManager.addCar(this._car);
-        this.collisionManager.addCar(this.dummyCar);
-
-        this.scene.add(this._car);
-        this.scene.add(this.dummyCar);
 
         this.scene.add(new AmbientLight(WHITE, AMBIENT_LIGHT_OPACITY));
 
@@ -129,6 +124,14 @@ export class RenderService {
         this.scene.background = skybox.CubeTexture;
         this.scene.add(this.createFloorMesh());
         this.generateTrack();
+    }
+
+    private async createCars(): Promise<void> {
+        for (const car of this.cars) {
+            await car.init();
+            this.collisionManager.addCar(car);
+            this.scene.add(car);
+        }
     }
 
     private generateTrack(): void {
@@ -145,14 +148,35 @@ export class RenderService {
             startLine.position.z = -(this.activeTrack.points[0].x + vector.x * HALF) * WORLD_SIZE + WORLD_SIZE * HALF;
             startLine.rotation.y = vector.x === 0 ? PI_OVER_2 : Math.atan(vector.y / vector.x);
             this.scene.add(startLine);
+            this.placeCarsBehindStartLine(vector, startLine);
             this.setCarsInitialPosition(vector, startLine);
         });
-}
+    }
+
+    private placeCarsBehindStartLine(vector: Vector2, startLine: Object3D): void {
+        for (const car of this.cars) {
+            car.Mesh.position.x = startLine.position.x - ( CAR_OFFSET_FROM_STARTLINE * WORLD_SIZE ) * vector.y / vector.length();
+            car.Mesh.position.z = startLine.position.z - ( CAR_OFFSET_FROM_STARTLINE * WORLD_SIZE ) * vector.x / vector.length();
+            car.Mesh.rotation.y = car.Mesh.position.length() < startLine.position.length() ?
+                                  startLine.rotation.y + Math.PI : startLine.rotation.y;
+        }
+    }
 
     private setCarsInitialPosition(vector: Vector2, startLine: Object3D): void {
-        this._car.Mesh.position.x = startLine.position.x - ( CAR_OFFSET_FROM_STARTLINE * WORLD_SIZE ) * vector.y / vector.length();
-        this._car.Mesh.position.z = startLine.position.z - ( CAR_OFFSET_FROM_STARTLINE * WORLD_SIZE ) * vector.x / vector.length();
-        this._car.Mesh.rotation.y = startLine.rotation.y + Math.PI;
+        const CAR_OFFSET_FROM_EACH_OTHER: number = 5;
+        let row: number = 0 ;
+        let column: number = 0;
+        const other: Vector2 = new Vector2(-vector.y, vector.x);
+        for (let i: number = 0; i < this.cars.length; i++) {
+            column = i % 2;
+            this.cars[i].Mesh.position.x += (row * CAR_OFFSET_FROM_EACH_OTHER - QUARTER_ROAD_WIDTH) * other.y / other.length();
+            this.cars[i].Mesh.position.z += (row * CAR_OFFSET_FROM_EACH_OTHER - QUARTER_ROAD_WIDTH) * other.x / other.length();
+            this.cars[i].Mesh.position.x += Math.pow(-1, column) * CAR_OFFSET_FROM_EACH_OTHER * vector.y / vector.length();
+            this.cars[i].Mesh.position.z += Math.pow(-1, column) * CAR_OFFSET_FROM_EACH_OTHER * vector.x / vector.length();
+            if (column === 1) {
+                row++;
+            }
+        }
     }
 
     private createRoad(index: number): Mesh {
