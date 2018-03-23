@@ -3,7 +3,7 @@ import Stats = require("stats.js");
 import { WebGLRenderer, Scene, AmbientLight,
          Mesh, PlaneBufferGeometry, MeshBasicMaterial,
          Vector2, BackSide, CircleBufferGeometry,
-         DoubleSide, Texture, RepeatWrapping, TextureLoader, Vector3, OBJLoader, ObjectLoader, Object3D, Object3DIdCount } from "three";
+         Texture, RepeatWrapping, TextureLoader, ObjectLoader, Object3D } from "three";
 import { Car } from "../car/car";
 import { ThirdPersonCamera } from "../camera/camera-perspective";
 import { TopViewCamera } from "../camera/camera-orthogonal";
@@ -24,6 +24,7 @@ const WORLD_SIZE: number = 1000;
 const FLOOR_SIZE: number = WORLD_SIZE / HALF;
 const ROAD_WIDTH: number = 10;
 const SUPERPOSITION: number = 0.001;
+const CAR_OFFSET_FROM_STARTLINE: number = 0.01;
 
 @Injectable()
 export class RenderService {
@@ -51,9 +52,9 @@ export class RenderService {
 
     public constructor() {
         this._car = new Car();
+        this.dummyCar = new Car();
         this.floorTextures = new Map<TrackType, Texture>();
         this.superposition = 0;
-        this.dummyCar = new Car(new Vector3(-15, 0, 0));
         this.collisionManager = new CollisionManager();
     }
 
@@ -138,13 +139,20 @@ export class RenderService {
     }
 
     private generateStartLine(vector: Vector2): void {
-            const loader: ObjectLoader = new ObjectLoader;
-            loader.load("../../assets/startLine.json", (startLine: Object3D) => {
-                startLine.position.x = -(this.activeTrack.points[0].y + vector.y * HALF) * WORLD_SIZE + WORLD_SIZE * HALF;
-                startLine.position.z = -(this.activeTrack.points[0].x + vector.x * HALF) * WORLD_SIZE + WORLD_SIZE * HALF;
-                startLine.rotation.y = vector.x === 0 ? PI_OVER_2 : Math.atan(vector.y / vector.x);
-                this.scene.add(startLine);
-            });
+        const loader: ObjectLoader = new ObjectLoader;
+        loader.load("../../assets/startLine.json", (startLine: Object3D) => {
+            startLine.position.x = -(this.activeTrack.points[0].y + vector.y * HALF) * WORLD_SIZE + WORLD_SIZE * HALF;
+            startLine.position.z = -(this.activeTrack.points[0].x + vector.x * HALF) * WORLD_SIZE + WORLD_SIZE * HALF;
+            startLine.rotation.y = vector.x === 0 ? PI_OVER_2 : Math.atan(vector.y / vector.x);
+            this.scene.add(startLine);
+            this.setCarsInitialPosition(vector, startLine);
+        });
+}
+
+    private setCarsInitialPosition(vector: Vector2, startLine: Object3D): void {
+        this._car.Mesh.position.x = startLine.position.x - ( CAR_OFFSET_FROM_STARTLINE * WORLD_SIZE ) * vector.y / vector.length();
+        this._car.Mesh.position.z = startLine.position.z - ( CAR_OFFSET_FROM_STARTLINE * WORLD_SIZE ) * vector.x / vector.length();
+        this._car.Mesh.rotation.y = startLine.rotation.y + Math.PI;
     }
 
     private createRoad(index: number): Mesh {

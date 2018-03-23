@@ -69,6 +69,10 @@ export class Car extends Object3D {
       return this.mesh.position;
     }
 
+    public get Mesh(): Object3D {
+        return this.mesh;
+    }
+
     public getMeshMatrix(): Matrix4 {
         return this.mesh.matrix;
     }
