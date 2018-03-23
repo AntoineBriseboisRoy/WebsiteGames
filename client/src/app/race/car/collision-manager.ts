@@ -67,23 +67,17 @@ export class CollisionManager {
 
     private wallCollision(car: Car, wallNormalVector: Vector3): void {
         // if (this.isFrontalCollision(wallNormalVector)) { this.bounce(); }
-        car.speed = car.speed.multiplyScalar(0.5);
         this.bounce(car, wallNormalVector);
+        car.speed = car.speed.multiplyScalar(0.5);
     }
 
     private bounce(car: Car, wallNormalVector: Vector3): void {
         const rectifiedCarDirection: Vector3 = car.direction.clone().cross(car.up);
-        const angleRatio: number = Math.abs(rectifiedCarDirection.dot(wallNormalVector));
-        if (angleRatio > 0.2) {
-            car.rotateMeshY(-angleRatio * Math.PI / 2);
-            // car.speed = car.speed.reflect(wallNormalVector);
-            // car.speed = new Vector3(-car.speed.x, car.speed.y, car.speed.z);
-            console.log(car.speed);
-            // Reflect component of speed that is not aligned with direction
-            // Rotate car's mesh;
-        } else {
-            car.speed = car.speed.negate();
+        const angleRatio: number = rectifiedCarDirection.dot(wallNormalVector);
+        if (Math.sign(angleRatio) < 0) {
+            wallNormalVector.negate();
         }
+        car.speed = (angleRatio > 0.2) ? car.speed.reflect(wallNormalVector) : car.speed.negate();
     }
 
     // tslint:disable-next-line:max-func-body-length
