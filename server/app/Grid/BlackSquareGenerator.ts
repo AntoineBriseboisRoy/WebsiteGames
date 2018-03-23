@@ -40,7 +40,6 @@ export class BlackSquareGenerator {
                     this.grid[tempPosition.x][tempPosition.y] = BLACKSQUARE_CHARACTER;
                 }
             }
-            console.log(this.grid);
         } while (!this.verifyBlackSquareGrid());
 
         return this.grid;
@@ -71,10 +70,10 @@ export class BlackSquareGenerator {
     }
 
     private allWordsConnected(): boolean {
-        return this.breadthFirstSearch(this.getAdjacencyMatrixMatrix(this.findAllwordsToFill()));
+        return this.breadthFirstSearch(this.getAdjacencyMatrix(this.findAllwordsToFill()));
     }
 
-    private getAdjacencyMatrixMatrix(words: IWord[]): boolean[][] {
+    private getAdjacencyMatrix(words: IWord[]): boolean[][] {
         const adjacencyMatrix: boolean[][] = new Array<Array<boolean>>();
         for (let i: number = 0; i < words.length; ++i) {
             adjacencyMatrix[i] = new Array<boolean>();

@@ -2,6 +2,10 @@ import { EMPTY_SQUARE } from "./Constants";
 
 export class StringService {
 
+    public static cleanWord(word: string): string {
+        return this.eliminateSpecialChars(this.replaceAccentedChars(word));
+    }
+
     public static eliminateSpecialChars(word: string): string {
         const specialChars: RegExp = /[ !@$%^&()_+\-=\[\]{};':"\\|,.<>\/?]/;
 
