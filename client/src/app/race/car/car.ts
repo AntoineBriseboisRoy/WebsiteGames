@@ -14,6 +14,7 @@ const MINIMUM_SPEED: number = 0.05;
 const NUMBER_REAR_WHEELS: number = 2;
 const NUMBER_WHEELS: number = 4;
 
+const RAYCASTER_FAR_DISTANCE: number = 1.8;
 const RAYCASTER_ANGLE: number = Math.PI / 8;
 
 export class Car extends Object3D {
@@ -156,12 +157,19 @@ export class Car extends Object3D {
     }
 
     private initRaycasters(): void {
-        this.raycasters.push(new Raycaster(this.getPosition().clone(), new Vector3(1, 0, 0)));
-        this.raycasters.push(new Raycaster(this.getPosition().clone(), new Vector3(Math.cos(RAYCASTER_ANGLE), 0, Math.sin(RAYCASTER_ANGLE))));
-        this.raycasters.push(new Raycaster(this.getPosition().clone(), new Vector3(Math.cos(RAYCASTER_ANGLE), 0, -Math.sin(RAYCASTER_ANGLE))));
-        this.raycasters.push(new Raycaster(this.getPosition().clone(), new Vector3(-1, 0, 0)));
-        this.raycasters.push(new Raycaster(this.getPosition().clone(), new Vector3(-Math.cos(RAYCASTER_ANGLE), 0, Math.sin(RAYCASTER_ANGLE))));
-        this.raycasters.push(new Raycaster(this.getPosition().clone(), new Vector3(-Math.cos(RAYCASTER_ANGLE), 0, -Math.sin(RAYCASTER_ANGLE))));
+        this.raycasters.push(new Raycaster(this.getPosition().clone(), new Vector3(1, 0, 0), 0, RAYCASTER_FAR_DISTANCE));
+        this.raycasters.push(new Raycaster(this.getPosition().clone(), new Vector3(Math.cos(RAYCASTER_ANGLE), 0, Math.sin(RAYCASTER_ANGLE)),
+                                           0, RAYCASTER_FAR_DISTANCE));
+        this.raycasters.push(new Raycaster(this.getPosition().clone(),
+                                           new Vector3(Math.cos(RAYCASTER_ANGLE), 0, -Math.sin(RAYCASTER_ANGLE)),
+                                           0, RAYCASTER_FAR_DISTANCE));
+        this.raycasters.push(new Raycaster(this.getPosition().clone(), new Vector3(-1, 0, 0), 0, RAYCASTER_FAR_DISTANCE));
+        this.raycasters.push(new Raycaster(this.getPosition().clone(),
+                                           new Vector3(-Math.cos(RAYCASTER_ANGLE), 0, Math.sin(RAYCASTER_ANGLE)),
+                                           0, RAYCASTER_FAR_DISTANCE));
+        this.raycasters.push(new Raycaster(this.getPosition().clone(),
+                                           new Vector3(-Math.cos(RAYCASTER_ANGLE), 0, -Math.sin(RAYCASTER_ANGLE)),
+                                           0, RAYCASTER_FAR_DISTANCE));
     }
 
     public steerLeft(): void {

@@ -1,5 +1,5 @@
 import { Car } from "./car";
-import { Vector3, Matrix4, Quaternion, Box3, Mesh } from "three";
+import { Vector3, Matrix4, Quaternion, Box3, Mesh, Object3D, Intersection, Raycaster } from "three";
 
 const CAR_A_MOMENTUM_FACTOR: number = 2.1;
 const CAR_B_MOMENTUM_FACTOR: number = 1.9;
@@ -27,7 +27,7 @@ export class CollisionManager {
 
     public update(): void {
         this.verifyCarCollision();
-        // this.verifyWallCollision();
+        this.verifyWallCollision();
     }
 
     private verifyCarCollision(): void {
@@ -42,6 +42,13 @@ export class CollisionManager {
     }
 
     private verifyWallCollision(): void {
+        this.cars.forEach((car: Car) => {
+            car.Raycasters.forEach((raycaster: Raycaster) => {
+                if (raycaster.intersectObjects(this.collisionables).length > 0) {
+                    console.log("Collision!!");
+                }
+            });
+        });
     }
 
     // tslint:disable-next-line:max-func-body-length

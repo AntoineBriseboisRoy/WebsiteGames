@@ -150,8 +150,7 @@ export class RenderService {
 
     private generateTrack(): void {
         for (let i: number = 0; i < this.activeTrack.points.length - 1; ++i) {
-            this.scene.add(this.createWall(i)[0]);
-            this.scene.add(this.createWall(i)[1]);
+            this.createWalls(i);
             this.scene.add(this.createRoad(i));
             this.scene.add(this.createIntersection(i));
         }
@@ -176,7 +175,7 @@ export class RenderService {
         return mesh;
     }
     // tslint:disable-next-line:max-func-body-length
-    private createWall(index: number): Mesh[] {
+    private createWalls(index: number): void {
         const trackTexture: Texture = new TextureLoader().load("/assets/road.jpg");
         trackTexture.wrapS = RepeatWrapping;
         const vector: Vector3 = new Vector3(this.activeTrack.points[(index + 1) % this.activeTrack.points.length].x -
@@ -204,10 +203,10 @@ export class RenderService {
                              + direction.normalize().x * ROAD_WIDTH * HALF;
         mesh[1].rotation.y = vector.x === 0 ? 0 : Math.atan(vector.z / vector.x) + PI_OVER_2;
 
+        this.scene.add(mesh[0]);
+        this.scene.add(mesh[1]);
         this.collisionManager.addWall(mesh[0]);
         this.collisionManager.addWall(mesh[1]);
-
-        return mesh;
     }
 
     private createIntersection(index: number): Mesh {
