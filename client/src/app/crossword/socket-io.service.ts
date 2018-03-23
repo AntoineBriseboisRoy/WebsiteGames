@@ -4,6 +4,7 @@ import { Subject } from "rxjs/Subject";
 import { Observer } from "rxjs/Observer";
 import { Observable } from "rxjs/Observable";
 import { INewGame } from "../../../../common/interfaces/INewGame";
+import { IWord } from "../../../../common/interfaces/IWord";
 import { GameRoomManagerService } from "./multiplayer-mode/GameRoomManagerService.service";
 
 @Injectable()
@@ -39,8 +40,28 @@ export class SocketIoService {
         return this.playGameSubject;
     }
 
+    public get GridContent(): Observable<string> {
+        return new Observable<string>((obs) => {
+            this.socket.on("grid-content", (data: string) => {
+                obs.next(data);
+            });
+
+            return () => this.socket.disconnect();
+        });
+    }
+
+    public get GridWords(): Observable<Array<IWord>> {
+        return new Observable<Array<IWord>>((obs) => {
+            this.socket.on("grid-words", (data: Array<IWord>) => {
+                obs.next(data);
+            });
+
+            return () => this.socket.disconnect();
+        });
+    }
+
     private createNewGame(): void {
-        this.createdGameSubject =  this.createSubject("new-game", "Error: Cannot send new game to other players");
+        this.createdGameSubject = this.createSubject("new-game", "Error: Cannot send new game to other players");
     }
 
     private deleteCreatedGame(): void {
@@ -67,7 +88,7 @@ export class SocketIoService {
                 obs.next(data);
             });
 
-            return () => this.socket.disconnect();
+            // return () => this.socket.disconnect();
         });
 
         return Subject.create(observer, observable);

@@ -6,17 +6,19 @@ import { IServerAddress } from "./iserver.address";
 import * as io from "socket.io";
 import { INewGame } from "../../common/interfaces/INewGame";
 import { WaitingGamesService } from "./Services/Multiplayer-menu-service/waiting-games.service";
-
+import { GamesInProgressService } from "./Services/GamesInProgress";
+import { IGameInProgress } from "../../common/interfaces/IGameInProgress";
 @injectable()
 export class Server {
 
-    private readonly appPort: string|number|boolean = this.normalizePort(process.env.PORT || "3000");
+    private readonly appPort: string | number | boolean = this.normalizePort(process.env.PORT || "3000");
     private readonly baseDix: number = 10;
     private server: http.Server;
     private socketIo: SocketIO.Server;
 
     constructor(@inject(Types.Application) private application: Application) { }
 
+    // tslint:disable-next-line:max-func-body-length
     public init(): void {
         this.application.app.set("port", this.appPort);
 
@@ -31,6 +33,7 @@ export class Server {
             socket.on("waiting-room", () => socket.join("waiting-room"));
             socket.on("new-game", (data: string) => {
                 const game: INewGame = JSON.parse(data);
+                socket.join(GamesInProgressService.Instance.createNewGame(game.userCreator).roomName);
                 WaitingGamesService.Instance.pushNewGame(game);
                 socket.in("waiting-room").broadcast.emit("new-game", game);
             });
@@ -40,11 +43,15 @@ export class Server {
                 socket.in("waiting-room").broadcast.emit("delete-game", game);
             });
             socket.on("play-game", (data: string) => {
-                socket.join("game-room");
                 const game: INewGame = JSON.parse(data);
+                socket.join(game.userCreator);
                 WaitingGamesService.Instance.remove(game);
                 socket.in("waiting-room").broadcast.emit("play-game", game);
+                const gameInProgress: IGameInProgress = GamesInProgressService.Instance.getGameInProgress(game.userCreator);
+                this.socketIo.in(game.userCreator).emit("grid-content", gameInProgress.gridContent);
+                this.socketIo.in(game.userCreator).emit("grid-words", gameInProgress.gridWords);
             });
+            socket.on("disconnect", () => console.warn("disconnect", socket.id));
         });
     }
 
@@ -79,7 +86,7 @@ export class Server {
     /**
      * Se produit lorsque le serveur se met à écouter sur le port.
      */
-    private  onListening(): void {
+    private onListening(): void {
         const addr: IServerAddress = this.server.address();
         const bind: string = (typeof addr === "string") ? `pipe ${addr}` : `port ${addr.port}`;
         // tslint:disable-next-line:no-console

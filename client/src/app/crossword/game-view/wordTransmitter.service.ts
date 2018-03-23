@@ -22,22 +22,25 @@ export class WordTransmitterService {
         this.indexPosition = new Array();
         this.cells = new Array();
         this.gridWords = new Array<IGridWord>();
-        this.gridService.getGrid().subscribe((gridContent: string) => {
-            this.gridContent = gridContent;
-        });
+    }
+    private getFormattedGrid(words: Array<IWord>): void {
+        this.words = words;
+        if (this.gridWords.length === 0) {
+            this.addIndextoCells();
+            this.createCells();
+            this.createWords();
+        }
     }
 
     public getTransformedWords(): Observable<Array<IGridWord>> {
         return Observable.create((observer: Observer<Array<IGridWord>>) => {
             if (this.words === undefined) {
-                this.gridService.getWords().subscribe((words: Array<IWord>) => {
-                    this.words = words;
-                    if (this.gridWords.length === 0) {
-                        this.addIndextoCells();
-                        this.createCells();
-                        this.createWords();
-                    }
-                    observer.next(this.gridWords);
+                this.gridService.getGrid().subscribe((gridContent: string) => {
+                    this.gridContent = gridContent;
+                    this.gridService.getWords().subscribe((words: Array<IWord>) => {
+                        this.getFormattedGrid(words);
+                        observer.next(this.gridWords);
+                    });
                 });
             } else {
                 observer.next(this.gridWords);
@@ -97,7 +100,7 @@ export class WordTransmitterService {
 
     private containsIndex(i: number): boolean {
         return !this.isABlackSquare(this.gridContent[i]) &&
-               (this.isFirstLineIndex(i) ||
+            (this.isFirstLineIndex(i) ||
                 this.isRightToBlackSquare(i) ||
                 this.isBelowBlackSquare(i) ||
                 this.isFirstColumnIndex(i));
@@ -113,8 +116,8 @@ export class WordTransmitterService {
 
     private isBelowBlackSquare(i: number): boolean {
         return this.isABlackSquare(this.gridContent[i - GRID_WIDTH]) &&
-               !this.isABlackSquare(this.gridContent[i + GRID_WIDTH]) &&
-               i < GRID_WIDTH * GRID_WIDTH - GRID_WIDTH;
+            !this.isABlackSquare(this.gridContent[i + GRID_WIDTH]) &&
+            i < GRID_WIDTH * GRID_WIDTH - GRID_WIDTH;
     }
 
     private isFirstColumnIndex(i: number): boolean {
