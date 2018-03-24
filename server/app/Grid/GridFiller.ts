@@ -126,8 +126,7 @@ export class GridFiller {
         console.log(this.grid);
 
         const longestFreeSpace: IWord = this.wordsLengths.pop();
-        let entry: WordAndDefinition;
-        entry = await this.getWord(longestFreeSpace);
+        const entry: WordAndDefinition = await this.getWord(longestFreeSpace);
         if (entry.word === NOT_FOUND) {
             this.wordsLengths.push(longestFreeSpace);
 
@@ -135,17 +134,21 @@ export class GridFiller {
         }
         const wordAdded: IWord = { position: longestFreeSpace.position, orientation: longestFreeSpace.orientation,
                                    content: entry.word, definition: entry.definition };
+        console.log("before addword(",wordAdded.content,")");
         this.addNewWord(wordAdded);
+        console.log("after addword");
         this.sortWordLengthsByCommonLetters();
 
         let nextWordPlaced: boolean = await this.fillGridWithWords();
         if (!nextWordPlaced) {
             this.backtrack(this.findWordWithCommonLetters(wordAdded));
             nextWordPlaced = await  this.fillGridWithWordsNextTry();
+            console.log("2  ",nextWordPlaced);
 
             return nextWordPlaced;
         } else {
             console.log("other true");
+
             return true;
         }
     }
@@ -168,8 +171,7 @@ export class GridFiller {
         console.log(this.grid);
 
         const longestFreeSpace: IWord = this.wordsLengths.pop();
-        let entry: WordAndDefinition;
-        entry = await this.getWord(longestFreeSpace);
+        const entry: WordAndDefinition = await this.getWord(longestFreeSpace);
         if (entry.word === NOT_FOUND) {
             this.wordsLengths.push(longestFreeSpace);
 
@@ -177,16 +179,19 @@ export class GridFiller {
         }
         const wordAdded: IWord = {position: longestFreeSpace.position, orientation: longestFreeSpace.orientation,
                                   content: entry.word, definition: entry.definition };
+        console.log("before addword(",wordAdded.content,")");
         this.addNewWord(wordAdded);
+        console.log("after addword");
         this.sortWordLengthsByCommonLetters();
 
         const nextWordPlaced: boolean = await !this.fillGridWithWords();
         if (!nextWordPlaced) {
             this.backtrack(this.findWordWithCommonLetters(wordAdded));
-
+            console.log("1");
             return false;
         } else {
             console.log("other true");
+
             return true;
         }
     }
@@ -330,9 +335,11 @@ export class GridFiller {
 
     private backtrack(wordToErase: IWord): void {
         console.log("bactrack(",wordToErase,")");
+        console.log("before, ",this.words.length," --- ",this.wordsLengths.length);
         this.words = this.words.filter((word: IWord) => word !== wordToErase);
         this.wordsLengths.push(wordToErase);
         this.removeLastWordFromGrid(wordToErase);
+        console.log("after, ",this.words.length," --- ",this.wordsLengths.length);
     }
 
     private removeLastWordFromGrid(lastWord: IWord): void {
