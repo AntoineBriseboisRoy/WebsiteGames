@@ -150,66 +150,66 @@ export class RenderService {
 
     private generateTrack(): void {
         for (let i: number = 0; i < this.activeTrack.points.length - 1; ++i) {
-            this.createRoad(i);
-            this.createWalls(i);
-
+            this.createRoadSegment(i);
             this.createIntersection(i);
             this.createIntersectionWall(i + 1);
         }
     }
 
-    private createRoad(index: number): void {
+    // tslint:disable-next-line:max-func-body-length
+    private createRoadSegment(index: number): void {
         const trackTexture: Texture = new TextureLoader().load("/assets/road.jpg");
         trackTexture.wrapS = RepeatWrapping;
-        const vector: Vector2 = new Vector2(this.activeTrack.points[index + 1].x -
-                                            this.activeTrack.points[index].x,
-                                            this.activeTrack.points[index + 1].y -
-                                            this.activeTrack.points[index].y);
-        const plane: PlaneBufferGeometry = new PlaneBufferGeometry(vector.length() * WORLD_SIZE, ROAD_WIDTH);
-        const mesh: Mesh = new Mesh(plane, new MeshBasicMaterial({ map: trackTexture, side: BackSide }));
-        trackTexture.repeat.set(vector.length() * TEXTURE_TILE_REPETIONS, 1);
-        mesh.position.x = -(this.activeTrack.points[index].y + vector.y * HALF) * WORLD_SIZE + WORLD_SIZE * HALF;
-        mesh.position.z = -(this.activeTrack.points[index].x + vector.x * HALF) * WORLD_SIZE + WORLD_SIZE * HALF;
+
+        const trackDirection: Vector3 = new Vector3(this.activeTrack.points[(index + 1) % this.activeTrack.points.length].x -
+                                                    this.activeTrack.points[index].x,
+                                                    0,
+                                                    this.activeTrack.points[(index + 1) % this.activeTrack.points.length].y -
+                                                    this.activeTrack.points[index].y);
+        trackTexture.repeat.set(trackDirection.length() * TEXTURE_TILE_REPETIONS, 1);
+
+        const direction: Vector3 = new Vector3(0, 1, 0).cross(trackDirection);
+
+        const plane: PlaneBufferGeometry = new PlaneBufferGeometry(trackDirection.length() * WORLD_SIZE, ROAD_WIDTH);
+        const planeInside: PlaneBufferGeometry = new PlaneBufferGeometry(trackDirection.length() * WORLD_SIZE - ROAD_WIDTH, ROAD_WIDTH);
+        const planeOutside: PlaneBufferGeometry = new PlaneBufferGeometry(trackDirection.length() * WORLD_SIZE - ROAD_WIDTH, ROAD_WIDTH);
+
+        const mesh: Mesh[] = new Array<Mesh>();
+        mesh.push( new Mesh(plane, new MeshBasicMaterial({ map: trackTexture, side: BackSide })));
+        mesh.push(new Mesh(planeInside, new MeshBasicMaterial({ map: trackTexture, side: DoubleSide })));
+        mesh.push(new Mesh(planeOutside, new MeshBasicMaterial({ map: trackTexture, side: DoubleSide })));
+
+        const meshPositionWorld: Vector2 = new Vector2(-(this.activeTrack.points[index].y + trackDirection.z * HALF)
+                                                       * WORLD_SIZE + WORLD_SIZE * HALF,
+                                                       -(this.activeTrack.points[index].x + trackDirection.x * HALF)
+                                                       * WORLD_SIZE + WORLD_SIZE * HALF);
+
+        this.createRoad(mesh[0], trackDirection, meshPositionWorld);
+
+        const distanceRoadBorder: Vector2 = new Vector2(direction.normalize().z * ROAD_WIDTH * HALF,
+                                                        direction.normalize().x * ROAD_WIDTH * HALF);
+
+        this.createWall(mesh[1], trackDirection, meshPositionWorld, new Vector2(-distanceRoadBorder.x, -distanceRoadBorder.y));
+        this.createWall(mesh[2], trackDirection, meshPositionWorld, distanceRoadBorder);
+    }
+
+    private createRoad(mesh: Mesh, trackDirection: Vector3, meshPositionWorld: Vector2): void {
+        mesh.position.x = meshPositionWorld.x;
+        mesh.position.z = meshPositionWorld.y;
         mesh.rotation.x = PI_OVER_2;
-        mesh.rotation.z = vector.y === 0 ? PI_OVER_2 : Math.atan(vector.x / vector.y);
-        this.superimpose(mesh);
+        mesh.rotation.z = trackDirection.z === 0 ? PI_OVER_2 : Math.atan(trackDirection.x / trackDirection.z);
+        this.superpose(mesh);
 
         this.scene.add(mesh);
     }
 
-    // tslint:disable-next-line:max-func-body-length
-    private createWalls(index: number): void {
-        const trackTexture: Texture = new TextureLoader().load("/assets/road.jpg");
-        trackTexture.wrapS = RepeatWrapping;
-        const vector: Vector3 = new Vector3(this.activeTrack.points[(index + 1) % this.activeTrack.points.length].x -
-                                            this.activeTrack.points[index].x,
-                                            0,
-                                            this.activeTrack.points[(index + 1) % this.activeTrack.points.length].y -
-                                            this.activeTrack.points[index].y);
-        const direction: Vector3 = new Vector3(0, 1, 0).cross(vector);
+    private createWall(mesh: Mesh, trackDirection: Vector3, meshPositionWorld: Vector2, distanceRoadBorder: Vector2): void {
+        mesh.position.x = meshPositionWorld.x + distanceRoadBorder.x;
+        mesh.position.z = meshPositionWorld.y + distanceRoadBorder.y;
+        mesh.rotation.y = trackDirection.x === 0 ? 0 : Math.atan(trackDirection.z / trackDirection.x) + PI_OVER_2;
 
-        const planeInside: PlaneBufferGeometry = new PlaneBufferGeometry(vector.length() * WORLD_SIZE - ROAD_WIDTH, ROAD_WIDTH);
-        const planeOutside: PlaneBufferGeometry = new PlaneBufferGeometry(vector.length() * WORLD_SIZE - ROAD_WIDTH, ROAD_WIDTH);
-
-        const mesh: Mesh[] = new Array<Mesh>();
-        mesh.push(new Mesh(planeInside, new MeshBasicMaterial({ map: trackTexture, side: DoubleSide })));
-        mesh.push(new Mesh(planeOutside, new MeshBasicMaterial({ map: trackTexture, side: DoubleSide })));
-        mesh[0].position.x = -(this.activeTrack.points[index].y + vector.z * HALF) * WORLD_SIZE + WORLD_SIZE * HALF
-                             - direction.normalize().z * ROAD_WIDTH * HALF;
-        mesh[0].position.z = -(this.activeTrack.points[index].x + vector.x * HALF) * WORLD_SIZE + WORLD_SIZE * HALF
-                             - direction.normalize().x * ROAD_WIDTH * HALF;
-        mesh[0].rotation.y = vector.x === 0 ? 0 : Math.atan(vector.z / vector.x) + PI_OVER_2;
-
-        mesh[1].position.x = -(this.activeTrack.points[index].y + vector.z * HALF) * WORLD_SIZE + WORLD_SIZE * HALF
-                             + direction.normalize().z * ROAD_WIDTH * HALF;
-        mesh[1].position.z = -(this.activeTrack.points[index].x + vector.x * HALF) * WORLD_SIZE + WORLD_SIZE * HALF
-                             + direction.normalize().x * ROAD_WIDTH * HALF;
-        mesh[1].rotation.y = vector.x === 0 ? 0 : Math.atan(vector.z / vector.x) + PI_OVER_2;
-
-        this.scene.add(mesh[0]);
-        this.scene.add(mesh[1]);
-        this.collisionManager.addWall(mesh[0]);
-        this.collisionManager.addWall(mesh[1]);
+        this.scene.add(mesh);
+        this.collisionManager.addWall(mesh);
     }
 
     private createIntersection(index: number): void {
@@ -221,7 +221,7 @@ export class RenderService {
         mesh.position.x = -(this.activeTrack.points[index].y) * WORLD_SIZE + WORLD_SIZE * HALF;
         mesh.position.z = -(this.activeTrack.points[index].x) * WORLD_SIZE + WORLD_SIZE * HALF;
         mesh.rotation.x = PI_OVER_2;
-        this.superimpose(mesh);
+        this.superpose(mesh);
 
         this.scene.add(mesh);
     }
@@ -229,7 +229,8 @@ export class RenderService {
     // TODO: Calculate 2 angles from wall length - segment length (and refactor into 2 methods)
     private createIntersectionWall(index: number): void {
         const vectorA: Vector3 = new Vector3(this.activeTrack.points[(index + 1) % this.activeTrack.points.length].x -
-                                             this.activeTrack.points[index].x, 0,
+                                             this.activeTrack.points[index].x,
+                                             0,
                                              this.activeTrack.points[(index + 1) % this.activeTrack.points.length].y -
                                              this.activeTrack.points[index].y);
         const vectorB: Vector3 = new Vector3(this.activeTrack.points[index].x -
@@ -263,7 +264,7 @@ export class RenderService {
         this.scene.add(mesh);
     }
 
-    private superimpose(mesh: Mesh): void {
+    private superpose(mesh: Mesh): void {
         this.superposition += SUPERPOSITION;
         mesh.position.y = this.superposition;
     }
