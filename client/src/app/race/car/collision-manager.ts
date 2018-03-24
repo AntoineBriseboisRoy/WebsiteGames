@@ -1,5 +1,6 @@
 import { Car } from "./car";
 import { Vector3, Matrix4, Quaternion, Box3, Mesh, Raycaster, Intersection } from "three";
+import { Injectable } from "@angular/core";
 
 const CAR_A_MOMENTUM_FACTOR: number = 2.1;
 const CAR_B_MOMENTUM_FACTOR: number = 1.9;
@@ -8,6 +9,8 @@ const BACK_SECTION: number = -1.55;
 const FRONT_SECTION: number = 1.79;
 
 const TIME_THRESHHOLD: number = 200; // Milliseconds
+
+@Injectable()
 export class CollisionManager {
 
     private cars: Car[];
