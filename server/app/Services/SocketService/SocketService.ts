@@ -42,7 +42,6 @@ export class SocketService {
             const game: INewGame = JSON.parse(data);
             socket.join(GamesInProgressService.Instance.createNewGame(game.userCreator).roomName);
             WaitingGamesService.Instance.pushNewGame(game);
-            console.log((WaitingGamesService.Instance.Games.length));
             socket.in("waiting-room").broadcast.emit("new-game", game);
         });
     }
@@ -50,7 +49,6 @@ export class SocketService {
         socket.on("delete-game", (data: string) => {
             const game: INewGame = JSON.parse(data);
             WaitingGamesService.Instance.remove(game);
-            console.log("disconnect", (WaitingGamesService.Instance.Games.length));
             socket.in("waiting-room").broadcast.emit("delete-game", game);
         });
     }
@@ -59,7 +57,6 @@ export class SocketService {
             const game: INewGame = JSON.parse(data);
             socket.join(game.userCreator);
             WaitingGamesService.Instance.remove(game);
-            console.log((WaitingGamesService.Instance.Games.length));
             socket.in("waiting-room").broadcast.emit("play-game", game);
             const gameInProgress: IGameInProgress = GamesInProgressService.Instance.getGameInProgress(game.userCreator);
             this.socketIo.in(game.userCreator).emit("grid-content", gameInProgress.gridContent);
