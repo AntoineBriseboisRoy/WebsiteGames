@@ -3,56 +3,24 @@ import * as http from "http";
 import Types from "./types";
 import { injectable, inject } from "inversify";
 import { IServerAddress } from "./iserver.address";
-import * as io from "socket.io";
-import { INewGame } from "../../common/interfaces/INewGame";
-import { WaitingGamesService } from "./Services/Multiplayer-menu-service/waiting-games.service";
-import { GamesInProgressService } from "./Services/GamesInProgress";
-import { IGameInProgress } from "../../common/interfaces/IGameInProgress";
+import { SocketService } from "./Services/SocketService/SocketService";
 @injectable()
 export class Server {
 
     private readonly appPort: string | number | boolean = this.normalizePort(process.env.PORT || "3000");
     private readonly baseDix: number = 10;
     private server: http.Server;
-    private socketIo: SocketIO.Server;
 
     constructor(@inject(Types.Application) private application: Application) { }
 
-    // tslint:disable-next-line:max-func-body-length
     public init(): void {
         this.application.app.set("port", this.appPort);
 
         this.server = http.createServer(this.application.app);
-        this.socketIo = io(this.server);
-
         this.server.listen(this.appPort);
         this.server.on("error", (error: NodeJS.ErrnoException) => this.onError(error));
         this.server.on("listening", () => this.onListening());
-
-        this.socketIo.on("connection", (socket: SocketIO.Socket) => {
-            socket.on("waiting-room", () => socket.join("waiting-room"));
-            socket.on("new-game", (data: string) => {
-                const game: INewGame = JSON.parse(data);
-                socket.join(GamesInProgressService.Instance.createNewGame(game.userCreator).roomName);
-                WaitingGamesService.Instance.pushNewGame(game);
-                socket.in("waiting-room").broadcast.emit("new-game", game);
-            });
-            socket.on("delete-game", (data: string) => {
-                const game: INewGame = JSON.parse(data);
-                WaitingGamesService.Instance.remove(game);
-                socket.in("waiting-room").broadcast.emit("delete-game", game);
-            });
-            socket.on("play-game", (data: string) => {
-                const game: INewGame = JSON.parse(data);
-                socket.join(game.userCreator);
-                WaitingGamesService.Instance.remove(game);
-                socket.in("waiting-room").broadcast.emit("play-game", game);
-                const gameInProgress: IGameInProgress = GamesInProgressService.Instance.getGameInProgress(game.userCreator);
-                this.socketIo.in(game.userCreator).emit("grid-content", gameInProgress.gridContent);
-                this.socketIo.in(game.userCreator).emit("grid-words", gameInProgress.gridWords);
-            });
-            socket.on("disconnect", () => console.warn("disconnect", socket.id));
-        });
+        SocketService.Instance.connect(this.server);
     }
 
     private normalizePort(val: number | string): number | string | boolean {
