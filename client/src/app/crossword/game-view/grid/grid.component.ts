@@ -12,18 +12,18 @@ import { GameManager } from "../../game-manager";
     selector: "app-crossword-grid",
     templateUrl: "./grid.component.html",
     styleUrls: ["./grid.component.css"],
-    providers: [KeyboardInputManagerService, WordTransmitterService]
+    providers: [KeyboardInputManagerService]
 })
 
 export class GridComponent implements OnInit {
-    private cells: Array<ICell>;
+    private gridCells: Array<ICell>;
     private gridWords: Array<IGridWord>;
     private clickedWords: Array<IGridWord>;
     private clickedCell: ICell;
     private focusCell: FocusCell;
     private keyboardInputManagerService: KeyboardInputManagerService;
     public constructor(private wordTransmitterService: WordTransmitterService) {
-        this.cells = new Array();
+        this.gridCells = new Array();
         this.gridWords = new Array();
         this.clickedWords = new Array();
         this.clickedCell = undefined;
@@ -36,8 +36,8 @@ export class GridComponent implements OnInit {
             this.gridWords = gridWords;
         });
         this.wordTransmitterService.getCells().subscribe((gridCells: Array<ICell>) => {
-            this.cells = gridCells;
-            this.keyboardInputManagerService = new KeyboardInputManagerService(this.cells);
+            this.gridCells = gridCells;
+            this.keyboardInputManagerService = new KeyboardInputManagerService(this.gridCells);
         });
     }
 
@@ -119,6 +119,7 @@ export class GridComponent implements OnInit {
                 this.setCellsToFound(word);
                 GameManager.Instance.playerOne.addPoint(word.cells.length);
                 word.isFound = true;
+                // TODO: Appel socket io
             }
             userAnswer = "";
         }

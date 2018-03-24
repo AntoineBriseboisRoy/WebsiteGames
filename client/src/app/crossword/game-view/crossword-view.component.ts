@@ -1,10 +1,12 @@
 import { Component } from "@angular/core";
 import { FocusCell } from "./focusCell";
+import { WordTransmitterService } from "./wordTransmitter.service";
 
 @Component({
     selector: "app-crossword-game-view",
     templateUrl: "./crossword-view.component.html",
     styleUrls: ["./crossword-view.component.css"],
+    providers: [WordTransmitterService]
 })
 export class CrosswordViewComponent {
 
