@@ -12,14 +12,13 @@ export class GridFiller {
     private wordsLengths: IWord[];
     private sideSize: number;
     private difficulty: number;
-    private attempts: number;
+    private problemWord: IWord;
 
     public constructor(private lexicalService: LexicalService) {
         this.sideSize = 0;
         this.grid = new Array<Array<string>>();
         this.words = new Array<IWord>();
         this.wordsLengths = new Array<IWord>();
-        this.attempts = 0;
     }
 
     public get Words(): IWord[] {
@@ -116,38 +115,32 @@ export class GridFiller {
     private async fillGridWithWords(): Promise<boolean> {
         console.log("fillGridWithWords");
         if (this.gridFilled()) {
-            console.log("filled");
             return true;
-        }
-        if (++this.attempts > 120) {
-            return false;
         }
         console.log(this.words.length, "  --  ", this.wordsLengths.length);
         console.log(this.grid);
 
+        this.sortWordLengthsByCommonLetters();
         const longestFreeSpace: IWord = this.wordsLengths.pop();
         const entry: WordAndDefinition = await this.getWord(longestFreeSpace);
         if (entry.word === NOT_FOUND) {
             this.wordsLengths.push(longestFreeSpace);
+            this.problemWord = longestFreeSpace;
 
             return false;
         }
         const wordAdded: IWord = { position: longestFreeSpace.position, orientation: longestFreeSpace.orientation,
                                    content: entry.word, definition: entry.definition };
-        console.log("before addword(",wordAdded.content,")");
         this.addNewWord(wordAdded);
-        console.log("after addword");
         this.sortWordLengthsByCommonLetters();
 
         let nextWordPlaced: boolean = await this.fillGridWithWords();
         if (!nextWordPlaced) {
-            this.backtrack(this.findWordWithCommonLetters(wordAdded));
+            this.backtrack(this.findWordWithCommonLetters(this.problemWord));
             nextWordPlaced = await  this.fillGridWithWordsNextTry();
-            console.log("2  ",nextWordPlaced);
 
             return nextWordPlaced;
         } else {
-            console.log("other true");
 
             return true;
         }
@@ -162,35 +155,32 @@ export class GridFiller {
         console.log("fillGridWithWordsNextTry");
         if (this.gridFilled()) {
             console.log("filled");
+
             return true;
-        }
-        if (++this.attempts > 120) {
-            return false;
         }
         console.log(this.words.length, "  --  ", this.wordsLengths.length);
         console.log(this.grid);
 
+        this.sortWordLengthsByCommonLetters();
         const longestFreeSpace: IWord = this.wordsLengths.pop();
         const entry: WordAndDefinition = await this.getWord(longestFreeSpace);
         if (entry.word === NOT_FOUND) {
             this.wordsLengths.push(longestFreeSpace);
+            this.problemWord = longestFreeSpace;
 
             return false;
         }
         const wordAdded: IWord = {position: longestFreeSpace.position, orientation: longestFreeSpace.orientation,
                                   content: entry.word, definition: entry.definition };
-        console.log("before addword(",wordAdded.content,")");
         this.addNewWord(wordAdded);
-        console.log("after addword");
         this.sortWordLengthsByCommonLetters();
 
-        const nextWordPlaced: boolean = await !this.fillGridWithWords();
+        const nextWordPlaced: boolean = await this.fillGridWithWords();
         if (!nextWordPlaced) {
-            this.backtrack(this.findWordWithCommonLetters(wordAdded));
-            console.log("1");
+            this.backtrack(this.findWordWithCommonLetters(this.problemWord));
+
             return false;
         } else {
-            console.log("other true");
 
             return true;
         }
@@ -309,37 +299,44 @@ export class GridFiller {
     }
 
     private async queryWordFromDB(searchTemplate: string): Promise<WordAndDefinition> {
-        let word: WordAndDefinition = { word: "nothing", definition: "" };
+        const words: WordAndDefinition[] = await this.lexicalService.searchWords(searchTemplate, this.difficulty);
 
-        return this.lexicalService.searchWords(searchTemplate, this.difficulty).then((words: WordAndDefinition[]) => {
-            const randomInt: number = Math.floor(Math.random() * words.length);
+        if (words.length === 0) {
+            return { word: NOT_FOUND, definition: "" };
+        }
+        const randomInt: number = Math.floor(Math.random() * words.length);
 
-            word = words.length === 0 ? { word: NOT_FOUND, definition: "" } :
-                { word: StringService.cleanWord(words[randomInt].word).toUpperCase(),
-                  definition: words[randomInt].definition };
+        return {
+            word: StringService.cleanWord(words[randomInt].word).toUpperCase(),
+            definition: words[randomInt].definition
+        };
 
-            return word;
-        });
     }
 
     private findWordWithCommonLetters(wordCompared: IWord): IWord {
-        let wordFound: IWord = this.words[0];
+        let wordsFound: IWord[] = new Array<IWord>();
         this.words.forEach((word: IWord) => {
             if (this.haveCommonLetter(word, wordCompared)) {
-                wordFound = word;
+                wordsFound.push(word);
+            }
+        });
+        let lowestCountWord: IWord = wordsFound[0];
+        wordsFound.forEach((word: IWord) => {
+            if (this.countLettersBelongingOtherWords(lowestCountWord) > this.countLettersBelongingOtherWords(word)) {
+                lowestCountWord = word;
             }
         });
 
-        return wordFound;
+        return lowestCountWord;
     }
 
     private backtrack(wordToErase: IWord): void {
-        console.log("bactrack(",wordToErase,")");
-        console.log("before, ",this.words.length," --- ",this.wordsLengths.length);
+        if (wordToErase === undefined) {
+            return;
+        }
         this.words = this.words.filter((word: IWord) => word !== wordToErase);
         this.wordsLengths.push(wordToErase);
         this.removeLastWordFromGrid(wordToErase);
-        console.log("after, ",this.words.length," --- ",this.wordsLengths.length);
     }
 
     private removeLastWordFromGrid(lastWord: IWord): void {
