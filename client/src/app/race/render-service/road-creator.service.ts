@@ -4,6 +4,7 @@ import { Point } from "../edit-track/Geometry";
 import { Texture, TextureLoader, RepeatWrapping, Vector3, Mesh, PlaneBufferGeometry,
          MeshBasicMaterial, BackSide, DoubleSide, Vector2, CircleBufferGeometry, CylinderGeometry } from "three";
 import { HALF, PI_OVER_2 } from "../../constants";
+import { InvalidArgumentError } from "../../invalidArgumentError";
 
 const TEXTURE_TILE_REPETIONS: number = 200;
 const WORLD_SIZE: number = 1000;
@@ -24,10 +25,10 @@ export class RoadCreator {
     public createTrack(points: Point[]): Mesh[] {
         this.points = points;
         this.meshes = new Array<Mesh>();
-        for (let i: number = 0; i < this.points.length - 1; ++i) {
+        for (let i: number = 1; i < this.points.length; ++i) {
             this.createRoadSegment(i);
             this.createIntersection(i);
-            this.createIntersectionWall(i + 1);
+            this.createIntersectionWall(i);
         }
 
         return this.meshes;
@@ -38,47 +39,60 @@ export class RoadCreator {
         const trackTexture: Texture = new TextureLoader().load("/assets/road.jpg");
         trackTexture.wrapS = RepeatWrapping;
 
-        const trackDirection: Vector3 = new Vector3(this.points[(index + 1) % this.points.length].x -
-                                                    this.points[index].x,
-                                                    0,
-                                                    this.points[(index + 1) % this.points.length].y -
-                                                    this.points[index].y);
-        // const previousTrackDirection: Vector3 = new Vector3(this.points[(index + 1) % this.points.length].x -
-        //                                                     this.points[index].x,
-        //                                                     0,
-        //                                                     this.points[(index + 1) % this.points.length].y -
-        //                                                     this.points[index].y);
+        const roadVectors: Vector3[] = this.createRoadVectors(index);
 
-        // const nextTrackDirection: Vector3 = new Vector3(this.points[(index + 1) % this.points.length].x -
-        //                                                 this.points[index].x,
-        //                                                 0,
-        //                                                 this.points[(index + 1) % this.points.length].y -
-        //                                                 this.points[index].y);
-        trackTexture.repeat.set(trackDirection.length() * TEXTURE_TILE_REPETIONS, 1);
+        trackTexture.repeat.set(roadVectors[1].length() * TEXTURE_TILE_REPETIONS, 1);
 
-        const direction: Vector3 = new Vector3(0, 1, 0).cross(trackDirection);
+        const direction: Vector3 = new Vector3(0, 1, 0).cross(roadVectors[1]);
 
-        const plane: PlaneBufferGeometry = new PlaneBufferGeometry(trackDirection.length() * WORLD_SIZE, ROAD_WIDTH);
-        const planeInside: PlaneBufferGeometry = new PlaneBufferGeometry(trackDirection.length() * WORLD_SIZE - ROAD_WIDTH, ROAD_WIDTH);
-        const planeOutside: PlaneBufferGeometry = new PlaneBufferGeometry(trackDirection.length() * WORLD_SIZE - ROAD_WIDTH, ROAD_WIDTH);
+        const plane: PlaneBufferGeometry = new PlaneBufferGeometry(roadVectors[1].length() * WORLD_SIZE, ROAD_WIDTH);
+        const planeInside: PlaneBufferGeometry = new PlaneBufferGeometry(roadVectors[1].length() * WORLD_SIZE - ROAD_WIDTH, ROAD_WIDTH);
+        const planeOutside: PlaneBufferGeometry = new PlaneBufferGeometry(roadVectors[1].length() * WORLD_SIZE - ROAD_WIDTH, ROAD_WIDTH);
 
         const mesh: Mesh[] = new Array<Mesh>();
-        mesh.push( new Mesh(plane, new MeshBasicMaterial({ map: trackTexture, side: BackSide })));
+        mesh.push(new Mesh(plane, new MeshBasicMaterial({ map: trackTexture, side: BackSide })));
         mesh.push(new Mesh(planeInside, new MeshBasicMaterial({ map: trackTexture, side: DoubleSide })));
         mesh.push(new Mesh(planeOutside, new MeshBasicMaterial({ map: trackTexture, side: DoubleSide })));
 
-        const meshPositionWorld: Vector2 = new Vector2(-(this.points[index].y + trackDirection.z * HALF)
+        const meshPositionWorld: Vector2 = new Vector2(-(this.points[index].y + roadVectors[1].z * HALF)
                                                        * WORLD_SIZE + WORLD_SIZE * HALF,
-                                                       -(this.points[index].x + trackDirection.x * HALF)
+                                                       -(this.points[index].x + roadVectors[1].x * HALF)
                                                        * WORLD_SIZE + WORLD_SIZE * HALF);
 
-        this.createRoad(mesh[0], trackDirection, meshPositionWorld);
+        this.createRoad(mesh[0], roadVectors[1], meshPositionWorld);
 
         const distanceRoadBorder: Vector2 = new Vector2(direction.normalize().z * ROAD_WIDTH * HALF,
                                                         direction.normalize().x * ROAD_WIDTH * HALF);
 
-        this.createWall(mesh[2], trackDirection, meshPositionWorld, distanceRoadBorder);
-        this.createWall(mesh[1], trackDirection, meshPositionWorld, distanceRoadBorder.negate());
+        this.createWall(mesh[2], roadVectors[1], meshPositionWorld, distanceRoadBorder);
+        this.createWall(mesh[1], roadVectors[1], meshPositionWorld, distanceRoadBorder.negate());
+    }
+
+    private createRoadVectors(index: number): Vector3[] {
+        const roadVectors: Vector3[] = new Array<Vector3>();
+        try {
+            roadVectors.push(new Vector3(this.points[index].x -
+                                         this.points[index - 1].x,
+                                         0,
+                                         this.points[index].y -
+                                         this.points[index - 1].y));
+
+            roadVectors.push(new Vector3(this.points[(index + 1) % this.points.length].x -
+                                         this.points[index].x,
+                                         0,
+                                         this.points[(index + 1) % this.points.length].y -
+                                         this.points[index].y));
+
+            roadVectors.push(new Vector3(this.points[(index + 2) % this.points.length].x -
+                                         this.points[(index + 1) % this.points.length].x,
+                                         0,
+                                         this.points[(index + 2) % this.points.length].y -
+                                         this.points[(index + 1) % this.points.length].y));
+        } catch (error) {
+            throw new InvalidArgumentError(error);
+        }
+
+        return roadVectors;
     }
 
     private createRoad(mesh: Mesh, trackDirection: Vector3, meshPositionWorld: Vector2): void {
