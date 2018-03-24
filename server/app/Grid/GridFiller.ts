@@ -1,8 +1,9 @@
 import { ICoordXY } from "../../../common/interfaces/ICoordXY";
 import { IWord, Orientation } from "../../../common/interfaces/IWord";
-import { DictionaryEntry, Constraint } from "./Interfaces";
 import { StringService } from "./StringService";
-import { EMPTY_SQUARE, MIN_LETTERS_FOR_WORD, NOT_FOUND, BLACKSQUARE_CHARACTER, MAX_WORD_QUERY_ATTEMPS, DICTIONNARY } from "./Constants";
+import { WordAndDefinition } from "../Services/LexicalService/Interfaces";
+import { EMPTY_SQUARE, MIN_LETTERS_FOR_WORD, NOT_FOUND, BLACKSQUARE_CHARACTER, MAX_WORD_QUERY_ATTEMPS } from "./Constants";
+import { Difficulty, LexicalService } from "../Services/LexicalService/LexicalService";
 
 export class GridFiller {
 
@@ -10,27 +11,35 @@ export class GridFiller {
     private words: IWord[];
     private wordsLengths: IWord[];
     private sideSize: number;
+    private difficulty: number;
+    private attempts: number;
 
-    public constructor() {
+    public constructor(private lexicalService: LexicalService) {
         this.sideSize = 0;
         this.grid = new Array<Array<string>>();
         this.words = new Array<IWord>();
         this.wordsLengths = new Array<IWord>();
+        this.attempts = 0;
     }
 
     public get Words(): IWord[] {
         return this.words;
     }
 
-    public fillWords(grid: string[][], sideSize: number): IWord[] {
+    public async fillWords(grid: string[][], sideSize: number, difficulty: Difficulty): Promise<IWord[]> {
         this.sideSize = sideSize;
         this.grid = grid;
+        this.difficulty = difficulty;
 
         this.establishWordLengths();
         this.sortWordLengths();
-        while (!this.fillGridWithWords()) { /* Do nothing */ }
+        let isDone: boolean = false;
+        while (!isDone) {
+            isDone = await this.fillGridWithWords();
+        }
         this.fillRemainingSpacesWithBlacksquares();
         console.log(this.grid);
+        console.log("done");
 
         return this.words;
     }
@@ -103,14 +112,21 @@ export class GridFiller {
         }
     }
 
-    private fillGridWithWords(): boolean {
-        console.log(this.grid);
+    // tslint:disable-next-line:max-func-body-length
+    private async fillGridWithWords(): Promise<boolean> {
+        console.log("fillGridWithWords");
         if (this.gridFilled()) {
+            console.log("filled");
             return true;
         }
+        if (++this.attempts > 120) {
+            return false;
+        }
+        console.log(this.words.length, "  --  ", this.wordsLengths.length);
+        console.log(this.grid);
+
         const longestFreeSpace: IWord = this.wordsLengths.pop();
-        const entry: DictionaryEntry = this.findWordsWithConstraints(longestFreeSpace.content.length,
-                                                                     this.establishConstraints(longestFreeSpace));
+        const entry: WordAndDefinition = await this.getWord(longestFreeSpace);
         if (entry.word === NOT_FOUND) {
             this.wordsLengths.push(longestFreeSpace);
 
@@ -118,15 +134,21 @@ export class GridFiller {
         }
         const wordAdded: IWord = { position: longestFreeSpace.position, orientation: longestFreeSpace.orientation,
                                    content: entry.word, definition: entry.definition };
-        console.log(wordAdded);
+        console.log("before addword(",wordAdded.content,")");
         this.addNewWord(wordAdded);
+        console.log("after addword");
         this.sortWordLengthsByCommonLetters();
 
-        if (!this.fillGridWithWords()) {
+        let nextWordPlaced: boolean = await this.fillGridWithWords();
+        if (!nextWordPlaced) {
             this.backtrack(this.findWordWithCommonLetters(wordAdded));
+            nextWordPlaced = await  this.fillGridWithWordsNextTry();
+            console.log("2  ",nextWordPlaced);
 
-            return (this.fillGridWithWordsNextTry());
+            return nextWordPlaced;
         } else {
+            console.log("other true");
+
             return true;
         }
     }
@@ -135,15 +157,21 @@ export class GridFiller {
         return (this.wordsLengths.length === 0);
     }
 
-    private fillGridWithWordsNextTry(): boolean {
-        console.log(this.grid);
+    // tslint:disable-next-line:max-func-body-length
+    private async fillGridWithWordsNextTry(): Promise<boolean> {
+        console.log("fillGridWithWordsNextTry");
         if (this.gridFilled()) {
+            console.log("filled");
             return true;
         }
+        if (++this.attempts > 120) {
+            return false;
+        }
+        console.log(this.words.length, "  --  ", this.wordsLengths.length);
+        console.log(this.grid);
 
         const longestFreeSpace: IWord = this.wordsLengths.pop();
-        const entry: DictionaryEntry = this.findWordsWithConstraints(longestFreeSpace.content.length,
-                                                                     this.establishConstraints(longestFreeSpace));
+        const entry: WordAndDefinition = await this.getWord(longestFreeSpace);
         if (entry.word === NOT_FOUND) {
             this.wordsLengths.push(longestFreeSpace);
 
@@ -151,14 +179,19 @@ export class GridFiller {
         }
         const wordAdded: IWord = {position: longestFreeSpace.position, orientation: longestFreeSpace.orientation,
                                   content: entry.word, definition: entry.definition };
+        console.log("before addword(",wordAdded.content,")");
         this.addNewWord(wordAdded);
+        console.log("after addword");
         this.sortWordLengthsByCommonLetters();
 
-        if (!this.fillGridWithWords()) {
+        const nextWordPlaced: boolean = await !this.fillGridWithWords();
+        if (!nextWordPlaced) {
             this.backtrack(this.findWordWithCommonLetters(wordAdded));
-
+            console.log("1");
             return false;
         } else {
+            console.log("other true");
+
             return true;
         }
     }
@@ -241,66 +274,52 @@ export class GridFiller {
         return belongs;
     }
 
-    private establishConstraints(nextWord: IWord): Constraint[] {
-        const constraints: Constraint[] = new Array<Constraint>();
-        for (let i: number = 0; i < nextWord.content.length; i++) {
-            const currentChar: string = (nextWord.orientation === Orientation.Vertical) ?
-                this.grid[nextWord.position.x][i + nextWord.position.y] :
-                this.grid[nextWord.position.x + i][nextWord.position.y];
-            if (currentChar !== EMPTY_SQUARE) {
-                constraints.push({position: i, letter: currentChar});
-            }
-        }
-
-        return constraints;
-    }
-
-    private findWordsWithConstraints(length: number, constraints: Constraint[]): DictionaryEntry {
+    private async getWord(wordToFill: IWord): Promise<WordAndDefinition>  {
         let nAttempts: number = 0;
-        let word: DictionaryEntry;
-
+        let wordFound: WordAndDefinition;
         do {
-            word = this.searchWordsTemporaryDB(length, constraints);
-            if (word.word === NOT_FOUND) {
-                return word;
+            wordFound = await this.queryWordFromDB(this.getSearchTemplate(wordToFill));
+            if (wordFound.word === NOT_FOUND) {
+                return wordFound;
             }
             ++nAttempts;
-        } while (this.verifyAlreadyUsedWord(word.word) && nAttempts < MAX_WORD_QUERY_ATTEMPS);
+        } while (this.verifyAlreadyUsedWord(wordFound.word) && nAttempts < MAX_WORD_QUERY_ATTEMPS);
 
-        return word;
+        return wordFound;
     }
 
     private verifyAlreadyUsedWord(wordToCheck: string): boolean {
         return this.words.filter((word: IWord) => word.content === wordToCheck).length > 0;
     }
 
-    // Temporary, to be replaced when we can establish a proper link with the lexical service
-    private searchWordsTemporaryDB(length: number, requiredLettersPositions: Constraint[]): DictionaryEntry {
-        const searchResults: DictionaryEntry[] = DICTIONNARY.filter((entry: DictionaryEntry) => {
-            return this.constraintFilter(entry, length, requiredLettersPositions); }
-        );
-        const randomInt: number =  Math.floor(Math.random() * searchResults.length);
+    private getSearchTemplate(nextWord: IWord): string {
+        let searchTemplate: string = "";
+        for (let i: number = 0; i < nextWord.content.length; i++) {
+            const currentChar: string = (nextWord.orientation === Orientation.Vertical) ?
+                this.grid[nextWord.position.x][i + nextWord.position.y] :
+                this.grid[nextWord.position.x + i][nextWord.position.y];
+            if (currentChar === EMPTY_SQUARE) {
+                searchTemplate += "?";
+            } else {
+                searchTemplate += currentChar;
+            }
+        }
 
-        return searchResults.length === 0 ? { word: NOT_FOUND, definition: "", field3: "" } :
-            {word: StringService.eliminateSpecialChars(StringService.replaceAccentedChars(searchResults[randomInt].word)).toUpperCase(),
-             definition: searchResults[randomInt].definition, field3: ""};
+        return searchTemplate;
     }
 
-    private constraintFilter(entry: DictionaryEntry, length: number, requiredLettersPositions: Constraint[]): boolean {
-        let passesFilter: boolean = true;
-        const cleanWord: string = StringService.eliminateSpecialChars(StringService.replaceAccentedChars(entry.word));
-        if (cleanWord.length !== length) {
-            passesFilter = false;
-        }
-        requiredLettersPositions.forEach((constraint: Constraint) => {
-            if (cleanWord[constraint.position] === undefined) {
-                passesFilter = false;
-            } else if (cleanWord[constraint.position].toUpperCase() !== constraint.letter.toUpperCase()) {
-                passesFilter = false;
-            }
-        });
+    private async queryWordFromDB(searchTemplate: string): Promise<WordAndDefinition> {
+        let word: WordAndDefinition = { word: "nothing", definition: "" };
 
-        return passesFilter;
+        return this.lexicalService.searchWords(searchTemplate, this.difficulty).then((words: WordAndDefinition[]) => {
+            const randomInt: number = Math.floor(Math.random() * words.length);
+
+            word = words.length === 0 ? { word: NOT_FOUND, definition: "" } :
+                { word: StringService.cleanWord(words[randomInt].word).toUpperCase(),
+                  definition: words[randomInt].definition };
+
+            return word;
+        });
     }
 
     private findWordWithCommonLetters(wordCompared: IWord): IWord {
@@ -315,9 +334,12 @@ export class GridFiller {
     }
 
     private backtrack(wordToErase: IWord): void {
+        console.log("bactrack(",wordToErase,")");
+        console.log("before, ",this.words.length," --- ",this.wordsLengths.length);
         this.words = this.words.filter((word: IWord) => word !== wordToErase);
         this.wordsLengths.push(wordToErase);
         this.removeLastWordFromGrid(wordToErase);
+        console.log("after, ",this.words.length," --- ",this.wordsLengths.length);
     }
 
     private removeLastWordFromGrid(lastWord: IWord): void {

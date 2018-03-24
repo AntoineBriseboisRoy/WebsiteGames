@@ -3,17 +3,23 @@ import { BlackSquareGenerator } from "./BlackSquareGenerator";
 import { StringService } from "./StringService";
 import { GridFiller } from "./GridFiller";
 import { STANDARD_SIDE_SIZE, PERCENTAGE_BLACK_SQUARES } from "./Constants";
+import { LexicalService, Difficulty } from "../Services/LexicalService/LexicalService";
 
 export class Grid {
 
     private gridContent: string[][];
     private words: IWord[];
 
-    public constructor(private sideSize: number = STANDARD_SIDE_SIZE, private percentageOfBlackSquares: number = PERCENTAGE_BLACK_SQUARES) {
+    public constructor(private difficulty: Difficulty, private sideSize: number = STANDARD_SIDE_SIZE,
+                       private percentageOfBlackSquares: number = PERCENTAGE_BLACK_SQUARES) {
+
+    }
+
+    public async fillGrid(): Promise<void> {
         this.gridContent = new BlackSquareGenerator(this.sideSize, this.percentageOfBlackSquares).generateBlackSquares();
-        this.words = new GridFiller().fillWords(this.gridContent, this.sideSize);
+        this.words = await new GridFiller(new LexicalService()).fillWords(this.gridContent, this.sideSize, this.difficulty);
         this.cleanGrid();
-     }
+    }
 
     public get GridContent(): string[][] {
         return this.gridContent;
