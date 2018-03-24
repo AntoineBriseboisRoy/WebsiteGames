@@ -47,7 +47,7 @@ describe("MultiplayerMenuComponent", () => {
         component.deleteGame();
         expect(component.gameRooms.Games.length).toBeLessThan(initialNumberOfGames);
     });
-    it("should call every method in side createNewGame", () => {
+    it("should call every method inside createNewGame", () => {
         spyOn(component.gameRooms, "isUsernameUnique");
         spyOn(component.gameRooms, "push");
         component.createNewGame();
