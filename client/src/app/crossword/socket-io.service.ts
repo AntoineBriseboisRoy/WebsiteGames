@@ -88,7 +88,7 @@ export class SocketIoService {
                 obs.next(data);
             });
 
-            // return () => this.socket.disconnect();
+            return () => this.socket.disconnect();
         });
 
         return Subject.create(observer, observable);
