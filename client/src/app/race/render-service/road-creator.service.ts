@@ -24,12 +24,11 @@ export class RoadCreator {
     }
     public createTrack(points: Point[]): Mesh[] {
         this.points = points;
-        this.points.pop();
         this.meshes = new Array<Mesh>();
-        for (let i: number = 0; i < this.points.length; ++i) {
+        for (let i: number = 0; i < this.points.length - 1; ++i) {
             this.createRoadSegment(i);
             this.createIntersection(i);
-            // this.createIntersectionWall(i + 1);
+            this.createIntersectionWall(i + 1);
         }
 
         return this.meshes;
@@ -76,50 +75,61 @@ export class RoadCreator {
         for (let i: number = 0; i < roadVectors.length - 1; ++i) {
             angles.push(roadVectors[i + 1].angleTo(roadVectors[i]));
         }
-        console.log(angles);
 
         return angles;
     }
-    // tslint:disable-next-line:max-func-body-length
+
     private createRoadVectors(index: number): Vector3[] {
         const roadVectors: Vector3[] = new Array<Vector3>();
-        let temp: number = 3;
         try {
-            if (index < 1) {
-                temp = 0;
-                index = this.points.length - 1;
-                roadVectors.push(new Vector3(this.points[temp].x -
-                                             this.points[index].x,
-                                             0,
-                                             this.points[temp].y -
-                                             this.points[index].y));
-            } else {
-            roadVectors.push(new Vector3(this.points[index].x -
-                                         this.points[index - 1].x,
-                                         0,
-                                         this.points[index].y -
-                                         this.points[index - 1].y));
-            }
-            if (temp < 1) {
-                index = 0;
-            }
-
-            roadVectors.push(new Vector3(this.points[(index + 1) % this.points.length].x -
-                                         this.points[index].x,
-                                         0,
-                                         this.points[(index + 1) % this.points.length].y -
-                                         this.points[index].y));
-
-            roadVectors.push(new Vector3(this.points[(index + 2) % this.points.length].x -
-                                         this.points[(index + 1) % this.points.length].x,
-                                         0,
-                                         this.points[(index + 2) % this.points.length].y -
-                                         this.points[(index + 1) % this.points.length].y));
+            roadVectors.push(this.getPreviousSegmentVector(index));
+            roadVectors.push(this.getCurrentSegmentVector(index));
+            roadVectors.push(this.getNextSegmentVector(index));
         } catch (error) {
             throw new InvalidArgumentError(error);
         }
 
         return roadVectors;
+    }
+
+    private getNextSegmentVector(index: number): Vector3 {
+        if (index === this.points.length - 2) {
+            return new Vector3(this.points[(index + 3) % this.points.length].x -
+                               this.points[(index + 1) % this.points.length].x,
+                               0,
+                               this.points[(index + 3) % this.points.length].y -
+                               this.points[(index + 1) % this.points.length].y);
+        } else {
+            return new Vector3(this.points[(index + 2) % this.points.length].x -
+                               this.points[(index + 1) % this.points.length].x,
+                               0,
+                               this.points[(index + 2) % this.points.length].y -
+                               this.points[(index + 1) % this.points.length].y);
+        }
+    }
+
+    private getCurrentSegmentVector(index: number): Vector3 {
+        return new Vector3(this.points[(index + 1) % this.points.length].x -
+                           this.points[index].x,
+                           0,
+                           this.points[(index + 1) % this.points.length].y -
+                           this.points[index].y);
+    }
+
+    private getPreviousSegmentVector(index: number): Vector3 {
+        if (index === 0) {
+            return new Vector3(this.points[0].x -
+                               this.points[this.points.length - 2].x,
+                               0,
+                               this.points[0].y -
+                               this.points[this.points.length - 2].y);
+        } else {
+            return new Vector3(this.points[index].x -
+                               this.points[index - 1].x,
+                               0,
+                               this.points[index].y -
+                               this.points[index - 1].y);
+        }
     }
 
     private createRoad(mesh: Mesh, trackDirection: Vector3, meshPositionWorld: Vector2): void {
