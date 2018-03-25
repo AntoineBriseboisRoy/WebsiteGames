@@ -1,8 +1,8 @@
 import { GridInPlay } from "./gridInPlay";
-import { Player } from "./player";
-import { RoomState, Difficulty } from "../../common/constants";
-import { IGridWord } from "../../common/interfaces/IGridWord";
-import { ICell } from "../../common/interfaces/ICell";
+import { Player } from "../../player";
+import { RoomState, Difficulty } from "../../../../common/constants";
+import { IGridWord } from "../../../../common/interfaces/IGridWord";
+import { ICell } from "../../../../common/interfaces/ICell";
 
 export class Room {
     private grid: GridInPlay;

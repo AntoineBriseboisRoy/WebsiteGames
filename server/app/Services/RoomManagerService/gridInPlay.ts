@@ -1,7 +1,7 @@
-import { ICell } from "../../common/interfaces/ICell";
-import { IGridWord } from "../../common/interfaces/IGridWord";
-import { WordTransmitterService } from "./Services/WordTransmitterService/wordTransmitter.service";
-import { Difficulty } from "../../common/constants";
+import { ICell } from "../../../../common/interfaces/ICell";
+import { IGridWord } from "../../../../common/interfaces/IGridWord";
+import { WordTransmitterService } from "../WordTransmitterService/wordTransmitter";
+import { Difficulty } from "../../../../common/constants";
 
 export class GridInPlay {
     private gridCells: Array<ICell>;

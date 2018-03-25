@@ -4,7 +4,7 @@ import { Message } from "../../../common/communication/message";
 import { injectable, } from "inversify";
 import { TrackSaver } from "../mongo/track-saver";
 import { ITrack } from "../../../common/interfaces/ITrack";
-import { WordTransmitterService } from "../Services/WordTransmitterService/wordTransmitter.service";
+import { WordTransmitterService } from "../Services/WordTransmitterService/wordTransmitter";
 import { ICell } from "../../../common/interfaces/ICell";
 import { IGridWord } from "../../../common/interfaces/IGridWord";
 
