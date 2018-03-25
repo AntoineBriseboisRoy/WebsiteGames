@@ -35,28 +35,15 @@ export class RoadCreator {
 
     // tslint:disable-next-line:max-func-body-length
     private createRoadSegment(index: number): void {
-        const trackTexture: Texture = new TextureLoader().load("/assets/road.jpg");
-        trackTexture.wrapS = RepeatWrapping;
-
         const trackDirection: Vector3 = new Vector3(this.points[(index + 1) % this.points.length].x -
                                                     this.points[index].x,
                                                     0,
                                                     this.points[(index + 1) % this.points.length].y -
                                                     this.points[index].y);
-        // const previousTrackDirection: Vector3 = new Vector3(this.points[(index + 1) % this.points.length].x -
-        //                                                     this.points[index].x,
-        //                                                     0,
-        //                                                     this.points[(index + 1) % this.points.length].y -
-        //                                                     this.points[index].y);
 
-        // const nextTrackDirection: Vector3 = new Vector3(this.points[(index + 1) % this.points.length].x -
-        //                                                 this.points[index].x,
-        //                                                 0,
-        //                                                 this.points[(index + 1) % this.points.length].y -
-        //                                                 this.points[index].y);
+        const trackTexture: Texture = new TextureLoader().load("/assets/road.jpg");
+        trackTexture.wrapS = RepeatWrapping;
         trackTexture.repeat.set(trackDirection.length() * TEXTURE_TILE_REPETIONS, 1);
-
-        const direction: Vector3 = new Vector3(0, 1, 0).cross(trackDirection);
 
         const plane: PlaneBufferGeometry = new PlaneBufferGeometry(trackDirection.length() * WORLD_SIZE, ROAD_WIDTH);
         const planeInside: PlaneBufferGeometry = new PlaneBufferGeometry(trackDirection.length() * WORLD_SIZE - ROAD_WIDTH, ROAD_WIDTH);
@@ -67,16 +54,16 @@ export class RoadCreator {
         mesh.push(new Mesh(planeInside, new MeshBasicMaterial({ map: trackTexture, side: DoubleSide })));
         mesh.push(new Mesh(planeOutside, new MeshBasicMaterial({ map: trackTexture, side: DoubleSide })));
 
-        const meshPositionWorld: Vector2 = new Vector2(-(this.points[index].y + trackDirection.z * HALF)
-                                                       * WORLD_SIZE + WORLD_SIZE * HALF,
-                                                       -(this.points[index].x + trackDirection.x * HALF)
-                                                       * WORLD_SIZE + WORLD_SIZE * HALF);
-
-        this.createRoad(mesh[0], trackDirection, meshPositionWorld);
-
+        const direction: Vector3 = new Vector3(0, 1, 0).cross(trackDirection);
         const distanceRoadBorder: Vector2 = new Vector2(direction.normalize().z * ROAD_WIDTH * HALF,
                                                         direction.normalize().x * ROAD_WIDTH * HALF);
 
+        const meshPositionWorld: Vector2 = new Vector2(-(this.points[index].y + trackDirection.z * HALF)
+                                                        * WORLD_SIZE + WORLD_SIZE * HALF,
+                                                       -(this.points[index].x + trackDirection.x * HALF)
+                                                        * WORLD_SIZE + WORLD_SIZE * HALF);
+
+        this.createRoad(mesh[0], trackDirection, meshPositionWorld);
         this.createWall(mesh[2], trackDirection, meshPositionWorld, distanceRoadBorder);
         this.createWall(mesh[1], trackDirection, meshPositionWorld, distanceRoadBorder.negate());
     }
