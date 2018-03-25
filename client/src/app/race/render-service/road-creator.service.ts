@@ -50,7 +50,7 @@ export class RoadCreator {
         const planeOutside: PlaneBufferGeometry = new PlaneBufferGeometry(trackDirection.length() * WORLD_SIZE - ROAD_WIDTH, ROAD_WIDTH);
 
         const mesh: Mesh[] = new Array<Mesh>();
-        mesh.push( new Mesh(plane, new MeshBasicMaterial({ map: trackTexture, side: BackSide })));
+        mesh.push(new Mesh(plane, new MeshBasicMaterial({ map: trackTexture, side: BackSide })));
         mesh.push(new Mesh(planeInside, new MeshBasicMaterial({ map: trackTexture, side: DoubleSide })));
         mesh.push(new Mesh(planeOutside, new MeshBasicMaterial({ map: trackTexture, side: DoubleSide })));
 
