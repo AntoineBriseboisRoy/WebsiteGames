@@ -7,7 +7,7 @@ import { ICell } from "../../common/interfaces/ICell";
 export class Room {
     private grid: GridInPlay;
     private players: Array<Player>;
-    private state: RoomState;
+    public state: RoomState;
     private name: string;
 
     public constructor(playerOne: Player, difficulty: Difficulty, name: string) {
@@ -21,10 +21,6 @@ export class Room {
 
     public get Players(): Array<Player> {
         return this.players;
-    }
-
-    public get State(): RoomState {
-        return this.state;
     }
 
     public get Difficulty(): Difficulty {

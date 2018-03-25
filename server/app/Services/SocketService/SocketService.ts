@@ -66,8 +66,9 @@ export class SocketService {
     private playAGame(socket: SocketIO.Socket): void {
         socket.on("play-game", (data: string) => {
             const game: INewGame = JSON.parse(data);
-            this.addPlayerToWaitingRoom(game.userCreatorID, game, socket.id);
-            const room: Room = this.getRoom(socket.id);
+            const room: Room = this.getRoom(game.userCreatorID);
+            this.addPlayerToRoom(game.userJoiner, socket.id, room.Name);
+            room.state = RoomState.Playing;
             socket.join(room.Name);
             socket.to(game.userCreatorID).emit("play-game", game);
             this.socketIo.in(room.Name).emit("grid-cells", room.Cells);
@@ -111,7 +112,7 @@ export class SocketService {
     private getWaitingGames(): Array<INewGame> {
         const waitingGames: Array<INewGame> = new Array<INewGame>();
         this.rooms.forEach((room: Room) => {
-            if (room.State === RoomState.Waiting) {
+            if (room.state === RoomState.Waiting) {
                 waitingGames.push({
                     userCreator: room.Players[0].username, difficulty: room.Difficulty,
                     userJoiner: "", userCreatorID: room.Players[0].socketID
@@ -122,10 +123,13 @@ export class SocketService {
         return waitingGames;
     }
 
-    private addPlayerToWaitingRoom(userCreatorId: string, game: INewGame, userJoinerId: string): void {
-        const index: number = this.findRoom(userCreatorId);
-        if (index !== ID_NOT_FOUND) {
-            this.rooms[index].addPlayer(userJoinerId, game.userJoiner);
+    private addPlayerToRoom(userJoiner: string, userJoinerId: string, roomName: string): void {
+        const room: Room = this.getRoom(roomName);
+        if (room !== undefined) {
+            const index: number = this.findRoom(room.Name);
+            this.rooms[index].addPlayer(userJoinerId, userJoiner);
+        } else {
+            // add new room for single player
         }
     }
 }
