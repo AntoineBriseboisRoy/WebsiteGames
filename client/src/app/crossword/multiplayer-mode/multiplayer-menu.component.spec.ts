@@ -3,12 +3,10 @@ import { async, ComponentFixture, TestBed } from "@angular/core/testing";
 import { MultiplayerMenuComponent } from "./multiplayer-menu.component";
 import { SocketIoService } from "../socket-io.service";
 import { GameRoomManagerService } from "./GameRoomManagerService.service";
-import { HttpClient } from "@angular/common/http";
 import { Router } from "@angular/router";
 
 describe("MultiplayerMenuComponent", () => {
-    const http: HttpClient = undefined;
-    const gameRoomManager: GameRoomManagerService = new GameRoomManagerService(http);
+    const gameRoomManager: GameRoomManagerService = new GameRoomManagerService();
     const socketIoService: SocketIoService = new SocketIoService(gameRoomManager);
     const router: Router = undefined;
     let fixture: ComponentFixture<MultiplayerMenuComponent>;
