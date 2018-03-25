@@ -14,8 +14,10 @@ const MINIMUM_SPEED: number = 0.05;
 const NUMBER_REAR_WHEELS: number = 2;
 const NUMBER_WHEELS: number = 4;
 
-const RAYCASTER_FAR_DISTANCE: number = 1.8;
-const RAYCASTER_ANGLE: number = Math.PI / 8;
+const FRONT_X_CORRECTION: number = 0.16;
+const FRONT_Z_CORRECTION: number = 0.13;
+const BACK_X_CORRECTION: number = 0.13;
+const BACK_Z_CORRECTION: number = 0.1;
 
 export class Car extends Object3D {
     public isAcceleratorPressed: boolean;
@@ -142,12 +144,11 @@ export class Car extends Object3D {
 
     public async init(): Promise<void> {
         this.mesh = await this.load();
-        this.mesh.position.y = 20;
         this.add(this.mesh);
         this.initBoundingBox();
-        this.initRaycasters();
         this.mesh.position.add(this.initialPosition);
         this.mesh.setRotationFromEuler(INITIAL_MODEL_ROTATION);
+        this.initRaycasters();
     }
 
     private initBoundingBox(): void {
@@ -157,19 +158,26 @@ export class Car extends Object3D {
     }
 
     private initRaycasters(): void {
-        this.raycasters.push(new Raycaster(this.getPosition().clone(), new Vector3(1, 0, 0), 0, RAYCASTER_FAR_DISTANCE));
-        this.raycasters.push(new Raycaster(this.getPosition().clone(), new Vector3(Math.cos(RAYCASTER_ANGLE), 0, Math.sin(RAYCASTER_ANGLE)),
-                                           0, RAYCASTER_FAR_DISTANCE));
-        this.raycasters.push(new Raycaster(this.getPosition().clone(),
-                                           new Vector3(Math.cos(RAYCASTER_ANGLE), 0, -Math.sin(RAYCASTER_ANGLE)),
-                                           0, RAYCASTER_FAR_DISTANCE));
-        this.raycasters.push(new Raycaster(this.getPosition().clone(), new Vector3(-1, 0, 0), 0, RAYCASTER_FAR_DISTANCE));
-        this.raycasters.push(new Raycaster(this.getPosition().clone(),
-                                           new Vector3(-Math.cos(RAYCASTER_ANGLE), 0, Math.sin(RAYCASTER_ANGLE)),
-                                           0, RAYCASTER_FAR_DISTANCE));
-        this.raycasters.push(new Raycaster(this.getPosition().clone(),
-                                           new Vector3(-Math.cos(RAYCASTER_ANGLE), 0, -Math.sin(RAYCASTER_ANGLE)),
-                                           0, RAYCASTER_FAR_DISTANCE));
+        const box: Box3 = new Box3();
+        box.setFromObject(this);
+
+        const front: Vector3 = new Vector3(this.position.x + box.min.x, 1, 0);
+        const frontLeft: Vector3 = new Vector3(this.position.x + box.min.x + FRONT_X_CORRECTION, 1,
+                                               this.position.z + box.max.z - FRONT_Z_CORRECTION);
+        const frontRight: Vector3 = new Vector3(this.position.x + box.min.x + FRONT_X_CORRECTION, 1,
+                                                this.position.z + box.min.z + FRONT_Z_CORRECTION);
+        const back: Vector3 = new Vector3(this.position.x + box.max.x, 1, 0);
+        const backLeft: Vector3 = new Vector3(this.position.x + box.max.x - BACK_X_CORRECTION, 1,
+                                              this.position.z + box.max.z - BACK_Z_CORRECTION);
+        const backRight: Vector3 = new Vector3(this.position.x + box.max.x - BACK_X_CORRECTION, 1,
+                                               this.position.z + box.min.z + BACK_Z_CORRECTION);
+
+        this.raycasters.push(new Raycaster(front, new Vector3(0, -1, 0)));
+        this.raycasters.push(new Raycaster(frontLeft, new Vector3(0, -1, 0)));
+        this.raycasters.push(new Raycaster(frontRight, new Vector3(0, -1, 0)));
+        this.raycasters.push(new Raycaster(back, new Vector3(0, -1, 0)));
+        this.raycasters.push(new Raycaster(backLeft, new Vector3(0, -1, 0)));
+        this.raycasters.push(new Raycaster(backRight, new Vector3(0, -1, 0)));
     }
 
     public steerLeft(): void {

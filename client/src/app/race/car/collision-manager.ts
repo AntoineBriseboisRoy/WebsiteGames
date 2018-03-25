@@ -14,14 +14,13 @@ const TIME_THRESHHOLD: number = 200; // Milliseconds
 export class CollisionManager {
 
     private cars: Car[];
-    private collisionables: Mesh[]; // In the optic that cars, walls and different floor types can create collisions.
-
+    private roadSegments: Mesh[];
     private timeSinceLastCollision: number;
     private lastDate: number;
 
     public constructor() {
         this.cars = new Array<Car>();
-        this.collisionables = new Array<Mesh>();
+        this.roadSegments = new Array<Mesh>();
         this.timeSinceLastCollision = 0;
         this.lastDate = 0;
     }
@@ -30,9 +29,9 @@ export class CollisionManager {
         this.cars.push(car);
     }
 
-    public addWall(collisionable: Mesh): void {
-        this.collisionables.push(collisionable);
-        this.collisionables[this.collisionables.length - 1].name = "Wall";
+    public addRoadSegment(collisionable: Mesh): void {
+        this.roadSegments.push(collisionable);
+        this.roadSegments[this.roadSegments.length - 1].name = "Wall";
     }
 
     public update(): void {
@@ -54,13 +53,13 @@ export class CollisionManager {
     private verifyWallCollision(): void {
         this.cars.forEach((car: Car) => {
             car.Raycasters.forEach((raycaster: Raycaster) => {
-                const intersections: Intersection[] = raycaster.intersectObjects(this.collisionables);
-                if (intersections.length > 0) {
+                const intersections: Intersection[] = raycaster.intersectObjects(this.roadSegments);
+                if (intersections.length === 0) { // Car is no more in contact with the road.
                     this.timeSinceLastCollision += Date.now() - this.lastDate;
                     if (this.timeSinceLastCollision > TIME_THRESHHOLD) {
                         this.timeSinceLastCollision = 0;
-                        const wall: Mesh = intersections[0].object as Mesh;
-                        this.wallCollision(car, wall.getWorldDirection());
+                        console.log("Out of track");
+                        // this.wallCollision(car);
                     }
                     this.lastDate = Date.now();
                 }
@@ -68,12 +67,12 @@ export class CollisionManager {
         });
     }
 
-    private wallCollision(car: Car, wallNormalVector: Vector3): void {
-        this.bounce(car, wallNormalVector);
+    private wallCollision(car: Car): void {
+        this.bounce(car);
         car.speed = car.speed.multiplyScalar(0.3);
     }
 
-    private bounce(car: Car, wallNormalVector: Vector3): void {
+    private bounce(car: Car): void {
         car.speed = car.speed.negate();
     }
 

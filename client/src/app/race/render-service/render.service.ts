@@ -127,7 +127,7 @@ export class RenderService {
         this.cameraContext.initStates(this._car.getPosition());
         this.cameraContext.setInitialState();
         this.collisionManager.addCar(this._car);
-        this.collisionManager.addCar(this.dummyCar);
+        // this.collisionManager.addCar(this.dummyCar);
 
         this.scene.add(this._car);
         // this.scene.add(this.dummyCar);
