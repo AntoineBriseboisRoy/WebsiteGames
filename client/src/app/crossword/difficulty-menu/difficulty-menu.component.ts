@@ -1,6 +1,6 @@
 import { Component } from "@angular/core";
 import { GameManager } from "../game-manager";
-import { Difficulty } from "../../constants";
+import { Difficulty } from "../../../../../common/constants";
 
 @Component({
     selector: "app-crossword-difficulty-menu",

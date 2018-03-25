@@ -1,4 +1,4 @@
-import { Difficulty } from "../../client/src/app/constants";
+import { Difficulty } from "../constants";
 
 export interface INewGame {
     userCreator: string;

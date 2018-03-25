@@ -11,11 +11,6 @@ export const PI_OVER_4: number = Math.PI / 4;
 export const HALF: number = 0.5;
 export const COMPLEMENT_PI_OVER_4: number = Math.PI - PI_OVER_4;
 export const BLACK_CHAR: string = "*";
-export const enum Difficulty {
-    Easy = "Easy",
-    Normal = "Normal",
-    Hard = "Hard"
-}
 export const INITIAL_CAMERA_POSITION_Y: number = 25;
 export const FRUSTUM_RATIO: number = 100;
 export const NO_CHEAT_COLOR: string = "#7BABEF";

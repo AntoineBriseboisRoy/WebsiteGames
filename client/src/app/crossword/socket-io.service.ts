@@ -13,12 +13,13 @@ export class SocketIoService {
     private createdGameSubject: Subject<INewGame>;
     private deletedGameSubject: Subject<INewGame>;
     private playGameSubject: Subject<INewGame>;
-
     public constructor(private gameRoomManager: GameRoomManagerService) {
         this.socket = io("http://localhost:3000/");
         this.socket.on("connect", () => {
-            this.gameRoomManager.init();
             this.socket.emit("waiting-room");
+        });
+        this.createObservable<Array<INewGame>>("waiting-room", "Error: Cannot receive games").subscribe((games: Array<INewGame>) => {
+            this.gameRoomManager.init(games);
         });
     }
 
@@ -73,8 +74,13 @@ export class SocketIoService {
     }
 
     private createSubject(emitMessage: string, errorMessage: string): Subject<INewGame> {
-        const observer: Observer<INewGame> = {
-            next: (data: INewGame) => {
+        return Subject.create(this.createObserver<INewGame>(emitMessage, errorMessage),
+                              this.createObservable<INewGame>(emitMessage, errorMessage));
+    }
+
+    private createObserver<T>(emitMessage: string, errorMessage: string): Observer<T> {
+        return {
+            next: (data: T) => {
                 this.socket.emit(emitMessage, JSON.stringify(data));
             },
             error: (err: string) => {
@@ -82,15 +88,15 @@ export class SocketIoService {
             },
             complete: () => { this.socket.disconnect(); }
         };
+    }
 
-        const observable: Observable<INewGame> = new Observable<INewGame>((obs) => {
-            this.socket.on(emitMessage, (data: INewGame) => {
+    private createObservable<T>(emitMessage: string, errorMessage: string): Observable<T> {
+        return new Observable<T>((obs) => {
+            this.socket.on(emitMessage, (data: T) => {
                 obs.next(data);
             });
 
             return () => this.socket.disconnect();
         });
-
-        return Subject.create(observer, observable);
     }
 }

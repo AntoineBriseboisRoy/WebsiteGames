@@ -1,7 +1,7 @@
 import { Component, HostListener } from "@angular/core";
 import { SocketIoService } from "../socket-io.service";
 import { INewGame } from "../../../../../common/interfaces/INewGame";
-import { Difficulty } from "../../constants";
+import { Difficulty } from "../../../../../common/constants";
 import { GameRoomManagerService } from "./GameRoomManagerService.service";
 import { Router } from "@angular/router";
 

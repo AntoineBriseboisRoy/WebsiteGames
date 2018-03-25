@@ -1,7 +1,7 @@
 import { async, ComponentFixture, TestBed } from "@angular/core/testing";
 
 import { DifficultyMenuComponent } from "./difficulty-menu.component";
-import { Difficulty } from "../../constants";
+import { Difficulty } from "../../../../../common/constants";
 
 describe("DifficultyMenuComponent", () => {
     let component: DifficultyMenuComponent;
