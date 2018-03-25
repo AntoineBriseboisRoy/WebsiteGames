@@ -62,8 +62,15 @@ export class SocketService {
     private playAGame(socket: SocketIO.Socket): void {
         socket.on("play-game", (data: string) => {
             const game: INewGame = JSON.parse(data);
-            const room: Room = RoomManagerService.Instance.getRoom(game.userCreatorID);
-            RoomManagerService.Instance.addPlayerToRoom(game.userJoiner, socket.id, room.Name);
+            let room: Room;
+            if ( this.isSinglePlayer(game)) {
+                game.userCreatorID = socket.id;
+                RoomManagerService.Instance.push(new Room(new Player(game.userCreator, game.userCreatorID), game.difficulty, socket.id));
+                room = RoomManagerService.Instance.getRoom(game.userCreatorID);
+            } else {
+                room = RoomManagerService.Instance.getRoom(game.userCreatorID);
+                RoomManagerService.Instance.addPlayerToRoom(game.userJoiner, socket.id, room.Name);
+            }
             room.state = RoomState.Playing;
             socket.join(room.Name);
             socket.to(game.userCreatorID).emit("play-game", game);
@@ -75,5 +82,9 @@ export class SocketService {
         socket.on("disconnect", () => {
             console.warn("disconnect");
         });
+    }
+
+    private isSinglePlayer(game: INewGame): boolean {
+        return game.userCreatorID === "";
     }
 }

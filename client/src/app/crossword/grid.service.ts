@@ -25,7 +25,7 @@ export class GridService {
 
     public fetchGrid(): Observable<void> {
         return Observable.create( (obs: Observer<void>) => {
-            this.getCells().subscribe((gridCells: Array<ICell>) => {
+            this.socketIO.GridContent.subscribe((gridCells: Array<ICell>) => {
                 this.gridCells = gridCells;
                 this.fetchGridWords(obs);
             });
@@ -33,7 +33,7 @@ export class GridService {
     }
 
     private fetchGridWords(obs: Observer<void>): void {
-        this.getWords().subscribe((gridWords: Array<IGridWord>) => {
+        this.socketIO.GridWords.subscribe((gridWords: Array<IGridWord>) => {
             this.gridWords = gridWords;
             this.setGridWordsReferencesToGridCells();
             obs.next(null);
@@ -46,36 +46,5 @@ export class GridService {
                 word.cells[i] = this.gridCells[word.cells[i].gridIndex];
             }
         }
-    }
-
-    private getCells(): Observable<Array<ICell>> {
-        if (!GameManager.Instance.isMultiplayer) {
-            const gridURL: string = this.BASE_URL + "getGrid";
-
-            return this.http.get<Array<ICell>>(gridURL).pipe(
-                catchError(this.handleError<Array<ICell>>("getGrid"))
-            );
-        } else {
-            return this.socketIO.GridContent;
-        }
-    }
-
-    private getWords(): Observable<Array<IGridWord>> {
-        if (!GameManager.Instance.isMultiplayer) {
-            const wordsURL: string = this.BASE_URL + "getWords";
-
-            return this.http.get<Array<IGridWord>>(wordsURL).pipe(
-                catchError(this.handleError<Array<IGridWord>>("getWords"))
-            );
-        } else {
-            return this.socketIO.GridWords;
-        }
-    }
-
-    private handleError<T>(request: string, result?: T): (error: Error) => Observable<T> {
-
-        return (error: Error): Observable<T> => {
-            return of(result as T);
-        };
     }
 }

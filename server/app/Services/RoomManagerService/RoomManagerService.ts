@@ -64,13 +64,11 @@ export class RoomManagerService {
         return waitingGames;
     }
 
-    public addPlayerToRoom(userJoiner: string, userJoinerId: string, roomName: string): void {
+    public addPlayerToRoom(playerName: string, playerId: string, roomName: string): void {
         const room: Room = this.getRoom(roomName);
         if (room !== undefined) {
             const index: number = this.findRoom(room.Name);
-            this.rooms[index].addPlayer(userJoinerId, userJoiner);
-        } else {
-            // add new room for single player
+            this.rooms[index].addPlayer(playerName, playerId);
         }
     }
 

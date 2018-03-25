@@ -15,12 +15,6 @@ export class Routes {
         router.get("/",
                    (req: Request, res: Response, next: NextFunction) => this.index.helloWorld(req, res, next));
 
-        router.get("/getGrid",
-                   (req: Request, res: Response, next: NextFunction) => this.index.getGrid(req, res, next));
-
-        router.get("/getWords",
-                   (req: Request, res: Response, next: NextFunction) => this.index.getWords(req, res, next));
-
         router.post("/postTrack",
                     (req: Request, res: Response, next: NextFunction) => this.index.postTrack(req, res, next));
 

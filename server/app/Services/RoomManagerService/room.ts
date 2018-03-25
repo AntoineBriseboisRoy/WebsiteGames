@@ -39,7 +39,7 @@ export class Room {
         return this.grid.Cells;
     }
 
-    public addPlayer(socketID: string, username: string): void {
+    public addPlayer(username: string, socketID: string): void {
         this.players.push(new Player(username, socketID));
     }
     public isPlayerInRoom(socketId: string): boolean {

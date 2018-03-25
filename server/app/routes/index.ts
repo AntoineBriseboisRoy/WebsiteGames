@@ -4,9 +4,6 @@ import { Message } from "../../../common/communication/message";
 import { injectable, } from "inversify";
 import { TrackSaver } from "../mongo/track-saver";
 import { ITrack } from "../../../common/interfaces/ITrack";
-import { WordTransmitterService } from "../Services/WordTransmitterService/wordTransmitter";
-import { ICell } from "../../../common/interfaces/ICell";
-import { IGridWord } from "../../../common/interfaces/IGridWord";
 
 module Route {
 
@@ -18,16 +15,6 @@ module Route {
             message.title = "Hello";
             message.body = "World";
             res.send(JSON.stringify(message));
-        }
-
-        public getGrid(req: Request, res: Response, next: NextFunction): void {
-            const gridContent: Array<ICell> = WordTransmitterService.Instance.getCells();
-            res.send(JSON.stringify(gridContent));
-        }
-
-        public getWords(req: Request, res: Response, next: NextFunction): void {
-            const words: Array<IGridWord> = WordTransmitterService.Instance.getTransformedWords();
-            res.send(JSON.stringify(words));
         }
 
         public postTrack(req: Request, res: Response, next: NextFunction): void {

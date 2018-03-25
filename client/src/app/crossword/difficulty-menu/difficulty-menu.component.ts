@@ -1,6 +1,8 @@
 import { Component } from "@angular/core";
 import { GameManager } from "../game-manager";
 import { Difficulty } from "../../../../../common/constants";
+import { SocketIoService } from "../socket-io.service";
+import { Router } from "@angular/router";
 
 @Component({
     selector: "app-crossword-difficulty-menu",
@@ -11,8 +13,9 @@ export class DifficultyMenuComponent {
     public readonly title: string = "Choose wisely your difficulty, smarty!";
     public isActiveDifficulty: boolean;
 
-    public constructor() {
+    public constructor(private socketIoService: SocketIoService, private router: Router) {
         this.isActiveDifficulty = false;
+        this.socketIoService.init();
     }
 
     public onButtonGroupClick($event: Event): void {
@@ -30,5 +33,15 @@ export class DifficultyMenuComponent {
     public activateDifficulty(difficulty: Difficulty): void {
         GameManager.Instance.difficulty = difficulty;
         this.isActiveDifficulty = true;
+    }
+
+    public createGame(): void {
+        this.socketIoService.PlayGameSubject.next({
+            userCreator: "Claudia",
+            difficulty: GameManager.Instance.difficulty,
+            userCreatorID: "",
+            userJoiner: ""
+        });
+        this.router.navigate(["/crossword/play"]);
     }
 }
