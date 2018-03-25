@@ -58,8 +58,7 @@ export class CollisionManager {
                     this.timeSinceLastCollision += Date.now() - this.lastDate;
                     if (this.timeSinceLastCollision > TIME_THRESHHOLD) {
                         this.timeSinceLastCollision = 0;
-                        console.log("Out of track");
-                        // this.wallCollision(car);
+                        this.wallCollision(car);
                     }
                     this.lastDate = Date.now();
                 }

@@ -2,8 +2,7 @@ import { Injectable } from "@angular/core";
 import Stats = require("stats.js");
 import { WebGLRenderer, Scene, AmbientLight,
          Mesh, PlaneBufferGeometry, MeshBasicMaterial,
-         BackSide, Texture, RepeatWrapping, TextureLoader, Vector3,
-         ArrowHelper, Raycaster } from "three";
+         BackSide, Texture, RepeatWrapping, TextureLoader, Vector3 } from "three";
 import { Car } from "../car/car";
 import { ThirdPersonCamera } from "../camera/camera-perspective";
 import { TopViewCamera } from "../camera/camera-orthogonal";
@@ -37,8 +36,6 @@ export class RenderService {
     private activeTrack: ITrack;
     private floorTextures: Map<TrackType, Texture>;
 
-    private arrows: ArrowHelper[];
-
     public get car(): Car {
         return this._car;
     }
@@ -51,7 +48,6 @@ export class RenderService {
         this._car = new Car();
         this.floorTextures = new Map<TrackType, Texture>();
         this.dummyCar = new Car(new Vector3(-15, 0, 0));
-        this.arrows = new Array<ArrowHelper>();
         this.scene = new Scene();
         this.cameraContext = new CameraContext();
     }
@@ -66,7 +62,6 @@ export class RenderService {
         await this.createScene();
         this.initStats();
         this.startRenderingLoop();
-        this.updateArrows();
     }
 
     public onResize(): void {
@@ -86,17 +81,6 @@ export class RenderService {
         this.floorTextures.set(TrackType.REGULAR, textureLoader.load("/assets/grass.jpg"));
     }
 
-    private updateArrows(): void {
-        const raycasters: Array<Raycaster> = this._car.Raycasters;
-        while (this.arrows.length > 0) {
-            this.scene.remove(this.arrows.pop());
-        }
-        for (let i: number = 0; i < raycasters.length; i++) {
-            this.arrows.push(new ArrowHelper(raycasters[i].ray.direction, raycasters[i].ray.origin, 2, 0xff0000, 0.5, 0.1));
-            this.scene.add(this.arrows[i]);
-        }
-    }
-
     private update(): void {
         const timeSinceLastFrame: number = Date.now() - this.lastDate;
         this._car.update(timeSinceLastFrame);
@@ -105,7 +89,6 @@ export class RenderService {
         this.lastDate = Date.now();
 
         this.collisionManager.update();
-        this.updateArrows();
     }
 
     private async createScene(): Promise<void> {
