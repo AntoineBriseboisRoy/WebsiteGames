@@ -27,6 +27,10 @@ import { MongoQueryService } from "./mongo-query.service";
 import { SocketIoService } from "./crossword/socket-io.service";
 import { MultiplayerGamesService } from "./crossword/multiplayer-menu/multiplayer-games.service";
 import { WaitingGamesComponent } from "./crossword/multiplayer-menu/waiting-games/waiting-games.component";
+import { ModalComponent } from "./modal/modal/modal.component";
+import { ModalService } from "./modal//modal.service";
+import { ModalStateService } from "./modal//modal-state.service";
+import { ModalDirective } from "./modal/modal.directive";
 
 @NgModule({
     declarations: [
@@ -43,7 +47,9 @@ import { WaitingGamesComponent } from "./crossword/multiplayer-menu/waiting-game
         TrackViewComponent,
         PlayerMenuComponent,
         MultiplayerMenuComponent,
-        WaitingGamesComponent
+        WaitingGamesComponent,
+        ModalComponent,
+        ModalDirective
     ],
     imports: [
         BrowserModule,
@@ -59,6 +65,8 @@ import { WaitingGamesComponent } from "./crossword/multiplayer-menu/waiting-game
         WordTransmitterService,
         MultiplayerGamesService,
         SocketIoService,
+        ModalService,
+        ModalStateService
     ],
     bootstrap: [AppComponent]
 })

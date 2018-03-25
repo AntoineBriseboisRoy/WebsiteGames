@@ -7,12 +7,14 @@ import { FocusCell } from "../focusCell";
 import { KeyboardInputManagerService } from "../keyboard-input-manager/keyboard-input-manager.service";
 import { WordTransmitterService } from "../wordTransmitter.service";
 import { GameManager } from "../../game-manager";
+import { ModalService } from "../../../modal/modal.service";
+import { Router } from "@angular/router";
 
 @Component({
     selector: "app-crossword-grid",
     templateUrl: "./grid.component.html",
     styleUrls: ["./grid.component.css"],
-    providers: [KeyboardInputManagerService, WordTransmitterService]
+    providers: [KeyboardInputManagerService]
 })
 
 export class GridComponent implements OnInit {
@@ -22,7 +24,7 @@ export class GridComponent implements OnInit {
     private clickedCell: ICell;
     private focusCell: FocusCell;
     private keyboardInputManagerService: KeyboardInputManagerService;
-    public constructor(private wordTransmitterService: WordTransmitterService) {
+    public constructor(private wordTransmitterService: WordTransmitterService, private modalService: ModalService, private router: Router) {
         this.cells = new Array();
         this.gridWords = new Array();
         this.clickedWords = new Array();
@@ -124,6 +126,16 @@ export class GridComponent implements OnInit {
         }
     }
 
+    private isGridCompleted(): boolean {
+        for (const word of this.gridWords) {
+            if (!word.isFound) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     private setCellsToFound(word: IGridWord): void {
         word.cells.forEach((cell) => {
             cell.isFound = true;
@@ -187,5 +199,15 @@ export class GridComponent implements OnInit {
         const cell: ICell = this.focusCell.Cell;
         this.keyboardInputManagerService.handleKeyDown(event.keyCode);
         this.verifyAnswers(cell);
+        if (this.isGridCompleted()) {
+            this.modalService.open({
+                title: "Game Over!", message: "Your score is " + GameManager.Instance.playerOne.point +
+                    "! You can choose to replay or go back to home page",
+                firstButton: "Restart", secondButton: "Home"
+            })
+                .then(() => this.router.navigate(["/crossword"]),
+                      () => window.location.reload()
+                );
+        }
     }
 }
