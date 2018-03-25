@@ -65,7 +65,10 @@ export class MultiplayerMenuComponent {
 
     public createNewGame(): void {
         if (this.gameRooms.isUsernameUnique(this.username)) {
-            this.gameRooms.createdGame = { userCreator: this.username, difficulty: this.difficulty };
+            this.gameRooms.createdGame = { userCreator: this.username,
+                                           difficulty: this.difficulty,
+                                           userCreatorID: "",
+                                           userJoiner: "" };
             this.gameRooms.push(this.gameRooms.createdGame);
             this.socketService.CreatedGameSubject.next(this.gameRooms.createdGame);
         }

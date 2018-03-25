@@ -13,6 +13,14 @@ export class GridInPlay {
         this.generateGrid();
     }
 
+    public get Cells(): Array<ICell> {
+        return this.gridCells;
+    }
+
+    public get Words(): Array<IGridWord> {
+        return this.gridWords;
+    }
+
     private generateGrid(): void {
         this.gridCells = WordTransmitterService.Instance.getCells();
         this.gridWords = WordTransmitterService.Instance.getTransformedWords();

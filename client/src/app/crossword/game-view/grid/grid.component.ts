@@ -6,7 +6,6 @@ import { ICell, CellColor } from "../../../../../../common/interfaces/ICell";
 import { FocusCell } from "../focusCell";
 import { KeyboardInputManagerService } from "../keyboard-input-manager/keyboard-input-manager.service";
 import { GridService } from "../../grid.service";
-import { GameManager } from "../../game-manager";
 
 @Component({
     selector: "app-crossword-grid",
@@ -109,9 +108,9 @@ export class GridComponent implements OnInit {
             }
             if (userAnswer === correctAnswer) {
                 this.setCellsToFound(word);
-                GameManager.Instance.playerOne.addPoint(word.cells.length);
+                // GameManager.Instance.playerOne.addPoint(word.cells.length);
                 word.isFound = true;
-                // TODO: Appel socket io
+                // TODO: Appel socket io pour ajouter les points
             }
             userAnswer = "";
         }

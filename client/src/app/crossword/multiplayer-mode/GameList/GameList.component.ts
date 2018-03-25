@@ -26,7 +26,8 @@ export class GameListComponent {
     public joinGame(index: number): void {
         const gameToPlay: INewGame = { userCreator: this.gameRooms.Games[index].userCreator,
                                        difficulty: this.gameRooms.Games[index].difficulty,
-                                       userJoiner: this.userJoiner[index]};
+                                       userJoiner: this.userJoiner[index],
+                                       userCreatorID: this.gameRooms.Games[index].userCreatorID};
         this.gameRooms.setGame(gameToPlay);
         this.socketIO.PlayGameSubject.next(gameToPlay);
         this.router.navigate(["/crossword/play"]);

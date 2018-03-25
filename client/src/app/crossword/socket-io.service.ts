@@ -4,8 +4,9 @@ import { Subject } from "rxjs/Subject";
 import { Observer } from "rxjs/Observer";
 import { Observable } from "rxjs/Observable";
 import { INewGame } from "../../../../common/interfaces/INewGame";
-import { IWord } from "../../../../common/interfaces/IWord";
 import { GameRoomManagerService } from "./multiplayer-mode/GameRoomManagerService.service";
+import { ICell } from "../../../../common/interfaces/ICell";
+import { IGridWord } from "../../../../common/interfaces/IGridWord";
 
 @Injectable()
 export class SocketIoService {
@@ -41,9 +42,9 @@ export class SocketIoService {
         return this.playGameSubject;
     }
 
-    public get GridContent(): Observable<string> {
-        return new Observable<string>((obs) => {
-            this.socket.on("grid-content", (data: string) => {
+    public get GridContent(): Observable<Array<ICell>> {
+        return new Observable<Array<ICell>>((obs) => {
+            this.socket.on("grid-cells", (data: Array<ICell>) => {
                 obs.next(data);
             });
 
@@ -51,9 +52,9 @@ export class SocketIoService {
         });
     }
 
-    public get GridWords(): Observable<Array<IWord>> {
-        return new Observable<Array<IWord>>((obs) => {
-            this.socket.on("grid-words", (data: Array<IWord>) => {
+    public get GridWords(): Observable<Array<IGridWord>> {
+        return new Observable<Array<IGridWord>>((obs) => {
+            this.socket.on("grid-words", (data: Array<IGridWord>) => {
                 obs.next(data);
             });
 

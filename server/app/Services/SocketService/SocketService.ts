@@ -1,9 +1,6 @@
 import * as http from "http";
 import * as io from "socket.io";
 import { INewGame } from "../../../../common/interfaces/INewGame";
-// import { WaitingGamesService } from "../Multiplayer-menu-service/waiting-games.service";
-// import { IGameInProgress } from "../../../../common/interfaces/IGameInProgress";
-// import { GamesInProgressService } from "../GamesInProgress";
 import { Room } from "../../room";
 import { Player } from "../../player";
 import { RoomState } from "../../../../common/constants";
@@ -49,8 +46,14 @@ export class SocketService {
     private createNewGame(socket: SocketIO.Socket): void {
         socket.on("new-game", (data: string) => {
             const game: INewGame = JSON.parse(data);
-            this.rooms.push(new Room(new Player(game.userCreator, socket.id), game.difficulty));
-            socket.in("waiting-room").broadcast.emit("new-game", game);
+            this.rooms.push(new Room(new Player(game.userCreator, socket.id), game.difficulty, socket.id));
+            socket.in("waiting-room").broadcast.emit("new-game", {
+                userCreator: game.userCreator,
+                userCreatorID: socket.id,
+                difficulty: game.difficulty,
+                userJoiner: ""
+            });
+            socket.join(this.getRoom(socket.id).Name);
         });
     }
     private deleteGame(socket: SocketIO.Socket): void {
@@ -62,16 +65,13 @@ export class SocketService {
     }
     private playAGame(socket: SocketIO.Socket): void {
         socket.on("play-game", (data: string) => {
-            // const game: INewGame = JSON.parse(data);
-            // 1. add player to waiting game
-            // 2. change state of game to playing
-            // 3. send Grid to client
-
-            // socket.join(game.userCreator);
-            // socket.in("waiting-room").broadcast.emit("play-game", game);
-            // const gameInProgress: IGameInProgress = GamesInProgressService.Instance.getGameInProgress(game.userCreator);
-            // this.socketIo.in(game.userCreator).emit("grid-content", gameInProgress.gridContent);
-            // this.socketIo.in(game.userCreator).emit("grid-words", gameInProgress.gridWords);
+            const game: INewGame = JSON.parse(data);
+            this.addPlayerToWaitingRoom(game.userCreatorID, game, socket.id);
+            const room: Room = this.getRoom(socket.id);
+            socket.join(room.Name);
+            socket.to(game.userCreatorID).emit("play-game", game);
+            this.socketIo.in(room.Name).emit("grid-cells", room.Cells);
+            this.socketIo.in(room.Name).emit("grid-words", room.Words);
         });
     }
     private disconnectSocket(socket: SocketIO.Socket): void {
@@ -85,6 +85,15 @@ export class SocketService {
         if (index !== ID_NOT_FOUND) {
             this.rooms.splice(index, 1);
         }
+    }
+
+    private getRoom(socketId: string): Room {
+        const index: number = this.findRoom(socketId);
+        if (index !== ID_NOT_FOUND) {
+            return this.rooms[index];
+        }
+
+        return undefined;
     }
 
     private findRoom(socketId: string): number {
@@ -101,12 +110,22 @@ export class SocketService {
 
     private getWaitingGames(): Array<INewGame> {
         const waitingGames: Array<INewGame> = new Array<INewGame>();
-        this.rooms.forEach((room: Room ) => {
+        this.rooms.forEach((room: Room) => {
             if (room.State === RoomState.Waiting) {
-                waitingGames.push({userCreator: room.Players[0].username, difficulty: room.Difficulty});
+                waitingGames.push({
+                    userCreator: room.Players[0].username, difficulty: room.Difficulty,
+                    userJoiner: "", userCreatorID: room.Players[0].socketID
+                });
             }
         });
 
         return waitingGames;
+    }
+
+    private addPlayerToWaitingRoom(userCreatorId: string, game: INewGame, userJoinerId: string): void {
+        const index: number = this.findRoom(userCreatorId);
+        if (index !== ID_NOT_FOUND) {
+            this.rooms[index].addPlayer(userJoinerId, game.userJoiner);
+        }
     }
 }

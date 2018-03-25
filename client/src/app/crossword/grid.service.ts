@@ -5,7 +5,7 @@ import { Observable } from "rxjs/Observable";
 import { catchError } from "rxjs/operators";
 import { of } from "rxjs/observable/of";
 
-// import { SocketIoService } from "./socket-io.service";
+import { SocketIoService } from "./socket-io.service";
 import { GameManager } from "./game-manager";
 import { IGridWord } from "../../../../common/interfaces/IGridWord";
 import { ICell } from "../../../../common/interfaces/ICell";
@@ -17,7 +17,7 @@ export class GridService {
     public gridCells: Array<ICell>;
     public gridWords: Array<IGridWord>;
 
-    public constructor(private http: HttpClient/*, private socketIO: SocketIoService*/) {
+    public constructor(private http: HttpClient, private socketIO: SocketIoService) {
         this.BASE_URL = "http://localhost:3000/";
         this.gridCells = new Array();
         this.gridWords = new Array();
@@ -56,10 +56,8 @@ export class GridService {
                 catchError(this.handleError<Array<ICell>>("getGrid"))
             );
         } else {
-            // return this.socketIO.GridContent;
+            return this.socketIO.GridContent;
         }
-
-        return Observable.create();
     }
 
     private getWords(): Observable<Array<IGridWord>> {
@@ -70,10 +68,8 @@ export class GridService {
                 catchError(this.handleError<Array<IGridWord>>("getWords"))
             );
         } else {
-            // return this.socketIO.GridWords;
+            return this.socketIO.GridWords;
         }
-
-        return Observable.create();
     }
 
     private handleError<T>(request: string, result?: T): (error: Error) => Observable<T> {
