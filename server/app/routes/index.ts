@@ -4,8 +4,6 @@ import { Message } from "../../../common/communication/message";
 import { injectable, } from "inversify";
 import { TrackSaver } from "../mongo/track-saver";
 import { ITrack } from "../../../common/interfaces/ITrack";
-import { INewGame } from "../../../common/interfaces/INewGame";
-import { WaitingGamesService } from "../Services/Multiplayer-menu-service/waiting-games.service";
 import { WordTransmitterService } from "../Services/WordTransmitterService/wordTransmitter.service";
 import { ICell } from "../../../common/interfaces/ICell";
 import { IGridWord } from "../../../common/interfaces/IGridWord";
@@ -20,10 +18,6 @@ module Route {
             message.title = "Hello";
             message.body = "World";
             res.send(JSON.stringify(message));
-        }
-        public getGames(req: Request, res: Response, next: NextFunction): void {
-            const games: Array<INewGame> = WaitingGamesService.Instance.Games;
-            res.send(JSON.stringify(games));
         }
 
         public getGrid(req: Request, res: Response, next: NextFunction): void {

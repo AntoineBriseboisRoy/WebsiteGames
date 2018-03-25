@@ -15,9 +15,6 @@ export class Routes {
         router.get("/",
                    (req: Request, res: Response, next: NextFunction) => this.index.helloWorld(req, res, next));
 
-        router.get("/getGames",
-                   (req: Request, res: Response, next: NextFunction) => this.index.getGames(req, res, next));
-
         router.get("/getGrid",
                    (req: Request, res: Response, next: NextFunction) => this.index.getGrid(req, res, next));
 
