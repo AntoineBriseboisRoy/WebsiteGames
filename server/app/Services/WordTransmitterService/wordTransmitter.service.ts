@@ -1,29 +1,52 @@
-import { Injectable } from "@angular/core";
-import { Observable } from "rxjs/Observable";
+import { IGridWord } from "../../../../common/interfaces/IGridWord";
+import { ICell, CellColor } from "../../../../common/interfaces/ICell";
+import { IWord, Orientation } from "../../../../common/interfaces/IWord";
 
-import { IGridWord } from "../interfaces/IGridWord";
-import { IWord, Orientation } from "../../../../../common/interfaces/IWord";
+import { GridGeneratorService } from "../../Grid/GridGeneratorService";
+import { STANDARD_SIDE_SIZE, BLACKSQUARE_CHARACTER } from "../../Grid/Constants";
 
-import { GridService } from "../grid.service";
-import { ICell, CellColor } from "../interfaces/ICell";
-import { GRID_WIDTH, BLACK_CHAR } from "../../constants";
-import { Observer } from "rxjs/Observer";
-
-@Injectable()
 export class WordTransmitterService {
-
+    private static instance: WordTransmitterService;
     private indexPosition: number[];
     private cells: Array<ICell>;
     private gridWords: Array<IGridWord>;
     private gridContent: string;
     private words: Array<IWord>;
 
-    public constructor(private gridService: GridService) {
+    private constructor() {
         this.indexPosition = new Array();
         this.cells = new Array();
         this.gridWords = new Array<IGridWord>();
     }
-    private getFormattedGrid(words: Array<IWord>): void {
+
+    public static get Instance(): WordTransmitterService {
+        if (!this.instance) {
+            this.instance = new WordTransmitterService();
+        }
+
+        return this.instance;
+    }
+
+    private generateNewGrid(): void {
+        if (this.words === undefined) {
+            this.gridContent = GridGeneratorService.Instance.getFakeGridContent();
+            this.formatGrid(GridGeneratorService.Instance.getFakeGridWords());
+        }
+    }
+
+    public getTransformedWords(): Array<IGridWord> {
+        this.generateNewGrid();
+
+        return this.gridWords;
+    }
+
+    public getCells(): Array<ICell> {
+        this.generateNewGrid();
+
+        return this.cells;
+    }
+
+    private formatGrid(words: Array<IWord>): void {
         this.words = words;
         if (this.gridWords.length === 0) {
             this.addIndextoCells();
@@ -32,36 +55,8 @@ export class WordTransmitterService {
         }
     }
 
-    public getTransformedWords(): Observable<Array<IGridWord>> {
-        return Observable.create((observer: Observer<Array<IGridWord>>) => {
-            if (this.words === undefined) {
-                this.gridService.getGrid().subscribe((gridContent: string) => {
-                    this.gridContent = gridContent;
-                    this.gridService.getWords().subscribe((words: Array<IWord>) => {
-                        this.getFormattedGrid(words);
-                        observer.next(this.gridWords);
-                    });
-                });
-            } else {
-                observer.next(this.gridWords);
-            }
-        });
-    }
-
-    public getCells(): Observable<Array<ICell>> {
-        return Observable.create((observer: Observer<Array<ICell>>) => {
-            if (this.words === undefined) {
-                this.getTransformedWords().subscribe((_) => {
-                    observer.next(this.cells);
-                });
-            } else {
-                observer.next(this.cells);
-            }
-        });
-    }
-
     private isABlackSquare(letter: string): boolean {
-        return letter === BLACK_CHAR;
+        return letter === BLACKSQUARE_CHARACTER;
     }
 
     private createCells(): void {
@@ -74,7 +69,7 @@ export class WordTransmitterService {
                 } as ICell);
                 ++index;
             } else {
-                if (this.gridContent[i] === BLACK_CHAR) {
+                if (this.gridContent[i] === BLACKSQUARE_CHARACTER) {
                     this.cells.push({
                         gridIndex: i, index: null, answer: "",
                         cellColor: CellColor.Black, content: "", isFound: false
@@ -107,7 +102,7 @@ export class WordTransmitterService {
     }
 
     private isFirstLineIndex(i: number): boolean {
-        return i < GRID_WIDTH && !this.isABlackSquare(this.gridContent[i + GRID_WIDTH]);
+        return i < STANDARD_SIDE_SIZE && !this.isABlackSquare(this.gridContent[i + STANDARD_SIDE_SIZE]);
     }
 
     private isRightToBlackSquare(i: number): boolean {
@@ -115,37 +110,37 @@ export class WordTransmitterService {
     }
 
     private isBelowBlackSquare(i: number): boolean {
-        return this.isABlackSquare(this.gridContent[i - GRID_WIDTH]) &&
-            !this.isABlackSquare(this.gridContent[i + GRID_WIDTH]) &&
-            i < GRID_WIDTH * GRID_WIDTH - GRID_WIDTH;
+        return this.isABlackSquare(this.gridContent[i - STANDARD_SIDE_SIZE]) &&
+            !this.isABlackSquare(this.gridContent[i + STANDARD_SIDE_SIZE]) &&
+            i < STANDARD_SIDE_SIZE * STANDARD_SIDE_SIZE - STANDARD_SIDE_SIZE;
     }
 
     private isFirstColumnIndex(i: number): boolean {
-        return i % GRID_WIDTH === 0 && !this.isABlackSquare(this.gridContent[i + 1]);
+        return i % STANDARD_SIDE_SIZE === 0 && !this.isABlackSquare(this.gridContent[i + 1]);
     }
 
     private createWords(): void {
-        let mockCells: Array<ICell> = new Array();
+        let wordCells: Array<ICell> = new Array();
         this.words.forEach((word: IWord, index: number) => {
             const startPosition: number = this.convertPositionToCellIndex(word.position.x, word.position.y);
             if (word.orientation === Orientation.Vertical) {
-                for (let i: number = startPosition, j: number = 0; j < word.content.length; i = i + GRID_WIDTH, j++) {
-                    mockCells.push(this.cells[i]);
+                for (let i: number = startPosition, j: number = 0; j < word.content.length; i = i + STANDARD_SIDE_SIZE, j++) {
+                    wordCells.push(this.cells[i]);
                 }
             } else {
                 for (let i: number = startPosition; i < word.content.length + startPosition; i++) {
-                    mockCells.push(this.cells[i]);
+                    wordCells.push(this.cells[i]);
                 }
             }
             this.gridWords.push({
-                cells: mockCells, correctAnswer: word.content,
+                cells: wordCells, correctAnswer: word.content,
                 definition: word.definition, orientation: word.orientation, isFound: false
             } as IGridWord);
-            mockCells = [];
+            wordCells = [];
         });
     }
 
     private convertPositionToCellIndex(x: number, y: number): number {
-        return (y * GRID_WIDTH + x);
+        return (y * STANDARD_SIDE_SIZE + x);
     }
 }

@@ -10,9 +10,6 @@ export class SocketService {
     private static instance: SocketService;
     private socketIo: SocketIO.Server;
 
-    private constructor() {
-    }
-
     public static get Instance(): SocketService {
         if (!this.instance) {
             this.instance = new SocketService();

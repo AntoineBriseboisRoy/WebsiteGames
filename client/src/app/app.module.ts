@@ -20,7 +20,6 @@ import { AdminSectionComponent } from "./admin-section/admin-section.component";
 import { APP_BASE_HREF } from "@angular/common";
 import { TrackViewComponent } from "./race/track-view/track-view.component";
 import { GridService } from "./crossword/grid.service";
-import { WordTransmitterService } from "./crossword/game-view/wordTransmitter.service";
 import { PlayerMenuComponent } from "./crossword/player-menu/player-menu.component";
 import { MultiplayerMenuComponent } from "./crossword/multiplayer-mode/multiplayer-menu.component";
 import { MongoQueryService } from "./mongo-query.service";
@@ -56,7 +55,6 @@ import { GameListComponent } from "./crossword/multiplayer-mode/GameList/GameLis
         {provide: APP_BASE_HREF, useValue : "/" },
         MongoQueryService,
         GridService,
-        WordTransmitterService,
         GameRoomManagerService,
         SocketIoService
     ],

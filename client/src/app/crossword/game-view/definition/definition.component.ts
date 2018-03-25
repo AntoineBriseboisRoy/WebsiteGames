@@ -1,9 +1,10 @@
 import { Component, OnInit } from "@angular/core";
-import { NO_CHEAT_COLOR, CHEAT_COLOR, Orientation } from "../../../constants";
-import { WordTransmitterService } from "../../game-view/wordTransmitter.service";
-import { IGridWord } from "../../interfaces/IGridWord";
+import { NO_CHEAT_COLOR, CHEAT_COLOR } from "../../../constants";
+import { Orientation } from "../../../../../../common/constants";
+import { GridService } from "../../grid.service";
+import { IGridWord } from "../../../../../../common/interfaces/IGridWord";
+import { ICell } from "../../../../../../common/interfaces/ICell";
 import { FocusCell } from "../focusCell";
-import { ICell } from "../../interfaces/ICell";
 
 @Component({
     selector: "app-crossword-definition",
@@ -21,7 +22,7 @@ export class DefinitionComponent implements OnInit {
     private gridWords: Array<IGridWord>;
     private focusCell: FocusCell;
 
-    public constructor(private wordTransmitterService: WordTransmitterService) {
+    public constructor(private gridService: GridService) {
         this.choosedDefinition = "";
         this.cheatModeActive = false;
         this.gridWordsHorizontal = [];
@@ -32,12 +33,13 @@ export class DefinitionComponent implements OnInit {
     }
 
     public ngOnInit(): void {
+        this.gridService.fetchGrid().subscribe( () => {
+                this.gridWords = this.gridService.gridWords;
+                this.gridWords = this.gridWords.sort(this.compareIndex);
+                this.splitHorizontalAndVerticalWords();
+            }
+        );
         document.getElementById("cheat-button").style.backgroundColor = this.cheatButtonColor;
-        this.wordTransmitterService.getTransformedWords().subscribe((gridWords: Array<IGridWord>) => {
-            this.gridWords = gridWords;
-            this.gridWords = gridWords.sort(this.compareIndex);
-            this.splitHorizontalAndVerticalWords();
-        });
     }
 
     public focusOnCell(choosedDefinition: string): void {

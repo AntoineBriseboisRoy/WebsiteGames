@@ -1,30 +1,26 @@
 import { Component, OnInit, HostListener } from "@angular/core";
-import { GRID_WIDTH, Orientation } from "../../../constants";
-
-import { IGridWord } from "../../interfaces/IGridWord";
-import { ICell, CellColor } from "../../interfaces/ICell";
+import { GRID_WIDTH } from "../../../constants";
+import { Orientation } from "../../../../../../common/constants";
+import { IGridWord } from "../../../../../../common/interfaces/IGridWord";
+import { ICell, CellColor } from "../../../../../../common/interfaces/ICell";
 import { FocusCell } from "../focusCell";
 import { KeyboardInputManagerService } from "../keyboard-input-manager/keyboard-input-manager.service";
-import { WordTransmitterService } from "../wordTransmitter.service";
+import { GridService } from "../../grid.service";
 import { GameManager } from "../../game-manager";
 
 @Component({
     selector: "app-crossword-grid",
     templateUrl: "./grid.component.html",
     styleUrls: ["./grid.component.css"],
-    providers: [KeyboardInputManagerService]
+    providers: [ KeyboardInputManagerService ]
 })
 
 export class GridComponent implements OnInit {
-    private gridCells: Array<ICell>;
-    private gridWords: Array<IGridWord>;
     private clickedWords: Array<IGridWord>;
     private clickedCell: ICell;
     private focusCell: FocusCell;
     private keyboardInputManagerService: KeyboardInputManagerService;
-    public constructor(private wordTransmitterService: WordTransmitterService) {
-        this.gridCells = new Array();
-        this.gridWords = new Array();
+    public constructor(private gridService: GridService) {
         this.clickedWords = new Array();
         this.clickedCell = undefined;
         this.focusCell = FocusCell.Instance;
@@ -32,13 +28,9 @@ export class GridComponent implements OnInit {
     }
 
     public ngOnInit(): void {
-        this.wordTransmitterService.getTransformedWords().subscribe((gridWords: Array<IGridWord>) => {
-            this.gridWords = gridWords;
-        });
-        this.wordTransmitterService.getCells().subscribe((gridCells: Array<ICell>) => {
-            this.gridCells = gridCells;
-            this.keyboardInputManagerService = new KeyboardInputManagerService(this.gridCells);
-        });
+        this.gridService.fetchGrid().subscribe( () =>
+            this.keyboardInputManagerService = new KeyboardInputManagerService(this.gridService.gridCells)
+        );
     }
 
     public focusOnCell(cell: ICell): void {
@@ -56,7 +48,7 @@ export class GridComponent implements OnInit {
 
     private addWordsToClickedWords(cell: ICell): void {
         this.clickedWords = [];
-        this.gridWords.forEach((word: IGridWord) => {
+        this.gridService.gridWords.forEach((word: IGridWord) => {
             if (word.cells.includes(cell) && !word.isFound) {
                 this.clickedWords.push(word);
             }
@@ -159,7 +151,7 @@ export class GridComponent implements OnInit {
 
     public addFirstCellBorder(cell: ICell): string {
         if (this.focusCell.cells) {
-            if (this.focusCell.cells[0] === cell) {
+        if (this.focusCell.cells[0] === cell) {
                 return this.focusCell.Orientation === Orientation.Vertical ?
                     "first-case-border-vertical" : "first-case-border-horizontal";
             }

@@ -1,4 +1,4 @@
-<div class="cell-for-click" *ngFor="let cell of gridCells; index as i" [ngClass]="gridLineJump(i)">
+<div class="cell-for-click" *ngFor="let cell of gridService.gridCells; index as i" [ngClass]="gridLineJump(i)">
   <div [ngClass]="[getCellType(cell.cellColor), addHighlightOnFocus(cell), addOrientationBorders(cell),
         addFirstCellBorder(cell), addLastCellBorder(cell)]">
     <div [ngClass]="addStyleOnFoundWord(cell)" *ngIf="cell.cellColor == 'White'" (click)="focusOnCell(cell)">

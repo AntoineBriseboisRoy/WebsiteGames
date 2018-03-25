@@ -1,13 +1,14 @@
 import "reflect-metadata";
 import { Request, Response, NextFunction } from "express";
 import { Message } from "../../../common/communication/message";
-import { IWord } from "../../../common/interfaces/IWord";
 import { injectable, } from "inversify";
-import { GridGeneratorService } from "../Grid/GridGeneratorService";
 import { TrackSaver } from "../mongo/track-saver";
 import { ITrack } from "../../../common/interfaces/ITrack";
 import { INewGame } from "../../../common/interfaces/INewGame";
 import { WaitingGamesService } from "../Services/Multiplayer-menu-service/waiting-games.service";
+import { WordTransmitterService } from "../Services/WordTransmitterService/wordTransmitter.service";
+import { ICell } from "../../../common/interfaces/ICell";
+import { IGridWord } from "../../../common/interfaces/IGridWord";
 
 module Route {
 
@@ -26,12 +27,12 @@ module Route {
         }
 
         public getGrid(req: Request, res: Response, next: NextFunction): void {
-            const gridContent: string = GridGeneratorService.Instance.getFakeGridContent();
+            const gridContent: Array<ICell> = WordTransmitterService.Instance.getCells();
             res.send(JSON.stringify(gridContent));
         }
 
         public getWords(req: Request, res: Response, next: NextFunction): void {
-            const words: Array<IWord> = GridGeneratorService.Instance.getFakeGridWords();
+            const words: Array<IGridWord> = WordTransmitterService.Instance.getTransformedWords();
             res.send(JSON.stringify(words));
         }
 

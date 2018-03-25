@@ -1,5 +1,5 @@
 import { AbsCommand } from "../AbsCommand";
-import { ICell } from "../../../interfaces/ICell";
+import { ICell } from "../../../../../../../common/interfaces/ICell";
 
 export abstract class AbsGridCommand extends AbsCommand {
     public constructor(protected cells: Array<ICell>) {

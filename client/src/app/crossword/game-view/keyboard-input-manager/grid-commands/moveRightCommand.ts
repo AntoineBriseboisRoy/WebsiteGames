@@ -1,5 +1,5 @@
 import { AbsGridCommand } from "./AbsGridCommand";
-import { ICell } from "../../../interfaces/ICell";
+import { ICell } from "../../../../../../../common/interfaces/ICell";
 import { FocusCell } from "../../focusCell";
 import { Orientation } from "../../../../../../../common/interfaces/IWord";
 

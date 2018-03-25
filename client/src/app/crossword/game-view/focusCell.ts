@@ -1,5 +1,5 @@
-import { ICell } from "../interfaces/ICell";
-import { Orientation } from "../../constants";
+import { ICell } from "../../../../../common/interfaces/ICell";
+import { Orientation } from "../../../../../common/constants";
 
 export class FocusCell {
     private static instance: FocusCell;
