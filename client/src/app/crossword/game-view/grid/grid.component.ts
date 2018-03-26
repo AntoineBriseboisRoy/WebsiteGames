@@ -2,7 +2,7 @@ import { Component, OnInit, HostListener } from "@angular/core";
 import { GRID_WIDTH } from "../../../constants";
 import { Orientation } from "../../../../../../common/constants";
 import { IGridWord } from "../../../../../../common/interfaces/IGridWord";
-import { ICell, CellColor } from "../../../../../../common/interfaces/ICell";
+import { ICell, CellColor, Finder } from "../../../../../../common/interfaces/ICell";
 import { FocusCell } from "../focusCell";
 import { KeyboardInputManagerService } from "../keyboard-input-manager/keyboard-input-manager.service";
 import { GridService } from "../../grid.service";
@@ -168,7 +168,17 @@ export class GridComponent implements OnInit {
     }
 
     public addStyleOnFoundWord(cell: ICell): string {
-        return cell.isFound ? "isFoundCell" : "";
+        if (cell.isFound) {
+            if ( cell.finder === Finder.player1 ) {
+                return "isFoundCellPlayerOne";
+            } else if ( cell.finder === Finder.player2 ) {
+                return "isFoundCellPlayerTwo";
+            } else if ( cell.finder === Finder.both ) {
+                return "isFoundCellBoth";
+            }
+        }
+
+        return "";
     }
 
     @HostListener("window:keydown", ["$event"])
