@@ -14,12 +14,13 @@ export class SocketIoService {
     private createdGameSubject: Subject<INewGame>;
     private deletedGameSubject: Subject<INewGame>;
     private playGameSubject: Subject<INewGame>;
+
     public constructor(private gameRoomManager: GameRoomManagerService) {
         this.socket = io("http://localhost:3000/");
         this.socket.on("connect", () => {
             this.socket.emit("waiting-room");
         });
-        this.createObservable<Array<INewGame>>("waiting-room", "Error: Cannot receive games").subscribe((games: Array<INewGame>) => {
+        this.createObservable<Array<INewGame>>("waiting-room").subscribe((games: Array<INewGame>) => {
             this.gameRoomManager.init(games);
         });
     }
@@ -43,40 +44,32 @@ export class SocketIoService {
     }
 
     public get GridContent(): Observable<Array<ICell>> {
-        return new Observable<Array<ICell>>((obs) => {
-            this.socket.on("grid-cells", (data: Array<ICell>) => {
-                obs.next(data);
-            });
-
-            return () => this.socket.disconnect();
-        });
+        return this.createObservable<Array<ICell>>("grid-cells");
     }
 
     public get GridWords(): Observable<Array<IGridWord>> {
-        return new Observable<Array<IGridWord>>((obs) => {
-            this.socket.on("grid-words", (data: Array<IGridWord>) => {
-                obs.next(data);
-            });
+        return this.createObservable<Array<IGridWord>>("grid-words");
+    }
 
-            return () => this.socket.disconnect();
-        });
+    public get CompletedWords(): Observer<IGridWord> {
+        return this.createObserver<IGridWord>("completed-word", "Error: Cannot send completed word");
     }
 
     private createNewGame(): void {
-        this.createdGameSubject = this.createSubject("new-game", "Error: Cannot send new game to other players");
+        this.createdGameSubject = this.createSubject<INewGame>("new-game", "Error: Cannot send new game to other players");
     }
 
     private deleteCreatedGame(): void {
-        this.deletedGameSubject = this.createSubject("delete-game", "Error: Cannot delete the game");
+        this.deletedGameSubject = this.createSubject<INewGame>("delete-game", "Error: Cannot delete the game");
     }
 
     private playGame(): void {
-        this.playGameSubject = this.createSubject("play-game", "Error: Cannot play the game");
+        this.playGameSubject = this.createSubject<INewGame>("play-game", "Error: Cannot play the game");
     }
 
-    private createSubject(emitMessage: string, errorMessage: string): Subject<INewGame> {
-        return Subject.create(this.createObserver<INewGame>(emitMessage, errorMessage),
-                              this.createObservable<INewGame>(emitMessage, errorMessage));
+    private createSubject<T>(emitMessage: string, errorMessage: string): Subject<T> {
+        return Subject.create(this.createObserver<T>(emitMessage, errorMessage),
+                              this.createObservable<T>(emitMessage));
     }
 
     private createObserver<T>(emitMessage: string, errorMessage: string): Observer<T> {
@@ -91,7 +84,7 @@ export class SocketIoService {
         };
     }
 
-    private createObservable<T>(emitMessage: string, errorMessage: string): Observable<T> {
+    private createObservable<T>(emitMessage: string): Observable<T> {
         return new Observable<T>((obs) => {
             this.socket.on(emitMessage, (data: T) => {
                 obs.next(data);
