@@ -1,13 +1,13 @@
 <div class="modal-header">
+  <h4 class="modal-title">{{ options.title }}</h4>
   <button type="button" class="close" aria-label="Close" (click)="no()">
     <span aria-hidden="true">&times;</span>
   </button>
-  <h4 class="modal-title">{{ options.title }}</h4>
 </div>
 <div class="modal-body">
   <p>{{ options.message }}</p>
 </div>
 <div class="modal-footer">
-  <button type="button" class="btn btn-primary" (click)="firstButton()">{{options.firstButton}}</button>
-  <button type="button" class="btn btn-info" (click)="secondButton()">{{options.secondButton}}</button>
+  <button type="button" class="btn btn-primary" (click)="firstButton()">{{ options.firstButton }}</button>
+  <button type="button" class="btn btn-info" (click)="secondButton()">{{ options.secondButton }}</button>
 </div>
