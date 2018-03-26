@@ -4,7 +4,7 @@ import { FocusCell } from "./focusCell";
 @Component({
     selector: "app-crossword-game-view",
     templateUrl: "./crossword-view.component.html",
-    styleUrls: ["./crossword-view.component.css"],
+    styleUrls: ["./crossword-view.component.css"]
 })
 export class CrosswordViewComponent {
 

@@ -1,5 +1,5 @@
 import { ICell } from "./ICell";
-import {Orientation} from "../../constants";
+import { Orientation } from "../constants";
 
 export interface IGridWord {
     cells: Array<ICell>;

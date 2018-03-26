@@ -16,7 +16,7 @@
       </div>
     </div>
     <div class="row">
-      <a *ngIf="isActiveDifficulty; else deactivateLink" routerLink="/crossword/play" id="play-button" type="submit" class="btn btn-outline-info play-layout">Play</a>
+      <button *ngIf="isActiveDifficulty; else deactivateLink" (click)="createGame()" id="play-button" type="submit" class="btn btn-outline-info play-layout">Play</button>
       <ng-template #deactivateLink>
         <button type="button" class="btn btn-outline-secondary deactivated-layout" disabled>Play</button>
       </ng-template>

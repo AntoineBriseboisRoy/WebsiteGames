@@ -3,17 +3,13 @@ import * as http from "http";
 import Types from "./types";
 import { injectable, inject } from "inversify";
 import { IServerAddress } from "./iserver.address";
-import * as io from "socket.io";
-import { INewGame } from "../../common/interfaces/INewGame";
-import { WaitingGamesService } from "./Services/Multiplayer-menu-service/waiting-games.service";
-
+import { SocketService } from "./Services/SocketService/SocketService";
 @injectable()
 export class Server {
 
-    private readonly appPort: string|number|boolean = this.normalizePort(process.env.PORT || "3000");
+    private readonly appPort: string | number | boolean = this.normalizePort(process.env.PORT || "3000");
     private readonly baseDix: number = 10;
     private server: http.Server;
-    private socketIo: SocketIO.Server;
 
     constructor(@inject(Types.Application) private application: Application) { }
 
@@ -21,29 +17,10 @@ export class Server {
         this.application.app.set("port", this.appPort);
 
         this.server = http.createServer(this.application.app);
-        this.socketIo = io(this.server);
-
         this.server.listen(this.appPort);
         this.server.on("error", (error: NodeJS.ErrnoException) => this.onError(error));
         this.server.on("listening", () => this.onListening());
-
-        this.socketIo.on("connection", (socket: SocketIO.Socket) => {
-            socket.on("new-game", (data: string) => {
-                const game: INewGame = JSON.parse(data);
-                WaitingGamesService.Instance.pushNewGame(game);
-                socket.broadcast.emit("new-game", game);
-            });
-            socket.on("delete-game", (data: string) => {
-                const game: INewGame = JSON.parse(data);
-                WaitingGamesService.Instance.remove(game);
-                socket.broadcast.emit("delete-game", game);
-            });
-            socket.on("play-game", (data: string) => {
-                const game: INewGame = JSON.parse(data);
-                WaitingGamesService.Instance.remove(game);
-                socket.broadcast.emit("play-game", game);
-            });
-        });
+        SocketService.Instance.connect(this.server);
     }
 
     private normalizePort(val: number | string): number | string | boolean {
@@ -77,7 +54,7 @@ export class Server {
     /**
      * Se produit lorsque le serveur se met à écouter sur le port.
      */
-    private  onListening(): void {
+    private onListening(): void {
         const addr: IServerAddress = this.server.address();
         const bind: string = (typeof addr === "string") ? `pipe ${addr}` : `port ${addr.port}`;
         // tslint:disable-next-line:no-console

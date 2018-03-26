@@ -3,15 +3,15 @@
   <div class="card-header">
     List of games created!
   </div>
-  <div *ngIf="!this.waitingGames.Games.length">
+  <div *ngIf="!this.gameRooms.Games.length">
     <p class="card-text my-5">There's no game at the moment</p>
   </div>
-  <div *ngFor="let game of waitingGames.Games; index as i;">
+  <div *ngFor="let game of gameRooms.Games; index as i;">
     <div class="card-body">
       <h5 class="card-title">{{game.userCreator}} is waiting for an opponent : {{game.difficulty}}</h5>
       <form class="form-inline ">
         <div class="form-group mx-sm-3 mb-2">
-          <input class="form-control" placeholder="Username" [(ngModel)]= "userJoiner[i]" [ngModelOptions]="{standalone: true}" [disabled]="this.waitingGames.isWaiting()">
+          <input class="form-control" placeholder="Username" [(ngModel)]= "userJoiner[i]" [ngModelOptions]="{standalone: true}" [disabled]="this.gameRooms.isDefined()">
         </div>
         <button type="submit" class="btn btn-primary mb-2"(click)= "joinGame(i)" [disabled]="!this.canJoinGame(i)">Start game!</button>
       </form>

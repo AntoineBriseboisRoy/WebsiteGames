@@ -1,7 +1,7 @@
 import { TestBed, inject } from "@angular/core/testing";
 import { KeyboardInputManagerService } from "./keyboard-input-manager.service";
 import { FocusCell } from "../focusCell";
-import { ICell, CellColor } from "../../interfaces/ICell";
+import { ICell, CellColor } from "../../../../../../common/interfaces/ICell";
 import { Orientation } from "../../../../../../common/interfaces/IWord";
 
 describe("KeyboardInputManagerService", () => {
@@ -29,13 +29,13 @@ describe("KeyboardInputManagerService", () => {
                  {gridIndex: 3, index: 2, answer: "C", cellColor: CellColor.White, content: "", isFound: false },
                  {gridIndex: 4, index: undefined, answer: "", cellColor: CellColor.Black, content: "", isFound: false }];
 
-        FocusCell.Instance.Cell = cells[1];
+        FocusCell.Instance.cell = cells[1];
         FocusCell.Instance.Orientation = Orientation.Horizontal;
-        FocusCell.Instance.Cells = [cells[0], cells[1]];
+        FocusCell.Instance.cells = [cells[0], cells[1]];
 
         keyboardInputManagerService.handleKeyDown(LETTER_A_KEYCODE);
 
-        expect(FocusCell.Instance.Cell.content).toEqual("A");
+        expect(FocusCell.Instance.cell.content).toEqual("A");
     });
 
     it("should have a cell with a content of nothing", () => {
@@ -44,12 +44,12 @@ describe("KeyboardInputManagerService", () => {
                  {gridIndex: 3, index: 2, answer: "C", cellColor: CellColor.White, content: "", isFound: false },
                  {gridIndex: 4, index: undefined, answer: "", cellColor: CellColor.Black, content: "", isFound: false }];
 
-        FocusCell.Instance.Cell = cells[1];
+        FocusCell.Instance.cell = cells[1];
         FocusCell.Instance.Orientation = Orientation.Horizontal;
-        FocusCell.Instance.Cells = [cells[0], cells[1]];
+        FocusCell.Instance.cells = [cells[0], cells[1]];
 
         keyboardInputManagerService.handleKeyDown(ESCAPE_KEYCODE);
-        expect(FocusCell.Instance.Cell.content).toBe("");
+        expect(FocusCell.Instance.cell.content).toBe("");
     });
 
     it("should contain all letters at least once", () => {
@@ -58,13 +58,13 @@ describe("KeyboardInputManagerService", () => {
                  {gridIndex: 3, index: 2, answer: "C", cellColor: CellColor.White, content: "", isFound: false },
                  {gridIndex: 4, index: undefined, answer: "", cellColor: CellColor.Black, content: "", isFound: false }];
 
-        FocusCell.Instance.Cell = cells[1];
+        FocusCell.Instance.cell = cells[1];
         FocusCell.Instance.Orientation = Orientation.Horizontal;
-        FocusCell.Instance.Cells = [cells[0], cells[1]];
+        FocusCell.Instance.cells = [cells[0], cells[1]];
 
         for (let keyCode: number = LETTER_A_KEYCODE; keyCode <= LETTER_Z_KEYCODE; keyCode++) {
             keyboardInputManagerService.handleKeyDown(keyCode);
-            expect(FocusCell.Instance.Cell.content).toEqual(String.fromCharCode(keyCode));
+            expect(FocusCell.Instance.cell.content).toEqual(String.fromCharCode(keyCode));
         }
     });
 
@@ -74,12 +74,12 @@ describe("KeyboardInputManagerService", () => {
                  {gridIndex: 3, index: 2, answer: "C", cellColor: CellColor.White, content: "", isFound: false },
                  {gridIndex: 4, index: undefined, answer: "", cellColor: CellColor.Black, content: "", isFound: false }];
 
-        FocusCell.Instance.Cell = cells[1];
-        FocusCell.Instance.Cell.content = "A";
+        FocusCell.Instance.cell = cells[1];
+        FocusCell.Instance.cell.content = "A";
         FocusCell.Instance.Orientation = Orientation.Horizontal;
-        FocusCell.Instance.Cells = [cells[0], cells[1]];
+        FocusCell.Instance.cells = [cells[0], cells[1]];
 
         keyboardInputManagerService.handleKeyDown(BACKSPACE_KEYCODE);
-        expect(FocusCell.Instance.Cell.content).toBe(undefined);
+        expect(FocusCell.Instance.cell.content).toBe(undefined);
     });
 });

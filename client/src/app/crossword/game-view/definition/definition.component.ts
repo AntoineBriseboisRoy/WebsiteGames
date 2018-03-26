@@ -1,9 +1,9 @@
 import { Component, OnInit } from "@angular/core";
-import { NO_CHEAT_COLOR, CHEAT_COLOR, Orientation } from "../../../constants";
-import { WordTransmitterService } from "../../game-view/wordTransmitter.service";
-import { IGridWord } from "../../interfaces/IGridWord";
+import { NO_CHEAT_COLOR, CHEAT_COLOR } from "../../../constants";
+import { GridService } from "../../grid.service";
+import { IGridWord } from "../../../../../../common/interfaces/IGridWord";
+import { ICell } from "../../../../../../common/interfaces/ICell";
 import { FocusCell } from "../focusCell";
-import { ICell } from "../../interfaces/ICell";
 
 @Component({
     selector: "app-crossword-definition",
@@ -14,37 +14,25 @@ import { ICell } from "../../interfaces/ICell";
 export class DefinitionComponent implements OnInit {
     public choosedDefinition: string;
     public cheatModeActive: boolean;
-    public gridWordsHorizontal: Array<IGridWord>;
-    public gridWordsVertical: Array<IGridWord>;
-
     private cheatButtonColor: string;
-    private gridWords: Array<IGridWord>;
     private focusCell: FocusCell;
 
-    public constructor(private wordTransmitterService: WordTransmitterService) {
+    public constructor(private gridService: GridService) {
         this.choosedDefinition = "";
         this.cheatModeActive = false;
-        this.gridWordsHorizontal = [];
-        this.gridWordsVertical = [];
         this.cheatButtonColor = NO_CHEAT_COLOR;
-        this.gridWords = [];
         this.focusCell = FocusCell.Instance;
     }
 
     public ngOnInit(): void {
         document.getElementById("cheat-button").style.backgroundColor = this.cheatButtonColor;
-        this.wordTransmitterService.getTransformedWords().subscribe((gridWords: Array<IGridWord>) => {
-            this.gridWords = gridWords;
-            this.gridWords = gridWords.sort(this.compareIndex);
-            this.splitHorizontalAndVerticalWords();
-        });
     }
 
     public focusOnCell(choosedDefinition: string): void {
-        this.gridWords.forEach((word: IGridWord, index: number) => {
+        this.gridService.gridWords.forEach((word: IGridWord, index: number) => {
             if (word.definition === choosedDefinition) {
-                this.focusCell.Cell = word.cells[this.firstUnknownCell(word.cells)];
-                this.focusCell.Cells = word.cells;
+                this.focusCell.cell = word.cells[this.firstUnknownCell(word.cells)];
+                this.focusCell.cells = word.cells;
                 this.focusCell.Orientation = word.orientation;
                 this.choosedDefinition = word.definition;
                 if (this.isAlreadyFoundWord()) {
@@ -76,26 +64,12 @@ export class DefinitionComponent implements OnInit {
 
     private isAlreadyFoundWord(): boolean {
         let isFoundWord: boolean = true;
-        this.focusCell.Cells.forEach((cell: ICell) => {
+        this.focusCell.cells.forEach((cell: ICell) => {
             if (!cell.isFound) {
                 isFoundWord = false;
             }
         });
 
         return isFoundWord;
-    }
-
-    private splitHorizontalAndVerticalWords(): void {
-        this.gridWords.forEach((word: IGridWord) => {
-            if (word.orientation === Orientation.Horizontal) {
-                this.gridWordsHorizontal.push(word);
-            } else {
-                this.gridWordsVertical.push(word);
-            }
-        });
-    }
-
-    private compareIndex(a: IGridWord, b: IGridWord): number {
-        return a.cells[0].index - b.cells[0].index;
     }
 }

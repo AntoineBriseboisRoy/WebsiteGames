@@ -1,13 +1,9 @@
 import "reflect-metadata";
 import { Request, Response, NextFunction } from "express";
 import { Message } from "../../../common/communication/message";
-import { IWord } from "../../../common/interfaces/IWord";
 import { injectable, } from "inversify";
-import { GridGeneratorService } from "../Grid/GridGeneratorService";
 import { TrackSaver } from "../mongo/track-saver";
 import { ITrack } from "../../../common/interfaces/ITrack";
-import { INewGame } from "../../../common/interfaces/INewGame";
-import { WaitingGamesService } from "../Services/Multiplayer-menu-service/waiting-games.service";
 
 module Route {
 
@@ -19,20 +15,6 @@ module Route {
             message.title = "Hello";
             message.body = "World";
             res.send(JSON.stringify(message));
-        }
-        public getGames(req: Request, res: Response, next: NextFunction): void {
-            const games: Array<INewGame> = WaitingGamesService.Instance.Games;
-            res.send(JSON.stringify(games));
-        }
-
-        public getGrid(req: Request, res: Response, next: NextFunction): void {
-            const gridContent: string = GridGeneratorService.Instance.getFakeGridContent();
-            res.send(JSON.stringify(gridContent));
-        }
-
-        public getWords(req: Request, res: Response, next: NextFunction): void {
-            const words: Array<IWord> = GridGeneratorService.Instance.getFakeGridWords();
-            res.send(JSON.stringify(words));
         }
 
         public postTrack(req: Request, res: Response, next: NextFunction): void {

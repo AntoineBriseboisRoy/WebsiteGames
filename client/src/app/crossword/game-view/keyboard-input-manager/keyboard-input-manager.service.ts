@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { ICell } from "../../interfaces/ICell";
+import { ICell } from "../../../../../../common/interfaces/ICell";
 import { ClearLetterCommand } from "./grid-commands/clearLetterCommand";
 import { LetterCommand } from "./grid-commands/letterCommand";
 import { MoveLeftCommand } from "./grid-commands/moveLeftCommand";

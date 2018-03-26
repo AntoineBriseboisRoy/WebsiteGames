@@ -20,13 +20,12 @@ import { AdminSectionComponent } from "./admin-section/admin-section.component";
 import { APP_BASE_HREF } from "@angular/common";
 import { TrackViewComponent } from "./race/track-view/track-view.component";
 import { GridService } from "./crossword/grid.service";
-import { WordTransmitterService } from "./crossword/game-view/wordTransmitter.service";
 import { PlayerMenuComponent } from "./crossword/player-menu/player-menu.component";
-import { MultiplayerMenuComponent } from "./crossword/multiplayer-menu/multiplayer-menu.component";
+import { MultiplayerMenuComponent } from "./crossword/multiplayer-mode/multiplayer-menu.component";
 import { MongoQueryService } from "./mongo-query.service";
 import { SocketIoService } from "./crossword/socket-io.service";
-import { MultiplayerGamesService } from "./crossword/multiplayer-menu/multiplayer-games.service";
-import { WaitingGamesComponent } from "./crossword/multiplayer-menu/waiting-games/waiting-games.component";
+import { GameRoomManagerService } from "./crossword/multiplayer-mode/GameRoomManagerService.service";
+import { GameListComponent } from "./crossword/multiplayer-mode/GameList/GameList.component";
 import { CollisionManager } from "./race/car/collision-manager";
 import { RoadCreator } from "./race/render-service/road-creator.service";
 import { ModalComponent } from "./modal/modal/modal.component";
@@ -50,7 +49,7 @@ import { TrackPreviewComponent } from './race/track-view/track-preview/track-pre
         TrackViewComponent,
         PlayerMenuComponent,
         MultiplayerMenuComponent,
-        WaitingGamesComponent,
+        GameListComponent,
         ModalComponent,
         ModalDirective,
         TrackPreviewComponent
@@ -66,8 +65,7 @@ import { TrackPreviewComponent } from './race/track-view/track-preview/track-pre
         { provide: APP_BASE_HREF, useValue : "/" },
         MongoQueryService,
         GridService,
-        WordTransmitterService,
-        MultiplayerGamesService,
+        GameRoomManagerService,
         SocketIoService,
         CollisionManager,
         RoadCreator,

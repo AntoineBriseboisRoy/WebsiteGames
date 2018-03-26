@@ -1,14 +1,12 @@
 import { Component, OnInit, HostListener } from "@angular/core";
-import { GRID_WIDTH, Orientation } from "../../../constants";
-
-import { IGridWord } from "../../interfaces/IGridWord";
-import { ICell, CellColor } from "../../interfaces/ICell";
+import { GRID_WIDTH } from "../../../constants";
+import { Orientation } from "../../../../../../common/constants";
+import { IGridWord } from "../../../../../../common/interfaces/IGridWord";
+import { ICell, CellColor, Finder } from "../../../../../../common/interfaces/ICell";
 import { FocusCell } from "../focusCell";
 import { KeyboardInputManagerService } from "../keyboard-input-manager/keyboard-input-manager.service";
-import { WordTransmitterService } from "../wordTransmitter.service";
-import { GameManager } from "../../game-manager";
-import { ModalService } from "../../../modal/modal.service";
-import { Router } from "@angular/router";
+import { GridService } from "../../grid.service";
+import { SocketIoService } from "../../socket-io.service";
 
 @Component({
     selector: "app-crossword-grid",
@@ -18,15 +16,11 @@ import { Router } from "@angular/router";
 })
 
 export class GridComponent implements OnInit {
-    private cells: Array<ICell>;
-    private gridWords: Array<IGridWord>;
     private clickedWords: Array<IGridWord>;
     private clickedCell: ICell;
     private focusCell: FocusCell;
     private keyboardInputManagerService: KeyboardInputManagerService;
-    public constructor(private wordTransmitterService: WordTransmitterService, private modalService: ModalService, private router: Router) {
-        this.cells = new Array();
-        this.gridWords = new Array();
+    public constructor(private gridService: GridService, private socketIo: SocketIoService) {
         this.clickedWords = new Array();
         this.clickedCell = undefined;
         this.focusCell = FocusCell.Instance;
@@ -34,13 +28,9 @@ export class GridComponent implements OnInit {
     }
 
     public ngOnInit(): void {
-        this.wordTransmitterService.getTransformedWords().subscribe((gridWords: Array<IGridWord>) => {
-            this.gridWords = gridWords;
-        });
-        this.wordTransmitterService.getCells().subscribe((gridCells: Array<ICell>) => {
-            this.cells = gridCells;
-            this.keyboardInputManagerService = new KeyboardInputManagerService(this.cells);
-        });
+        this.gridService.fetchGrid().subscribe(() =>
+            this.keyboardInputManagerService = new KeyboardInputManagerService(this.gridService.gridCells)
+        );
     }
 
     public focusOnCell(cell: ICell): void {
@@ -53,12 +43,12 @@ export class GridComponent implements OnInit {
     }
 
     private isSameCell(cell: ICell): boolean {
-        return (this.clickedCell === cell && !cell.isFound && this.focusCell.Cell !== undefined);
+        return (this.clickedCell === cell && !cell.isFound && this.focusCell.cell !== undefined);
     }
 
     private addWordsToClickedWords(cell: ICell): void {
         this.clickedWords = [];
-        this.gridWords.forEach((word: IGridWord) => {
+        this.gridService.gridWords.forEach((word: IGridWord) => {
             if (word.cells.includes(cell) && !word.isFound) {
                 this.clickedWords.push(word);
             }
@@ -67,10 +57,10 @@ export class GridComponent implements OnInit {
 
     private invertOrientation(): void {
         if (this.clickedWords.length > 1) {
-            this.focusCell.Cell = this.isFocusCellinCells(this.clickedWords[0].cells) ?
+            this.focusCell.cell = this.isFocusCellinCells(this.clickedWords[0].cells) ?
                 this.clickedWords[1].cells[this.firstUnknownCell(this.clickedWords[1].cells)] :
                 this.clickedWords[0].cells[this.firstUnknownCell(this.clickedWords[0].cells)];
-            this.focusCell.Cells = this.focusCell.Cells === this.clickedWords[0].cells ?
+            this.focusCell.cells = this.focusCell.cells === this.clickedWords[0].cells ?
                 this.clickedWords[1].cells : this.clickedWords[0].cells;
             this.focusCell.invertOrientation();
         }
@@ -78,8 +68,8 @@ export class GridComponent implements OnInit {
     private chooseNewWord(cell: ICell): void {
         if (this.clickedWords.length !== 0) {
             this.clickedCell = cell;
-            this.focusCell.Cell = this.clickedWords[0].cells[this.firstUnknownCell(this.clickedWords[0].cells)];
-            this.focusCell.Cells = this.clickedWords[0].cells;
+            this.focusCell.cell = this.clickedWords[0].cells[this.firstUnknownCell(this.clickedWords[0].cells)];
+            this.focusCell.cells = this.clickedWords[0].cells;
             this.focusCell.Orientation = this.clickedWords[0].orientation;
         } else {
             this.focusCell.clear();
@@ -87,7 +77,7 @@ export class GridComponent implements OnInit {
     }
     private isFocusCellinCells(cells: Array<ICell>): boolean {
         for (const cell of cells) {
-            if (this.focusCell.Cell === cell && this.focusCell.Cells === cells) {
+            if (this.focusCell.cell === cell && this.focusCell.cells === cells) {
                 return true;
             }
         }
@@ -119,28 +109,15 @@ export class GridComponent implements OnInit {
             }
             if (userAnswer === correctAnswer) {
                 this.setCellsToFound(word);
-                GameManager.Instance.playerOne.addPoint(word.cells.length);
-                word.isFound = true;
+                // GameManager.Instance.playerOne.addPoint(word.cells.length);
+                this.socketIo.CompletedWords.next(word);
             }
             userAnswer = "";
         }
     }
 
-    private isGridCompleted(): boolean {
-        for (const word of this.gridWords) {
-            if (!word.isFound) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
     private setCellsToFound(word: IGridWord): void {
-        word.cells.forEach((cell) => {
-            cell.isFound = true;
-        });
-        if (FocusCell.Instance.Cells === word.cells) {
+        if (FocusCell.Instance.cells === word.cells) {
             FocusCell.Instance.clear();
         }
     }
@@ -154,12 +131,12 @@ export class GridComponent implements OnInit {
         return color === CellColor.Black ? "black-square" : "white-square";
     }
     public addHighlightOnFocus(cell: ICell): string {
-        return this.focusCell.Cell === cell ? "focus" : "";
+        return this.focusCell.cell === cell ? "focus" : "";
     }
 
     public addOrientationBorders(cell: ICell): string {
-        if (this.focusCell.Cells) {
-            if (this.focusCell.Cells.includes(cell)) {
+        if (this.focusCell.cells) {
+            if (this.focusCell.cells.includes(cell)) {
                 return this.focusCell.Orientation === Orientation.Vertical ?
                     "vertical-border" : "horizontal-border";
             }
@@ -169,8 +146,8 @@ export class GridComponent implements OnInit {
     }
 
     public addFirstCellBorder(cell: ICell): string {
-        if (this.focusCell.Cells) {
-            if (this.focusCell.Cells[0] === cell) {
+        if (this.focusCell.cells) {
+            if (this.focusCell.cells[0] === cell) {
                 return this.focusCell.Orientation === Orientation.Vertical ?
                     "first-case-border-vertical" : "first-case-border-horizontal";
             }
@@ -180,8 +157,8 @@ export class GridComponent implements OnInit {
     }
 
     public addLastCellBorder(cell: ICell): string {
-        if (this.focusCell.Cells) {
-            if (this.focusCell.Cells[this.focusCell.Cells.length - 1] === cell) {
+        if (this.focusCell.cells) {
+            if (this.focusCell.cells[this.focusCell.cells.length - 1] === cell) {
                 return this.focusCell.Orientation === Orientation.Vertical ?
                     "last-case-border-vertical" : "last-case-border-horizontal";
             }
@@ -191,23 +168,23 @@ export class GridComponent implements OnInit {
     }
 
     public addStyleOnFoundWord(cell: ICell): string {
-        return cell.isFound ? "isFoundCell" : "";
+        if (cell.isFound) {
+            if ( cell.finder === Finder.player1 ) {
+                return "isFoundCellPlayerOne";
+            } else if ( cell.finder === Finder.player2 ) {
+                return "isFoundCellPlayerTwo";
+            } else if ( cell.finder === Finder.both ) {
+                return "isFoundCellBoth";
+            }
+        }
+
+        return "";
     }
 
     @HostListener("window:keydown", ["$event"])
     public onKeyDown(event: KeyboardEvent): void {
-        const cell: ICell = this.focusCell.Cell;
+        const cell: ICell = this.focusCell.cell;
         this.keyboardInputManagerService.handleKeyDown(event.keyCode);
         this.verifyAnswers(cell);
-        if (this.isGridCompleted()) {
-            this.modalService.open({
-                title: "Game Over!", message: "Your score is " + GameManager.Instance.playerOne.point +
-                    "! You can choose to replay or go back to home page",
-                firstButton: "Restart", secondButton: "Home", showPreview: false
-            })
-                .then(() => this.router.navigate(["/crossword"]),
-                      () => window.location.reload()
-                );
-        }
     }
 }

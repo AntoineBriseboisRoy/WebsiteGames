@@ -14,4 +14,8 @@ export class ModalService {
 
     return this.state.modal.result;
   }
+
+  public get IsOpen(): boolean {
+      return this.state.isOpen;
+  }
 }

@@ -19,7 +19,6 @@ const DEFINITION_4: string =
 "n\tany of several trees of the genus Populus having leaves on flattened stalks so that they flutter in the lightest wind";
 const DEFINITION_5: string = "n\tusually used in combination: `liverwort'; `milkwort'; `whorlywort'";
 
-
 describe("Verifying LexicalService's searchWords function.", () => {
 
     it("should return an array of WordAndDefinition", () => {
