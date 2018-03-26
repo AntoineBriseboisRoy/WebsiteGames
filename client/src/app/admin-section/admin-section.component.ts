@@ -1,5 +1,6 @@
 import { Component, OnInit } from "@angular/core";
-import { Track } from "./track";
+import { ITrack } from "./../../../../common/interfaces/ITrack";
+import { MongoQueryService } from "../mongo-query.service";
 
 @Component({
     selector: "app-admin-section",
@@ -8,34 +9,26 @@ import { Track } from "./track";
 })
 export class AdminSectionComponent implements OnInit {
 
-    private tracks: Track[];
-    private activeTrack: Track;
-
-    public readonly title: string = "Welcome to the admistration section!";
-    public constructor() {
-        this.tracks = new Array<Track>();
-        this.activeTrack = new Track("", "");
+    private tracks: ITrack[];
+    public readonly title: string;
+    public constructor(private mongoQueryService: MongoQueryService) {
+        this.tracks = new Array<ITrack>();
+        this.title = "Welcome to the admistration section!";
     }
 
     public ngOnInit(): void {
-        this.createArtificialTracks();
+        this.getITracksFromServer();
     }
 
-    private onClick(name: string, action: string): void {
-        const selectedTrack: Track = this.tracks.find((track: Track) => {
-            return track.Name === name;
-        });
-        if (selectedTrack) {
-            this.activeTrack = selectedTrack;
-        }
-        alert("Can't yet " + action + " \"" + name + "\" because the track editor is not implemented.");
+    public deleteTrack(name: string): void {
+        this.mongoQueryService.deleteTrack(name);
     }
 
-    private createArtificialTracks(): void {
-        this.tracks.push(new Track("Laguna Seca", "A great American track with a corkscrew."));
-        this.tracks.push(new Track("Monza", "The best Italian chicane."));
-        this.tracks.push(new Track("Nürburgring Nordschleife", "Pure German madness."));
-        this.tracks.push(new Track("La Sarthe", "24 hours of French adrenaline."));
-        this.tracks.push(new Track("Monaco", "A street racing circuit."));
+    private getITracksFromServer(): void {
+        this.mongoQueryService.getAllTracks()
+            .then((tracks: Array<ITrack>) => {
+                this.tracks = tracks;
+            })
+            .catch((err: Error) => { console.error(err); });
     }
 }

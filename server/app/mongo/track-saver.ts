@@ -1,52 +1,65 @@
-import { DbClient } from "./mongo";
-import { Collection, InsertOneWriteOpResult, DeleteWriteOpResultObject, ReplaceWriteOpResult, ObjectId } from "mongodb";
-import { Schema } from "mongoose";
-import { Track } from "../../../client/src/app/admin-section/track";
+import { DbClient } from "./db-client";
+import { Collection } from "mongodb";
+import { ITrack } from "../../../common/interfaces/ITrack";
 
 const TRACKS: string = "tracks";
 
 export class TrackSaver {
 
-    private dbClient: DbClient;
-    private collection: Collection<Schema>;
+    private  dbClient: DbClient;
+    private  collection: Collection;
 
     public constructor() {
         this.dbClient = new DbClient();
     }
 
-    private connectToClient(): void {
-        if (this.dbClient != null) {
-            this.collection = this.dbClient.DB.collection(TRACKS);
-        }
+    public postTrack(track: ITrack): Promise<ITrack> {
+        return this.connectToClient()
+        .then(() => {
+            delete track._id;
+            this.collection.insertOne(track);
+
+            return track;
+        });
     }
 
-    private postTrack(track: Track): Promise<InsertOneWriteOpResult> {
-        this.connectToClient();
+    public putTrack(name: string, track: ITrack): Promise<ITrack> {
+        return this.connectToClient()
+        .then(() => {
+            delete track._id;
+            this.collection.replaceOne({name: name}, track, { upsert: true });
 
-        return this.collection.insertOne(track);
+            return track;
+        });
     }
 
-    private putTrack(name: string, track: Track): Promise<ReplaceWriteOpResult> {
-        this.connectToClient();
+    public deleteTrack(name: string): Promise<string> {
+        return this.connectToClient()
+        .then(() => {
+            this.collection.deleteOne({name: name});
 
-        return this.collection.replaceOne({_id: new ObjectId(name)}, track);
+            return name;
+        });
     }
 
-    private deleteTrack(name: string): Promise<DeleteWriteOpResultObject> {
-        this.connectToClient();
-
-        return this.collection.deleteOne(name);
+    public getTrack(name: string): Promise<ITrack> {
+        return this.connectToClient()
+        .then(() => {
+            return this.collection.findOne({name: name});
+        });
     }
 
-    private getTrack(name: string): Promise<Track> {
-        this.connectToClient();
-
-        return this.collection.findOne({_id: new Object(name)});
+    public getAllTracks(): Promise<ITrack[]> {
+        return this.connectToClient()
+        .then(() => {
+            return this.collection.find<ITrack>().toArray();
+        });
     }
 
-    private getAllTracks(): Promise<Schema[]> {
-        this.connectToClient();
-
-        return this.collection.find({}).toArray();
+    private connectToClient(): Promise<void> {
+        return this.dbClient.connect().then(() => {
+            if (this.dbClient.DB !== undefined) {
+                this.collection = this.dbClient.DB.collection(TRACKS);
+        }});
     }
 }

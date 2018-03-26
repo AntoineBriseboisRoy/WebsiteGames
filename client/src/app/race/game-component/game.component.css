@@ -3,9 +3,129 @@ div {
     height: 800px;
 }
 
-ul, li {
-    position: relative;
-    margin: 0;
-    top: 40px;
-    color: orange;
+.text {
+    position: fixed;
+    z-index: 1;
+    color: rgb(253, 192, 47);
+}
+
+#speed-background {
+    position: fixed;
+    bottom: 0%;
+    right: 0%;
+    width: 35%;
+    height: 15%;
+}
+
+#speed {
+    font-size: 8vh;
+    bottom: 2%;
+    right: 17%;
+}
+
+#speed-unit {
+    font-size: 3vh;
+    bottom: 7%;
+    right: 13%;
+}
+
+#gear {
+    font-size: 8vh;
+    bottom: 2%;
+    right: 7%;
+}
+
+#rpm-background {
+    position: fixed;
+    bottom: 15%;
+    right: 1%;
+    width: 27%;
+    height: 3%;
+    background: rgba(64, 64, 64);
+    background: rgba(64, 64, 64, 0.5);
+}
+
+#rpm-bar {
+    position: fixed;
+    bottom: 15%;
+    right: 1%;
+    height: 3%;
+    background: rgb(253, 192, 47);
+}
+
+#rpm-text {
+    font-size: 2vh;
+}
+
+#lap {
+    font-size: 8vh;
+    top: 4%;
+    right: 7%;
+}
+
+#lap-background {
+    position: fixed;
+    top: 5%;
+    right: 0%;
+    height: 12%;
+    width: 25%;
+    background: rgba(64, 64, 64);
+    background: rgba(64, 64, 64, 0.5);
+}
+
+#time-background {
+    position: fixed;
+    top: 4%;
+    left: 0%;
+    height: 5%;
+    width: 15%;
+    background: rgba(64, 64, 64);
+    background: rgba(64, 64, 64, 0.5);
+}
+
+#time {
+    font-size: 3vh;
+    top: 4%;
+    left: 1%;
+}
+
+#lap-time-background {
+    position: fixed;
+    top: 10%;
+    left: 0%;
+    height: 5%;
+    width: 15%;
+    background: rgba(64, 64, 64);
+    background: rgba(64, 64, 64, 0.5);
+}
+
+#lap-time {
+    font-size: 3vh;
+    top: 10%;
+    left: 1%;
+}
+
+#best-time-background {
+    position: fixed;
+    top: 16%;
+    left: 0%;
+    height: 5%;
+    width: 15%;
+    background: rgba(64, 64, 64);
+    background: rgba(64, 64, 64, 0.5);
+}
+
+#best-time {
+    font-size: 3vh;
+    top: 16%;
+    left: 1%;
+}
+
+#starting-text {
+    position: fixed;
+    font-size: 12vh;
+    font-weight: bold;
+    top: 25%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }

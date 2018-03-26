@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { Car } from "../car/car";
-import { AccelerateCarCommand } from "./car-commands/UpCarCommand";
+import { AccelerateCarCommand } from "./car-commands/AccelerateCarCommand";
 import { RightCarCommand } from "./car-commands/RightCarCommand";
 import { LeftCarCommand } from "./car-commands/LeftCarCommand";
 import { ReleaseSteeringCommand } from "./car-commands/ReleaseSteeringCommand";
@@ -8,68 +8,63 @@ import { DecelerateCarCommand } from "./car-commands/DecelerateCarCommand";
 import { AbsCommand } from "./AbsCommand";
 import { ZoomInCommand } from "./camera-commands/ZoomInCommand";
 import { ZoomOutCommand } from "./camera-commands/ZoomOutCommand";
-import { PerspectiveCamera } from "three";
-import { ThirdPersonCamera } from "../camera/camera-perspective";
-import { RenderService } from "../render-service/render.service";
 import { BrakeCarCommand } from "./car-commands/BrakeCarCommand";
 import { ReleaseBrakeCommand } from "./car-commands/ReleaseBrakeCommand";
 import { CameraContext } from "../camera/camera-context";
 import { SwapCameraCommand } from "./camera-commands/SwapCameraCommand";
 
-const ACCELERATE_KEYCODE: number = 87; // w
-const LEFT_KEYCODE: number = 65;       // a
-const BRAKE_KEYCODE: number = 83;      // s
-const RIGHT_KEYCODE: number = 68;      // d
-const ZOOM_IN_KEYCODE: number = 90;    // z
-const ZOOM_OUT_KEYCODE: number = 88;   // x
-const SWAP_CAM_KEYCODE: number = 67;   // c
-
-interface CommandKeyPair {
-    KeyCode: number;
-    Command: AbsCommand;
-}
+export const ACCELERATE_KEYCODE: number = 87; // w
+export const LEFT_KEYCODE: number = 65;       // a
+export const BRAKE_KEYCODE: number = 83;      // s
+export const RIGHT_KEYCODE: number = 68;      // d
+export const ZOOM_IN_KEYCODE: number = 187;    // +
+export const ZOOM_OUT_KEYCODE: number = 189;   // -
+export const SWAP_CAM_KEYCODE: number = 67;   // c
 
 @Injectable()
 export class InputManagerService {
 
-    private keyDownCommands: CommandKeyPair[];
-    private keyUpCommands: CommandKeyPair[];
+    private keyDownCommands: Map<number, AbsCommand>;
+    private keyUpCommands: Map<number, AbsCommand>;
 
-    public constructor() { }
-
-    public init(car: Car, cameraContext: CameraContext): void {
-        this.keyDownCommands = [
-            { KeyCode: ACCELERATE_KEYCODE, Command: new AccelerateCarCommand(car) },
-            { KeyCode: LEFT_KEYCODE, Command: new LeftCarCommand(car) },
-            { KeyCode: RIGHT_KEYCODE, Command: new RightCarCommand(car) },
-            { KeyCode: ZOOM_IN_KEYCODE, Command: new ZoomInCommand(cameraContext) },
-            { KeyCode: ZOOM_OUT_KEYCODE, Command: new ZoomOutCommand(cameraContext) },
-            { KeyCode: BRAKE_KEYCODE, Command: new BrakeCarCommand(car) },
-            { KeyCode: SWAP_CAM_KEYCODE, Command: new SwapCameraCommand(cameraContext) }
-        ];
-        this.keyUpCommands = [
-            { KeyCode: ACCELERATE_KEYCODE, Command: new DecelerateCarCommand(car) },
-            { KeyCode: RIGHT_KEYCODE, Command: new ReleaseSteeringCommand(car) },
-            { KeyCode: LEFT_KEYCODE, Command: new ReleaseSteeringCommand(car) },
-            { KeyCode: BRAKE_KEYCODE, Command: new ReleaseBrakeCommand(car) }
-        ];
+    public constructor() {
+        this.keyDownCommands = new Map<number, AbsCommand>();
+        this.keyUpCommands = new Map<number, AbsCommand>();
     }
 
-    public handleKeyDown(event: KeyboardEvent): void {
-        const command: CommandKeyPair = this.keyDownCommands.find((cmd: CommandKeyPair) => {
-            return cmd.KeyCode === event.keyCode;
-        });
+    public init(car: Car, cameraContext: CameraContext): void {
+        this.setDownKeyBindings(car, cameraContext);
+        this.setUpKeyBindings(car, cameraContext);
+    }
+
+    private setDownKeyBindings(car: Car, cameraContext: CameraContext): void {
+        this.keyDownCommands.set(ACCELERATE_KEYCODE, new AccelerateCarCommand(car));
+        this.keyDownCommands.set(LEFT_KEYCODE, new LeftCarCommand(car));
+        this.keyDownCommands.set(RIGHT_KEYCODE, new RightCarCommand(car));
+        this.keyDownCommands.set(ZOOM_IN_KEYCODE, new ZoomInCommand(cameraContext));
+        this.keyDownCommands.set(ZOOM_OUT_KEYCODE, new ZoomOutCommand(cameraContext));
+        this.keyDownCommands.set(BRAKE_KEYCODE, new BrakeCarCommand(car));
+        this.keyDownCommands.set(SWAP_CAM_KEYCODE, new SwapCameraCommand(cameraContext));
+    }
+
+    private setUpKeyBindings(car: Car, cameraContext: CameraContext): void {
+        this.keyUpCommands.set(ACCELERATE_KEYCODE, new DecelerateCarCommand(car));
+        this.keyUpCommands.set(RIGHT_KEYCODE, new ReleaseSteeringCommand(car));
+        this.keyUpCommands.set(LEFT_KEYCODE, new ReleaseSteeringCommand(car));
+        this.keyUpCommands.set(BRAKE_KEYCODE, new ReleaseBrakeCommand(car));
+    }
+
+    public handleKeyDown(eventKeyCode: number): void {
+        const command: AbsCommand = this.keyDownCommands.get(eventKeyCode);
         if (command) {
-            command.Command.execute();
+            command.execute();
         }
     }
 
-    public handleKeyUp(event: KeyboardEvent): void {
-         const command: CommandKeyPair = this.keyUpCommands.find((cmd: CommandKeyPair) => {
-            return cmd.KeyCode === event.keyCode;
-         });
+    public handleKeyUp(eventKeyCode: number): void {
+         const command: AbsCommand = this.keyUpCommands.get(eventKeyCode);
          if (command) {
-            command.Command.execute();
+            command.execute();
          }
     }
 }

@@ -8,7 +8,7 @@ const RELATIVE_CAMERA_OFFSET_Z: number = 5;
 
 const ZOOM_INCREMENT: number = 0.05;
 const MAX_ZOOM: number = 2.5;
-const MIN_ZOOM: number = 0.5;
+const MIN_ZOOM: number = 0.7;
 
 export class ThirdPersonCamera extends PerspectiveCamera implements CameraState {
 
@@ -45,26 +45,44 @@ export class ThirdPersonCamera extends PerspectiveCamera implements CameraState 
         this.aspect = ThirdPersonCamera.getAspectRatio(clientWidth, clientHeight);
         this.updateProjectionMatrix();
     }
+
     public zoomIn(): void {
-        if (this.zoom >= MIN_ZOOM) {
+        if (this. isGreaterEqualThanMinZoom()) {
             this.zoom += ZOOM_INCREMENT;
-            if (this.zoom > MAX_ZOOM) {
+            if (this.isGreaterThanMaxZoom()) {
                 this.zoom = MAX_ZOOM;
             }
+            this.zoom = this.roundZoom(this.zoom);
             this.updateProjectionMatrix();
         } else {
             this.zoom = MIN_ZOOM;
         }
     }
+
     public zoomOut(): void {
-        if (this.zoom >= MIN_ZOOM) {
+        if (this. isGreaterEqualThanMinZoom()) {
             this.zoom -= ZOOM_INCREMENT;
-            if (this.zoom > MAX_ZOOM) {
+            if (this.isGreaterThanMaxZoom()) {
                 this.zoom = MAX_ZOOM;
             }
+            this.zoom = this.roundZoom(this.zoom);
             this.updateProjectionMatrix();
         } else {
             this.zoom = MIN_ZOOM;
         }
+    }
+
+    private isGreaterEqualThanMinZoom(): boolean {
+        return (this.zoom >= MIN_ZOOM);
+    }
+
+    private isGreaterThanMaxZoom(): boolean {
+        return (this.zoom > MAX_ZOOM);
+    }
+
+    private roundZoom(zoomFactor: number): number {
+        const SECOND_DECIMAL_ROUND: number = 100;
+
+        return (Math.round(zoomFactor * SECOND_DECIMAL_ROUND) / SECOND_DECIMAL_ROUND);
     }
 }

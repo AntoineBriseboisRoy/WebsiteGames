@@ -1,4 +1,4 @@
-<div id="game-page">
+<div id="game-page" (click)="clickHandler($event)">
   <div class="container-fluid">
     <app-crossword-top-bar></app-crossword-top-bar>
     <div id="main-page">
@@ -15,3 +15,7 @@
     </div>
   </div>
 </div>
+
+<ng-template appModalDirective>
+  <app-modal></app-modal>
+</ng-template>
