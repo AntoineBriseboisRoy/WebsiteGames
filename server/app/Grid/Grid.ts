@@ -16,8 +16,11 @@ export class Grid {
     }
 
     public async fillGrid(): Promise<void> {
-        this.gridContent = new BlackSquareGenerator(this.sideSize, this.percentageOfBlackSquares).generateBlackSquares();
-        this.words = await new GridFiller(new LexicalService()).fillWords(this.gridContent, this.sideSize, this.difficulty);
+        const blackSquareGenerator: BlackSquareGenerator = new BlackSquareGenerator(this.sideSize, this.percentageOfBlackSquares);
+        this.gridContent = blackSquareGenerator.Content;
+        const gridFiller: GridFiller = new GridFiller();
+        this.words = await gridFiller.fillWords(this.gridContent, this.sideSize, this.difficulty, blackSquareGenerator.WordsToFill);
+        this.gridContent = gridFiller.Content;
         this.cleanGrid();
     }
 

@@ -5,7 +5,7 @@ import { STANDARD_SIDE_SIZE, PERCENTAGE_BLACK_SQUARES, BLACKSQUARE_CHARACTER, MI
 
 describe("Verifying BlackSquare generation.", () => {
     it ("Should have the correct percentage of BlackSquares.", () => {
-        const grid: string[][] = new BlackSquareGenerator(STANDARD_SIDE_SIZE, PERCENTAGE_BLACK_SQUARES).generateBlackSquares();
+        const grid: string[][] = new BlackSquareGenerator(STANDARD_SIDE_SIZE, PERCENTAGE_BLACK_SQUARES).Content;
         let nBlackSquares: number = 0;
         grid.forEach((row: string[]) => {
             row.forEach((letter: string) => {
@@ -18,7 +18,7 @@ describe("Verifying BlackSquare generation.", () => {
     });
     // tslint:disable-next-line:max-func-body-length
     it("Should have room for at least one word per row/column.", () => {
-        const grid: string[][] = new BlackSquareGenerator(STANDARD_SIDE_SIZE, PERCENTAGE_BLACK_SQUARES).generateBlackSquares();
+        const grid: string[][] = new BlackSquareGenerator(STANDARD_SIDE_SIZE, PERCENTAGE_BLACK_SQUARES).Content;
         let enoughRoom: boolean = true;
         for (let i: number = 0; i < STANDARD_SIDE_SIZE; i++) {
             let previousBlackSquarePosRow: number = -1, previousBlackSquarePosCol: number = -1,

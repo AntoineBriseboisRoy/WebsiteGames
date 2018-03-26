@@ -5,12 +5,20 @@ import { EMPTY_SQUARE, BLACKSQUARE_CHARACTER, MIN_LETTERS_FOR_WORD, MIN_WORDS_PE
          MAX_WORDS_PER_LINE } from "./Constants";
 export class BlackSquareGenerator {
 
-    private blackSquares: ICoordXY[];
     private grid: string[][];
+    private wordsToFill: IWord[];
 
     public constructor(private sideSize: number, private percentageOfBlackSquares: number) {
-        this.blackSquares = new Array<ICoordXY>();
         this.grid = this.initializeEmptyGrid();
+        this.generateBlackSquares();
+    }
+
+    public get Content(): string[][] {
+        return this.grid;
+    }
+
+    public get WordsToFill(): IWord[] {
+        return this.wordsToFill;
     }
 
     private initializeEmptyGrid(): string[][] {
@@ -25,9 +33,9 @@ export class BlackSquareGenerator {
         return emptyGrid;
     }
 
-    public generateBlackSquares(): string[][] {
+    public generateBlackSquares(): void {
         if (this.sideSize <= 0) {
-            return this.grid;
+            return;
         }
         const numberOfBlackSquaresPerLine: number = this.percentageOfBlackSquares * this.sideSize;
         do {
@@ -36,13 +44,10 @@ export class BlackSquareGenerator {
             for (let i: number = 0; i < this.sideSize; i++) {
                 for (let j: number = 0; j < numberOfBlackSquaresPerLine; j++) {
                     const tempPosition: ICoordXY = this.randomPositionGenerator();
-                    this.blackSquares.push(tempPosition);
                     this.grid[tempPosition.x][tempPosition.y] = BLACKSQUARE_CHARACTER;
                 }
             }
         } while (!this.verifyBlackSquareGrid());
-
-        return this.grid;
     }
 
     private isOccupiedPosition(position: ICoordXY): boolean {
@@ -139,13 +144,13 @@ export class BlackSquareGenerator {
     }
 
     private findAllwordsToFill(): IWord[] {
-        let wordsToFill: IWord[] = new Array<IWord>();
+        this.wordsToFill = new Array<IWord>();
         for (let i: number = 0; i < this.sideSize; ++i) {
-            wordsToFill = wordsToFill.concat(this.findWordsInRow(i));
-            wordsToFill = wordsToFill.concat(this.findWordsInColumn(i));
+            this.wordsToFill = this.wordsToFill.concat(this.findWordsInRow(i));
+            this.wordsToFill = this.wordsToFill.concat(this.findWordsInColumn(i));
         }
 
-        return wordsToFill;
+        return this.wordsToFill;
     }
 
     private findWordsInRow(row: number): IWord[] {
