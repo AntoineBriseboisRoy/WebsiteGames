@@ -79,10 +79,10 @@ export class GridService {
             this.modalService.open({
                 title: "Game Over!", message: "Your score is " + GameManager.Instance.playerOne.score +
                     "! You can choose to replay or go back to home page",
-                firstButton: "Restart", secondButton: "Home"
+                firstButton: "Restart", secondButton: "Home", showPreview: false
             })
-                .then(() => this.router.navigate(["/crossword"]),
-                      () => window.location.reload()
+                .then(() => window.location.reload(),
+                      () => this.router.navigate([""])
                 );
         }
     }
