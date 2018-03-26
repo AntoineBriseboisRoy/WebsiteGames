@@ -7,12 +7,12 @@
       <select multiple class="form-control word-definition">
         <div *ngIf="!cheatModeActive;then showDefinitionsHorizontal else cheatModeHorizontal"></div>
         <ng-template #showDefinitionsHorizontal>
-          <option class="definition-for-click" *ngFor="let word of gridWordsHorizontal" [class.word-definition-found] = "word.isFound" (click)="focusOnCell(word.definition)">
+          <option class="definition-for-click" *ngFor="let word of gridService.gridWordsHorizontal" [class.word-definition-found] = "word.isFound" (click)="focusOnCell(word.definition)">
             {{word.cells[0].index +". "+ word.definition}}
           </option>
         </ng-template>
         <ng-template #cheatModeHorizontal>
-          <option class="definition-for-click" *ngFor="let word of gridWordsHorizontal" [class.word-definition-found] = "word.isFound" (click)="focusOnCell(word.definition)">
+          <option class="definition-for-click" *ngFor="let word of gridService.gridWordsHorizontal" [class.word-definition-found] = "word.isFound" (click)="focusOnCell(word.definition)">
             {{word.cells[0].index +". "+ word.correctAnswer}}
           </option>
         </ng-template>
@@ -29,12 +29,12 @@
       <select multiple class="form-control word-definition">
         <div *ngIf="!cheatModeActive;then showDefinitionsVertical else cheatModeVertical"></div>
         <ng-template #showDefinitionsVertical>
-          <option class="definition-for-click" *ngFor="let word of gridWordsVertical" [class.word-definition-found] = "word.isFound" (click)="focusOnCell(word.definition)">
+          <option class="definition-for-click" *ngFor="let word of gridService.gridWordsVertical" [class.word-definition-found] = "word.isFound" (click)="focusOnCell(word.definition)">
             {{word.cells[0].index +". "+ word.definition}}
           </option>
         </ng-template>
         <ng-template #cheatModeVertical>
-          <option class="definition-for-click" *ngFor="let word of gridWordsVertical" [class.word-definition-found] = "word.isFound" (click)="focusOnCell(word.definition)">
+          <option class="definition-for-click" *ngFor="let word of gridService.gridWordsVertical" [class.word-definition-found] = "word.isFound" (click)="focusOnCell(word.definition)">
             {{word.cells[0].index +". "+ word.correctAnswer}}
           </option>
         </ng-template>

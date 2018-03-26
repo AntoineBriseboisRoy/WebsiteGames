@@ -3,16 +3,25 @@ import { Observable } from "rxjs/Observable";
 import { SocketIoService } from "./socket-io.service";
 import { IGridWord } from "../../../../common/interfaces/IGridWord";
 import { ICell } from "../../../../common/interfaces/ICell";
+import { Orientation } from "../../../../common/constants";
 import { Observer } from "rxjs/Observer";
 
 @Injectable()
 export class GridService {
     public gridCells: Array<ICell>;
     public gridWords: Array<IGridWord>;
+    public gridWordsHorizontal: Array<IGridWord>;
+    public gridWordsVertical: Array<IGridWord>;
+
+    private static compareIndex(a: IGridWord, b: IGridWord): number {
+        return a.cells[0].index - b.cells[0].index;
+    }
 
     public constructor(private socketIO: SocketIoService) {
         this.gridCells = new Array();
         this.gridWords = new Array();
+        this.gridWordsHorizontal = new Array();
+        this.gridWordsVertical = new Array();
     }
 
     public fetchGrid(): Observable<void> {
@@ -36,7 +45,21 @@ export class GridService {
         this.socketIO.GridWords.subscribe((gridWords: Array<IGridWord>) => {
             this.gridWords = gridWords;
             this.setGridWordsReferencesToGridCells();
+            this.gridWords.sort(GridService.compareIndex);
+            this.splitHorizontalAndVerticalWords();
             obs.next(null);
+        });
+    }
+
+    private splitHorizontalAndVerticalWords(): void {
+        this.gridWordsHorizontal.length = 0;
+        this.gridWordsVertical.length = 0;
+        this.gridWords.forEach((word: IGridWord) => {
+            if (word.orientation === Orientation.Horizontal) {
+                this.gridWordsHorizontal.push(word);
+            } else {
+                this.gridWordsVertical.push(word);
+            }
         });
     }
 
