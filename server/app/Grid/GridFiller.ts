@@ -35,7 +35,7 @@ export class GridFiller {
         this.grid = grid;
         this.difficulty = difficulty;
         this.wordsToFill = wordsToFill;
-        this.sortWordLengths();
+        this.sortWordsToFillByLength();
 
         let isDone: boolean = false;
         while (!isDone) {
@@ -48,7 +48,7 @@ export class GridFiller {
         return this.wordsPlaced;
     }
 
-    private sortWordLengths(): void {
+    private sortWordsToFillByLength(): void {
         this.wordsToFill.sort((left: IWord, right: IWord): number => {
             if (left.content.length < right.content.length) {
                 return -1;
@@ -61,7 +61,7 @@ export class GridFiller {
         });
     }
 
-    private sortWordLengthsByCommonLetters(): void {
+    private sortWordsToFillByCommonLetters(): void {
         this.wordsToFill.sort((left: IWord, right: IWord): number => {
             const nCommonLettersLeft: number = this.countLettersBelongingOtherWords(left);
             const nCommonLettersRight: number = this.countLettersBelongingOtherWords(right);
@@ -86,19 +86,19 @@ export class GridFiller {
         console.log(this.wordsPlaced.length, "  --  ", this.wordsToFill.length);
         console.log(this.grid);
 
-        this.sortWordLengthsByCommonLetters();
-        const longestFreeSpace: IWord = this.wordsToFill.pop();
-        const entry: WordAndDefinition = await this.getWord(longestFreeSpace);
+        this.sortWordsToFillByCommonLetters();
+        const wordToPlace: IWord = this.wordsToFill.pop();
+        const entry: WordAndDefinition = await this.getWord(wordToPlace);
         if (entry.word === NOT_FOUND) {
-            this.wordsToFill.push(longestFreeSpace);
-            this.problemWord = longestFreeSpace;
+            this.wordsToFill.push(wordToPlace);
+            this.problemWord = wordToPlace;
 
             return false;
         }
-        const wordAdded: IWord = { position: longestFreeSpace.position, orientation: longestFreeSpace.orientation,
+        const wordAdded: IWord = { position: wordToPlace.position, orientation: wordToPlace.orientation,
                                    content: entry.word, definition: entry.definition };
         this.addNewWord(wordAdded);
-        this.sortWordLengthsByCommonLetters();
+        this.sortWordsToFillByCommonLetters();
 
         let nextWordPlaced: boolean = await this.fillGridWithWords();
         if (!nextWordPlaced) {
@@ -127,19 +127,19 @@ export class GridFiller {
         console.log(this.wordsPlaced.length, "  --  ", this.wordsToFill.length);
         console.log(this.grid);
 
-        this.sortWordLengthsByCommonLetters();
-        const longestFreeSpace: IWord = this.wordsToFill.pop();
-        const entry: WordAndDefinition = await this.getWord(longestFreeSpace);
+        this.sortWordsToFillByCommonLetters();
+        const wordToPlace: IWord = this.wordsToFill.pop();
+        const entry: WordAndDefinition = await this.getWord(wordToPlace);
         if (entry.word === NOT_FOUND) {
-            this.wordsToFill.push(longestFreeSpace);
-            this.problemWord = longestFreeSpace;
+            this.wordsToFill.push(wordToPlace);
+            this.problemWord = wordToPlace;
 
             return false;
         }
-        const wordAdded: IWord = {position: longestFreeSpace.position, orientation: longestFreeSpace.orientation,
+        const wordAdded: IWord = {position: wordToPlace.position, orientation: wordToPlace.orientation,
                                   content: entry.word, definition: entry.definition };
         this.addNewWord(wordAdded);
-        this.sortWordLengthsByCommonLetters();
+        this.sortWordsToFillByCommonLetters();
 
         const nextWordPlaced: boolean = await this.fillGridWithWords();
         if (!nextWordPlaced) {
@@ -312,13 +312,13 @@ export class GridFiller {
     private removeLastWordFromGrid(lastWord: IWord): void {
         for (let i: number = 0; i < lastWord.content.length; i++) {
             if (lastWord.orientation === Orientation.Horizontal) {
-                if (!this.letterBelongsOtherWord({ x: Math.abs(Math.floor(lastWord.position.x + i)),
-                                                   y: Math.abs(Math.floor(lastWord.position.y))} as ICoordXY)) {
+                if (!this.letterBelongsOtherWord({ x: lastWord.position.x + i,
+                                                   y: lastWord.position.y } as ICoordXY)) {
                     this.grid[lastWord.position.x + i][lastWord.position.y] = EMPTY_SQUARE;
                 }
             } else {
-                if (!this.letterBelongsOtherWord({ x: Math.abs(Math.floor(lastWord.position.x)),
-                                                   y: Math.abs(Math.floor(lastWord.position.y + i))} as ICoordXY)) {
+                if (!this.letterBelongsOtherWord({ x: lastWord.position.x,
+                                                   y: lastWord.position.y + i } as ICoordXY)) {
                     this.grid[lastWord.position.x][lastWord.position.y + i] = EMPTY_SQUARE;
                 }
             }
