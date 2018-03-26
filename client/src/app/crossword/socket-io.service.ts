@@ -19,12 +19,13 @@ export class SocketIoService {
         this.socket.on("connect", () => {
             this.socket.emit("waiting-room");
         });
+        this.init();
         this.createObservable<Array<INewGame>>("waiting-room", "Error: Cannot receive games").subscribe((games: Array<INewGame>) => {
             this.gameRoomManager.init(games);
         });
     }
 
-    public init(): void {
+    private init(): void {
         this.createNewGame();
         this.deleteCreatedGame();
         this.playGame();
