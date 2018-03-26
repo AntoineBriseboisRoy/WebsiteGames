@@ -1,13 +1,14 @@
 import { Grid } from "./Grid";
 import { IWord } from "../../../common/interfaces/IWord";
 import { ICoordXY } from "../../../common/interfaces/ICoordXY";
+import { Difficulty } from "../Services/LexicalService/LexicalService";
 
 export class GridGeneratorService {
 
     private grid: Grid;
 
     public constructor() {
-        this.grid = new Grid();
+        this.grid = new Grid(Difficulty.EASY);
     }
 
     public get Grid(): string {
@@ -19,7 +20,7 @@ export class GridGeneratorService {
     }
 
     public generateNewGrid(): void {
-        this.grid = new Grid();
+        this.grid = new Grid(Difficulty.EASY);
     }
 
     // tslint:disable-next-line:max-func-body-length

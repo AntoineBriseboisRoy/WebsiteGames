@@ -44,6 +44,7 @@ export class GridFiller {
         this.fillRemainingSpacesWithBlacksquares();
         console.log(this.grid);
         console.log("done");
+        console.log(this.wordsPlaced);
 
         return this.wordsPlaced;
     }

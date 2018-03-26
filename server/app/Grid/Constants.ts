@@ -11,5 +11,4 @@ export const PERCENTAGE_BLACK_SQUARES: number = 0.4;
 export const MAX_WORD_QUERY_ATTEMPS: number = 5;
 export const STANDARD_SIDE_SIZE: number = 10;
 
-export const DICTIONNARY: DictionaryEntry[] = require("../../../bigDb.json");
 export const EMPTY_CHAR_FOR_QUERY: string = "?";
