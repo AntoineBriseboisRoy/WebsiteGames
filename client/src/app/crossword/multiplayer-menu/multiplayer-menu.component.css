@@ -1,0 +1,38 @@
+.button-layout{
+    margin:5% 35% 0 30%;
+    float: none;
+    text-align: center;
+    width: 40%;
+}
+
+.background {
+    background-color: white;
+}
+
+#easy-button:hover {
+    background-color: green;
+}
+
+#normal-button:hover {
+    background-color: yellow;
+}
+
+#hard-button:hover {
+    background-color: red;
+}
+
+#easy-button[disabled]:hover {
+    background-color: white;
+}
+
+#normal-button[disabled]:hover {
+    background-color: white;
+}
+
+#hard-button[disabled]:hover {
+    background-color: white;
+}
+
+.form-username {
+    width: 70%
+}

@@ -1,4 +1,4 @@
-import { Vector3, Matrix4, Object3D, ObjectLoader, Euler, Quaternion } from "three";
+import { Vector3, Matrix4, Object3D, ObjectLoader, Euler, Quaternion, Box3, BoxHelper, Raycaster } from "three";
 import { Engine } from "./engine";
 import { MS_TO_SECONDS, GRAVITY, PI_OVER_2, RAD_TO_DEG } from "../../constants";
 import { Wheel } from "./wheel";
@@ -14,6 +14,11 @@ const MINIMUM_SPEED: number = 0.05;
 const NUMBER_REAR_WHEELS: number = 2;
 const NUMBER_WHEELS: number = 4;
 
+const FRONT_X_CORRECTION: number = 0.16;
+const FRONT_Z_CORRECTION: number = 0.13;
+const BACK_X_CORRECTION: number = 0.13;
+const BACK_Z_CORRECTION: number = 0.1;
+
 export class Car extends Object3D {
     public isAcceleratorPressed: boolean;
 
@@ -23,14 +28,29 @@ export class Car extends Object3D {
     private readonly wheelbase: number;
     private readonly dragCoefficient: number;
 
+    private readonly initialPosition: Vector3;
+
     private _speed: Vector3;
     private isBraking: boolean;
     private mesh: Object3D;
     private steeringWheelDirection: number;
     private weightRear: number;
 
+    private boundingBox: Box3;
+    private raycasters: Raycaster[];
+
+    private raycasterOffsets: Vector3[];
+
+    public get Mass(): number {
+        return this.mass;
+    }
+
     public get speed(): Vector3 {
         return this._speed.clone();
+    }
+
+    public set speed(newSpeed: Vector3) {
+        this._speed = newSpeed;
     }
 
     public get currentGear(): number {
@@ -41,8 +61,16 @@ export class Car extends Object3D {
         return this.engine.rpm;
     }
 
+    public get BoundingBox(): Box3 {
+        return this.boundingBox;
+    }
+
     public get angle(): number {
         return this.mesh.rotation.y * RAD_TO_DEG;
+    }
+
+    public get Raycasters(): Array<Raycaster> {
+        return this.raycasters;
     }
 
     public getWorldMatrix(): Matrix4 {
@@ -53,7 +81,15 @@ export class Car extends Object3D {
       return this.mesh.position;
     }
 
-    private get direction(): Vector3 {
+    public getRotation(): Euler {
+        return this.mesh.rotation;
+    }
+
+    public getMeshMatrix(): Matrix4 {
+        return this.mesh.matrix;
+    }
+
+    public get direction(): Vector3 {
         const rotationMatrix: Matrix4 = new Matrix4();
         const carDirection: Vector3 = new Vector3(0, 0, -1);
 
@@ -64,6 +100,7 @@ export class Car extends Object3D {
     }
 
     public constructor(
+        initialPosition: Vector3 = new Vector3(),
         engine: Engine = new Engine(),
         rearWheel: Wheel = new Wheel(),
         wheelbase: number = DEFAULT_WHEELBASE,
@@ -75,12 +112,10 @@ export class Car extends Object3D {
             console.error("Wheelbase should be greater than 0.");
             wheelbase = DEFAULT_WHEELBASE;
         }
-
         if (mass <= 0) {
             console.error("Mass should be greater than 0.");
             mass = DEFAULT_MASS;
         }
-
         if (dragCoefficient <= 0) {
             console.error("Drag coefficient should be greater than 0.");
             dragCoefficient = DEFAULT_DRAG_COEFFICIENT;
@@ -91,13 +126,18 @@ export class Car extends Object3D {
         this.wheelbase = wheelbase;
         this.mass = mass;
         this.dragCoefficient = dragCoefficient;
-
+        this.initialPosition = initialPosition;
         this.isBraking = false;
         this.steeringWheelDirection = 0;
         this.weightRear = INITIAL_WEIGHT_DISTRIBUTION;
         this._speed = new Vector3(0, 0, 0);
+
+        this.boundingBox = new Box3();
+        this.raycasters = new Array<Raycaster>();
+        this.raycasterOffsets = new Array<Vector3>();
     }
 
+    // tslint:disable-next-line:no-suspicious-comment
     // TODO: move loading code outside of car class.
     private async load(): Promise<Object3D> {
         return new Promise<Object3D>((resolve, reject) => {
@@ -110,8 +150,38 @@ export class Car extends Object3D {
 
     public async init(): Promise<void> {
         this.mesh = await this.load();
-        this.mesh.setRotationFromEuler(INITIAL_MODEL_ROTATION);
         this.add(this.mesh);
+        this.initBoundingBox();
+        this.mesh.position.add(this.initialPosition);
+        this.initRaycasters();
+        this.mesh.setRotationFromEuler(INITIAL_MODEL_ROTATION);
+    }
+
+    private initBoundingBox(): void {
+        const helper: BoxHelper =  new BoxHelper(this.mesh);
+        this.boundingBox.setFromObject(helper);
+        this.mesh.add(helper);
+    }
+
+    private initRaycasters(): void {
+        const box: Box3 = new Box3().setFromObject(this.mesh);
+        this.setRaycasterOffsets(box);
+        this.setRaycastersFromOffsets();
+    }
+
+    private setRaycastersFromOffsets(): void {
+        this.raycasterOffsets.forEach((offset: Vector3) => {
+            this.raycasters.push(new Raycaster(offset.clone().add(this.getPosition()), new Vector3(0, -1, 0)));
+        });
+    }
+
+    private setRaycasterOffsets(box: Box3): void {
+        this.raycasterOffsets.push(new Vector3(box.min.x, 1, 0));
+        this.raycasterOffsets.push(new Vector3(box.min.x + FRONT_X_CORRECTION, 1, box.max.z - FRONT_Z_CORRECTION));
+        this.raycasterOffsets.push(new Vector3(box.min.x + FRONT_X_CORRECTION, 1, box.max.z + FRONT_Z_CORRECTION));
+        this.raycasterOffsets.push(new Vector3(box.max.x, 1, 0));
+        this.raycasterOffsets.push(new Vector3(box.max.x - BACK_X_CORRECTION, 1, box.max.z - BACK_Z_CORRECTION));
+        this.raycasterOffsets.push(new Vector3(box.max.x - BACK_X_CORRECTION, 1, box.max.z + BACK_Z_CORRECTION));
     }
 
     public steerLeft(): void {
@@ -134,6 +204,10 @@ export class Car extends Object3D {
         this.isBraking = true;
     }
 
+    public rotateMeshY(omega: number): void {
+        this.mesh.rotateY(omega);
+    }
+
     public update(deltaTime: number): void {
         deltaTime = deltaTime / MS_TO_SECONDS;
 
@@ -147,13 +221,28 @@ export class Car extends Object3D {
         // Physics calculations
         this.physicsUpdate(deltaTime);
 
+        const R: number = DEFAULT_WHEELBASE / Math.sin(this.steeringWheelDirection * deltaTime);
+        const theta: number = this._speed.length() / R;
+        this.updateRaycasters(deltaTime, theta);
+
         // Move back to world coordinates
+        this.updateBoundingBox();
         this._speed = this.speed.applyQuaternion(rotationQuaternion.inverse());
 
         // Angular rotation of the car
-        const R: number = DEFAULT_WHEELBASE / Math.sin(this.steeringWheelDirection * deltaTime);
         const omega: number = this._speed.length() / R;
-        this.mesh.rotateY(omega);
+        this.rotateMeshY(omega);
+    }
+
+    private updateRaycasters(deltaTime: number, theta: number): void {
+        const rotationMatrix: Matrix4 = new Matrix4().makeRotationY(theta);
+
+        for (let i: number = 0; i < this.raycasters.length; i++) {
+            this.raycasters[i].ray.origin = this.getPosition().clone().add(this.raycasterOffsets[i]);
+            this.raycasters[i].ray.origin = this.raycasters[i].ray.origin.sub(this.getPosition().clone());
+            this.raycasters[i].ray.applyMatrix4(rotationMatrix);
+            this.raycasters[i].ray.origin.add(this.getPosition().clone());
+        }
     }
 
     private physicsUpdate(deltaTime: number): void {
@@ -166,6 +255,10 @@ export class Car extends Object3D {
         this.rearWheel.update(this._speed.length());
     }
 
+    private updateBoundingBox(): void {
+        this.boundingBox.setFromObject(this.mesh);
+    }
+
     private getWeightDistribution(): number {
         const acceleration: number = this.getAcceleration().length();
         /* tslint:disable:no-magic-numbers */
@@ -176,13 +269,14 @@ export class Car extends Object3D {
         /* tslint:enable:no-magic-numbers */
     }
 
-    private getLongitudinalForce(): Vector3 {
+    private getForces(): Vector3 {
         const resultingForce: Vector3 = new Vector3();
 
         if (this._speed.length() >= MINIMUM_SPEED) {
             const dragForce: Vector3 = this.getDragForce();
             const rollingResistance: Vector3 = this.getRollingResistance();
-            resultingForce.add(dragForce).add(rollingResistance);
+            const friction: Vector3 = this.getLatteralFrictionForce();
+            resultingForce.add(dragForce).add(rollingResistance).add(friction);
         }
 
         if (this.isAcceleratorPressed) {
@@ -198,6 +292,14 @@ export class Car extends Object3D {
         return resultingForce;
     }
 
+    private getLatteralFrictionForce(): Vector3 {
+        const frictionCoefficient: number = 0.05;
+        const sideways: Vector3 = this.direction.cross(this.up);
+        const sidewaysSpeed: Vector3 = sideways.normalize().multiplyScalar(this.speed.dot(sideways));
+
+        return sidewaysSpeed.normalize().multiplyScalar(frictionCoefficient * GRAVITY * this.mass);
+    }
+
     private getRollingResistance(): Vector3 {
         const tirePressure: number = 1;
         // formula taken from: https://www.engineeringtoolbox.com/rolling-friction-resistance-d_1303.html
@@ -205,16 +307,21 @@ export class Car extends Object3D {
         // tslint:disable-next-line:no-magic-numbers
         const rollingCoefficient: number = (1 / tirePressure) * (Math.pow(this.speed.length() * 3.6 / 100, 2) * 0.0095 + 0.01) + 0.005;
 
-        return this.direction.multiplyScalar(rollingCoefficient * this.mass * GRAVITY);
+        return this.direction.multiplyScalar(rollingCoefficient * this.mass * GRAVITY * this.goingBackwards());
     }
 
     private getDragForce(): Vector3 {
         const carSurface: number = 3;
         const airDensity: number = 1.2;
         const resistance: Vector3 = this.direction;
-        resistance.multiplyScalar(airDensity * carSurface * -this.dragCoefficient * this.speed.length() * this.speed.length());
+        resistance.multiplyScalar(airDensity * carSurface * -this.dragCoefficient *
+                                  this.speed.length() * this.speed.length() * this.goingBackwards());
 
         return resistance;
+    }
+
+    private goingBackwards(): number {
+        return Math.sign(this._speed.dot(this.direction.normalize()));
     }
 
     private getTractionForce(): number {
@@ -250,7 +357,7 @@ export class Car extends Object3D {
     }
 
     private getAcceleration(): Vector3 {
-        return this.getLongitudinalForce().divideScalar(this.mass);
+        return this.getForces().divideScalar(this.mass);
     }
 
     private getDeltaSpeed(deltaTime: number): Vector3 {

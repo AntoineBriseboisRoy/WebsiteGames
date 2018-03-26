@@ -1,5 +1,5 @@
 import { Component, OnInit } from "@angular/core";
-import { ITrack, TrackType } from "./../../../../common/interfaces/ITrack";
+import { ITrack } from "./../../../../common/interfaces/ITrack";
 import { MongoQueryService } from "../mongo-query.service";
 
 @Component({
@@ -21,7 +21,6 @@ export class AdminSectionComponent implements OnInit {
     }
 
     public deleteTrack(name: string): void {
-        console.log(name);
         this.mongoQueryService.deleteTrack(name);
     }
 

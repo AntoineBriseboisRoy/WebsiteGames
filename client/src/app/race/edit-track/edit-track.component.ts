@@ -33,7 +33,7 @@ export class EditTrackComponent implements OnInit {
                        name: "",
                        description: "",
                        nTimesPlayed: 0,
-                       bestTimes: new Array<string>(),
+                       bestTimes: new Array<string>("Never played"),
                        type: TrackType.REGULAR,
                        points: new Array<Point>()} as ITrack;
      }
@@ -149,7 +149,7 @@ export class EditTrackComponent implements OnInit {
         }
     }
 
-    private saveTrack(): void {
+    public saveTrack(): void {
         this.mongoQueryService.putTrack(this.track.name, this.track);
     }
 }

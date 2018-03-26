@@ -22,10 +22,13 @@
                                 </li>
                             </ul>
                         </div>
-                        <a routerLink="/race/play" class="play-btn btn btn-success">Play this track</a>
+                    <a class="play-btn btn btn-success" (click)="callModal()" [routerLink]="['/race/']" [queryParams]=" { name: track.name }">Play this track</a>
                     </li>
                 </div>
             </ul>
         </div>
     </div>
 </div>
+<ng-template appModalDirective>
+    <app-modal></app-modal>
+</ng-template>

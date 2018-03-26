@@ -21,7 +21,19 @@ import { APP_BASE_HREF } from "@angular/common";
 import { TrackViewComponent } from "./race/track-view/track-view.component";
 import { GridService } from "./crossword/grid.service";
 import { WordTransmitterService } from "./crossword/game-view/wordTransmitter.service";
+import { PlayerMenuComponent } from "./crossword/player-menu/player-menu.component";
+import { MultiplayerMenuComponent } from "./crossword/multiplayer-menu/multiplayer-menu.component";
 import { MongoQueryService } from "./mongo-query.service";
+import { SocketIoService } from "./crossword/socket-io.service";
+import { MultiplayerGamesService } from "./crossword/multiplayer-menu/multiplayer-games.service";
+import { WaitingGamesComponent } from "./crossword/multiplayer-menu/waiting-games/waiting-games.component";
+import { CollisionManager } from "./race/car/collision-manager";
+import { RoadCreator } from "./race/render-service/road-creator.service";
+import { ModalComponent } from "./modal/modal/modal.component";
+import { ModalService } from "./modal//modal.service";
+import { ModalStateService } from "./modal//modal-state.service";
+import { ModalDirective } from "./modal/modal.directive";
+import { TrackPreviewComponent } from './race/track-view/track-preview/track-preview.component';
 
 @NgModule({
     declarations: [
@@ -35,7 +47,13 @@ import { MongoQueryService } from "./mongo-query.service";
         DifficultyMenuComponent,
         EditTrackComponent,
         AdminSectionComponent,
-        TrackViewComponent
+        TrackViewComponent,
+        PlayerMenuComponent,
+        MultiplayerMenuComponent,
+        WaitingGamesComponent,
+        ModalComponent,
+        ModalDirective,
+        TrackPreviewComponent
     ],
     imports: [
         BrowserModule,
@@ -44,7 +62,18 @@ import { MongoQueryService } from "./mongo-query.service";
         AppRoutingModule,
         NgbModule.forRoot()
     ],
-    providers: [{provide: APP_BASE_HREF, useValue : "/" }, MongoQueryService, GridService, WordTransmitterService],
+    providers: [
+        { provide: APP_BASE_HREF, useValue : "/" },
+        MongoQueryService,
+        GridService,
+        WordTransmitterService,
+        MultiplayerGamesService,
+        SocketIoService,
+        CollisionManager,
+        RoadCreator,
+        ModalService,
+        ModalStateService
+    ],
     bootstrap: [AppComponent]
 })
 export class AppModule { }
