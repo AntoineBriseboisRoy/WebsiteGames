@@ -39,6 +39,8 @@ export class Car extends Object3D {
     private boundingBox: Box3;
     private raycasters: Raycaster[];
 
+    private raycasterOffsets: Vector3[];
+
     public get Mass(): number {
         return this.mass;
     }
@@ -125,7 +127,6 @@ export class Car extends Object3D {
         this.mass = mass;
         this.dragCoefficient = dragCoefficient;
         this.initialPosition = initialPosition;
-
         this.isBraking = false;
         this.steeringWheelDirection = 0;
         this.weightRear = INITIAL_WEIGHT_DISTRIBUTION;
@@ -133,6 +134,7 @@ export class Car extends Object3D {
 
         this.boundingBox = new Box3();
         this.raycasters = new Array<Raycaster>();
+        this.raycasterOffsets = new Array<Vector3>();
     }
 
     // tslint:disable-next-line:no-suspicious-comment
@@ -151,8 +153,8 @@ export class Car extends Object3D {
         this.add(this.mesh);
         this.initBoundingBox();
         this.mesh.position.add(this.initialPosition);
-        this.mesh.setRotationFromEuler(INITIAL_MODEL_ROTATION);
         this.initRaycasters();
+        this.mesh.setRotationFromEuler(INITIAL_MODEL_ROTATION);
     }
 
     private initBoundingBox(): void {
@@ -162,26 +164,24 @@ export class Car extends Object3D {
     }
 
     private initRaycasters(): void {
-        const box: Box3 = new Box3();
-        box.setFromObject(this.mesh);
+        const box: Box3 = new Box3().setFromObject(this.mesh);
+        this.setRaycasterOffsets(box);
+        this.setRaycastersFromOffsets();
+    }
 
-        const front: Vector3 = new Vector3(this.getPosition().x + box.min.x, 10, 0);
-        const frontLeft: Vector3 = new Vector3(this.getPosition().x + box.min.x + FRONT_X_CORRECTION, 10,
-                                               this.getPosition().z + box.max.z - FRONT_Z_CORRECTION);
-        const frontRight: Vector3 = new Vector3(this.getPosition().x + box.min.x + FRONT_X_CORRECTION, 10,
-                                                this.getPosition().z + box.min.z + FRONT_Z_CORRECTION);
-        const back: Vector3 = new Vector3(this.getPosition().x + box.max.x, 10, 0);
-        const backLeft: Vector3 = new Vector3(this.getPosition().x + box.max.x - BACK_X_CORRECTION, 10,
-                                              this.getPosition().z + box.max.z - BACK_Z_CORRECTION);
-        const backRight: Vector3 = new Vector3(this.getPosition().x + box.max.x - BACK_X_CORRECTION, 10,
-                                               this.getPosition().z + box.min.z + BACK_Z_CORRECTION);
+    private setRaycastersFromOffsets(): void {
+        this.raycasterOffsets.forEach((offset: Vector3) => {
+            this.raycasters.push(new Raycaster(offset.clone().add(this.getPosition()), new Vector3(0, -1, 0)));
+        });
+    }
 
-        this.raycasters.push(new Raycaster(front, new Vector3(0, -1, 0)));
-        this.raycasters.push(new Raycaster(frontLeft, new Vector3(0, -1, 0)));
-        this.raycasters.push(new Raycaster(frontRight, new Vector3(0, -1, 0)));
-        this.raycasters.push(new Raycaster(back, new Vector3(0, -1, 0)));
-        this.raycasters.push(new Raycaster(backLeft, new Vector3(0, -1, 0)));
-        this.raycasters.push(new Raycaster(backRight, new Vector3(0, -1, 0)));
+    private setRaycasterOffsets(box: Box3): void {
+        this.raycasterOffsets.push(new Vector3(box.min.x, 1, 0));
+        this.raycasterOffsets.push(new Vector3(box.min.x + FRONT_X_CORRECTION, 1, box.max.z - FRONT_Z_CORRECTION));
+        this.raycasterOffsets.push(new Vector3(box.min.x + FRONT_X_CORRECTION, 1, box.max.z + FRONT_Z_CORRECTION));
+        this.raycasterOffsets.push(new Vector3(box.max.x, 1, 0));
+        this.raycasterOffsets.push(new Vector3(box.max.x - BACK_X_CORRECTION, 1, box.max.z - BACK_Z_CORRECTION));
+        this.raycasterOffsets.push(new Vector3(box.max.x - BACK_X_CORRECTION, 1, box.max.z + BACK_Z_CORRECTION));
     }
 
     public steerLeft(): void {
@@ -237,12 +237,12 @@ export class Car extends Object3D {
     private updateRaycasters(deltaTime: number, theta: number): void {
         const rotationMatrix: Matrix4 = new Matrix4().makeRotationY(theta);
 
-        this.raycasters.forEach((raycaster: Raycaster) => {
-            raycaster.ray.origin = raycaster.ray.origin.add(this.getDeltaPosition(deltaTime));
-            raycaster.ray.origin = raycaster.ray.origin.sub(this.getPosition().clone());
-            raycaster.ray.applyMatrix4(rotationMatrix);
-            raycaster.ray.origin.add(this.getPosition().clone());
-        });
+        for (let i: number = 0; i < this.raycasters.length; i++) {
+            this.raycasters[i].ray.origin = this.getPosition().clone().add(this.raycasterOffsets[i]);
+            this.raycasters[i].ray.origin = this.raycasters[i].ray.origin.sub(this.getPosition().clone());
+            this.raycasters[i].ray.applyMatrix4(rotationMatrix);
+            this.raycasters[i].ray.origin.add(this.getPosition().clone());
+        }
     }
 
     private physicsUpdate(deltaTime: number): void {

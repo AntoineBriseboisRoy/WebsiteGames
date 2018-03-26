@@ -9,6 +9,7 @@ const BACK_SECTION: number = -1.55;
 const FRONT_SECTION: number = 1.79;
 
 const TIME_THRESHHOLD: number = 200; // Milliseconds
+const SLOW_DOWN_FACTOR: number = 0.3;
 
 @Injectable()
 export class CollisionManager {
@@ -39,12 +40,32 @@ export class CollisionManager {
     }
 
     private verifyCarCollision(): void {
-        // tslint:disable-next-line:prefer-for-of
-        for (let i: number = 0; i < this.cars.length; ++i) {
-            for (let j: number = i + 1; j < this.cars.length; ++j) {
-                if (this.cars[i].BoundingBox.intersectsBox(this.cars[j].BoundingBox)) {
-                    this.carCollision(this.cars[i], this.cars[j]);
+        if (this.cars.length > 1) {
+            let didACollision: boolean = false;
+            const carsCollision: Car[] = new Array<Car>();
+            for (let i: number = 0; i < this.cars.length; ++i) {
+                carsCollision.push(this.cars[i]);
+                for (let j: number = i + 1; j < this.cars.length; ++j) {
+                    carsCollision.push(this.cars[j]);
+                    carsCollision[0].Raycasters.forEach((raycaster: Raycaster) => {
+                        const intersections: Intersection[] = raycaster.intersectObject(carsCollision[1], true);
+                        if (intersections.length > 0) {
+                            didACollision = true;
+                            this.carCollision(carsCollision[0], carsCollision[1]);
+                        }
+                    });
+                    if (!didACollision) {
+                        carsCollision[1].Raycasters.forEach((raycaster: Raycaster) => {
+                            const intersections: Intersection[] = raycaster.intersectObject(carsCollision[0], true);
+                            if (intersections.length > 0) {
+                                this.carCollision(carsCollision[0], carsCollision[1]);
+                            }
+                        });
+                    }
+                    didACollision = false;
+                    carsCollision.pop();
                 }
+                carsCollision.pop();
             }
         }
     }
@@ -57,7 +78,7 @@ export class CollisionManager {
                     this.timeSinceLastCollision += Date.now() - this.lastDate;
                     if (this.timeSinceLastCollision > TIME_THRESHHOLD) {
                         this.timeSinceLastCollision = 0;
-                        // this.wallCollision(car);
+                        this.wallCollision(car);
                     }
                     this.lastDate = Date.now();
                 }
@@ -67,7 +88,7 @@ export class CollisionManager {
 
     private wallCollision(car: Car): void {
         this.bounce(car);
-        car.speed = car.speed.multiplyScalar(0.3);
+        car.speed = car.speed.multiplyScalar(SLOW_DOWN_FACTOR);
     }
 
     private bounce(car: Car): void {

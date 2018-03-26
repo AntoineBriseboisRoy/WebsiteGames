@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import Stats = require("stats.js");
 import { WebGLRenderer, Scene, AmbientLight, Mesh, PlaneBufferGeometry, MeshBasicMaterial,
-         Vector2, BackSide, Texture, RepeatWrapping, TextureLoader, ObjectLoader, Object3D, ArrowHelper, Raycaster } from "three";
+         Vector2, BackSide, Texture, RepeatWrapping, TextureLoader, ObjectLoader, Object3D } from "three";
 import { Car } from "../car/car";
 import { ThirdPersonCamera } from "../camera/camera-perspective";
 import { TopViewCamera } from "../camera/camera-orthogonal";
@@ -24,7 +24,7 @@ const FLOOR_SIZE: number = WORLD_SIZE / HALF;
 const QUARTER_ROAD_WIDTH: number = 2.5;
 const CAR_OFFSET_FROM_STARTLINE: number = 0.01;
 const PLAYER: number = 0;
-const NUMBER_OF_CARS: number = 1;
+const NUMBER_OF_CARS: number = 4;
 
 @Injectable()
 export class RenderService {
@@ -37,7 +37,6 @@ export class RenderService {
     private lastDate: number;
     private activeTrack: ITrack;
     private floorTextures: Map<TrackType, Texture>;
-    private arrows: ArrowHelper[];
     public get car(): Car {
         return this.cars[PLAYER];
     }
@@ -90,8 +89,8 @@ export class RenderService {
         this.cameraContext.update(this.cars[PLAYER]);
         this.lastDate = Date.now();
         this.collisionManager.update();
-        console.log(this.cars[0].getPosition());
-        console.log(this.cars[0].Raycasters[0].ray.origin);
+        // console.log(this.cars[0].getPosition());
+        // console.log(this.cars[0].Raycasters[0].ray.origin);
 
     }
 
