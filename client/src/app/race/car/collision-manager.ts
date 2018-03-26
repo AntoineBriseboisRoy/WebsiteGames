@@ -39,14 +39,36 @@ export class CollisionManager {
     }
 
     private verifyCarCollision(): void {
-        // tslint:disable-next-line:prefer-for-of
-        for (let i: number = 0; i < this.cars.length; ++i) {
-            for (let j: number = i + 1; j < this.cars.length; ++j) {
-                if (this.cars[i].BoundingBox.intersectsBox(this.cars[j].BoundingBox)) {
-                    this.carCollision(this.cars[i], this.cars[j]);
+        if (this.cars.length > 1) {
+            let didACollision: boolean = false;
+            const carsCollision: Car[] = new Array<Car>();
+            for (let i: number = 0; i < this.cars.length; ++i) {
+                carsCollision.push(this.cars[i]);
+                for (let j: number = i + 1; j < this.cars.length; ++j) {
+                    carsCollision.push(this.cars[j]);
+                    carsCollision[0].Raycasters.forEach((raycaster: Raycaster) => {
+                        const intersections: Intersection[] = raycaster.intersectObject(carsCollision[1], true);
+                        if (intersections.length > 0) {
+                            didACollision = true;
+                            this.carCollision(carsCollision[0], carsCollision[1]);
+                        }
+                    });
+                    if (!didACollision) {
+                        carsCollision[1].Raycasters.forEach((raycaster: Raycaster) => {
+                            const intersections: Intersection[] = raycaster.intersectObject(carsCollision[0], true);
+                            if (intersections.length > 0) {
+                                this.carCollision(carsCollision[0], carsCollision[1]);
+                            }
+                        });
+                    }
+                    didACollision = false;
+                    carsCollision.pop();
                 }
+                carsCollision.pop();
             }
         }
+        // tslint:disable-next-line:prefer-for-of
+
     }
 
     private verifyWallCollision(): void {
