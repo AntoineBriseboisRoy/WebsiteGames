@@ -8,4 +8,9 @@ export class Player {
     public addPoints(nLetter: number): void {
         this.score += (nLetter * POINT_BY_LETTER);
     }
+
+    public clear(): void {
+        this.username = "";
+        this.score = 0;
+    }
 }

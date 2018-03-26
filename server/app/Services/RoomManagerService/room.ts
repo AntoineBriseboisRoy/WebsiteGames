@@ -2,7 +2,7 @@ import { GridInPlay } from "./gridInPlay";
 import { Player } from "../../player";
 import { RoomState, Difficulty } from "../../../../common/constants";
 import { IGridWord } from "../../../../common/interfaces/IGridWord";
-import { ICell } from "../../../../common/interfaces/ICell";
+import { ICell, Finder } from "../../../../common/interfaces/ICell";
 
 export class Room {
     private grid: GridInPlay;
@@ -44,5 +44,27 @@ export class Room {
     }
     public isPlayerInRoom(socketId: string): boolean {
         return this.players.some((player: Player) => player.socketID === socketId);
+    }
+
+    public setWordFound(word: IGridWord, socketId: string): void {
+        word.cells.forEach((cell: ICell) => {
+            cell.isFound = true;
+            cell.finder = this.identifyFinder(cell, socketId);
+        });
+        this.grid.setWordToFound(word);
+    }
+
+    public clear(): void {
+        this.grid.clear();
+        this.players.forEach((player: Player) => player.clear());
+    }
+
+    private identifyFinder(cell: ICell, playerId: string): Finder {
+        const finder: Finder = this.players.findIndex((player: Player) => player.socketID === playerId);
+        if (cell.finder === Finder.nobody || cell.finder === finder) {
+            return finder;
+        } else {
+            return Finder.both;
+        }
     }
 }

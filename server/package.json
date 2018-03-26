@@ -14,7 +14,9 @@
   },
   "dependencies": {
     "@types/chai-spies": "0.0.0",
+
     "@types/mongodb": "^3.0.9",
+
     "@types/request-promise-native": "^1.0.14",
     "body-parser": "~1.16.0",
     "chai-spies": "^1.0.0",

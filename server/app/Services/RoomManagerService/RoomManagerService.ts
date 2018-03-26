@@ -25,6 +25,7 @@ export class RoomManagerService {
     public deleteRoom(socketId: string): void {
         const index: number = this.findRoom(socketId);
         if (index !== ID_NOT_FOUND) {
+            this.rooms[index].clear();
             this.rooms.splice(index, 1);
         }
     }
@@ -70,5 +71,4 @@ export class RoomManagerService {
             this.rooms[index].addPlayer(playerName, playerId);
         }
     }
-
 }

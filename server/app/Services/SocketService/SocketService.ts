@@ -5,6 +5,7 @@ import { Room } from "../RoomManagerService/room";
 import { Player } from "../../player";
 import { RoomState } from "../../../../common/constants";
 import { RoomManagerService } from "../RoomManagerService/RoomManagerService";
+import { IGridWord } from "../../../../common/interfaces/IGridWord";
 
 export class SocketService {
 
@@ -25,13 +26,14 @@ export class SocketService {
     public connect(server: http.Server): void {
         this.init(server);
         this.socketIo.on("connection", (receivedSocket: SocketIO.Socket) => {
+            console.warn("Connected to", receivedSocket.id);
             this.joinWaitingRoom(receivedSocket);
             this.createNewGame(receivedSocket);
             this.deleteGame(receivedSocket);
             this.playAGame(receivedSocket);
+            this.completeAWord(receivedSocket);
             this.disconnectSocket(receivedSocket);
         });
-
     }
     private joinWaitingRoom(socket: SocketIO.Socket): void {
         socket.on("waiting-room", () => {
@@ -78,9 +80,20 @@ export class SocketService {
             this.socketIo.in(room.Name).emit("grid-words", room.Words);
         });
     }
+
+    private completeAWord(socket: SocketIO.Socket): void {
+        socket.on("completed-word", (data: string) => {
+            const word: IGridWord = JSON.parse(data);
+            const room: Room = RoomManagerService.Instance.getRoom(socket.id);
+            room.setWordFound(word, socket.id);
+            this.socketIo.in(room.Name).emit("grid-cells", room.Cells);
+            this.socketIo.in(room.Name).emit("grid-words", room.Words);
+        });
+    }
+
     private disconnectSocket(socket: SocketIO.Socket): void {
         socket.on("disconnect", () => {
-            console.warn("disconnect");
+            console.warn("Disconnect: ", socket.id);
         });
     }
 

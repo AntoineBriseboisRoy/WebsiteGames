@@ -1,5 +1,5 @@
 import { IGridWord } from "../../../../common/interfaces/IGridWord";
-import { ICell, CellColor } from "../../../../common/interfaces/ICell";
+import { ICell, CellColor, Finder } from "../../../../common/interfaces/ICell";
 import { IWord, Orientation } from "../../../../common/interfaces/IWord";
 
 import { GridGeneratorService } from "../../Grid/GridGeneratorService";
@@ -64,20 +64,20 @@ export class WordTransmitterService {
         for (let i: number = 0; i < this.gridContent.length; ++i) {
             if (i === this.indexPosition[index - 1]) {
                 this.cells.push({
-                    gridIndex: i, index: index, answer: this.gridContent[i],
-                    cellColor: CellColor.White, content: "", isFound: false
+                    gridIndex: i, index: index, answer: this.gridContent[i], cellColor: CellColor.White,
+                    content: "", isFound: false, finder: Finder.nobody
                 } as ICell);
                 ++index;
             } else {
                 if (this.gridContent[i] === BLACKSQUARE_CHARACTER) {
                     this.cells.push({
-                        gridIndex: i, index: null, answer: "",
-                        cellColor: CellColor.Black, content: "", isFound: false
+                        gridIndex: i, index: null, answer: "", cellColor: CellColor.Black,
+                        content: "", isFound: false, finder: Finder.nobody
                     } as ICell);
                 } else {
                     this.cells.push({
-                        gridIndex: i, index: null, answer: this.gridContent[i],
-                        cellColor: CellColor.White, content: "", isFound: false
+                        gridIndex: i, index: null, answer: this.gridContent[i], cellColor: CellColor.White,
+                        content: "", isFound: false, finder: Finder.nobody
                     } as ICell);
                 }
             }

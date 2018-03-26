@@ -6,12 +6,13 @@ import { ICell, CellColor } from "../../../../../../common/interfaces/ICell";
 import { FocusCell } from "../focusCell";
 import { KeyboardInputManagerService } from "../keyboard-input-manager/keyboard-input-manager.service";
 import { GridService } from "../../grid.service";
+import { SocketIoService } from "../../socket-io.service";
 
 @Component({
     selector: "app-crossword-grid",
     templateUrl: "./grid.component.html",
     styleUrls: ["./grid.component.css"],
-    providers: [ KeyboardInputManagerService ]
+    providers: [KeyboardInputManagerService]
 })
 
 export class GridComponent implements OnInit {
@@ -19,7 +20,7 @@ export class GridComponent implements OnInit {
     private clickedCell: ICell;
     private focusCell: FocusCell;
     private keyboardInputManagerService: KeyboardInputManagerService;
-    public constructor(private gridService: GridService) {
+    public constructor(private gridService: GridService, private socketIo: SocketIoService) {
         this.clickedWords = new Array();
         this.clickedCell = undefined;
         this.focusCell = FocusCell.Instance;
@@ -27,7 +28,7 @@ export class GridComponent implements OnInit {
     }
 
     public ngOnInit(): void {
-        this.gridService.fetchGrid().subscribe( () =>
+        this.gridService.fetchGrid().subscribe(() =>
             this.keyboardInputManagerService = new KeyboardInputManagerService(this.gridService.gridCells)
         );
     }
@@ -109,17 +110,13 @@ export class GridComponent implements OnInit {
             if (userAnswer === correctAnswer) {
                 this.setCellsToFound(word);
                 // GameManager.Instance.playerOne.addPoint(word.cells.length);
-                word.isFound = true;
-                // TODO: Appel socket io pour ajouter les points
+                this.socketIo.CompletedWords.next(word);
             }
             userAnswer = "";
         }
     }
 
     private setCellsToFound(word: IGridWord): void {
-        word.cells.forEach((cell) => {
-            cell.isFound = true;
-        });
         if (FocusCell.Instance.cells === word.cells) {
             FocusCell.Instance.clear();
         }
@@ -150,7 +147,7 @@ export class GridComponent implements OnInit {
 
     public addFirstCellBorder(cell: ICell): string {
         if (this.focusCell.cells) {
-        if (this.focusCell.cells[0] === cell) {
+            if (this.focusCell.cells[0] === cell) {
                 return this.focusCell.Orientation === Orientation.Vertical ?
                     "first-case-border-vertical" : "first-case-border-horizontal";
             }
