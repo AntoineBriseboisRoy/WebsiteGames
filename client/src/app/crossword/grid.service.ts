@@ -24,6 +24,14 @@ export class GridService {
         this.gridWords = new Array();
         this.gridWordsHorizontal = new Array();
         this.gridWordsVertical = new Array();
+        if (!GameManager.Instance.isMultiplayer) {
+            this.socketIO.PlayGameSubject.next({
+                userCreator: "Claudia",
+                difficulty: GameManager.Instance.difficulty,
+                userCreatorID: "",
+                userJoiner: ""
+            });
+        }
     }
 
     public fetchGrid(): Observable<void> {

@@ -13,7 +13,7 @@ export class DifficultyMenuComponent {
     public readonly title: string = "Choose wisely your difficulty, smarty!";
     public isActiveDifficulty: boolean;
 
-    public constructor(private socketIoService: SocketIoService, private router: Router) {
+    public constructor(private router: Router) {
         this.isActiveDifficulty = false;
     }
 
@@ -35,12 +35,7 @@ export class DifficultyMenuComponent {
     }
 
     public createGame(): void {
-        this.socketIoService.PlayGameSubject.next({
-            userCreator: "Claudia",
-            difficulty: GameManager.Instance.difficulty,
-            userCreatorID: "",
-            userJoiner: ""
-        });
+        GameManager.Instance.isMultiplayer = false;
         this.router.navigate(["/crossword/play"]);
     }
 }
