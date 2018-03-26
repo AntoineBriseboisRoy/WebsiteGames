@@ -23,9 +23,10 @@ export class SocketIoService {
         this.createObservable<Array<INewGame>>("waiting-room").subscribe((games: Array<INewGame>) => {
             this.gameRoomManager.init(games);
         });
+        this.init();
     }
 
-    public init(): void {
+    private init(): void {
         this.createNewGame();
         this.deleteCreatedGame();
         this.playGame();

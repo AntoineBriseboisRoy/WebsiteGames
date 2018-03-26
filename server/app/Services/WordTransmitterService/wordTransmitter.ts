@@ -28,7 +28,7 @@ export class WordTransmitterService {
     }
 
     private generateNewGrid(): void {
-        if (this.words === undefined) {
+        if (!this.words) {
             this.gridContent = GridGeneratorService.Instance.getFakeGridContent();
             this.formatGrid(GridGeneratorService.Instance.getFakeGridWords());
         }
