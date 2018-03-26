@@ -7,7 +7,7 @@ import { Orientation } from "../../../../common/constants";
 import { Observer } from "rxjs/Observer";
 import { ModalService } from "../modal/modal.service";
 import { Router } from "@angular/router";
-import { GameManager } from "./game-manager";
+import { GameManagerService } from "./game-manager.service";
 
 @Injectable()
 export class GridService {
@@ -19,15 +19,16 @@ export class GridService {
         return a.cells[0].index - b.cells[0].index;
     }
 
-    public constructor(private socketIO: SocketIoService, private modalService: ModalService, private router: Router) {
+    public constructor(private socketIO: SocketIoService, private modalService: ModalService,
+                       private router: Router, private gameManagerService: GameManagerService) {
         this.gridCells = new Array();
         this.gridWords = new Array();
         this.gridWordsHorizontal = new Array();
         this.gridWordsVertical = new Array();
-        if (!GameManager.Instance.isMultiplayer) {
+        if (!this.gameManagerService.isMultiplayer) {
             this.socketIO.PlayGameSubject.next({
                 userCreator: "Claudia",
-                difficulty: GameManager.Instance.difficulty,
+                difficulty: this.gameManagerService.difficulty,
                 userCreatorID: "",
                 userJoiner: ""
             });
@@ -85,9 +86,9 @@ export class GridService {
     private checkGameStatus(): void {
         if (this.isGridCompleted() && !this.modalService.IsOpen) {
             this.modalService.open({
-                title: "Game Over!", message: "Your score is " + GameManager.Instance.playerOne.score +
+                title: "Game Over!", message: "Your score is " + this.gameManagerService.playerOne.score +
                     "! You can choose to replay or go back to home page",
-                firstButton: "Restart", secondButton: "Home"
+                firstButton: "Restart", secondButton: "Home", showPreview: false
             })
                 .then(() => this.router.navigate(["/crossword"]),
                       () => window.location.reload()

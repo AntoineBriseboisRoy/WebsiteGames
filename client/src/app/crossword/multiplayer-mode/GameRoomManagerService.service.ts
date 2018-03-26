@@ -1,14 +1,16 @@
 import { Injectable } from "@angular/core";
 import { INewGame } from "../../../../../common/interfaces/INewGame";
-import { GameManager } from "../game-manager";
+import { GameManagerService } from "../game-manager.service";
+import { SocketIoService } from "../socket-io.service";
 
 @Injectable()
 export class GameRoomManagerService {
     private games: Array<INewGame>;
     public createdGame: INewGame;
 
-    public constructor() {
+    public constructor(private gameManagerService: GameManagerService, private socketIo: SocketIoService) {
         this.games = new Array<INewGame>();
+        this.socketIo.WaitingRoom.subscribe((games: Array<INewGame>) => this.init(games));
     }
 
     public init(games: Array<INewGame>): void {
@@ -48,9 +50,9 @@ export class GameRoomManagerService {
     }
 
     public setGame(gameToPlay: INewGame): void {
-        GameManager.Instance.difficulty = gameToPlay.difficulty;
-        GameManager.Instance.isMultiplayer = true;
-        GameManager.Instance.playerOne.username = gameToPlay.userCreator;
-        GameManager.Instance.playerTwo.username = gameToPlay.userJoiner;
+        this.gameManagerService.difficulty = gameToPlay.difficulty;
+        this.gameManagerService.isMultiplayer = true;
+        this.gameManagerService.playerOne.username = gameToPlay.userCreator;
+        this.gameManagerService.playerTwo.username = gameToPlay.userJoiner;
     }
 }

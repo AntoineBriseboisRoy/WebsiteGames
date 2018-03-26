@@ -6,6 +6,7 @@ import { Player } from "../../player";
 import { RoomState } from "../../../../common/constants";
 import { RoomManagerService } from "../RoomManagerService/RoomManagerService";
 import { IGridWord } from "../../../../common/interfaces/IGridWord";
+import { IPlayer } from "../../../../common/interfaces/IPlayer";
 
 export class SocketService {
 
@@ -65,7 +66,7 @@ export class SocketService {
         socket.on("play-game", (data: string) => {
             const game: INewGame = JSON.parse(data);
             let room: Room;
-            if ( this.isSinglePlayer(game)) {
+            if (this.isSinglePlayer(game)) {
                 game.userCreatorID = socket.id;
                 RoomManagerService.Instance.push(new Room(new Player(game.userCreator, game.userCreatorID), game.difficulty, socket.id));
                 room = RoomManagerService.Instance.getRoom(game.userCreatorID);
@@ -88,7 +89,17 @@ export class SocketService {
             room.setWordFound(word, socket.id);
             this.socketIo.in(room.Name).emit("grid-cells", room.Cells);
             this.socketIo.in(room.Name).emit("grid-words", room.Words);
+            this.socketIo.in(room.Name).emit("update-score", this.parseToIPlayers(room.Players));
         });
+    }
+
+    private parseToIPlayers(players: Array<Player>): Array<IPlayer> {
+        const iPlayers: Array<IPlayer> = new Array<IPlayer>();
+        players.forEach((player: Player) => {
+            iPlayers.push({ username: player.username, score: player.score });
+        });
+
+        return iPlayers;
     }
 
     private disconnectSocket(socket: SocketIO.Socket): void {

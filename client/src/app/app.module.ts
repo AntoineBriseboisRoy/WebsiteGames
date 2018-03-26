@@ -32,7 +32,8 @@ import { ModalComponent } from "./modal/modal/modal.component";
 import { ModalService } from "./modal//modal.service";
 import { ModalStateService } from "./modal//modal-state.service";
 import { ModalDirective } from "./modal/modal.directive";
-import { TrackPreviewComponent } from './race/track-view/track-preview/track-preview.component';
+import { TrackPreviewComponent } from "./race/track-view/track-preview/track-preview.component";
+import { GameManagerService } from "./crossword/game-manager.service";
 
 @NgModule({
     declarations: [
@@ -62,7 +63,7 @@ import { TrackPreviewComponent } from './race/track-view/track-preview/track-pre
         NgbModule.forRoot()
     ],
     providers: [
-        { provide: APP_BASE_HREF, useValue : "/" },
+        { provide: APP_BASE_HREF, useValue: "/" },
         MongoQueryService,
         GridService,
         GameRoomManagerService,
@@ -70,7 +71,8 @@ import { TrackPreviewComponent } from './race/track-view/track-preview/track-pre
         CollisionManager,
         RoadCreator,
         ModalService,
-        ModalStateService
+        ModalStateService,
+        GameManagerService
     ],
     bootstrap: [AppComponent]
 })

@@ -52,6 +52,7 @@ export class Room {
             cell.finder = this.identifyFinder(cell, socketId);
         });
         this.grid.setWordToFound(word);
+        this.setScore(socketId);
     }
 
     public clear(): void {
@@ -65,6 +66,13 @@ export class Room {
             return finder;
         } else {
             return Finder.both;
+        }
+    }
+
+    private setScore(socketId: string): void {
+        const foundPlayer: Player = this.players.find((player: Player) => player.socketID === socketId);
+        if (foundPlayer) {
+            foundPlayer.addPoints();
         }
     }
 }
