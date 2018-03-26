@@ -11,6 +11,11 @@ const FRONT_SECTION: number = 1.79;
 const TIME_THRESHHOLD: number = 200; // Milliseconds
 const SLOW_DOWN_FACTOR: number = 0.3;
 
+enum CollisionSide {
+    RIGHT = 0,
+    LEFT
+}
+
 @Injectable()
 export class CollisionManager {
 
@@ -41,28 +46,16 @@ export class CollisionManager {
 
     private verifyCarCollision(): void {
         if (this.cars.length > 1) {
-            let didACollision: boolean = false;
+            let collisioned: boolean = false;
             const carsCollision: Car[] = new Array<Car>();
             for (let i: number = 0; i < this.cars.length; ++i) {
                 carsCollision.push(this.cars[i]);
                 for (let j: number = i + 1; j < this.cars.length; ++j) {
                     carsCollision.push(this.cars[j]);
-                    carsCollision[0].Raycasters.forEach((raycaster: Raycaster) => {
-                        const intersections: Intersection[] = raycaster.intersectObject(carsCollision[1], true);
-                        if (intersections.length > 0) {
-                            didACollision = true;
-                            this.carCollision(carsCollision[0], carsCollision[1]);
-                        }
-                    });
-                    if (!didACollision) {
-                        carsCollision[1].Raycasters.forEach((raycaster: Raycaster) => {
-                            const intersections: Intersection[] = raycaster.intersectObject(carsCollision[0], true);
-                            if (intersections.length > 0) {
-                                this.carCollision(carsCollision[0], carsCollision[1]);
-                            }
-                        });
+                    collisioned = this.raycasterFindCollision(carsCollision[0], carsCollision[1]);
+                    if (!collisioned) {
+                       collisioned = this.raycasterFindCollision(carsCollision[1], carsCollision[0]);
                     }
-                    didACollision = false;
                     carsCollision.pop();
                 }
                 carsCollision.pop();
@@ -70,11 +63,24 @@ export class CollisionManager {
         }
     }
 
+    private raycasterFindCollision(carA: Car, carB: Car): boolean {
+        let collisioned: boolean = false;
+        carA.Raycasters.forEach((raycaster: Raycaster) => {
+            const intersections: Intersection[] = raycaster.intersectObject(carB, true);
+            if (intersections.length > 0) {
+                this.carCollision(carA, carB);
+                collisioned = true;
+            }
+        });
+
+        return collisioned;
+    }
+
     private verifyWallCollision(): void {
         this.cars.forEach((car: Car) => {
             car.Raycasters.forEach((raycaster: Raycaster) => {
                 const intersections: Intersection[] = raycaster.intersectObjects(this.roadSegments);
-                if (intersections.length === 0) { // Car is no more in contact with the road.
+                if (intersections.length === 0) {
                     this.timeSinceLastCollision += Date.now() - this.lastDate;
                     if (this.timeSinceLastCollision > TIME_THRESHHOLD) {
                         this.timeSinceLastCollision = 0;
@@ -95,92 +101,58 @@ export class CollisionManager {
         car.speed = car.speed.negate();
     }
 
-    // tslint:disable-next-line:max-func-body-length
     private carCollision(carA: Car, carB: Car): void {
-        const massA: number = carA.Mass;
-        const massB: number = carB.Mass;
-        const speedA: Vector3 = carA.speed;
-        const speedB: Vector3 = carB.speed;
-
         const intersectBox: Box3 =  carA.BoundingBox.intersect(carB.BoundingBox);
-        const deltaA: Vector3 = carA.getPosition().clone().sub(intersectBox.getCenter());
-        const deltaB: Vector3 = carB.getPosition().clone().sub(intersectBox.getCenter());
-        this.spinCar(carA, deltaA);
-        this.spinCar(carB, deltaB);
+        this.spinCar(carA, carA.getPosition().clone().sub(intersectBox.getCenter()));
+        this.spinCar(carB, carB.getPosition().clone().sub(intersectBox.getCenter()));
 
-        const rotationA: Matrix4 = new Matrix4();
-        rotationA.extractRotation(carA.getMeshMatrix());
-        const rotationQuaternionA: Quaternion = new Quaternion();
-        rotationQuaternionA.setFromRotationMatrix(rotationA);
-        speedA.applyMatrix4(rotationA);
+        const speedA: Vector3 = this.getWorldCoordinatesSpeed(carA);
+        const speedB: Vector3 = this.getWorldCoordinatesSpeed(carB);
 
-        const rotationB: Matrix4 = new Matrix4();
-        rotationB.extractRotation(carB.getMeshMatrix());
-        const rotationQuaternionB: Quaternion = new Quaternion();
+        const totalSystemMomentum: Vector3 = speedA.multiplyScalar(carA.Mass).add(speedB.multiplyScalar(carB.Mass));
 
-        rotationQuaternionB.setFromRotationMatrix(rotationB);
-        speedB.applyMatrix4(rotationB);
+        const carANewSpeed: Vector3 = new Vector3(totalSystemMomentum.x / carA.Mass / CAR_A_MOMENTUM_FACTOR,
+                                                  totalSystemMomentum.y / carA.Mass / CAR_A_MOMENTUM_FACTOR,
+                                                  totalSystemMomentum.z / carA.Mass / CAR_A_MOMENTUM_FACTOR);
+        const carBNewSpeed: Vector3 = new Vector3(totalSystemMomentum.x / carB.Mass / CAR_B_MOMENTUM_FACTOR,
+                                                  totalSystemMomentum.y / carB.Mass / CAR_B_MOMENTUM_FACTOR,
+                                                  totalSystemMomentum.z / carB.Mass / CAR_B_MOMENTUM_FACTOR);
 
-        const totalSystemMomentum: Vector3 = speedA.multiplyScalar(massA).add(speedB.multiplyScalar(massB));
+        carA.speed = this.getCarCoordinatesSpeed(carA, carANewSpeed);
+        carB.speed = this.getCarCoordinatesSpeed(carB, carBNewSpeed);
+    }
 
-        let carANewSpeed: Vector3 = new Vector3(totalSystemMomentum.x / massA / CAR_A_MOMENTUM_FACTOR,
-                                                totalSystemMomentum.y / massA / CAR_A_MOMENTUM_FACTOR,
-                                                totalSystemMomentum.z / massA / CAR_A_MOMENTUM_FACTOR);
-        let carBNewSpeed: Vector3 = new Vector3(totalSystemMomentum.x / massB / CAR_B_MOMENTUM_FACTOR,
-                                                totalSystemMomentum.y / massB / CAR_B_MOMENTUM_FACTOR,
-                                                totalSystemMomentum.z / massB / CAR_B_MOMENTUM_FACTOR);
+    private getWorldCoordinatesSpeed(car: Car): Vector3 {
+        const rotation: Matrix4 = new Matrix4();
+        rotation.extractRotation(car.getMeshMatrix());
 
-        carANewSpeed = carANewSpeed.applyQuaternion(rotationQuaternionA.inverse());
-        carBNewSpeed = carBNewSpeed.applyQuaternion(rotationQuaternionB.inverse());
+        return car.speed.clone().applyMatrix4(rotation);
+    }
 
-        carA.speed = carANewSpeed;
-        carB.speed = carBNewSpeed;
+    private getCarCoordinatesSpeed(car: Car, newSpeed: Vector3): Vector3 {
+        const rotation: Matrix4 = new Matrix4();
+        rotation.extractRotation(car.getMeshMatrix());
+
+        const rotationQuaternion: Quaternion = new Quaternion();
+        rotationQuaternion.setFromRotationMatrix(rotation);
+
+        return newSpeed.applyQuaternion(rotationQuaternion.inverse());
     }
 
     private spinCar(car: Car, delta: Vector3): void {
-        if (delta.z > 0) {
-            this.rightSideCollision(car, delta.x);
-        } else {
-            this.leftSideCollision(car, delta.x);
-        }
-    }
+        const collisionSide: CollisionSide = (delta.z > 0) ? CollisionSide.RIGHT : CollisionSide.LEFT;
 
-    private rightSideCollision(car: Car, deltaX: number): void {
-        if (deltaX < -MIDDLE_SECTION) {
-            if (deltaX > BACK_SECTION) {
-                console.log("back-right-side");
-                car.steerRight();
+        if (delta.x < -MIDDLE_SECTION) {
+            if (delta.x > BACK_SECTION) {
+                collisionSide === CollisionSide.RIGHT ? car.steerRight() : car.steerLeft();
             } else {
-                console.log("back-right-back");
-                car.steerLeft();
+                collisionSide === CollisionSide.RIGHT ? car.steerLeft() : car.steerRight();
             }
-        } else if (deltaX > MIDDLE_SECTION) {
-            if (deltaX < FRONT_SECTION) {
-                console.log("front-right-side");
-                car.steerLeft();
+        } else if (delta.x > MIDDLE_SECTION) {
+            if (delta.x < FRONT_SECTION) {
+                collisionSide === CollisionSide.RIGHT ? car.steerLeft() : car.steerRight();
             } else {
-                console.log("front-right-front");
-                car.steerRight();
-            }
-        }
-    }
-
-    private leftSideCollision(car: Car, deltaX: number): void {
-        if (deltaX < -MIDDLE_SECTION) {
-            if (deltaX > BACK_SECTION) {
-                console.log("back-left-side");
-                car.steerLeft();
-            } else {
-                console.log("back-left-back");
-                car.steerRight();
-            }
-        } else if (deltaX > MIDDLE_SECTION) {
-            if (deltaX < FRONT_SECTION) {
-                console.log("front-left-side");
-                car.steerRight();
-            } else {
-                console.log("front-left-front");
-                car.steerLeft();
+                collisionSide === CollisionSide.RIGHT ? car.steerRight() : car.steerLeft();
             }
         }
     }
