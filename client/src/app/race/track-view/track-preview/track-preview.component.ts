@@ -40,22 +40,23 @@ export class TrackPreviewComponent implements OnInit {
     this.context.fillStyle = "black";
 
     for (let i: number = 0; i < points.length - 1; ++i) {
-        this.context.beginPath();
-        this.context.lineWidth = TRACK_WIDTH / 2;
-        this.context.moveTo(points[i].x * this.Canvas.getBoundingClientRect().width,
-                            points[i].y * this.Canvas.getBoundingClientRect().height);
-        this.context.lineTo(points[i + 1].x * this.Canvas.getBoundingClientRect().width,
-                            points[i + 1].y * this.Canvas.getBoundingClientRect().height);
-        this.context.stroke();
-        this.context.closePath();
+      this.context.beginPath();
+      this.context.lineWidth = TRACK_WIDTH / 2;
+      this.context.moveTo(points[i].x * this.Canvas.getBoundingClientRect().width,
+                          points[i].y * this.Canvas.getBoundingClientRect().height);
+      this.context.lineTo(points[i + 1].x * this.Canvas.getBoundingClientRect().width,
+                          points[i + 1].y * this.Canvas.getBoundingClientRect().height);
+      this.context.stroke();
+      this.context.closePath();
 
-        this.context.beginPath();
-        this.context.lineWidth = DEFAULT_LINE_WIDTH;
-        this.context.arc(points[i].x * this.Canvas.getBoundingClientRect().width,
-                         points[i].y * this.Canvas.getBoundingClientRect().height,
-                         DEFAULT_CIRCLE_RADIUS / 5, 0, FULL_CIRCLE_RAD, false);
-        this.context.stroke();
-        this.context.fill();
-        this.context.closePath();
+      this.context.beginPath();
+      this.context.lineWidth = DEFAULT_LINE_WIDTH;
+      this.context.arc(points[i].x * this.Canvas.getBoundingClientRect().width,
+                       points[i].y * this.Canvas.getBoundingClientRect().height,
+                       DEFAULT_CIRCLE_RADIUS / 5, 0, FULL_CIRCLE_RAD, false);
+      this.context.stroke();
+      this.context.fill();
+      this.context.closePath();
     }
+  }
 }
