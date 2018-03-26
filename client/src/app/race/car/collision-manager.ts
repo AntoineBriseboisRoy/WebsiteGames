@@ -50,9 +50,6 @@ export class CollisionManager {
     }
 
     private verifyWallCollision(): void {
-        console.log(this.cars[0].Raycasters[0].ray.origin);
-        console.log(this.roadSegments[0].position);
-
         this.cars.forEach((car: Car) => {
             car.Raycasters.forEach((raycaster: Raycaster) => {
                 const intersections: Intersection[] = raycaster.intersectObjects(this.roadSegments);

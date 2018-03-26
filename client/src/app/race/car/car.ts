@@ -163,18 +163,18 @@ export class Car extends Object3D {
 
     private initRaycasters(): void {
         const box: Box3 = new Box3();
-        box.setFromObject(this);
+        box.setFromObject(this.mesh);
 
-        const front: Vector3 = new Vector3(this.position.x + box.min.x, 1, 0);
-        const frontLeft: Vector3 = new Vector3(this.position.x + box.min.x + FRONT_X_CORRECTION, 1,
-                                               this.position.z + box.max.z - FRONT_Z_CORRECTION);
-        const frontRight: Vector3 = new Vector3(this.position.x + box.min.x + FRONT_X_CORRECTION, 1,
-                                                this.position.z + box.min.z + FRONT_Z_CORRECTION);
-        const back: Vector3 = new Vector3(this.position.x + box.max.x, 1, 0);
-        const backLeft: Vector3 = new Vector3(this.position.x + box.max.x - BACK_X_CORRECTION, 1,
-                                              this.position.z + box.max.z - BACK_Z_CORRECTION);
-        const backRight: Vector3 = new Vector3(this.position.x + box.max.x - BACK_X_CORRECTION, 1,
-                                               this.position.z + box.min.z + BACK_Z_CORRECTION);
+        const front: Vector3 = new Vector3(this.getPosition().x + box.min.x, 10, 0);
+        const frontLeft: Vector3 = new Vector3(this.getPosition().x + box.min.x + FRONT_X_CORRECTION, 10,
+                                               this.getPosition().z + box.max.z - FRONT_Z_CORRECTION);
+        const frontRight: Vector3 = new Vector3(this.getPosition().x + box.min.x + FRONT_X_CORRECTION, 10,
+                                                this.getPosition().z + box.min.z + FRONT_Z_CORRECTION);
+        const back: Vector3 = new Vector3(this.getPosition().x + box.max.x, 10, 0);
+        const backLeft: Vector3 = new Vector3(this.getPosition().x + box.max.x - BACK_X_CORRECTION, 10,
+                                              this.getPosition().z + box.max.z - BACK_Z_CORRECTION);
+        const backRight: Vector3 = new Vector3(this.getPosition().x + box.max.x - BACK_X_CORRECTION, 10,
+                                               this.getPosition().z + box.min.z + BACK_Z_CORRECTION);
 
         this.raycasters.push(new Raycaster(front, new Vector3(0, -1, 0)));
         this.raycasters.push(new Raycaster(frontLeft, new Vector3(0, -1, 0)));
