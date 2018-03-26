@@ -110,7 +110,6 @@ export class GridComponent implements OnInit {
             if (userAnswer === correctAnswer) {
                 this.setCellsToFound(word);
                 // GameManager.Instance.playerOne.addPoint(word.cells.length);
-                // word.isFound = true;
                 this.socketIo.CompletedWords.next(word);
             }
             userAnswer = "";
@@ -118,9 +117,6 @@ export class GridComponent implements OnInit {
     }
 
     private setCellsToFound(word: IGridWord): void {
-        // word.cells.forEach((cell) => {
-        //     cell.isFound = true;
-        // });
         if (FocusCell.Instance.cells === word.cells) {
             FocusCell.Instance.clear();
         }

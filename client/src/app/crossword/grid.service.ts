@@ -18,10 +18,18 @@ export class GridService {
     public fetchGrid(): Observable<void> {
         return Observable.create( (obs: Observer<void>) => {
             this.socketIO.GridContent.subscribe((gridCells: Array<ICell>) => {
-                this.gridCells = gridCells;
+                this.addFoundWord(gridCells);
                 this.fetchGridWords(obs);
             });
         });
+    }
+
+    private addFoundWord(gridCells: Array<ICell>): void {
+        for (const serverCell of gridCells) {
+            if (serverCell.isFound || !this.gridCells[serverCell.gridIndex]) {
+                this.gridCells[serverCell.gridIndex] = serverCell;
+            }
+        }
     }
 
     private fetchGridWords(obs: Observer<void>): void {

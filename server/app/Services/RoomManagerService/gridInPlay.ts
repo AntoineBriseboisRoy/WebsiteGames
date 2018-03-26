@@ -36,6 +36,7 @@ export class GridInPlay {
         for (let i: number = 0; i < this.gridWords.length; ++i) {
             if (GridInPlay.isSameWord(wordFound, this.gridWords[i])) {
                 this.gridWords[i] = wordFound;
+                this.gridWords[i].isFound = true;
                 this.setCellsToFound(i);
             }
         }

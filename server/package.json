@@ -13,6 +13,7 @@
     "postinstall": "rimraf false"
   },
   "dependencies": {
+    "@types/chai-spies": "0.0.0",
     "@types/mongodb": "^3.0.8",
     "@types/request-promise-native": "^1.0.14",
     "body-parser": "~1.16.0",

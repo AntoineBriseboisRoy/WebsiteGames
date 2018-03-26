@@ -51,7 +51,6 @@ export class Room {
             cell.isFound = true;
             cell.finder = this.identifyFinder(cell, socketId);
         });
-        word.isFound = true;
         this.grid.setWordToFound(word);
     }
 

@@ -16,7 +16,6 @@ export class MultiplayerMenuComponent {
 
     public constructor(private socketService: SocketIoService, public gameRooms: GameRoomManagerService,
                        private router: Router) {
-        this.socketService.init();
         this.socketService.CreatedGameSubject.subscribe((newGame: INewGame) => {
             this.gameRooms.push(newGame);
         });
