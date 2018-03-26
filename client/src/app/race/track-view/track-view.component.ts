@@ -33,7 +33,7 @@ export class TrackViewComponent implements OnInit {
         );
     }
 
-    private callModal(): void {
+    public callModal(): void {
         this.modalService.open({
             title: "Race preview", message: "Are you sure you want to play this track?\n",
             firstButton: "Play", secondButton: "Cancel", showPreview: true
