@@ -5,8 +5,14 @@
   </button>
 </div>
 <div class="modal-body">
-  <p>{{ options.message }}</p>
+  <div id="track-preview">
+    <div>{{ options.message }}</div>
+    <div *ngIf="state.options.showPreview">
+      <app-track-preview></app-track-preview>
+    </div>
+  </div>
 </div>
+
 <div class="modal-footer">
   <button type="button" class="btn btn-primary" (click)="firstButton()">{{ options.firstButton }}</button>
   <button type="button" class="btn btn-info" (click)="secondButton()">{{ options.secondButton }}</button>

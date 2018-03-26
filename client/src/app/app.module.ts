@@ -33,6 +33,7 @@ import { ModalComponent } from "./modal/modal/modal.component";
 import { ModalService } from "./modal//modal.service";
 import { ModalStateService } from "./modal//modal-state.service";
 import { ModalDirective } from "./modal/modal.directive";
+import { TrackPreviewComponent } from './race/track-view/track-preview/track-preview.component';
 
 @NgModule({
     declarations: [
@@ -51,7 +52,8 @@ import { ModalDirective } from "./modal/modal.directive";
         MultiplayerMenuComponent,
         WaitingGamesComponent,
         ModalComponent,
-        ModalDirective
+        ModalDirective,
+        TrackPreviewComponent
     ],
     imports: [
         BrowserModule,

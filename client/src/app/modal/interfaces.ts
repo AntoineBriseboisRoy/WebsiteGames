@@ -3,4 +3,5 @@ export interface ModalOptions {
     message: string;
     firstButton: string;
     secondButton: string;
+    showPreview: boolean;
 }
