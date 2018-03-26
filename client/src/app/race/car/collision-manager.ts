@@ -7,6 +7,7 @@ const CAR_B_MOMENTUM_FACTOR: number = 1.9;
 const MIDDLE_SECTION: number = 0.5;
 const BACK_SECTION: number = -1.55;
 const FRONT_SECTION: number = 1.79;
+const COLLISION_DISTANCE: number = 10;
 
 const TIME_THRESHHOLD: number = 200; // Milliseconds
 const SLOW_DOWN_FACTOR: number = 0.3;
@@ -52,15 +53,23 @@ export class CollisionManager {
                 carsCollision.push(this.cars[i]);
                 for (let j: number = i + 1; j < this.cars.length; ++j) {
                     carsCollision.push(this.cars[j]);
-                    collisioned = this.raycasterFindCollision(carsCollision[0], carsCollision[1]);
-                    if (!collisioned) {
-                       collisioned = this.raycasterFindCollision(carsCollision[1], carsCollision[0]);
+                    const distanceBetweenCars: Vector3 = carsCollision[0].getPosition().clone().sub(carsCollision[1].getPosition().clone());
+                    if (this.isNear(distanceBetweenCars)) {
+                        collisioned = this.raycasterFindCollision(carsCollision[0], carsCollision[1]);
+                        if (!collisioned) {
+                            collisioned = this.raycasterFindCollision(carsCollision[1], carsCollision[0]);
+                        }
                     }
                     carsCollision.pop();
                 }
                 carsCollision.pop();
             }
         }
+    }
+
+    private isNear(distance: Vector3): boolean {
+        return Math.abs(distance.x) < COLLISION_DISTANCE ||
+               Math.abs(distance.z) < COLLISION_DISTANCE;
     }
 
     private raycasterFindCollision(carA: Car, carB: Car): boolean {

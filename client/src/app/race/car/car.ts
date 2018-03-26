@@ -1,4 +1,4 @@
-import { Vector3, Matrix4, Object3D, ObjectLoader, Euler, Quaternion, Box3, BoxHelper, Raycaster } from "three";
+import { Vector3, Matrix4, Object3D, ObjectLoader, Euler, Quaternion, Box3, BoxHelper, Raycaster, BoxGeometry, MeshBasicMaterial, Mesh } from "three";
 import { Engine } from "./engine";
 import { MS_TO_SECONDS, GRAVITY, PI_OVER_2, RAD_TO_DEG } from "../../constants";
 import { Wheel } from "./wheel";
@@ -37,6 +37,7 @@ export class Car extends Object3D {
     private weightRear: number;
 
     private boundingBox: Box3;
+    private hitBox: Mesh;
     private raycasters: Raycaster[];
 
     private raycasterOffsets: Vector3[];
@@ -99,6 +100,7 @@ export class Car extends Object3D {
         return carDirection;
     }
 
+    // tslint:disable-next-line:max-func-body-length
     public constructor(
         initialPosition: Vector3 = new Vector3(),
         engine: Engine = new Engine(),
@@ -158,9 +160,13 @@ export class Car extends Object3D {
     }
 
     private initBoundingBox(): void {
+        const box: BoxGeometry = new BoxGeometry(1.5,2,3.3);
+        const material: MeshBasicMaterial = new MeshBasicMaterial();
+        material.visible = false;
+        this.hitBox = new Mesh( box, material );
         const helper: BoxHelper =  new BoxHelper(this.mesh);
         this.boundingBox.setFromObject(helper);
-        this.mesh.add(helper);
+        this.mesh.add(this.hitBox);
     }
 
     private initRaycasters(): void {
