@@ -89,9 +89,6 @@ export class RenderService {
         this.cameraContext.update(this.cars[PLAYER]);
         this.lastDate = Date.now();
         this.collisionManager.update();
-        // console.log(this.cars[0].getPosition());
-        // console.log(this.cars[0].Raycasters[0].ray.origin);
-
     }
 
     private async createScene(): Promise<void> {
@@ -116,7 +113,6 @@ export class RenderService {
         this.scene.background = new Skybox().CubeTexture;
         this.createFloorMesh();
         this.generateTrack();
-        this.createFloorCollisionables();
     }
 
     private async createCars(): Promise<void> {
@@ -128,18 +124,14 @@ export class RenderService {
     }
 
     private generateTrack(): void {
-        this.roadCreator.createTrack(this.activeTrack.points).forEach((mesh: Mesh) => {
+        this.roadCreator.createTrack(this.activeTrack.points);
+        this.roadCreator.Meshes.forEach((mesh: Mesh) => {
+            this.collisionManager.addRoadSegment(mesh);
             this.scene.add(mesh);
         });
 
         this.generateStartLine(new Vector2(this.activeTrack.points[1].x - this.activeTrack.points[0].x,
                                            this.activeTrack.points[1].y - this.activeTrack.points[0].y));
-    }
-
-    private createFloorCollisionables(): void {
-        this.roadCreator.Meshes.forEach((mesh: Mesh) => {
-            this.collisionManager.addRoadSegment(mesh);
-        });
     }
 
     private generateStartLine(firstRoad: Vector2): void {
