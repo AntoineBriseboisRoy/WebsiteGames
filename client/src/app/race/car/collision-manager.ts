@@ -9,6 +9,7 @@ const BACK_SECTION: number = -1.55;
 const FRONT_SECTION: number = 1.79;
 
 const TIME_THRESHHOLD: number = 200; // Milliseconds
+const SLOW_DOWN_FACTOR: number = 0.3;
 
 @Injectable()
 export class CollisionManager {
@@ -67,8 +68,6 @@ export class CollisionManager {
                 carsCollision.pop();
             }
         }
-        // tslint:disable-next-line:prefer-for-of
-
     }
 
     private verifyWallCollision(): void {
@@ -79,7 +78,7 @@ export class CollisionManager {
                     this.timeSinceLastCollision += Date.now() - this.lastDate;
                     if (this.timeSinceLastCollision > TIME_THRESHHOLD) {
                         this.timeSinceLastCollision = 0;
-                        // this.wallCollision(car);
+                        this.wallCollision(car);
                     }
                     this.lastDate = Date.now();
                 }
@@ -89,7 +88,7 @@ export class CollisionManager {
 
     private wallCollision(car: Car): void {
         this.bounce(car);
-        car.speed = car.speed.multiplyScalar(0.3);
+        car.speed = car.speed.multiplyScalar(SLOW_DOWN_FACTOR);
     }
 
     private bounce(car: Car): void {
