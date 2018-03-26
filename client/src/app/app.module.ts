@@ -26,6 +26,12 @@ import { MongoQueryService } from "./mongo-query.service";
 import { SocketIoService } from "./crossword/socket-io.service";
 import { GameRoomManagerService } from "./crossword/multiplayer-mode/GameRoomManagerService.service";
 import { GameListComponent } from "./crossword/multiplayer-mode/GameList/GameList.component";
+import { CollisionManager } from "./race/car/collision-manager";
+import { RoadCreator } from "./race/render-service/road-creator.service";
+import { ModalComponent } from "./modal/modal/modal.component";
+import { ModalService } from "./modal//modal.service";
+import { ModalStateService } from "./modal//modal-state.service";
+import { ModalDirective } from "./modal/modal.directive";
 
 @NgModule({
     declarations: [
@@ -42,7 +48,9 @@ import { GameListComponent } from "./crossword/multiplayer-mode/GameList/GameLis
         TrackViewComponent,
         PlayerMenuComponent,
         MultiplayerMenuComponent,
-        GameListComponent
+        GameListComponent,
+        ModalComponent,
+        ModalDirective
     ],
     imports: [
         BrowserModule,
@@ -52,11 +60,15 @@ import { GameListComponent } from "./crossword/multiplayer-mode/GameList/GameLis
         NgbModule.forRoot()
     ],
     providers: [
-        {provide: APP_BASE_HREF, useValue : "/" },
+        { provide: APP_BASE_HREF, useValue : "/" },
         MongoQueryService,
         GridService,
         GameRoomManagerService,
-        SocketIoService
+        SocketIoService,
+        CollisionManager,
+        RoadCreator,
+        ModalService,
+        ModalStateService
     ],
     bootstrap: [AppComponent]
 })

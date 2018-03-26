@@ -1,0 +1,85 @@
+{
+	"metadata": {
+		"version": 4.5,
+		"type": "Object",
+		"generator": "Object3D.toJSON"
+	},
+	"geometries": [
+		{
+			"uuid": "E8AF660E-B040-4BAB-8986-2AA2AFE90C9C",
+			"type": "CylinderBufferGeometry",
+			"radiusTop": 1,
+			"radiusBottom": 1,
+			"height": 1,
+			"radialSegments": 8,
+			"heightSegments": 1,
+			"openEnded": false,
+			"thetaStart": 0,
+			"thetaLength": 6.283185
+		},
+		{
+			"uuid": "783ED338-C916-41D0-AF3C-A3C3A55971A6",
+			"type": "BoxBufferGeometry",
+			"width": 1,
+			"height": 1,
+			"depth": 1,
+			"widthSegments": 1,
+			"heightSegments": 1,
+			"depthSegments": 1
+		}],
+	"materials": [
+		{
+			"uuid": "8A58255A-2D26-4F2F-9301-D52F3FD05723",
+			"type": "MeshStandardMaterial",
+			"color": 8421504,
+			"roughness": 0.5,
+			"metalness": 0.5,
+			"emissive": 8405056,
+			"depthFunc": 3,
+			"depthTest": true,
+			"depthWrite": true
+		},
+		{
+			"uuid": "1366811A-BFA4-4819-943D-A1887226EC45",
+			"type": "MeshStandardMaterial",
+			"color": 16777215,
+			"roughness": 0.5,
+			"metalness": 0.5,
+			"emissive": 12632256,
+			"side": 2,
+			"depthFunc": 3,
+			"depthTest": true,
+			"depthWrite": true
+		}],
+	"object": {
+		"uuid": "96E761C3-9303-44A3-ABFC-42963B28AC12",
+		"type": "Group",
+		"name": "Group",
+		"matrix": [6,0,0,0,0,3,0,0,0,0,4,0,0,0,0,1],
+		"children": [
+			{
+				"uuid": "EBDE54F7-047E-430F-85CA-1076AB03F592",
+				"type": "Mesh",
+				"name": "Cylinder",
+				"matrix": [0.02,0,0,0,0,1,0,0,0,0,0.02,0,0.84,0.455792,0,1],
+				"geometry": "E8AF660E-B040-4BAB-8986-2AA2AFE90C9C",
+				"material": "8A58255A-2D26-4F2F-9301-D52F3FD05723"
+			},
+			{
+				"uuid": "EA0E4F70-222F-4AB1-9595-3B91B7F113BD",
+				"type": "Mesh",
+				"name": "Cylinder",
+				"matrix": [0.02,0,0,0,0,1,0,0,0,0,0.02,0,-0.840005,0.455792,0,1],
+				"geometry": "E8AF660E-B040-4BAB-8986-2AA2AFE90C9C",
+				"material": "8A58255A-2D26-4F2F-9301-D52F3FD05723"
+			},
+			{
+				"uuid": "7A1A7600-0214-4FB4-BBE4-FFA8B31C1840",
+				"type": "Mesh",
+				"name": "Box",
+				"matrix": [1.869098,0,0,0,0,0.446945,0,0,0,0,0.033507,0,0.000644,1.17781,0,1],
+				"geometry": "783ED338-C916-41D0-AF3C-A3C3A55971A6",
+				"material": "1366811A-BFA4-4819-943D-A1887226EC45"
+			}]
+	}
+}

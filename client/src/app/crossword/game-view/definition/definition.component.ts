@@ -46,7 +46,7 @@ export class DefinitionComponent implements OnInit {
     public toogleCheatMode(): void {
         this.cheatModeActive = !this.cheatModeActive;
         this.cheatButtonColor = this.cheatModeActive ? CHEAT_COLOR : NO_CHEAT_COLOR;
-        document.getElementById("cheat-button").style.backgroundColor = this.cheatButtonColor;
+        document.getElementById("cheat-button").style.backgroundColor = this.cheatButtonColor; // TODO: Changer ceci
     }
 
     public cheatModeToString(): string {

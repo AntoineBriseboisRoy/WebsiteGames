@@ -8,6 +8,7 @@ import { FocusCell } from "./focusCell";
 })
 export class CrosswordViewComponent {
 
+    public constructor() {}
     public clickHandler(event: Event): void {
         if (this.isOutsideClick(event)) {
             FocusCell.Instance.clear();

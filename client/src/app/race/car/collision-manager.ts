@@ -1,47 +1,102 @@
 import { Car } from "./car";
-import { Object3D, Vector3, Matrix4, Quaternion, Box3 } from "three";
+import { Vector3, Matrix4, Quaternion, Box3, Mesh, Raycaster, Intersection } from "three";
+import { Injectable } from "@angular/core";
 
 const CAR_A_MOMENTUM_FACTOR: number = 2.1;
 const CAR_B_MOMENTUM_FACTOR: number = 1.9;
 const MIDDLE_SECTION: number = 0.5;
 const BACK_SECTION: number = -1.55;
 const FRONT_SECTION: number = 1.79;
+
+const TIME_THRESHHOLD: number = 200; // Milliseconds
+const SLOW_DOWN_FACTOR: number = 0.3;
+
+@Injectable()
 export class CollisionManager {
 
     private cars: Car[];
-    private collisionables: Object3D[]; // In the optic that cars, walls and different floor types can create collisions.
+    private roadSegments: Mesh[];
+    private timeSinceLastCollision: number;
+    private lastDate: number;
 
     public constructor() {
         this.cars = new Array<Car>();
-        this.collisionables = new Array<Object3D>();
+        this.roadSegments = new Array<Mesh>();
+        this.timeSinceLastCollision = 0;
+        this.lastDate = 0;
     }
 
     public addCar(car: Car): void {
         this.cars.push(car);
-        this.addCollisionable(car);
     }
 
-    public addCollisionable(collisionable: Object3D): void {
-        this.collisionables.push(collisionable);
+    public addRoadSegment(collisionable: Mesh): void {
+        this.roadSegments.push(collisionable);
     }
 
     public update(): void {
-        this.verifyCollision();
+        this.verifyCarCollision();
+        this.verifyWallCollision();
     }
 
-    private verifyCollision(): void {
-        // tslint:disable-next-line:prefer-for-of
-        for (let i: number = 0; i < this.cars.length; ++i) {
-            for (let j: number = i + 1; j < this.cars.length; ++j) {
-                if (this.cars[i].BoundingBox.intersectsBox(this.cars[j].BoundingBox)) {
-                    this.collision(this.cars[i], this.cars[j]);
+    private verifyCarCollision(): void {
+        if (this.cars.length > 1) {
+            let didACollision: boolean = false;
+            const carsCollision: Car[] = new Array<Car>();
+            for (let i: number = 0; i < this.cars.length; ++i) {
+                carsCollision.push(this.cars[i]);
+                for (let j: number = i + 1; j < this.cars.length; ++j) {
+                    carsCollision.push(this.cars[j]);
+                    carsCollision[0].Raycasters.forEach((raycaster: Raycaster) => {
+                        const intersections: Intersection[] = raycaster.intersectObject(carsCollision[1], true);
+                        if (intersections.length > 0) {
+                            didACollision = true;
+                            this.carCollision(carsCollision[0], carsCollision[1]);
+                        }
+                    });
+                    if (!didACollision) {
+                        carsCollision[1].Raycasters.forEach((raycaster: Raycaster) => {
+                            const intersections: Intersection[] = raycaster.intersectObject(carsCollision[0], true);
+                            if (intersections.length > 0) {
+                                this.carCollision(carsCollision[0], carsCollision[1]);
+                            }
+                        });
+                    }
+                    didACollision = false;
+                    carsCollision.pop();
                 }
+                carsCollision.pop();
             }
         }
     }
 
+    private verifyWallCollision(): void {
+        this.cars.forEach((car: Car) => {
+            car.Raycasters.forEach((raycaster: Raycaster) => {
+                const intersections: Intersection[] = raycaster.intersectObjects(this.roadSegments);
+                if (intersections.length === 0) { // Car is no more in contact with the road.
+                    this.timeSinceLastCollision += Date.now() - this.lastDate;
+                    if (this.timeSinceLastCollision > TIME_THRESHHOLD) {
+                        this.timeSinceLastCollision = 0;
+                        this.wallCollision(car);
+                    }
+                    this.lastDate = Date.now();
+                }
+            });
+        });
+    }
+
+    private wallCollision(car: Car): void {
+        this.bounce(car);
+        car.speed = car.speed.multiplyScalar(SLOW_DOWN_FACTOR);
+    }
+
+    private bounce(car: Car): void {
+        car.speed = car.speed.negate();
+    }
+
     // tslint:disable-next-line:max-func-body-length
-    private collision(carA: Car, carB: Car): void {
+    private carCollision(carA: Car, carB: Car): void {
         const massA: number = carA.Mass;
         const massB: number = carB.Mass;
         const speedA: Vector3 = carA.speed;
