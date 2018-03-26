@@ -27,6 +27,8 @@ import { MongoQueryService } from "./mongo-query.service";
 import { SocketIoService } from "./crossword/socket-io.service";
 import { MultiplayerGamesService } from "./crossword/multiplayer-menu/multiplayer-games.service";
 import { WaitingGamesComponent } from "./crossword/multiplayer-menu/waiting-games/waiting-games.component";
+import { CollisionManager } from "./race/car/collision-manager";
+import { RoadCreator } from "./race/render-service/road-creator.service";
 
 @NgModule({
     declarations: [
@@ -53,12 +55,14 @@ import { WaitingGamesComponent } from "./crossword/multiplayer-menu/waiting-game
         NgbModule.forRoot()
     ],
     providers: [
-        {provide: APP_BASE_HREF, useValue : "/" },
+        { provide: APP_BASE_HREF, useValue : "/" },
         MongoQueryService,
         GridService,
         WordTransmitterService,
         MultiplayerGamesService,
         SocketIoService,
+        CollisionManager,
+        RoadCreator
     ],
     bootstrap: [AppComponent]
 })

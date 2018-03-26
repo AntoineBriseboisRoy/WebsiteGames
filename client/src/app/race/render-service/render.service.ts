@@ -1,9 +1,7 @@
 import { Injectable } from "@angular/core";
 import Stats = require("stats.js");
-import { WebGLRenderer, Scene, AmbientLight,
-         Mesh, PlaneBufferGeometry, MeshBasicMaterial,
-         Vector2, BackSide, CircleBufferGeometry,
-         Texture, RepeatWrapping, TextureLoader, ObjectLoader, Object3D } from "three";
+import { WebGLRenderer, Scene, AmbientLight, Mesh, PlaneBufferGeometry, MeshBasicMaterial,
+         Vector2, BackSide, Texture, RepeatWrapping, TextureLoader, ObjectLoader, Object3D } from "three";
 import { Car } from "../car/car";
 import { ThirdPersonCamera } from "../camera/camera-perspective";
 import { TopViewCamera } from "../camera/camera-orthogonal";
@@ -12,6 +10,7 @@ import { Skybox } from "../skybox/skybox";
 import { CameraContext } from "../camera/camera-context";
 import { ITrack, TrackType } from "../../../../../common/interfaces/ITrack";
 import { CollisionManager } from "../car/collision-manager";
+import { RoadCreator } from "./road-creator.service";
 
 export const FAR_CLIPPING_PLANE: number = 1000;
 export const NEAR_CLIPPING_PLANE: number = 1;
@@ -22,9 +21,7 @@ const AMBIENT_LIGHT_OPACITY: number = 0.5;
 const TEXTURE_TILE_REPETIONS: number = 200;
 const WORLD_SIZE: number = 1000;
 const FLOOR_SIZE: number = WORLD_SIZE / HALF;
-const ROAD_WIDTH: number = 10;
 const QUARTER_ROAD_WIDTH: number = 2.5;
-const SUPERPOSITION: number = 0.001;
 const CAR_OFFSET_FROM_STARTLINE: number = 0.01;
 const PLAYER: number = 0;
 const NUMBER_OF_CARS: number = 4;
@@ -38,11 +35,8 @@ export class RenderService {
     private scene: THREE.Scene;
     private stats: Stats;
     private lastDate: number;
-    private superposition: number;
     private activeTrack: ITrack;
     private floorTextures: Map<TrackType, Texture>;
-
-    private collisionManager: CollisionManager;
 
     public get car(): Car {
         return this.cars[PLAYER];
@@ -52,14 +46,15 @@ export class RenderService {
         return this.cameraContext;
     }
 
-    public constructor() {
+    public constructor(private collisionManager: CollisionManager, private roadCreator: RoadCreator) {
         this.cars = new Array<Car>();
         for (let i: number = 0; i < NUMBER_OF_CARS; i++) {
             this.cars.push(new Car());
         }
         this.floorTextures = new Map<TrackType, Texture>();
-        this.superposition = 0;
         this.collisionManager = new CollisionManager();
+        this.scene = new Scene();
+        this.cameraContext = new CameraContext();
     }
 
     public async initialize(container: HTMLDivElement, track: ITrack): Promise<void> {
@@ -99,8 +94,6 @@ export class RenderService {
     }
 
     private async createScene(): Promise<void> {
-        this.scene = new Scene();
-        this.cameraContext = new CameraContext();
         this.cameraContext.addState(new ThirdPersonCamera(FIELD_OF_VIEW,
                                                           NEAR_CLIPPING_PLANE,
                                                           FAR_CLIPPING_PLANE,
@@ -117,13 +110,12 @@ export class RenderService {
 
         this.cameraContext.initStates(this.cars[PLAYER].getPosition());
         this.cameraContext.setInitialState();
-
         this.scene.add(new AmbientLight(WHITE, AMBIENT_LIGHT_OPACITY));
 
-        const skybox: Skybox = new Skybox();
-        this.scene.background = skybox.CubeTexture;
-        this.scene.add(this.createFloorMesh());
+        this.scene.background = new Skybox().CubeTexture;
+        this.createFloorMesh();
         this.generateTrack();
+        this.createFloorCollisionables();
     }
 
     private async createCars(): Promise<void> {
@@ -135,10 +127,18 @@ export class RenderService {
     }
 
     private generateTrack(): void {
-        for (let i: number = 0; i < this.activeTrack.points.length - 1; ++i) {
-            this.scene.add(this.createRoad(i));
-            this.scene.add(this.createIntersection(i));
-        }
+        this.roadCreator.createTrack(this.activeTrack.points).forEach((mesh: Mesh) => {
+            this.scene.add(mesh);
+        });
+
+        this.generateStartLine(new Vector2(this.activeTrack.points[1].x - this.activeTrack.points[0].x,
+                                           this.activeTrack.points[1].y - this.activeTrack.points[0].y));
+    }
+
+    private createFloorCollisionables(): void {
+        this.roadCreator.Meshes.forEach((mesh: Mesh) => {
+            this.collisionManager.addRoadSegment(mesh);
+        });
     }
 
     private generateStartLine(firstRoad: Vector2): void {
@@ -198,54 +198,14 @@ export class RenderService {
         }
     }
 
-    private createRoad(index: number): Mesh {
-        const trackTexture: Texture = new TextureLoader().load("/assets/road.jpg");
-        trackTexture.wrapS = RepeatWrapping;
-        const road: Vector2 = new Vector2(this.activeTrack.points[index + 1].x -
-                                          this.activeTrack.points[index].x,
-                                          this.activeTrack.points[index + 1].y -
-                                          this.activeTrack.points[index].y);
-        if (index === 0) {
-            this.generateStartLine(road);
-        }
-        const plane: PlaneBufferGeometry = new PlaneBufferGeometry(road.length() * WORLD_SIZE, ROAD_WIDTH);
-        const mesh: Mesh = new Mesh(plane, new MeshBasicMaterial({ map: trackTexture, side: BackSide }));
-        trackTexture.repeat.set(road.length() * TEXTURE_TILE_REPETIONS, 1);
-        mesh.position.x = -(this.activeTrack.points[index].y + road.y * HALF) * WORLD_SIZE + WORLD_SIZE * HALF;
-        mesh.position.z = -(this.activeTrack.points[index].x + road.x * HALF) * WORLD_SIZE + WORLD_SIZE * HALF;
-        mesh.rotation.x = PI_OVER_2;
-        mesh.rotation.z = road.y === 0 ? PI_OVER_2 : Math.atan(road.x / road.y);
-        this.superimpose(mesh);
-
-        return mesh;
-    }
-
-    private createIntersection(index: number): Mesh {
-        const POLYGONS_NUMBER: number = 32;
-        const trackTexture: Texture = new TextureLoader().load("/assets/road.jpg");
-        const circle: CircleBufferGeometry = new CircleBufferGeometry(ROAD_WIDTH * HALF, POLYGONS_NUMBER);
-        const mesh: Mesh = new Mesh(circle, new MeshBasicMaterial({ map: trackTexture, side: BackSide }));
-        mesh.position.x = -(this.activeTrack.points[index].y) * WORLD_SIZE + WORLD_SIZE * HALF;
-        mesh.position.z = -(this.activeTrack.points[index].x) * WORLD_SIZE + WORLD_SIZE * HALF;
-        mesh.rotation.x = PI_OVER_2;
-        this.superimpose(mesh);
-
-        return mesh;
-    }
-
-    private createFloorMesh(): Mesh {
+    private createFloorMesh(): void {
         this.floorTextures.get(this.activeTrack.type).wrapS = this.floorTextures.get(this.activeTrack.type).wrapT = RepeatWrapping;
         this.floorTextures.get(this.activeTrack.type).repeat.set(TEXTURE_TILE_REPETIONS, TEXTURE_TILE_REPETIONS);
         const mesh: Mesh = new Mesh(new PlaneBufferGeometry(FLOOR_SIZE, FLOOR_SIZE, 1, 1),
                                     new MeshBasicMaterial({ map: this.floorTextures.get(this.activeTrack.type), side: BackSide }));
         mesh.rotation.x = PI_OVER_2;
 
-        return mesh;
-    }
-
-    private superimpose(mesh: Mesh): void {
-        this.superposition += SUPERPOSITION;
-        mesh.position.y = this.superposition;
+        this.scene.add(mesh);
     }
 
     private startRenderingLoop(): void {
