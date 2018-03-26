@@ -46,10 +46,10 @@ describe("MultiplayerMenuComponent", () => {
         expect(component.gameRooms.Games.length).toBeLessThan(initialNumberOfGames);
     });
     it("should call every method inside createNewGame", () => {
-        spyOn(component.gameRooms, "isUsernameUnique");
-        spyOn(component.gameRooms, "push");
+        const spy: jasmine.Spy = spyOn(component.gameRooms, "isUsernameUnique");
+        const spy2: jasmine.Spy  = spyOn(component.gameRooms, "push");
         component.createNewGame();
-        expect(component.gameRooms.isUsernameUnique).toHaveBeenCalled();
-        expect(component.gameRooms.push).toHaveBeenCalled();
+        expect(spy).toHaveBeenCalled();
+        expect(spy2).toHaveBeenCalled();
     });
 });

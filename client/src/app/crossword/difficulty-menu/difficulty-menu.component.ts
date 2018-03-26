@@ -15,7 +15,6 @@ export class DifficultyMenuComponent {
 
     public constructor(private socketIoService: SocketIoService, private router: Router) {
         this.isActiveDifficulty = false;
-        this.socketIoService.init();
     }
 
     public onButtonGroupClick($event: Event): void {
