@@ -5,6 +5,9 @@ import { IGridWord } from "../../../../common/interfaces/IGridWord";
 import { ICell } from "../../../../common/interfaces/ICell";
 import { Orientation } from "../../../../common/constants";
 import { Observer } from "rxjs/Observer";
+import { ModalService } from "../modal/modal.service";
+import { Router } from "@angular/router";
+import { GameManager } from "./game-manager";
 
 @Injectable()
 export class GridService {
@@ -12,12 +15,11 @@ export class GridService {
     public gridWords: Array<IGridWord>;
     public gridWordsHorizontal: Array<IGridWord>;
     public gridWordsVertical: Array<IGridWord>;
-
     private static compareIndex(a: IGridWord, b: IGridWord): number {
         return a.cells[0].index - b.cells[0].index;
     }
 
-    public constructor(private socketIO: SocketIoService) {
+    public constructor(private socketIO: SocketIoService, private modalService: ModalService, private router: Router) {
         this.gridCells = new Array();
         this.gridWords = new Array();
         this.gridWordsHorizontal = new Array();
@@ -25,7 +27,7 @@ export class GridService {
     }
 
     public fetchGrid(): Observable<void> {
-        return Observable.create( (obs: Observer<void>) => {
+        return Observable.create((obs: Observer<void>) => {
             this.socketIO.GridContent.subscribe((gridCells: Array<ICell>) => {
                 this.addFoundWord(gridCells);
                 this.fetchGridWords(obs);
@@ -47,6 +49,7 @@ export class GridService {
             this.setGridWordsReferencesToGridCells();
             this.gridWords.sort(GridService.compareIndex);
             this.splitHorizontalAndVerticalWords();
+            this.checkGameStatus();
             obs.next(null);
         });
     }
@@ -69,5 +72,28 @@ export class GridService {
                 word.cells[i] = this.gridCells[word.cells[i].gridIndex];
             }
         }
+    }
+
+    private checkGameStatus(): void {
+        if (this.isGridCompleted() && !this.modalService.IsOpen) {
+            this.modalService.open({
+                title: "Game Over!", message: "Your score is " + GameManager.Instance.playerOne.score +
+                    "! You can choose to replay or go back to home page",
+                firstButton: "Restart", secondButton: "Home"
+            })
+                .then(() => this.router.navigate(["/crossword"]),
+                      () => window.location.reload()
+                );
+        }
+    }
+
+    private isGridCompleted(): boolean {
+        for (const word of this.gridWords) {
+            if (!word.isFound) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

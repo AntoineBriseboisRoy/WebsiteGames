@@ -7,6 +7,7 @@ export class ModalStateService {
     public options: ModalOptions;
     public modal: NgbModalRef;
     public template: TemplateRef<HTMLTemplateElement>;
+    public isOpen: boolean;
 
     public constructor() {
         this.options = {title: "", message: "", firstButton: "", secondButton: ""} as ModalOptions;

@@ -7,9 +7,6 @@ import { FocusCell } from "../focusCell";
 import { KeyboardInputManagerService } from "../keyboard-input-manager/keyboard-input-manager.service";
 import { GridService } from "../../grid.service";
 import { SocketIoService } from "../../socket-io.service";
-import { ModalService } from "../../../modal/modal.service";
-import { Router } from "@angular/router";
-import { GameManager } from "../../game-manager";
 
 @Component({
     selector: "app-crossword-grid",
@@ -23,8 +20,7 @@ export class GridComponent implements OnInit {
     private clickedCell: ICell;
     private focusCell: FocusCell;
     private keyboardInputManagerService: KeyboardInputManagerService;
-    public constructor(private gridService: GridService, private socketIo: SocketIoService,
-                       private modalService: ModalService, private router: Router) {
+    public constructor(private gridService: GridService, private socketIo: SocketIoService) {
         this.clickedWords = new Array();
         this.clickedCell = undefined;
         this.focusCell = FocusCell.Instance;
@@ -120,16 +116,6 @@ export class GridComponent implements OnInit {
         }
     }
 
-    private isGridCompleted(): boolean {
-        for (const word of this.gridService.gridWords) {
-            if (!word.isFound) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
     private setCellsToFound(word: IGridWord): void {
         if (FocusCell.Instance.cells === word.cells) {
             FocusCell.Instance.clear();
@@ -200,15 +186,5 @@ export class GridComponent implements OnInit {
         const cell: ICell = this.focusCell.cell;
         this.keyboardInputManagerService.handleKeyDown(event.keyCode);
         this.verifyAnswers(cell);
-        if (this.isGridCompleted()) {
-            this.modalService.open({
-                title: "Game Over!", message: "Your score is " + GameManager.Instance.playerOne.score +
-                    "! You can choose to replay or go back to home page",
-                firstButton: "Restart", secondButton: "Home"
-            })
-                .then(() => this.router.navigate(["/crossword"]),
-                      () => window.location.reload()
-                );
-        }
     }
 }

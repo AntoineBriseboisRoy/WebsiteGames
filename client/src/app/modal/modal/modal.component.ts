@@ -12,14 +12,17 @@ export class ModalComponent {
     public options: ModalOptions;
 
     public constructor(private state: ModalStateService) {
+        this.state.isOpen = true;
         this.options = state.options;
     }
 
     public firstButton(): void {
+        this.state.isOpen = false;
         this.state.modal.close("confirmed");
     }
 
     public secondButton(): void {
+        this.state.isOpen = false;
         this.state.modal.dismiss("not confirmed");
     }
 }
