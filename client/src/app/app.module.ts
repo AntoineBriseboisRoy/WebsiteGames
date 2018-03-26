@@ -29,6 +29,10 @@ import { MultiplayerGamesService } from "./crossword/multiplayer-menu/multiplaye
 import { WaitingGamesComponent } from "./crossword/multiplayer-menu/waiting-games/waiting-games.component";
 import { CollisionManager } from "./race/car/collision-manager";
 import { RoadCreator } from "./race/render-service/road-creator.service";
+import { ModalComponent } from "./modal/modal/modal.component";
+import { ModalService } from "./modal//modal.service";
+import { ModalStateService } from "./modal//modal-state.service";
+import { ModalDirective } from "./modal/modal.directive";
 
 @NgModule({
     declarations: [
@@ -45,7 +49,9 @@ import { RoadCreator } from "./race/render-service/road-creator.service";
         TrackViewComponent,
         PlayerMenuComponent,
         MultiplayerMenuComponent,
-        WaitingGamesComponent
+        WaitingGamesComponent,
+        ModalComponent,
+        ModalDirective
     ],
     imports: [
         BrowserModule,
@@ -62,7 +68,9 @@ import { RoadCreator } from "./race/render-service/road-creator.service";
         MultiplayerGamesService,
         SocketIoService,
         CollisionManager,
-        RoadCreator
+        RoadCreator,
+        ModalService,
+        ModalStateService
     ],
     bootstrap: [AppComponent]
 })
