@@ -1,6 +1,8 @@
 import { async, ComponentFixture, TestBed } from "@angular/core/testing";
 
 import { TopBarComponent } from "./top-bar.component";
+import { GameManagerService } from "../../game-manager.service";
+import { SocketIoService } from "../../socket-io.service";
 
 describe("TopBarComponent", () => {
   let component: TopBarComponent;
@@ -8,7 +10,8 @@ describe("TopBarComponent", () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ TopBarComponent ]
+      declarations: [ TopBarComponent ],
+      providers: [GameManagerService, SocketIoService]
     })
     .compileComponents();
   }));

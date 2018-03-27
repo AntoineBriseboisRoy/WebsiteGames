@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import Stats = require("stats.js");
 import { WebGLRenderer, Scene, AmbientLight, Mesh, PlaneBufferGeometry, MeshBasicMaterial,
-         Vector2, BackSide, Texture, RepeatWrapping, TextureLoader, ObjectLoader, Object3D } from "three";
+         Vector2, BackSide, Texture, RepeatWrapping, TextureLoader, Object3D } from "three";
 import { Car } from "../car/car";
 import { ThirdPersonCamera } from "../camera/camera-perspective";
 import { TopViewCamera } from "../camera/camera-orthogonal";
@@ -11,6 +11,7 @@ import { CameraContext } from "../camera/camera-context";
 import { ITrack, TrackType } from "../../../../../common/interfaces/ITrack";
 import { CollisionManager } from "../car/collision-manager.service";
 import { RoadCreator } from "./road-creator.service";
+import { StartLineGeneratorService } from "../start-line-generator.service";
 
 export const FAR_CLIPPING_PLANE: number = 1000;
 export const NEAR_CLIPPING_PLANE: number = 1;
@@ -21,8 +22,6 @@ const AMBIENT_LIGHT_OPACITY: number = 0.5;
 const TEXTURE_TILE_REPETIONS: number = 200;
 const WORLD_SIZE: number = 1000;
 const FLOOR_SIZE: number = WORLD_SIZE / HALF;
-const QUARTER_ROAD_WIDTH: number = 2.5;
-const CAR_OFFSET_FROM_STARTLINE: number = 0.01;
 const PLAYER: number = 0;
 const NUMBER_OF_CARS: number = 4;
 
@@ -53,7 +52,8 @@ export class RenderService {
         return this.floorTextures;
     }
 
-    public constructor(private collisionManager: CollisionManager, private roadCreator: RoadCreator) {
+    public constructor(private collisionManager: CollisionManager, private roadCreator: RoadCreator,
+                       private startLineGeneratorService: StartLineGeneratorService) {
         this.cars = new Array<Car>();
         for (let i: number = 0; i < NUMBER_OF_CARS; i++) {
             this.cars.push(new Car());
@@ -138,65 +138,11 @@ export class RenderService {
             this.scene.add(mesh);
         });
 
-        this.generateStartLine(new Vector2(this.activeTrack.points[1].x - this.activeTrack.points[0].x,
-                                           this.activeTrack.points[1].y - this.activeTrack.points[0].y));
-    }
-
-    private generateStartLine(firstRoad: Vector2): void {
-        const loader: ObjectLoader = new ObjectLoader;
-        loader.load("../../assets/startLine.json", (startLine: Object3D) => {
-            startLine.position.x = -(this.activeTrack.points[0].y + firstRoad.y * HALF) * WORLD_SIZE + WORLD_SIZE * HALF;
-            startLine.position.z = -(this.activeTrack.points[0].x + firstRoad.x * HALF) * WORLD_SIZE + WORLD_SIZE * HALF;
-            startLine.rotation.y = firstRoad.x === 0 ? PI_OVER_2 : Math.atan(firstRoad.y / firstRoad.x);
-            this.scene.add(startLine);
-            this.placeCarsBehindStartLine(firstRoad, startLine);
-            this.setCarsInitialPosition(firstRoad, startLine);
-        });
-    }
-
-    private placeCarsBehindStartLine(firstRoad: Vector2, startLine: Object3D): void {
-        for (const car of this.cars) {
-            car.getPosition().x = startLine.position.x - ( CAR_OFFSET_FROM_STARTLINE * WORLD_SIZE ) * firstRoad.y / firstRoad.length();
-            car.getPosition().z = startLine.position.z - ( CAR_OFFSET_FROM_STARTLINE * WORLD_SIZE ) * firstRoad.x / firstRoad.length();
-            car.getRotation().y = car.getPosition().length() < startLine.position.length() ?
-                                  startLine.rotation.y + Math.PI : startLine.rotation.y;
-        }
-    }
-
-    private setCarsInitialPosition(firstRoad: Vector2, startLine: Object3D): void {
-        const CAR_OFFSET_FROM_EACH_OTHER: number = 5;
-        const EVEN: number = 2;
-        let row: number = 0 ;
-        let column: number = 0;
-        const shuffledCars: Array<Car> = this.cars.slice();
-        this.shuffleCars(shuffledCars);
-        const perpendicularDirection: Vector2 = new Vector2(-firstRoad.y, firstRoad.x);
-        for (let i: number = 0; i < shuffledCars.length; i++) {
-            column = i % EVEN;
-            shuffledCars[i].getPosition().x += (row * CAR_OFFSET_FROM_EACH_OTHER - QUARTER_ROAD_WIDTH)
-            * perpendicularDirection.y / perpendicularDirection.length();
-            shuffledCars[i].getPosition().z += (row * CAR_OFFSET_FROM_EACH_OTHER - QUARTER_ROAD_WIDTH)
-            * perpendicularDirection.x / perpendicularDirection.length();
-            shuffledCars[i].getPosition().x += Math.pow(-1, column) * CAR_OFFSET_FROM_EACH_OTHER * firstRoad.y / firstRoad.length();
-            shuffledCars[i].getPosition().z += Math.pow(-1, column) * CAR_OFFSET_FROM_EACH_OTHER * firstRoad.x / firstRoad.length();
-            if (column === 1) {
-                row++;
-            }
-        }
-    }
-
-    // Fisher-Yates Algorithm
-    private shuffleCars(cars: Array<Car>): void {
-        let currentIndex: number = cars.length;
-        let temporaryValue: Car;
-        let randomIndex: number;
-        while (currentIndex !== 0) {
-            randomIndex = Math.floor(Math.random() * currentIndex);
-            currentIndex -= 1;
-            temporaryValue = cars[currentIndex];
-            cars[currentIndex] = cars[randomIndex];
-            cars[randomIndex] = temporaryValue;
-        }
+        this.startLineGeneratorService.generateStartLine(new Vector2(this.activeTrack.points[1].x - this.activeTrack.points[0].x,
+                                                                     this.activeTrack.points[1].y - this.activeTrack.points[0].y),
+                                                         this.cars,
+                                                         this.activeTrack)
+        .then((startLine: Object3D) => this.scene.add(startLine));
     }
 
     private createFloorMesh(): void {
