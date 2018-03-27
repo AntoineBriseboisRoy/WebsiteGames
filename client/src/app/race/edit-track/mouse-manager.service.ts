@@ -72,6 +72,7 @@ export class MouseManagerService {
         const xDistance: number = x - this.points[index].x;
         const yDistance: number = y - this.points[index].y;
 
+        // tslint:disable-next-line:no-magic-numbers
         return Math.sqrt(Math.pow(xDistance, 2) + Math.pow(yDistance, 2));
     }
 

@@ -10,7 +10,9 @@ describe("PlayerMenuComponent", () => {
     TestBed.configureTestingModule({
       declarations: [ PlayerMenuComponent ]
     })
-    .compileComponents();
+    .compileComponents().catch((error: Error) => {
+        console.error(error);
+    });
   }));
 
   beforeEach(() => {

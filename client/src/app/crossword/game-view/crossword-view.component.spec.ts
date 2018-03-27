@@ -12,7 +12,9 @@ describe("CrosswordViewComponent", () => {
     TestBed.configureTestingModule({
       declarations: [ CrosswordViewComponent, TopBarComponent, GridComponent, DefinitionComponent ]
     })
-    .compileComponents();
+    .compileComponents().catch((error: Error) => {
+        console.error(error);
+    });
   }));
 
   beforeEach(() => {

@@ -9,7 +9,7 @@ import { MongoQueryService } from "../mongo-query.service";
 })
 export class AdminSectionComponent implements OnInit {
 
-    private tracks: ITrack[];
+    public tracks: ITrack[];
     public readonly title: string;
     public constructor(private mongoQueryService: MongoQueryService) {
         this.tracks = new Array<ITrack>();
@@ -20,8 +20,16 @@ export class AdminSectionComponent implements OnInit {
         this.getITracksFromServer();
     }
 
+    public refreshITrackList(): void {
+        this.getITracksFromServer();
+    }
+
     public deleteTrack(name: string): void {
-        this.mongoQueryService.deleteTrack(name);
+        this.mongoQueryService.deleteTrack(name).then(() => {
+            this.getITracksFromServer();
+        }).catch((error: Error) => {
+            console.error(error);
+        });
     }
 
     private getITracksFromServer(): void {

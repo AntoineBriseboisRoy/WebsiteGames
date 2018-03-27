@@ -5,6 +5,7 @@ import { ITrack } from "../../../../../../common/interfaces/ITrack";
 import { Point } from "../../edit-track/Geometry";
 import { TRACK_WIDTH, DEFAULT_CIRCLE_RADIUS, FULL_CIRCLE_RAD, DEFAULT_LINE_WIDTH } from "../../../constants";
 
+const ARC_DIVISION_FACTOR: number = 5;
 @Component({
   selector: "app-track-preview",
   templateUrl: "./track-preview.component.html",
@@ -41,6 +42,7 @@ export class TrackPreviewComponent implements OnInit {
 
     for (let i: number = 0; i < points.length - 1; ++i) {
       this.context.beginPath();
+      // tslint:disable-next-line:no-magic-numbers
       this.context.lineWidth = TRACK_WIDTH / 2;
       this.context.moveTo(points[i].x * this.Canvas.getBoundingClientRect().width,
                           points[i].y * this.Canvas.getBoundingClientRect().height);
@@ -53,7 +55,7 @@ export class TrackPreviewComponent implements OnInit {
       this.context.lineWidth = DEFAULT_LINE_WIDTH;
       this.context.arc(points[i].x * this.Canvas.getBoundingClientRect().width,
                        points[i].y * this.Canvas.getBoundingClientRect().height,
-                       DEFAULT_CIRCLE_RADIUS / 5, 0, FULL_CIRCLE_RAD, false);
+                       DEFAULT_CIRCLE_RADIUS / ARC_DIVISION_FACTOR, 0, FULL_CIRCLE_RAD, false);
       this.context.stroke();
       this.context.fill();
       this.context.closePath();

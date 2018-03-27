@@ -25,7 +25,9 @@ describe("EditTrackComponent", () => {
         TestBed.configureTestingModule({
             declarations: [EditTrackComponent]
         })
-            .compileComponents();
+            .compileComponents().catch((error: Error) => {
+                console.error(error);
+            });
     }));
 
     beforeEach(() => {

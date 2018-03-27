@@ -13,7 +13,9 @@ describe("TopBarComponent", () => {
       declarations: [ TopBarComponent ],
       providers: [GameManagerService, SocketIoService]
     })
-    .compileComponents();
+    .compileComponents().catch((error: Error) => {
+        console.error(error);
+    });
   }));
 
   beforeEach(() => {

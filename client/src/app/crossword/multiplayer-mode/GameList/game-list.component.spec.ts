@@ -10,7 +10,9 @@ describe("WaitingGamesComponent", () => {
     TestBed.configureTestingModule({
       declarations: [ GameListComponent ]
     })
-    .compileComponents();
+    .compileComponents().catch((error: Error) => {
+        console.error(error);
+    });
   }));
 
   beforeEach(() => {

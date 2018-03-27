@@ -68,6 +68,8 @@ export class GameComponent implements AfterViewInit {
                     this.startingSequence();
                 })
                 .catch((err) => console.error(err));
+            }).catch((error: Error) => {
+                console.error(error);
             });
         });
     }

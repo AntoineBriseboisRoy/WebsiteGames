@@ -8,7 +8,7 @@ export class ModalService {
 
   public constructor(private modalService: NgbModal, private state: ModalStateService) {}
 
-  public open(options: ModalOptions): Promise<void> {
+  public async open(options: ModalOptions): Promise<void> {
     this.state.options = options;
     this.state.modal = this.modalService.open(this.state.template);
 
