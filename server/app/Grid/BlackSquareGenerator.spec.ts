@@ -3,6 +3,8 @@ import { BlackSquareGenerator } from "./BlackSquareGenerator";
 import { STANDARD_SIDE_SIZE, PERCENTAGE_BLACK_SQUARES, BLACKSQUARE_CHARACTER, MIN_LETTERS_FOR_WORD,
          MIN_WORDS_PER_LINE } from "./Constants";
 
+const EXTENDED_TIMEOUT: number = 5000;
+
 describe("Verifying BlackSquare generation.", () => {
     it ("Should have the correct percentage of BlackSquares.", () => {
         const grid: string[][] = new BlackSquareGenerator(STANDARD_SIDE_SIZE, PERCENTAGE_BLACK_SQUARES).Content;
@@ -15,7 +17,7 @@ describe("Verifying BlackSquare generation.", () => {
             });
         });
         expect(nBlackSquares).to.equal(PERCENTAGE_BLACK_SQUARES * STANDARD_SIDE_SIZE * STANDARD_SIDE_SIZE);
-    }).timeout(5000);
+    }).timeout(EXTENDED_TIMEOUT);
     // tslint:disable-next-line:max-func-body-length
     it("Should have room for at least one word per row/column.", () => {
         const grid: string[][] = new BlackSquareGenerator(STANDARD_SIDE_SIZE, PERCENTAGE_BLACK_SQUARES).Content;
@@ -48,5 +50,5 @@ describe("Verifying BlackSquare generation.", () => {
             }
         }
         expect(enoughRoom).to.equal(true);
-    }).timeout(5000);
+    }).timeout(EXTENDED_TIMEOUT);
 });

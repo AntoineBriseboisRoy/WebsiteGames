@@ -60,13 +60,13 @@ module Route {
             const name: string = req.query.name;
             if (name !== null) {
                 const trackSaver: TrackSaver = new TrackSaver();
-                trackSaver.getTrack(name).then((track: ITrack) => res.send(track));
+                trackSaver.getTrack(name).then((track: ITrack) => res.send(track)).catch((error: Error) => console.error(error));
             }
         }
 
         public getAllTracks(req: Request, res: Response, next: NextFunction): void {
             const trackSaver: TrackSaver = new TrackSaver();
-            trackSaver.getAllTracks().then((tracks: ITrack[]) => res.send(tracks));
+            trackSaver.getAllTracks().then((tracks: ITrack[]) => res.send(tracks)).catch((error: Error) => console.error(error));
         }
     }
 }
