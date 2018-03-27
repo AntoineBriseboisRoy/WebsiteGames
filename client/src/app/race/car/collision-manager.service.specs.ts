@@ -4,7 +4,7 @@ import { CollisionManager } from "./collision-manager.service";
 import { Car } from "./car";
 import { Vector3 } from "three";
 
-describe("MouseManagerService", () => {
+describe("CollisionManagerService", () => {
     beforeEach(() => {
         TestBed.configureTestingModule({
             providers: [CollisionManager]
