@@ -1,13 +1,12 @@
 import { Component } from "@angular/core";
-import { GameRoomManagerService } from "../GameRoomManagerService.service";
+import { GameRoomManagerService } from "../game-room-manager.service";
 import { SocketIoService } from "../../socket-io.service";
 import { INewGame } from "../../../../../../common/interfaces/INewGame";
 import { Router } from "@angular/router";
 
 @Component({
     selector: "app-game-list",
-    templateUrl: "./GameList.component.html",
-    styleUrls: ["./GameList.component.css"]
+    templateUrl: "./game-list.component.html"
 })
 export class GameListComponent {
 

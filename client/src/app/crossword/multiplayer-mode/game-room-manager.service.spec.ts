@@ -1,6 +1,6 @@
 import { TestBed, inject } from "@angular/core/testing";
 
-import { GameRoomManagerService } from "./GameRoomManagerService.service";
+import { GameRoomManagerService } from "./game-room-manager.service";
 
 describe("MultiplayerGamesService", () => {
   beforeEach(() => {

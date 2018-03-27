@@ -25,6 +25,10 @@ export class GridService {
         this.gridWords = new Array();
         this.gridWordsHorizontal = new Array();
         this.gridWordsVertical = new Array();
+        this.initSinglePlayerGame();
+    }
+
+    private initSinglePlayerGame(): void {
         if (!this.gameManagerService.isMultiplayer) {
             this.socketIO.PlayGameSubject.next({
                 userCreator: "Claudia",
@@ -46,10 +50,14 @@ export class GridService {
 
     private addFoundWord(gridCells: Array<ICell>): void {
         for (const serverCell of gridCells) {
-            if (serverCell.isFound || !this.gridCells[serverCell.gridIndex]) {
+            if (this.isFoundOrUndefined(serverCell)) {
                 this.gridCells[serverCell.gridIndex] = serverCell;
             }
         }
+    }
+
+    private isFoundOrUndefined(serverCell: ICell): boolean {
+        return serverCell.isFound || !this.gridCells[serverCell.gridIndex];
     }
 
     private fetchGridWords(obs: Observer<void>): void {
@@ -61,6 +69,14 @@ export class GridService {
             this.checkGameStatus();
             obs.next(null);
         });
+    }
+
+    private setGridWordsReferencesToGridCells(): void {
+        for (const word of this.gridWords) {
+            for (let i: number = 0; i < word.cells.length; i++) {
+                word.cells[i] = this.gridCells[word.cells[i].gridIndex];
+            }
+        }
     }
 
     private splitHorizontalAndVerticalWords(): void {
@@ -75,18 +91,10 @@ export class GridService {
         });
     }
 
-    private setGridWordsReferencesToGridCells(): void {
-        for (const word of this.gridWords) {
-            for (let i: number = 0; i < word.cells.length; i++) {
-                word.cells[i] = this.gridCells[word.cells[i].gridIndex];
-            }
-        }
-    }
-
     private checkGameStatus(): void {
         if (this.isGridCompleted() && !this.modalService.IsOpen) {
             this.modalService.open({
-                title: "Game Over!", message: "Your score is " + this.gameManagerService.playerOne.score +
+                title: "Game Over!", message: "Your score is " + this.gameManagerService.players[0].score +
                     "! You can choose to replay or go back to home page",
                 firstButton: "Restart", secondButton: "Home", showPreview: false
             })

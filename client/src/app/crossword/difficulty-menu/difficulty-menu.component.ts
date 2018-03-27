@@ -20,7 +20,6 @@ export class DifficultyMenuComponent {
         const clickedElement: Element = $event.srcElement;
         if (clickedElement.nodeName === "BUTTON") {
             const isButtonAlreadyActive: Element = clickedElement.parentElement.parentElement.querySelector(".active");
-            // if a Button already has Class: .active
             if (isButtonAlreadyActive) {
                 isButtonAlreadyActive.classList.remove("active");
             }

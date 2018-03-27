@@ -1,7 +1,7 @@
 import { TestBed, inject } from "@angular/core/testing";
 import { KeyboardInputManagerService } from "./keyboard-input-manager.service";
 import { FocusCell } from "../focusCell";
-import { ICell, CellColor } from "../../../../../../common/interfaces/ICell";
+import { ICell, CellColor, Finder } from "../../../../../../common/interfaces/ICell";
 import { Orientation } from "../../../../../../common/interfaces/IWord";
 
 describe("KeyboardInputManagerService", () => {
@@ -10,7 +10,7 @@ describe("KeyboardInputManagerService", () => {
     const LETTER_A_KEYCODE: number = 65;
     const LETTER_Z_KEYCODE: number = 90;
 
-    let cells: Array<ICell> = new Array();
+    let cells: Array<ICell> = new Array<ICell>();
     const keyboardInputManagerService: KeyboardInputManagerService = new KeyboardInputManagerService(cells);
 
     beforeEach(() => {
@@ -24,10 +24,11 @@ describe("KeyboardInputManagerService", () => {
     }));
 
     it("should have a cell with a content of A", () => {
-        cells = [{gridIndex: 1, index: 1, answer: "A", cellColor: CellColor.White, content: "", isFound: false },
-                 {gridIndex: 2, index: 1, answer: "B", cellColor: CellColor.White, content: "", isFound: false },
-                 {gridIndex: 3, index: 2, answer: "C", cellColor: CellColor.White, content: "", isFound: false },
-                 {gridIndex: 4, index: undefined, answer: "", cellColor: CellColor.Black, content: "", isFound: false }];
+        cells = [{gridIndex: 1, index: 1, answer: "A", cellColor: CellColor.White, content: "", isFound: false, finder: Finder.player1 },
+                 {gridIndex: 2, index: 1, answer: "B", cellColor: CellColor.White, content: "", isFound: false, finder: Finder.player1 },
+                 {gridIndex: 3, index: 2, answer: "C", cellColor: CellColor.White, content: "", isFound: false, finder: Finder.player1 },
+                 {gridIndex: 4, index: undefined, answer: "", cellColor: CellColor.Black, content: "",
+                  isFound: false, finder: Finder.player1 }];
 
         FocusCell.Instance.cell = cells[1];
         FocusCell.Instance.Orientation = Orientation.Horizontal;
@@ -39,10 +40,11 @@ describe("KeyboardInputManagerService", () => {
     });
 
     it("should have a cell with a content of nothing", () => {
-        cells = [{gridIndex: 1, index: 1, answer: "A", cellColor: CellColor.White, content: "", isFound: false },
-                 {gridIndex: 2, index: 1, answer: "B", cellColor: CellColor.White, content: "", isFound: false },
-                 {gridIndex: 3, index: 2, answer: "C", cellColor: CellColor.White, content: "", isFound: false },
-                 {gridIndex: 4, index: undefined, answer: "", cellColor: CellColor.Black, content: "", isFound: false }];
+        cells = [{gridIndex: 1, index: 1, answer: "A", cellColor: CellColor.White, content: "", isFound: false, finder: Finder.player1 },
+                 {gridIndex: 2, index: 1, answer: "B", cellColor: CellColor.White, content: "", isFound: false, finder: Finder.player1 },
+                 {gridIndex: 3, index: 2, answer: "C", cellColor: CellColor.White, content: "", isFound: false, finder: Finder.player1 },
+                 {gridIndex: 4, index: undefined, answer: "", cellColor: CellColor.Black, content: "",
+                  isFound: false, finder: Finder.player1 }];
 
         FocusCell.Instance.cell = cells[1];
         FocusCell.Instance.Orientation = Orientation.Horizontal;
@@ -53,10 +55,11 @@ describe("KeyboardInputManagerService", () => {
     });
 
     it("should contain all letters at least once", () => {
-        cells = [{gridIndex: 1, index: 1, answer: "A", cellColor: CellColor.White, content: "", isFound: false },
-                 {gridIndex: 2, index: 1, answer: "B", cellColor: CellColor.White, content: "", isFound: false },
-                 {gridIndex: 3, index: 2, answer: "C", cellColor: CellColor.White, content: "", isFound: false },
-                 {gridIndex: 4, index: undefined, answer: "", cellColor: CellColor.Black, content: "", isFound: false }];
+        cells = [{gridIndex: 1, index: 1, answer: "A", cellColor: CellColor.White, content: "", isFound: false, finder: Finder.player1 },
+                 {gridIndex: 2, index: 1, answer: "B", cellColor: CellColor.White, content: "", isFound: false, finder: Finder.player1 },
+                 {gridIndex: 3, index: 2, answer: "C", cellColor: CellColor.White, content: "", isFound: false, finder: Finder.player1 },
+                 {gridIndex: 4, index: undefined, answer: "", cellColor: CellColor.Black, content: "",
+                  isFound: false, finder: Finder.player1 }];
 
         FocusCell.Instance.cell = cells[1];
         FocusCell.Instance.Orientation = Orientation.Horizontal;
@@ -69,10 +72,11 @@ describe("KeyboardInputManagerService", () => {
     });
 
     it("should have a content of nothing", () => {
-        cells = [{gridIndex: 1, index: 1, answer: "A", cellColor: CellColor.White, content: "", isFound: false },
-                 {gridIndex: 2, index: 1, answer: "B", cellColor: CellColor.White, content: "", isFound: false },
-                 {gridIndex: 3, index: 2, answer: "C", cellColor: CellColor.White, content: "", isFound: false },
-                 {gridIndex: 4, index: undefined, answer: "", cellColor: CellColor.Black, content: "", isFound: false }];
+        cells = [{gridIndex: 1, index: 1, answer: "A", cellColor: CellColor.White, content: "", isFound: false, finder: Finder.player1 },
+                 {gridIndex: 2, index: 1, answer: "B", cellColor: CellColor.White, content: "", isFound: false, finder: Finder.player1 },
+                 {gridIndex: 3, index: 2, answer: "C", cellColor: CellColor.White, content: "", isFound: false, finder: Finder.player1 },
+                 {gridIndex: 4, index: undefined, answer: "", cellColor: CellColor.Black, content: "",
+                  isFound: false, finder: Finder.player1 }];
 
         FocusCell.Instance.cell = cells[1];
         FocusCell.Instance.cell.content = "A";

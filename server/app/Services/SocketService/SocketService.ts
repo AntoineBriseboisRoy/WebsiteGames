@@ -87,9 +87,9 @@ export class SocketService {
             const word: IGridWord = JSON.parse(data);
             const room: Room = RoomManagerService.Instance.getRoom(socket.id);
             room.setWordFound(word, socket.id);
+            this.socketIo.in(room.Name).emit("update-score", this.parseToIPlayers(room.Players));
             this.socketIo.in(room.Name).emit("grid-cells", room.Cells);
             this.socketIo.in(room.Name).emit("grid-words", room.Words);
-            this.socketIo.in(room.Name).emit("update-score", this.parseToIPlayers(room.Players));
         });
     }
 

@@ -85,7 +85,6 @@ export class GridComponent implements OnInit {
         return false;
     }
 
-    // Return index of the first unfound cell of an unfound word.
     private firstUnknownCell(cells: Array<ICell>): number {
         for (let i: number = 0; i < cells.length; i++) {
             if (!cells[i].isFound) {
@@ -109,7 +108,6 @@ export class GridComponent implements OnInit {
             }
             if (userAnswer === correctAnswer) {
                 this.setCellsToFound(word);
-                // GameManager.Instance.playerOne.addPoint(word.cells.length);
                 this.socketIo.CompletedWords.next(word);
             }
             userAnswer = "";
@@ -122,7 +120,6 @@ export class GridComponent implements OnInit {
         }
     }
 
-    /* Functions directly called by html: */
     public gridLineJump(index: number): string {
         return (index % GRID_WIDTH) === 0 ? "square clear" : "square";
     }

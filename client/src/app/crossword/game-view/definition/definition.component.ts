@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { Component } from "@angular/core";
 import { NO_CHEAT_COLOR, CHEAT_COLOR } from "../../../constants";
 import { GridService } from "../../grid.service";
 import { IGridWord } from "../../../../../../common/interfaces/IGridWord";
@@ -11,10 +11,10 @@ import { FocusCell } from "../focusCell";
     styleUrls: ["./definition.component.css"]
 })
 
-export class DefinitionComponent implements OnInit {
+export class DefinitionComponent {
     public choosedDefinition: string;
     public cheatModeActive: boolean;
-    private cheatButtonColor: string;
+    public cheatButtonColor: string;
     private focusCell: FocusCell;
 
     public constructor(private gridService: GridService) {
@@ -22,10 +22,6 @@ export class DefinitionComponent implements OnInit {
         this.cheatModeActive = false;
         this.cheatButtonColor = NO_CHEAT_COLOR;
         this.focusCell = FocusCell.Instance;
-    }
-
-    public ngOnInit(): void {
-        document.getElementById("cheat-button").style.backgroundColor = this.cheatButtonColor;
     }
 
     public focusOnCell(choosedDefinition: string): void {
@@ -46,7 +42,6 @@ export class DefinitionComponent implements OnInit {
     public toogleCheatMode(): void {
         this.cheatModeActive = !this.cheatModeActive;
         this.cheatButtonColor = this.cheatModeActive ? CHEAT_COLOR : NO_CHEAT_COLOR;
-        document.getElementById("cheat-button").style.backgroundColor = this.cheatButtonColor; // TODO: Changer ceci
     }
 
     public cheatModeToString(): string {

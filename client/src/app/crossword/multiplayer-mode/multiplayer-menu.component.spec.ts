@@ -4,10 +4,12 @@ import { MultiplayerMenuComponent } from "./multiplayer-menu.component";
 import { SocketIoService } from "../socket-io.service";
 import { GameRoomManagerService } from "./GameRoomManagerService.service";
 import { Router } from "@angular/router";
+import { GameManagerService } from "../game-manager.service";
 
 describe("MultiplayerMenuComponent", () => {
-    const gameRoomManager: GameRoomManagerService = new GameRoomManagerService();
-    const socketIoService: SocketIoService = new SocketIoService(gameRoomManager);
+    const socketIoService: SocketIoService = new SocketIoService();
+    const gameManagerService: GameManagerService = new GameManagerService(socketIoService);
+    const gameRoomManager: GameRoomManagerService = new GameRoomManagerService(gameManagerService, socketIoService);
     const router: Router = undefined;
     let fixture: ComponentFixture<MultiplayerMenuComponent>;
     let component: MultiplayerMenuComponent = new MultiplayerMenuComponent(socketIoService, gameRoomManager, router);
