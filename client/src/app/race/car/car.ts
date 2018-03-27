@@ -1,4 +1,5 @@
-import { Vector3, Matrix4, Object3D, ObjectLoader, Euler, Quaternion, Box3, BoxHelper, Raycaster } from "three";
+import { Vector3, Matrix4, Object3D, ObjectLoader, Euler, Quaternion, Box3,
+         BoxHelper, Raycaster, BoxGeometry, MeshBasicMaterial, Mesh } from "three";
 import { Engine } from "./engine";
 import { MS_TO_SECONDS, GRAVITY, PI_OVER_2, RAD_TO_DEG } from "../../constants";
 import { Wheel } from "./wheel";
@@ -18,6 +19,7 @@ const FRONT_X_CORRECTION: number = 0.16;
 const FRONT_Z_CORRECTION: number = 0.13;
 const BACK_X_CORRECTION: number = 0.13;
 const BACK_Z_CORRECTION: number = 0.1;
+const EXTRA_BUMPER_LENGTH: number = 0.5;
 
 export class Car extends Object3D {
     public isAcceleratorPressed: boolean;
@@ -37,6 +39,7 @@ export class Car extends Object3D {
     private weightRear: number;
 
     private boundingBox: Box3;
+    private hitBox: Mesh;
     private raycasters: Raycaster[];
 
     private raycasterOffsets: Vector3[];
@@ -91,9 +94,8 @@ export class Car extends Object3D {
 
     public get direction(): Vector3 {
         const rotationMatrix: Matrix4 = new Matrix4();
-        const carDirection: Vector3 = new Vector3(0, 0, -1);
-
         rotationMatrix.extractRotation(this.mesh.matrix);
+        const carDirection: Vector3 = new Vector3(0, 0, -1);
         carDirection.applyMatrix4(rotationMatrix);
 
         return carDirection;
@@ -160,12 +162,17 @@ export class Car extends Object3D {
     private initBoundingBox(): void {
         const helper: BoxHelper =  new BoxHelper(this.mesh);
         this.boundingBox.setFromObject(helper);
-        this.mesh.add(helper);
+        const material: MeshBasicMaterial = new MeshBasicMaterial();
+        material.visible = false;
+        const box: BoxGeometry = new BoxGeometry(this.boundingBox.getSize().x,
+                                                 this.boundingBox.getSize().y,
+                                                 this.boundingBox.getSize().z + EXTRA_BUMPER_LENGTH);
+        this.hitBox = new Mesh(box, material);
+        this.mesh.add(this.hitBox);
     }
 
     private initRaycasters(): void {
-        const box: Box3 = new Box3().setFromObject(this.mesh);
-        this.setRaycasterOffsets(box);
+        this.setRaycasterOffsets(new Box3().setFromObject(this.mesh));
         this.setRaycastersFromOffsets();
     }
 

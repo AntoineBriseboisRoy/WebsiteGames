@@ -25,7 +25,6 @@ describe("Verifying the generation of default strings", () => {
         const STRING_LENGTH: number = 10;
         const generatedString: string = StringService.generateDefaultString(STRING_LENGTH);
 
-        console.log(generatedString);
         expect(generatedString.length).to.equal(STRING_LENGTH);
     });
     it("Should create a string with only EMPTY_SQUAREs", () => {
@@ -33,12 +32,11 @@ describe("Verifying the generation of default strings", () => {
         const generatedString: string = StringService.generateDefaultString(STRING_LENGTH);
         let everyLetterValid: boolean = true;
 
-        for(let i: number = 0; i < generatedString.length; ++i) {
-            if (generatedString[i] !== cst.EMPTY_SQUARE) {
+        for (const letter of generatedString) {
+            if (letter !== cst.EMPTY_SQUARE) {
                 everyLetterValid = false;
             }
         }
-
         expect(everyLetterValid).to.equal(true);
     });
 });
