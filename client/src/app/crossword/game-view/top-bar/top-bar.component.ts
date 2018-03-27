@@ -1,5 +1,5 @@
 import { Component } from "@angular/core";
-import { GameManager } from "../../game-manager";
+import { GameManagerService } from "../../game-manager.service";
 
 @Component({
     selector: "app-crossword-top-bar",
@@ -7,10 +7,8 @@ import { GameManager } from "../../game-manager";
     styleUrls: ["./top-bar.component.css"]
 })
 export class TopBarComponent {
-    private gameManager: GameManager;
 
-    public constructor() {
-        this.gameManager = GameManager.Instance;
+    public constructor(private gameManager: GameManagerService) {
     }
 
     public modeToString(): string {

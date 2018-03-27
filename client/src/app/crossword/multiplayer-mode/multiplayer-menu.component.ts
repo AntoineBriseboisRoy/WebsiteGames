@@ -2,7 +2,7 @@ import { Component, HostListener } from "@angular/core";
 import { SocketIoService } from "../socket-io.service";
 import { INewGame } from "../../../../../common/interfaces/INewGame";
 import { Difficulty } from "../../../../../common/constants";
-import { GameRoomManagerService } from "./GameRoomManagerService.service";
+import { GameRoomManagerService } from "./game-room-manager.service";
 import { Router } from "@angular/router";
 
 @Component({
@@ -16,10 +16,15 @@ export class MultiplayerMenuComponent {
 
     public constructor(private socketService: SocketIoService, public gameRooms: GameRoomManagerService,
                        private router: Router) {
+        this.username = "";
+        this.difficulty = undefined;
+        this.initSubscriptions();
+    }
+
+    private initSubscriptions(): void {
         this.socketService.CreatedGameSubject.subscribe((newGame: INewGame) => {
             this.gameRooms.push(newGame);
         });
-
         this.socketService.DeletedGameSubject.subscribe((deletedGame: INewGame) => {
             this.gameRooms.remove(deletedGame);
         });
@@ -58,8 +63,8 @@ export class MultiplayerMenuComponent {
     }
 
     public hasCompletedForm(): boolean {
-        return this.difficulty !== undefined && this.username !== undefined && this.username !== "" &&
-            !this.gameRooms.isDefined();
+        return this.difficulty !== undefined && this.username !== undefined &&
+               this.username !== "" && !this.gameRooms.isDefined();
     }
 
     public createNewGame(): void {

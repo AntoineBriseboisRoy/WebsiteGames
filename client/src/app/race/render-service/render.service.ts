@@ -9,7 +9,7 @@ import { INITIAL_CAMERA_POSITION_Y, FRUSTUM_RATIO, PI_OVER_2, HALF } from "../..
 import { Skybox } from "../skybox/skybox";
 import { CameraContext } from "../camera/camera-context";
 import { ITrack, TrackType } from "../../../../../common/interfaces/ITrack";
-import { CollisionManager } from "../car/collision-manager";
+import { CollisionManager } from "../car/collision-manager.service";
 import { RoadCreator } from "./road-creator.service";
 import { StartLineGeneratorService } from "../start-line-generator.service";
 
@@ -42,6 +42,14 @@ export class RenderService {
 
     public get CameraContext(): CameraContext {
         return this.cameraContext;
+    }
+
+    public get RoadCreator(): RoadCreator {
+        return this.roadCreator;
+    }
+
+    public get FloorTextures(): Map<TrackType, Texture> {
+        return this.floorTextures;
     }
 
     public constructor(private collisionManager: CollisionManager, private roadCreator: RoadCreator,
@@ -113,7 +121,6 @@ export class RenderService {
         this.scene.background = new Skybox().CubeTexture;
         this.createFloorMesh();
         this.generateTrack();
-        this.createFloorCollisionables();
     }
 
     private async createCars(): Promise<void> {
@@ -125,7 +132,9 @@ export class RenderService {
     }
 
     private generateTrack(): void {
-        this.roadCreator.createTrack(this.activeTrack.points).forEach((mesh: Mesh) => {
+        this.roadCreator.createTrack(this.activeTrack.points);
+        this.roadCreator.Meshes.forEach((mesh: Mesh) => {
+            this.collisionManager.addRoadSegment(mesh);
             this.scene.add(mesh);
         });
 
@@ -134,12 +143,6 @@ export class RenderService {
                                                          this.cars,
                                                          this.activeTrack)
         .then((startLine: Object3D) => this.scene.add(startLine));
-    }
-
-    private createFloorCollisionables(): void {
-        this.roadCreator.Meshes.forEach((mesh: Mesh) => {
-            this.collisionManager.addRoadSegment(mesh);
-        });
     }
 
     private createFloorMesh(): void {

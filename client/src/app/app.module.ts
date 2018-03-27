@@ -24,16 +24,20 @@ import { PlayerMenuComponent } from "./crossword/player-menu/player-menu.compone
 import { MultiplayerMenuComponent } from "./crossword/multiplayer-mode/multiplayer-menu.component";
 import { MongoQueryService } from "./mongo-query.service";
 import { SocketIoService } from "./crossword/socket-io.service";
-import { GameRoomManagerService } from "./crossword/multiplayer-mode/GameRoomManagerService.service";
-import { GameListComponent } from "./crossword/multiplayer-mode/GameList/GameList.component";
-import { CollisionManager } from "./race/car/collision-manager";
+import { GameRoomManagerService } from "./crossword/multiplayer-mode/game-room-manager.service";
+import { GameListComponent } from "./crossword/multiplayer-mode/GameList/game-list.component";
+import { CollisionManager } from "./race/car/collision-manager.service";
 import { RoadCreator } from "./race/render-service/road-creator.service";
 import { ModalComponent } from "./modal/modal/modal.component";
 import { ModalService } from "./modal//modal.service";
 import { ModalStateService } from "./modal//modal-state.service";
 import { ModalDirective } from "./modal/modal.directive";
 import { TrackPreviewComponent } from "./race/track-view/track-preview/track-preview.component";
+<<<<<<< HEAD
 import { StartLineGeneratorService } from "./race/start-line-generator.service";
+=======
+import { GameManagerService } from "./crossword/game-manager.service";
+>>>>>>> master
 
 @NgModule({
     declarations: [
@@ -63,7 +67,7 @@ import { StartLineGeneratorService } from "./race/start-line-generator.service";
         NgbModule.forRoot()
     ],
     providers: [
-        { provide: APP_BASE_HREF, useValue : "/" },
+        { provide: APP_BASE_HREF, useValue: "/" },
         MongoQueryService,
         GridService,
         GameRoomManagerService,
@@ -72,7 +76,8 @@ import { StartLineGeneratorService } from "./race/start-line-generator.service";
         RoadCreator,
         ModalService,
         ModalStateService,
-        StartLineGeneratorService
+        StartLineGeneratorService,
+        GameManagerService
     ],
     bootstrap: [AppComponent]
 })

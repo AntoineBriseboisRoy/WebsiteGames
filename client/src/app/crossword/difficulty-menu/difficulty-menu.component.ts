@@ -1,7 +1,6 @@
 import { Component } from "@angular/core";
-import { GameManager } from "../game-manager";
+import { GameManagerService } from "../game-manager.service";
 import { Difficulty } from "../../../../../common/constants";
-import { SocketIoService } from "../socket-io.service";
 import { Router } from "@angular/router";
 
 @Component({
@@ -13,7 +12,7 @@ export class DifficultyMenuComponent {
     public readonly title: string = "Choose wisely your difficulty, smarty!";
     public isActiveDifficulty: boolean;
 
-    public constructor(private socketIoService: SocketIoService, private router: Router) {
+    public constructor(private router: Router, private gameManagerService: GameManagerService) {
         this.isActiveDifficulty = false;
     }
 
@@ -21,7 +20,6 @@ export class DifficultyMenuComponent {
         const clickedElement: Element = $event.srcElement;
         if (clickedElement.nodeName === "BUTTON") {
             const isButtonAlreadyActive: Element = clickedElement.parentElement.parentElement.querySelector(".active");
-            // if a Button already has Class: .active
             if (isButtonAlreadyActive) {
                 isButtonAlreadyActive.classList.remove("active");
             }
@@ -30,17 +28,12 @@ export class DifficultyMenuComponent {
     }
 
     public activateDifficulty(difficulty: Difficulty): void {
-        GameManager.Instance.difficulty = difficulty;
+        this.gameManagerService.difficulty = difficulty;
         this.isActiveDifficulty = true;
     }
 
     public createGame(): void {
-        this.socketIoService.PlayGameSubject.next({
-            userCreator: "Claudia",
-            difficulty: GameManager.Instance.difficulty,
-            userCreatorID: "",
-            userJoiner: ""
-        });
+        this.gameManagerService.isMultiplayer = false;
         this.router.navigate(["/crossword/play"]);
     }
 }

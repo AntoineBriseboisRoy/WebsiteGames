@@ -4,9 +4,9 @@ import { Subject } from "rxjs/Subject";
 import { Observer } from "rxjs/Observer";
 import { Observable } from "rxjs/Observable";
 import { INewGame } from "../../../../common/interfaces/INewGame";
-import { GameRoomManagerService } from "./multiplayer-mode/GameRoomManagerService.service";
 import { ICell } from "../../../../common/interfaces/ICell";
 import { IGridWord } from "../../../../common/interfaces/IGridWord";
+import { IPlayer } from "../../../../common/interfaces/IPlayer";
 
 @Injectable()
 export class SocketIoService {
@@ -15,13 +15,10 @@ export class SocketIoService {
     private deletedGameSubject: Subject<INewGame>;
     private playGameSubject: Subject<INewGame>;
 
-    public constructor(private gameRoomManager: GameRoomManagerService) {
+    public constructor() {
         this.socket = io("http://localhost:3000/");
         this.socket.on("connect", () => {
             this.socket.emit("waiting-room");
-        });
-        this.createObservable<Array<INewGame>>("waiting-room").subscribe((games: Array<INewGame>) => {
-            this.gameRoomManager.init(games);
         });
         this.init();
     }
@@ -51,7 +48,12 @@ export class SocketIoService {
     public get GridWords(): Observable<Array<IGridWord>> {
         return this.createObservable<Array<IGridWord>>("grid-words");
     }
-
+    public get Score(): Observable<Array<IPlayer>> {
+        return this.createObservable<Array<IPlayer>>("update-score");
+    }
+    public get WaitingRoom(): Observable<Array<INewGame>> {
+        return this.createObservable<Array<INewGame>>("waiting-room");
+    }
     public get CompletedWords(): Observer<IGridWord> {
         return this.createObserver<IGridWord>("completed-word", "Error: Cannot send completed word");
     }
