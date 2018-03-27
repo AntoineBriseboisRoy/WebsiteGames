@@ -16,20 +16,6 @@ module Route {
             message.body = "World";
             res.send(JSON.stringify(message));
         }
-        public getGames(req: Request, res: Response, next: NextFunction): void {
-            const games: Array<INewGame> = WaitingGamesService.Instance.Games;
-            res.send(JSON.stringify(games));
-        }
-
-        public getGrid(req: Request, res: Response, next: NextFunction): void {
-            const gridContent: string = new GridGeneratorService().getFakeGridContent();
-            res.send(JSON.stringify(gridContent));
-        }
-
-        public getWords(req: Request, res: Response, next: NextFunction): void {
-            const words: Array<IWord> = new GridGeneratorService().getFakeGridWords();
-            res.send(JSON.stringify(words));
-        }
 
         public postTrack(req: Request, res: Response, next: NextFunction): void {
             const trackSaver: TrackSaver = new TrackSaver();
