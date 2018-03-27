@@ -16,7 +16,7 @@ describe("constraints", () => {
                                 { x: 900, y: 900, start: false, end: false },
                                 { x: 0, y: 900, start: false, end: false },
                                 { x: 0, y: 0, start: false, end: true }];
-        constraints.checkConstraints(array, true);
+        constraints.checkConstraints(array, true, new ClientRect());
         for (const seg of constraints.Segments) {
             expect(seg.broken).toBeFalsy();
         }
@@ -26,7 +26,7 @@ describe("constraints", () => {
         const array: Point[] = [{ x: 0, y: 0, start: true, end: false },
                                 { x: 900, y: 0, start: false, end: false },
                                 { x: 0, y: 899, start: false, end: false }];
-        constraints.checkConstraints(array, false);
+        constraints.checkConstraints(array, false, new ClientRect());
         for (const seg of constraints.Segments) {
             expect(seg.broken).toBeTruthy();
         }
@@ -37,7 +37,7 @@ describe("constraints", () => {
                                 { x: 900, y: 0, start: false, end: false },
                                 { x: 900, y: 900, start: false, end: false },
                                 { x: 450, y: -900, start: false, end: false }];
-        constraints.checkConstraints(array, false);
+        constraints.checkConstraints(array, false, new ClientRect());
         expect(constraints.Segments[constraints.Segments.length - 1].broken).toBeTruthy();
         expect(constraints.Segments[0].broken).toBeTruthy();
     });
@@ -48,7 +48,7 @@ describe("constraints", () => {
                                 { x: 900, y: 900, start: false, end: false },
                                 { x: 450, y: 900, start: false, end: false },
                                 { x: 450, y: -900, start: false, end: false }];
-        constraints.checkConstraints(array, false);
+        constraints.checkConstraints(array, false, new ClientRect());
         expect(constraints.Segments[constraints.Segments.length - 1].broken).toBeTruthy();
         expect(constraints.Segments[0].broken).toBeTruthy();
     });
@@ -57,7 +57,7 @@ describe("constraints", () => {
         const array: Point[] = [{ x: 0, y: 0, start: true, end: false },
                                 { x: cst.TWICE_TRACK_WIDTH - 1, y: 0, start: true, end: false },
                                 { x: cst.TWICE_TRACK_WIDTH - 1, y: cst.TWICE_TRACK_WIDTH * 10, start: true, end: false }];
-        constraints.checkConstraints(array, false);
+        constraints.checkConstraints(array, false, new ClientRect());
         expect(constraints.Segments[0].broken).toBeTruthy();
         expect(constraints.Segments[1].broken).toBeFalsy();
     });
