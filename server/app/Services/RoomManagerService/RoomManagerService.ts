@@ -5,8 +5,6 @@ import { RoomState } from "../../../../common/constants";
 const ID_NOT_FOUND: number = -1;
 
 export class RoomManagerService {
-
-    private static instance: RoomManagerService;
     public static get Instance(): RoomManagerService {
         if (!this.instance) {
             this.instance = new RoomManagerService();
@@ -14,7 +12,9 @@ export class RoomManagerService {
 
         return this.instance;
     }
+    private static instance: RoomManagerService;
     private rooms: Array<Room>;
+
     private constructor() {
         this.rooms = new Array<Room>();
     }

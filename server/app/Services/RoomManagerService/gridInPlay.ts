@@ -21,6 +21,7 @@ export class GridInPlay {
     public constructor() {
         this.gridCells = new Array<ICell>();
         this.gridWords = new Array<IGridWord>();
+        this.difficulty = undefined;
         this.generateGrid();
     }
 
@@ -31,6 +32,10 @@ export class GridInPlay {
     public get Words(): Array<IGridWord> {
         return this.gridWords;
     }
+    public clear(): void {
+        this.gridCells.length = 0;
+        this.gridWords.length = 0;
+    }
 
     public setWordToFound(wordFound: IGridWord): void {
         for (let i: number = 0; i < this.gridWords.length; ++i) {
@@ -40,11 +45,6 @@ export class GridInPlay {
                 this.setCellsToFound(i);
             }
         }
-    }
-
-    public clear(): void {
-        this.gridCells.length = 0;
-        this.gridWords.length = 0;
     }
 
     private setCellsToFound(i: number): void {
