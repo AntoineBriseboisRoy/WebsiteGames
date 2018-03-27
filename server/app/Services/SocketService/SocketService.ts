@@ -45,7 +45,7 @@ export class SocketService {
     private createNewGame(socket: SocketIO.Socket): void {
         socket.on("new-game", (data: string) => {
             const game: INewGame = JSON.parse(data);
-            RoomManagerService.Instance.push(new Room(new Player(game.userCreator, socket.id), game.difficulty, socket.id));
+            this.addNewPlayerToRoom(game, socket);
             socket.in("waiting-room").broadcast.emit("new-game", {
                 userCreator: game.userCreator,
                 userCreatorID: socket.id,
@@ -55,6 +55,7 @@ export class SocketService {
             socket.join(RoomManagerService.Instance.getRoom(socket.id).Name);
         });
     }
+
     private deleteGame(socket: SocketIO.Socket): void {
         socket.on("delete-game", (data: string) => {
             const game: INewGame = JSON.parse(data);
@@ -65,20 +66,10 @@ export class SocketService {
     private playAGame(socket: SocketIO.Socket): void {
         socket.on("play-game", (data: string) => {
             const game: INewGame = JSON.parse(data);
-            let room: Room;
-            if (this.isSinglePlayer(game)) {
-                game.userCreatorID = socket.id;
-                RoomManagerService.Instance.push(new Room(new Player(game.userCreator, game.userCreatorID), game.difficulty, socket.id));
-                room = RoomManagerService.Instance.getRoom(game.userCreatorID);
-            } else {
-                room = RoomManagerService.Instance.getRoom(game.userCreatorID);
-                RoomManagerService.Instance.addPlayerToRoom(game.userJoiner, socket.id, room.Name);
-            }
-            room.state = RoomState.Playing;
+            const room: Room = this.addOtherPlayerToRoom(game, socket);
             socket.join(room.Name);
             socket.to(game.userCreatorID).emit("play-game", game);
-            this.socketIo.in(room.Name).emit("grid-cells", room.Cells);
-            this.socketIo.in(room.Name).emit("grid-words", room.Words);
+            this.sendGrid(room);
         });
     }
 
@@ -88,9 +79,38 @@ export class SocketService {
             const room: Room = RoomManagerService.Instance.getRoom(socket.id);
             room.setWordFound(word, socket.id);
             this.socketIo.in(room.Name).emit("update-score", this.parseToIPlayers(room.Players));
-            this.socketIo.in(room.Name).emit("grid-cells", room.Cells);
-            this.socketIo.in(room.Name).emit("grid-words", room.Words);
+            this.sendGrid(room);
         });
+    }
+
+    private disconnectSocket(socket: SocketIO.Socket): void {
+        socket.on("disconnect", () => {
+            console.warn("Disconnect: ", socket.id);
+        });
+    }
+
+    private sendGrid(room: Room): void {
+        this.socketIo.in(room.Name).emit("grid-cells", room.Cells);
+        this.socketIo.in(room.Name).emit("grid-words", room.Words);
+    }
+
+    private addNewPlayerToRoom(game: INewGame, socket: SocketIO.Socket): void {
+        RoomManagerService.Instance.push(new Room(new Player(game.userCreator, socket.id), game.difficulty, socket.id));
+    }
+
+    private addOtherPlayerToRoom(game: INewGame, socket: SocketIO.Socket): Room {
+        let room: Room;
+        if (this.isSinglePlayer(game)) {
+            game.userCreatorID = socket.id;
+            this.addNewPlayerToRoom(game, socket);
+            room = RoomManagerService.Instance.getRoom(game.userCreatorID);
+        } else {
+            room = RoomManagerService.Instance.getRoom(game.userCreatorID);
+            RoomManagerService.Instance.addPlayerToRoom(game.userJoiner, socket.id, room.Name);
+        }
+        room.state = RoomState.Playing;
+
+        return room;
     }
 
     private parseToIPlayers(players: Array<Player>): Array<IPlayer> {
@@ -100,12 +120,6 @@ export class SocketService {
         });
 
         return iPlayers;
-    }
-
-    private disconnectSocket(socket: SocketIO.Socket): void {
-        socket.on("disconnect", () => {
-            console.warn("Disconnect: ", socket.id);
-        });
     }
 
     private isSinglePlayer(game: INewGame): boolean {

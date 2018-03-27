@@ -5,9 +5,9 @@ import { IGridWord } from "../../../../common/interfaces/IGridWord";
 import { ICell, Finder } from "../../../../common/interfaces/ICell";
 
 export class Room {
+    public state: RoomState;
     private grid: GridInPlay;
     private players: Array<Player>;
-    public state: RoomState;
     private name: string;
 
     public constructor(playerOne: Player, difficulty: Difficulty, name: string) {
