@@ -42,4 +42,4 @@
     </div>
   </form>
 </div>
-<button id="cheat-button" (click)="toogleCheatMode()" type="button" class="btn btn-lg btn-block">{{cheatModeToString()}}</button>
+<button id="cheat-button" (click)="toogleCheatMode()" type="button" class="btn btn-lg btn-block" [ngStyle]="{ 'background-color':cheatButtonColor }">{{cheatModeToString()}}</button>
