@@ -90,7 +90,7 @@ export class GameComponent implements AfterViewInit {
         let countdown: number = COUNTDOWN;
         const subscription: Subscription = this.timer.Seconds.subscribe((time: number) => {
             if (countdown === COUNTDOWN) {
-                startingSequence.play();
+                startingSequence.play().catch((error: Error) => console.error(error));
             }
             if (countdown > 0) {
                 this.startingText = (countdown).toString();

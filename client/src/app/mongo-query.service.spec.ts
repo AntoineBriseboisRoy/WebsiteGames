@@ -29,8 +29,8 @@ fdescribe("MongoQueryService", () => {
         service.postTrack(createdTrack).then(() => {
             service.getTrack("LaTrack").then((track: ITrack) => {
                 expect(track).toEqual(createdTrack);
-            });
-        });
+            }).catch((error: Error) => console.error(error));
+        }).catch((error: Error) => console.error(error));
     }));
 
     it("should delete a track", inject([MongoQueryService], (service: MongoQueryService) => {
@@ -47,9 +47,9 @@ fdescribe("MongoQueryService", () => {
             service.deleteTrack("test99").then(() => {
                 service.getTrack("test99").then((track: ITrack) => {
                     expect(track).not.toEqual(createdTrack);
-                });
-            });
-        });
+                }).catch((error: Error) => console.error(error));
+            }).catch((error: Error) => console.error(error));
+        }).catch((error: Error) => console.error(error));
     }));
 
     it("should overwrite a track", inject([MongoQueryService], (service: MongoQueryService) => {
@@ -75,8 +75,8 @@ fdescribe("MongoQueryService", () => {
             service.postTrack(otherTrack).then(() => {
                 service.getTrack("test10").then((track: ITrack) => {
                     expect(track.description).toEqual(otherTrack.description);
-                });
-            });
-        });
+                }).catch((error: Error) => console.error(error));
+            }).catch((error: Error) => console.error(error));
+        }).catch((error: Error) => console.error(error));
     }));
 });

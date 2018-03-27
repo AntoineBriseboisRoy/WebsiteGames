@@ -43,14 +43,12 @@ describe("AdminSectionComponent", () => {
                                        type: TrackType.REGULAR,
                                        points: Array<Point>() } as ITrack;
 
-
-
         mongoQueryService.putTrack("test", createdTrack).then(() => {
             component.deleteTrack("test");
             component["getITracksFromServer"]();
             component.tracks.forEach((track: ITrack) => {
                 expect(track).not.toEqual(createdTrack);
             });
-        });
+        }).catch((error: Error) => console.error(error));
     }));
 });

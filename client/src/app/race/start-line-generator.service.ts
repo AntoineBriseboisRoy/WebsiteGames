@@ -32,7 +32,7 @@ export class StartLineGeneratorService {
         this.firstRoad = new Vector2();
     }
 
-    public generateStartLine(firstRoad: Vector2, cars: Array<Car>, activeTrack: ITrack): Promise<Object3D> {
+    public async generateStartLine(firstRoad: Vector2, cars: Array<Car>, activeTrack: ITrack): Promise<Object3D> {
         this.activeTrack = activeTrack;
         this.cars = cars;
         this.firstRoad = firstRoad;
@@ -45,7 +45,7 @@ export class StartLineGeneratorService {
             return startLine;
         });
     }
-    private loadStartLine(): Promise<Object3D> {
+    private async loadStartLine(): Promise<Object3D> {
         return new Promise<Object3D>((resolve) => new ObjectLoader().load("../../assets/startLine.json", resolve));
     }
 

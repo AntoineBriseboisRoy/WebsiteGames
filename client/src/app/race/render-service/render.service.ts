@@ -142,7 +142,8 @@ export class RenderService {
                                                                      this.activeTrack.points[1].y - this.activeTrack.points[0].y),
                                                          this.cars,
                                                          this.activeTrack)
-        .then((startLine: Object3D) => this.scene.add(startLine));
+        .then((startLine: Object3D) => this.scene.add(startLine))
+        .catch((error: Error) => console.error(error));
     }
 
     private createFloorMesh(): void {
