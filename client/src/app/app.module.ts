@@ -24,8 +24,8 @@ import { PlayerMenuComponent } from "./crossword/player-menu/player-menu.compone
 import { MultiplayerMenuComponent } from "./crossword/multiplayer-mode/multiplayer-menu.component";
 import { MongoQueryService } from "./mongo-query.service";
 import { SocketIoService } from "./crossword/socket-io.service";
-import { GameRoomManagerService } from "./crossword/multiplayer-mode/GameRoomManagerService.service";
-import { GameListComponent } from "./crossword/multiplayer-mode/GameList/GameList.component";
+import { GameRoomManagerService } from "./crossword/multiplayer-mode/game-room-manager.service";
+import { GameListComponent } from "./crossword/multiplayer-mode/GameList/game-list.component";
 import { CollisionManager } from "./race/car/collision-manager";
 import { RoadCreator } from "./race/render-service/road-creator.service";
 import { ModalComponent } from "./modal/modal/modal.component";
