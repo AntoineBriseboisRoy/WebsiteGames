@@ -17,7 +17,9 @@ describe("RenderService", () => {
 
     it("should have different textures for its floor and track", inject([RenderService], (service: RenderService) => {
         service.initialize(new HTMLDivElement(),
-                           {name: "", description: "", points: new Array<Point>(), type: TrackType.REGULAR} as ITrack);
+                           {name: "", description: "", points: new Array<Point>(), type: TrackType.REGULAR} as ITrack)
+                           .catch((error: Error) => { console.error(error); });
+
         expect(service.RoadCreator.RoadTexture.sourceFile).not.toEqual(service.FloorTextures.get(TrackType.REGULAR).sourceFile);
     }));
 });
