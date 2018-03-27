@@ -11,19 +11,19 @@ export class DbClient {
     private db: Db;
 
     public constructor() {
-        this.connect();
+        this.connect().catch((error: Error) => console.error(error));
     }
 
     public get DB(): Db {
         return this.db;
     }
 
-    private connect(): Promise<void> {
+    private async connect(): Promise<void> {
         return MongoClient.connect(DB_URL)
             .then((client: MongoClient) => {
                 this.db = client.db(DB_NAME);
             }).catch((error: Error) => {
-                console.log(error);
+                console.error(error);
             });
     }
 }

@@ -13,50 +13,50 @@ export class TrackSaver {
         this.dbClient = new DbClient();
     }
 
-    public postTrack(track: ITrack): Promise<ITrack> {
+    public async postTrack(track: ITrack): Promise<ITrack> {
         return this.connectToClient()
         .then(() => {
             delete track._id;
-            this.collection.insertOne(track);
+            this.collection.insertOne(track).catch((error: Error) => console.error(error));
 
             return track;
         });
     }
 
-    public putTrack(name: string, track: ITrack): Promise<ITrack> {
+    public async putTrack(name: string, track: ITrack): Promise<ITrack> {
         return this.connectToClient()
         .then(() => {
             delete track._id;
-            this.collection.replaceOne({name: name}, track, { upsert: true });
+            this.collection.replaceOne({name: name}, track, { upsert: true }).catch((error: Error) => console.error(error));
 
             return track;
         });
     }
 
-    public deleteTrack(name: string): Promise<string> {
+    public async deleteTrack(name: string): Promise<string> {
         return this.connectToClient()
         .then(() => {
-            this.collection.deleteOne({name: name});
+            this.collection.deleteOne({name: name}).catch((error: Error) => console.error(error));
 
             return name;
         });
     }
 
-    public getTrack(name: string): Promise<ITrack> {
+    public async getTrack(name: string): Promise<ITrack> {
         return this.connectToClient()
-        .then(() => {
-            return this.collection.findOne({name: name});
+        .then(async () => {
+            return this.collection.findOne({name: name}).catch((error: Error) => console.error(error));
         });
     }
 
-    public getAllTracks(): Promise<ITrack[]> {
+    public async getAllTracks(): Promise<ITrack[]> {
         return this.connectToClient()
-        .then(() => {
+        .then(async () => {
             return this.collection.find<ITrack>().toArray();
         });
     }
 
-    private connectToClient(): Promise<void> {
+    private async connectToClient(): Promise<void> {
         return this.dbClient.connect().then(() => {
             if (this.dbClient.DB !== undefined) {
                 this.collection = this.dbClient.DB.collection(TRACKS);

@@ -1,32 +1,24 @@
-import { BlackSquare } from "./BlackSquare";
 import { ICoordXY } from "../../../common/interfaces/ICoordXY";
-import * as cst from "./Constants";
 import { Orientation, IWord } from "../../../common/interfaces/IWord";
 import { StringService } from "./StringService";
+import { EMPTY_SQUARE, BLACKSQUARE_CHARACTER, MIN_LETTERS_FOR_WORD, MIN_WORDS_PER_LINE,
+         MAX_WORDS_PER_LINE } from "./Constants";
 export class BlackSquareGenerator {
 
-    private static instance: BlackSquareGenerator;
-    private blackSquares: BlackSquare[];
     private grid: string[][];
-    private nTotalWords: number;
-    private connectedWordsFound: IWord[];
+    private wordsToFill: IWord[];
 
-    private constructor(private sideSize: number, private percentageOfBlackSquares: number) {
-        this.blackSquares = new Array<BlackSquare>();
+    public constructor(private sideSize: number, private percentageOfBlackSquares: number) {
         this.grid = this.initializeEmptyGrid();
+        this.generateBlackSquares();
     }
 
-    public static getInstance(sideSize: number, percentageOfBlackSquares: number): BlackSquareGenerator {
-        if (this.mustCreateNewInstance(sideSize, percentageOfBlackSquares)) {
-            this.instance = new BlackSquareGenerator(sideSize, percentageOfBlackSquares);
-        }
-
-        return this.instance;
+    public get Content(): string[][] {
+        return this.grid;
     }
 
-    private static mustCreateNewInstance(sideSize: number, percentageOfBlackSquares: number): boolean {
-        return this.instance === null || this.instance === undefined || this.instance.sideSize !== sideSize ||
-               this.instance.percentageOfBlackSquares !== percentageOfBlackSquares;
+    public get WordsToFill(): IWord[] {
+        return this.wordsToFill;
     }
 
     private initializeEmptyGrid(): string[][] {
@@ -34,14 +26,17 @@ export class BlackSquareGenerator {
         for (let i: number = 0; i < this.sideSize; i++) {
             emptyGrid[i] = new Array<string>();
             for (let j: number = 0; j < this.sideSize; j++) {
-                emptyGrid[i][j] = cst.EMPTY_SQUARE;
+                emptyGrid[i][j] = EMPTY_SQUARE;
             }
         }
 
         return emptyGrid;
     }
 
-    public generateBlackSquares(): string[][] {
+    public generateBlackSquares(): void {
+        if (this.sideSize <= 0) {
+            return;
+        }
         const numberOfBlackSquaresPerLine: number = this.percentageOfBlackSquares * this.sideSize;
         do {
             this.grid = this.initializeEmptyGrid();
@@ -49,17 +44,14 @@ export class BlackSquareGenerator {
             for (let i: number = 0; i < this.sideSize; i++) {
                 for (let j: number = 0; j < numberOfBlackSquaresPerLine; j++) {
                     const tempPosition: ICoordXY = this.randomPositionGenerator();
-                    this.blackSquares.push(new BlackSquare(tempPosition));
-                    this.grid[tempPosition.x][tempPosition.y] = cst.BLACKSQUARE_CHARACTER;
+                    this.grid[tempPosition.x][tempPosition.y] = BLACKSQUARE_CHARACTER;
                 }
             }
         } while (!this.verifyBlackSquareGrid());
-
-        return this.grid;
     }
 
     private isOccupiedPosition(position: ICoordXY): boolean {
-        return !(this.grid[position.x][position.y] === cst.EMPTY_SQUARE);
+        return !(this.grid[position.x][position.y] === EMPTY_SQUARE);
     }
 
     private randomIntGenerator(): number {
@@ -68,227 +60,64 @@ export class BlackSquareGenerator {
 
     private randomPositionGenerator(): ICoordXY {
         let tempPosition: ICoordXY = { x: Math.abs(Math.floor(this.randomIntGenerator())),
-                                       y: Math.abs(Math.floor(this.randomIntGenerator()))} as ICoordXY;
+                                       y: Math.abs(Math.floor(this.randomIntGenerator())) } as ICoordXY;
 
         while (this.isOccupiedPosition(tempPosition)) {
             tempPosition = { x: Math.abs(Math.floor(this.randomIntGenerator())),
-                             y: Math.abs(Math.floor(this.randomIntGenerator()))} as ICoordXY;
+                             y: Math.abs(Math.floor(this.randomIntGenerator())) } as ICoordXY;
         }
 
         return tempPosition;
     }
 
     private verifyBlackSquareGrid(): boolean {
-        return this.correctBlackSquareRatio() && this.correctNumberWordsPerRowColumn() && this.allWordsConnected();
+        return this.correctNumberWordsPerRowColumn() && this.allWordsConnected();
     }
 
     private allWordsConnected(): boolean {
-        return (this.countConnectedWords() === this.nTotalWords);
+        return this.breadthFirstSearch(this.getAdjacencyMatrix(this.findAllwordsToFill()));
     }
 
-    private findFirstWord(): { coord: ICoordXY, direction: Orientation } {
-        for (let i: number = 0; i < this.sideSize; ++i) {
-            for (let j: number = 0; j < this.sideSize; ++j) {
-                if (this.grid[i][j] === cst.EMPTY_SQUARE) {
-                    let nLettersRow: number = 0;
-                    while (++nLettersRow + j < this.sideSize && this.grid[i][j + nLettersRow] === cst.EMPTY_SQUARE) {
-                        if (nLettersRow >= cst.MIN_LETTERS_FOR_WORD - 1) {
-                            return { coord: { x: Math.abs(Math.floor(i)),
-                                              y: Math.abs(Math.floor(j))} as ICoordXY,
-                                     direction: Orientation.Vertical };
-                        }
-                    }
-                    let nLettersCol: number = 0;
-                    while (++nLettersCol + i < this.sideSize && this.grid[i + nLettersCol][j] === cst.EMPTY_SQUARE) {
-                        if (nLettersCol >= cst.MIN_LETTERS_FOR_WORD - 1) {
-                            return { coord: { x: Math.abs(Math.floor(i)),
-                                              y: Math.abs(Math.floor(j))} as ICoordXY,
-                                     direction: Orientation.Horizontal };
-                        }
-                    }
+    private getAdjacencyMatrix(words: IWord[]): boolean[][] {
+        const adjacencyMatrix: boolean[][] = new Array<Array<boolean>>();
+        for (let i: number = 0; i < words.length; ++i) {
+            adjacencyMatrix[i] = new Array<boolean>();
+        }
+        for (let i: number = 0; i < words.length; ++i) {
+            for (let j: number = i + 1; j < words.length; ++j) {
+                adjacencyMatrix[i][j] = adjacencyMatrix[j][i] = this.wordsIntersect(words[i], words[j]);
+            }
+        }
+
+        return adjacencyMatrix;
+    }
+
+    private breadthFirstSearch(adjacencyMatrix: boolean[][]): boolean {
+        const visited: boolean[] = new Array<boolean>();
+        for (let i: number = 0; i < adjacencyMatrix.length; ++i) {
+            visited[i] = false;
+        }
+
+        const queue: number[] = new Array<number>();
+        queue.push(0);
+        visited[0] = true;
+
+        while (queue.length !== 0) {
+            const current: number = queue.pop();
+            for (let i: number = 0; i < adjacencyMatrix.length; ++i) {
+                if (adjacencyMatrix[current][i] && !visited[i]) {
+                    visited[i] = true;
+                    queue.push(i);
                 }
             }
         }
 
-        return { coord: { x: 0, y: 0} as ICoordXY, direction: Orientation.Horizontal };
+        return this.allNodesVisited(visited);
     }
 
-    private countConnectedWords(): number {
-        this.connectedWordsFound = new Array<IWord>();
-
-        return this.countConnectedWordsRecursive(this.findFirstWord());
-    }
-
-    // tslint:disable-next-line:max-func-body-length
-    private countConnectedWordsRecursive(currChar: { coord: ICoordXY, direction: Orientation }): number {
-        if (this.charBelongsToAlreadyCheckedWord(currChar)) {
-            return 0;
-        }
-
-        const charsToCheck: { coord: ICoordXY, direction: Orientation }[] = new Array<{ coord: ICoordXY, direction: Orientation }>();
-        let nWordsConnected: number = 1;
-        let currWordPosition: ICoordXY, currWordLength: number = 0;
-
-        if (currChar.direction === Orientation.Horizontal) {
-            let i: number = currChar.coord.x;
-            while (--i >= 0 && this.grid[i][currChar.coord.y] === cst.EMPTY_SQUARE) {
-                if (this.checkAdjacentSquares({ x: Math.abs(Math.floor(i)),
-                                                y: Math.abs(Math.floor(currChar.coord.y))} as ICoordXY,
-                                              currChar.direction)) {
-                    charsToCheck.push({ coord: { x: Math.abs(Math.floor(i)),
-                                                 y: Math.abs(Math.floor(currChar.coord.y))} as ICoordXY,
-                                        direction: Orientation.Vertical });
-                }
-            }
-            currWordPosition = { x: Math.abs(Math.floor(i + 1)),
-                                 y: Math.abs(Math.floor(currChar.coord.y))} as ICoordXY;
-            i = currChar.coord.x;
-            while (++i < this.sideSize && this.grid[i][currChar.coord.y] === cst.EMPTY_SQUARE) {
-                if (this.checkAdjacentSquares({ x: Math.abs(Math.floor(i)),
-                                                y: Math.abs(Math.floor(currChar.coord.y))} as ICoordXY,
-                                              currChar.direction)) {
-                    charsToCheck.push({ coord: { x: Math.abs(Math.floor(i)),
-                                                 y: Math.abs(Math.floor(currChar.coord.y))} as ICoordXY,
-                                        direction: Orientation.Vertical });
-                }
-            }
-            currWordLength = i - currWordPosition.x;
-        } else {
-            let i: number = currChar.coord.y;
-            while (--i >= 0 && this.grid[currChar.coord.x][i] === cst.EMPTY_SQUARE) {
-                if (this.checkAdjacentSquares({ x: Math.abs(Math.floor(currChar.coord.x)),
-                                                y: Math.abs(Math.floor(i))} as ICoordXY,
-                                              currChar.direction)) {
-                    charsToCheck.push({ coord: { x: Math.abs(Math.floor(currChar.coord.x)),
-                                                 y: Math.abs(Math.floor(i))} as ICoordXY,
-                                        direction: Orientation.Horizontal });
-                }
-            }
-            currWordPosition = { x: Math.abs(Math.floor(currChar.coord.x)),
-                                 y: Math.abs(Math.floor(i + 1))} as ICoordXY;
-            i = currChar.coord.y;
-            while (++i < this.sideSize && this.grid[currChar.coord.x][i] === cst.EMPTY_SQUARE) {
-                if (this.checkAdjacentSquares({ x: Math.abs(Math.floor(currChar.coord.x)),
-                                                y: Math.abs(Math.floor(i))} as ICoordXY,
-                                              currChar.direction)) {
-                    charsToCheck.push({ coord: { x: Math.abs(Math.floor(currChar.coord.x)),
-                                                 y: Math.abs(Math.floor(i))} as ICoordXY,
-                                        direction: Orientation.Horizontal });
-                }
-            }
-            currWordLength = i - currWordPosition.y;
-        }
-        this.connectedWordsFound.push({position: currWordPosition, orientation: currChar.direction,
-                                       content: StringService.generateDefaultString(currWordLength), definition: ""});
-
-        charsToCheck.forEach((char: { coord: ICoordXY, direction: Orientation }) => {
-            nWordsConnected += this.countConnectedWordsRecursive(char);
-        });
-
-        return nWordsConnected;
-    }
-
-    private charBelongsToAlreadyCheckedWord(currChar: { coord: ICoordXY, direction: Orientation }): boolean {
-        let alreadyConnected: boolean = false;
-        this.connectedWordsFound.forEach((word: IWord) => {
-            if (currChar.direction === word.orientation) {
-                if (currChar.direction === Orientation.Horizontal) {
-                    if (word.position.y === currChar.coord.y && word.position.x <= currChar.coord.x
-                        && word.position.x + word.content.length >= currChar.coord.x) {
-                        alreadyConnected = true;
-                    }
-                } else {
-                    if (word.position.x === currChar.coord.x && word.position.y <= currChar.coord.y
-                        && word.position.y + word.content.length >= currChar.coord.y) {
-                        alreadyConnected = true;
-                    }
-                }
-            }
-        });
-
-        return alreadyConnected;
-    }
-
-    private checkAdjacentSquares(currSquare: ICoordXY, orientation: Orientation): boolean {
-        if (orientation === Orientation.Vertical) {
-            if (currSquare.x < this.sideSize - 1 && this.grid[currSquare.x + 1][currSquare.y] === cst.EMPTY_SQUARE) {
-                if (!this.charBelongsToAlreadyCheckedWord({ coord: currSquare, direction: Orientation.Horizontal })) {
-                    return true;
-                }
-            }
-            if (currSquare.x > 0 && this.grid[currSquare.x - 1][currSquare.y] === cst.EMPTY_SQUARE) {
-                if (!this.charBelongsToAlreadyCheckedWord({ coord: currSquare, direction: Orientation.Horizontal })) {
-                    return true;
-                }
-            }
-        } else {
-            if (currSquare.y < this.sideSize - 1 && this.grid[currSquare.x][currSquare.y + 1] === cst.EMPTY_SQUARE) {
-                if (!this.charBelongsToAlreadyCheckedWord({ coord: currSquare, direction: Orientation.Vertical })) {
-                    return true;
-                }
-            }
-            if (currSquare.y > 0 && this.grid[currSquare.x][currSquare.y - 1] === cst.EMPTY_SQUARE) {
-                if (!this.charBelongsToAlreadyCheckedWord({ coord: currSquare, direction: Orientation.Vertical })) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
-    }
-
-    // tslint:disable-next-line:max-func-body-length
-    private correctNumberWordsPerRowColumn(): boolean {
-        this.nTotalWords = 0;
-        let correctRatio: boolean = true;
-        for (let i: number = 0; i < this.sideSize; ++i) {
-            let nLettersRow: number = 0, nLettersCol: number = 0, nWordsCol: number = 0, nWordsRow: number = 0;
-            for (let j: number = 0; j < this.sideSize; ++j) {
-                if (this.grid[i][j] === cst.EMPTY_SQUARE) {
-                    ++nLettersCol;
-                } else {
-                    if (nLettersCol >= cst.MIN_LETTERS_FOR_WORD) {
-                        ++nWordsCol;
-                    }
-                    nLettersCol = 0;
-                }
-                if (this.grid[j][i] === cst.EMPTY_SQUARE) {
-                    ++nLettersRow;
-                } else {
-                    if (nLettersRow >= cst.MIN_LETTERS_FOR_WORD) {
-                        ++nWordsRow;
-                    }
-                    nLettersRow = 0;
-                }
-            }
-            if (nLettersCol >= cst.MIN_LETTERS_FOR_WORD) {
-                ++nWordsCol;
-            }
-            if (nLettersRow >= cst.MIN_LETTERS_FOR_WORD) {
-                ++nWordsRow;
-            }
-            if (!(nWordsRow >= cst.MIN_WORDS_PER_LINE && nWordsRow <= cst.MAX_WORDS_PER_LINE
-                && nWordsCol >= cst.MIN_WORDS_PER_LINE && nWordsCol <= cst.MAX_WORDS_PER_LINE)) {
-                    correctRatio = false;
-            }
-            this.nTotalWords += nWordsRow + nWordsCol;
-        }
-
-        return correctRatio;
-    }
-
-    private correctBlackSquareRatio(): boolean {
-        for (let i: number = 0; i < this.sideSize; i++) {
-            let nBlackSquaresRow: number = 0, nBlackSquaresCol: number = 0;
-            for (let j: number = 0; j < this.sideSize; j++) {
-                if (this.grid[i][j] === cst.BLACKSQUARE_CHARACTER) {
-                    ++nBlackSquaresRow;
-                }
-                if (this.grid[j][i] === cst.BLACKSQUARE_CHARACTER) {
-                    ++nBlackSquaresCol;
-                }
-            }
-            if (this.tooManyBlackSquares(nBlackSquaresCol, nBlackSquaresRow)) {
+    private allNodesVisited(visited: boolean[]): boolean {
+        for (const iterator of visited) {
+            if (!iterator) {
                 return false;
             }
         }
@@ -296,8 +125,97 @@ export class BlackSquareGenerator {
         return true;
     }
 
-    private tooManyBlackSquares(nBlackSquaresCol: number, nBlackSquaresRow: number): boolean {
-        return nBlackSquaresCol / this.sideSize > cst.MAX_BLACKSQUARE_RATIO || nBlackSquaresRow / this.sideSize > cst.MAX_BLACKSQUARE_RATIO;
+    private wordsIntersect(firstWord: IWord, secondWord: IWord): boolean {
+        if (firstWord.orientation === secondWord.orientation) {
+            return false;
+        }
+        if (firstWord.orientation === Orientation.Horizontal) {
+            return this.haveCommonPosition(firstWord, secondWord);
+        } else {
+            return this.haveCommonPosition(secondWord, firstWord);
+        }
     }
-// tslint:disable-next-line:max-file-line-count
+
+    private haveCommonPosition(horizontalWord: IWord, verticalWord: IWord): boolean {
+        return horizontalWord.position.x + horizontalWord.content.length - 1 >= verticalWord.position.x
+                && horizontalWord.position.x <= verticalWord.position.x
+                && verticalWord.position.y + verticalWord.content.length - 1 >= horizontalWord.position.y
+                && verticalWord.position.y <= horizontalWord.position.y;
+    }
+
+    private findAllwordsToFill(): IWord[] {
+        this.wordsToFill = new Array<IWord>();
+        for (let i: number = 0; i < this.sideSize; ++i) {
+            this.wordsToFill = this.wordsToFill.concat(this.findWordsInRow(i));
+            this.wordsToFill = this.wordsToFill.concat(this.findWordsInColumn(i));
+        }
+
+        return this.wordsToFill;
+    }
+
+    private findWordsInRow(row: number): IWord[] {
+        let nLettersRow: number = 0;
+        const wordsToFill: IWord[] = new Array<IWord>();
+        for (let i: number = 0; i < this.sideSize; ++i) {
+            if (this.grid[i][row] === EMPTY_SQUARE) {
+                ++nLettersRow;
+            } else if (this.grid[i][row] === BLACKSQUARE_CHARACTER) {
+                if (nLettersRow >= MIN_LETTERS_FOR_WORD) {
+                    wordsToFill.push(this.createEmptyWord(i - nLettersRow, row,
+                                                          Orientation.Horizontal, nLettersRow));
+                }
+                nLettersRow = 0;
+            }
+        }
+        if (nLettersRow >= MIN_LETTERS_FOR_WORD) {
+            wordsToFill.push(this.createEmptyWord(this.sideSize - nLettersRow, row,
+                                                  Orientation.Horizontal, nLettersRow));
+
+        }
+
+        return wordsToFill;
+    }
+
+    private findWordsInColumn(column: number): IWord[] {
+        let nLettersCol: number = 0;
+        const wordsToFill: IWord[] = new Array<IWord>();
+        for (let i: number = 0; i < this.sideSize; ++i) {
+            if (this.grid[column][i] === EMPTY_SQUARE) {
+                ++nLettersCol;
+            } else if (this.grid[column][i] === BLACKSQUARE_CHARACTER) {
+                if (nLettersCol >= MIN_LETTERS_FOR_WORD) {
+                    wordsToFill.push(this.createEmptyWord(column, i - nLettersCol,
+                                                          Orientation.Vertical, nLettersCol));
+}
+                nLettersCol = 0;
+            }
+        }
+        if (nLettersCol >= MIN_LETTERS_FOR_WORD) {
+            wordsToFill.push(this.createEmptyWord(column, this.sideSize - nLettersCol,
+                                                  Orientation.Vertical, nLettersCol));
+        }
+
+        return wordsToFill;
+    }
+
+    private createEmptyWord(x: number, y: number, orientation: Orientation, length: number): IWord {
+        return { position: { x: x, y: y } as ICoordXY,
+                 orientation: orientation,
+                 content: StringService.generateDefaultString(length),
+                 definition: "" } as IWord;
+    }
+
+    private correctNumberWordsPerRowColumn(): boolean {
+        let correctRatio: boolean = true;
+        for (let i: number = 0; i < this.sideSize; ++i) {
+            const wordsInRow: number = this.findWordsInRow(i).length;
+            const wordsInColumn: number = this.findWordsInColumn(i).length;
+            if (wordsInRow < MIN_WORDS_PER_LINE || wordsInRow > MAX_WORDS_PER_LINE ||
+                wordsInColumn < MIN_WORDS_PER_LINE || wordsInColumn > MAX_WORDS_PER_LINE) {
+                correctRatio = false;
+            }
+        }
+
+        return correctRatio;
+    }
 }

@@ -26,7 +26,7 @@ export class LexicalService {
             simple: true // should request promise for status code other than 2xx
         };
     }
-    private sendGetRequest(searchedTemplate: string): Promise<void|JSON> {
+    private async sendGetRequest(searchedTemplate: string): Promise<void|JSON> {
         this.options.qs.sp = searchedTemplate;
 
         return requestPromise(this.options).promise()

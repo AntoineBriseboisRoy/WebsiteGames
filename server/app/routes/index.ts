@@ -16,6 +16,20 @@ module Route {
             message.body = "World";
             res.send(JSON.stringify(message));
         }
+        public getGames(req: Request, res: Response, next: NextFunction): void {
+            const games: Array<INewGame> = WaitingGamesService.Instance.Games;
+            res.send(JSON.stringify(games));
+        }
+
+        public getGrid(req: Request, res: Response, next: NextFunction): void {
+            const gridContent: string = new GridGeneratorService().getFakeGridContent();
+            res.send(JSON.stringify(gridContent));
+        }
+
+        public getWords(req: Request, res: Response, next: NextFunction): void {
+            const words: Array<IWord> = new GridGeneratorService().getFakeGridWords();
+            res.send(JSON.stringify(words));
+        }
 
         public postTrack(req: Request, res: Response, next: NextFunction): void {
             const trackSaver: TrackSaver = new TrackSaver();
@@ -42,13 +56,13 @@ module Route {
             const name: string = req.query.name;
             if (name !== null) {
                 const trackSaver: TrackSaver = new TrackSaver();
-                trackSaver.getTrack(name).then((track: ITrack) => res.send(track));
+                trackSaver.getTrack(name).then((track: ITrack) => res.send(track)).catch((error: Error) => console.error(error));
             }
         }
 
         public getAllTracks(req: Request, res: Response, next: NextFunction): void {
             const trackSaver: TrackSaver = new TrackSaver();
-            trackSaver.getAllTracks().then((tracks: ITrack[]) => res.send(tracks));
+            trackSaver.getAllTracks().then((tracks: ITrack[]) => res.send(tracks)).catch((error: Error) => console.error(error));
         }
     }
 }
