@@ -1,11 +1,12 @@
 import { TestBed, inject } from "@angular/core/testing";
 
 import { GameManagerService } from "./game-manager.service";
+import { SocketIoService } from "./socket-io.service";
 
 describe("GameManagerService", () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [GameManagerService]
+      providers: [GameManagerService, SocketIoService]
     });
   });
 

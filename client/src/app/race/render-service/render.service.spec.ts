@@ -3,11 +3,13 @@ import { TestBed, inject } from "@angular/core/testing";
 import { RenderService } from "./render.service";
 import { ITrack, TrackType } from "../../../../../common/interfaces/ITrack";
 import { Point } from "../edit-track/Geometry";
+import { CollisionManager } from "../car/collision-manager.service";
+import { RoadCreator } from "./road-creator.service";
 
 describe("RenderService", () => {
     beforeEach(() => {
         TestBed.configureTestingModule({
-            providers: [RenderService]
+            providers: [RenderService, CollisionManager, RoadCreator]
         });
     });
 

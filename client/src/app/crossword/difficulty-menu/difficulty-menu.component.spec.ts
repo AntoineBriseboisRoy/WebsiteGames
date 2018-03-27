@@ -2,6 +2,9 @@ import { async, ComponentFixture, TestBed } from "@angular/core/testing";
 
 import { DifficultyMenuComponent } from "./difficulty-menu.component";
 import { Difficulty } from "../../../../../common/constants";
+import { RouterTestingModule } from "@angular/router/testing";
+import { GameManagerService } from "../game-manager.service";
+import { SocketIoService } from "../socket-io.service";
 
 describe("DifficultyMenuComponent", () => {
     let component: DifficultyMenuComponent;
@@ -9,7 +12,9 @@ describe("DifficultyMenuComponent", () => {
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
-            declarations: [DifficultyMenuComponent]
+            declarations: [DifficultyMenuComponent],
+            providers: [GameManagerService, SocketIoService],
+            imports: [RouterTestingModule]
         })
             .compileComponents();
     }));
