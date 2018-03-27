@@ -21,7 +21,9 @@ describe("DefinitionComponent", () => {
                         NgbModalStack, ModalStateService, GameManagerService],
             imports: [RouterTestingModule]
         })
-            .compileComponents();
+            .compileComponents().catch((error: Error) => {
+                console.error(error);
+            });
     }));
 
     beforeEach(() => {

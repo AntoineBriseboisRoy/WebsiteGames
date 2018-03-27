@@ -18,7 +18,9 @@ describe("MultiplayerMenuComponent", () => {
         TestBed.configureTestingModule({
             declarations: [MultiplayerMenuComponent]
         })
-            .compileComponents();
+            .compileComponents().catch((error: Error) => {
+                console.error(error);
+            });
     }));
 
     beforeEach(() => {

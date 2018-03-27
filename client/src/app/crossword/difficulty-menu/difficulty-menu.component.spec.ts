@@ -16,7 +16,9 @@ describe("DifficultyMenuComponent", () => {
             providers: [GameManagerService, SocketIoService],
             imports: [RouterTestingModule]
         })
-            .compileComponents();
+            .compileComponents().catch((error: Error) => {
+                console.error(error);
+            });
     }));
 
     beforeEach(() => {
@@ -26,7 +28,9 @@ describe("DifficultyMenuComponent", () => {
     });
 
     it("should create", () => {
-        expect(component).toBeTruthy();
+        expect(component).toBeTruthy().catch((error: Error) => {
+            console.error(error);
+        });
     });
 
     it("should have an active difficulty", () => {

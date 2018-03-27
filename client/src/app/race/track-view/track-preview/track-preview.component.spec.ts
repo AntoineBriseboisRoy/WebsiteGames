@@ -1,8 +1,8 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed } from "@angular/core/testing";
 
-import { TrackPreviewComponent } from './track-preview.component';
+import { TrackPreviewComponent } from "./track-preview.component";
 
-describe('TrackPreviewComponent', () => {
+describe("TrackPreviewComponent", () => {
   let component: TrackPreviewComponent;
   let fixture: ComponentFixture<TrackPreviewComponent>;
 
@@ -10,7 +10,9 @@ describe('TrackPreviewComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ TrackPreviewComponent ]
     })
-    .compileComponents();
+    .compileComponents().catch((error: Error) => {
+        console.error(error);
+    });
   }));
 
   beforeEach(() => {
@@ -19,7 +21,7 @@ describe('TrackPreviewComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it("should create", () => {
     expect(component).toBeTruthy();
   });
 });

@@ -10,7 +10,9 @@ describe("AdminSectionComponent", () => {
         TestBed.configureTestingModule({
             declarations: [AdminSectionComponent]
         })
-            .compileComponents();
+            .compileComponents().catch((error: Error) => {
+                console.error(error);
+            });
     }));
 
     beforeEach(() => {
@@ -20,6 +22,8 @@ describe("AdminSectionComponent", () => {
     });
 
     it("should create", () => {
-        expect(component).toBeTruthy();
+        expect(component).toBeTruthy().catch((error: Error) => {
+            console.error(error);
+        });
     });
 });

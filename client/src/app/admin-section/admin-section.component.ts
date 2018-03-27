@@ -20,8 +20,16 @@ export class AdminSectionComponent implements OnInit {
         this.getITracksFromServer();
     }
 
+    public refreshITrackList(): void {
+        this.getITracksFromServer();
+    }
+
     public deleteTrack(name: string): void {
-        this.mongoQueryService.deleteTrack(name);
+        this.mongoQueryService.deleteTrack(name).then(() => {
+            this.getITracksFromServer();
+        }).catch((error: Error) => {
+            console.error(error);
+        });
     }
 
     private getITracksFromServer(): void {

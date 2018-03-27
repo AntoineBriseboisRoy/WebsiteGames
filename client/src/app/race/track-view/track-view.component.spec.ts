@@ -10,7 +10,9 @@ describe("TrackViewComponent", () => {
     TestBed.configureTestingModule({
       declarations: [ TrackViewComponent ]
     })
-    .compileComponents();
+    .compileComponents().catch((error: Error) => {
+        console.error(error);
+    });
   }));
 
   beforeEach(() => {

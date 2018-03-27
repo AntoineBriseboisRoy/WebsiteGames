@@ -10,7 +10,9 @@ describe("DashboardComponent", () => {
     TestBed.configureTestingModule({
       declarations: [ DashboardComponent ]
     })
-    .compileComponents();
+    .compileComponents().catch((error: Error) => {
+        console.error(error);
+    });
   }));
 
   beforeEach(() => {

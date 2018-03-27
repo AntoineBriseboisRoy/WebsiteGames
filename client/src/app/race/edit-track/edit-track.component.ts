@@ -47,6 +47,8 @@ export class EditTrackComponent implements OnInit {
                 this.mongoQueryService.getTrack(params["name"]).then((track: ITrack) => {
                     this.track = track;
                     this.initializeMouseEvents();
+                }).catch((error: Error) => {
+                    console.error(error);
                 });
             } else {
                 this.initializeMouseEvents();
@@ -150,6 +152,8 @@ export class EditTrackComponent implements OnInit {
     }
 
     public saveTrack(): void {
-        this.mongoQueryService.putTrack(this.track.name, this.track);
+        this.mongoQueryService.putTrack(this.track.name, this.track).catch((error: Error) => {
+            console.error(error);
+        });
     }
 }
