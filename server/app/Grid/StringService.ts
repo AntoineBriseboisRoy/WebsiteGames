@@ -7,13 +7,13 @@ export class StringService {
     }
 
     public static eliminateSpecialChars(word: string): string {
-        const specialChars: RegExp = /[ !@$%^&()_+\-=\[\]{};':"\\|,.<>\/?]/;
+        const specialChars: RegExp = /[ !@$%^&()_+\-=\[\]{};':"\\|,.<>\/?]/ig;
 
         return word.replace(specialChars, "");
     }
 
     public static replaceAccentedChars(word: string): string {
-        const accentedChars: RegExp[] = [/[àÀäÄâÂ]/, /[ÉéêÊèÈëË]/, /[ïÏîÎìÌ]/, /[òÒôÔöÖ]/, /[ùÙüÜûÛ]/, /[çÇ]/];
+        const accentedChars: RegExp[] = [/[àÀäÄâÂ]/ig, /[ÉéêÊèÈëË]/ig, /[ïÏîÎìÌ]/ig, /[òÒôÔöÖ]/ig, /[ùÙüÜûÛ]/ig, /[çÇ]/ig];
         const replacementChars: string[] = ["A", "E", "I", "O", "U", "C"];
 
         for (let i: number = 0; i < accentedChars.length; i++) {

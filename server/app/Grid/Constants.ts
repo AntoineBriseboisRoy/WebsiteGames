@@ -1,5 +1,3 @@
-import { DictionaryEntry } from "./Interfaces";
-
 export const BLACKSQUARE_CHARACTER: string = "*";
 export const EMPTY_SQUARE: string = " ";
 export const MIN_LETTERS_FOR_WORD: number = 3;

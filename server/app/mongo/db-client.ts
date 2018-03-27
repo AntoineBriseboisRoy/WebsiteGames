@@ -14,7 +14,7 @@ export class DbClient {
         return this.db;
     }
 
-    public connect(): Promise<void> {
+    public async connect(): Promise<void> {
         return MongoClient.connect(DB_URL)
             .then((client: MongoClient) => {
                 this.db = client.db(DB_NAME);

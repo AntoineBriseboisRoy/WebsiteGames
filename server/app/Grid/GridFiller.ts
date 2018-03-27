@@ -42,9 +42,6 @@ export class GridFiller {
             isDone = await this.fillGridWithWords();
         }
         this.fillRemainingSpacesWithBlacksquares();
-        console.log(this.grid);
-        console.log("done");
-        console.log(this.wordsPlaced);
 
         return this.wordsPlaced;
     }
@@ -78,15 +75,10 @@ export class GridFiller {
         });
     }
 
-    // tslint:disable-next-line:max-func-body-length
     private async fillGridWithWords(): Promise<boolean> {
-        console.log("fillGridWithWords");
         if (this.gridFilled()) {
             return true;
         }
-        console.log(this.wordsPlaced.length, "  --  ", this.wordsToFill.length);
-        console.log(this.grid);
-
         this.sortWordsToFillByCommonLetters();
         const wordToPlace: IWord = this.wordsToFill.pop();
         const entry: WordAndDefinition = await this.getWord(wordToPlace);
@@ -104,11 +96,10 @@ export class GridFiller {
         let nextWordPlaced: boolean = await this.fillGridWithWords();
         if (!nextWordPlaced) {
             this.backtrack(this.findWordWithCommonLetters(this.problemWord));
-            nextWordPlaced = await  this.fillGridWithWordsNextTry();
+            nextWordPlaced = await this.fillGridWithWordsNextTry();
 
             return nextWordPlaced;
         } else {
-
             return true;
         }
     }
@@ -117,17 +108,10 @@ export class GridFiller {
         return (this.wordsToFill.length === 0);
     }
 
-    // tslint:disable-next-line:max-func-body-length
     private async fillGridWithWordsNextTry(): Promise<boolean> {
-        console.log("fillGridWithWordsNextTry");
         if (this.gridFilled()) {
-            console.log("filled");
-
             return true;
         }
-        console.log(this.wordsPlaced.length, "  --  ", this.wordsToFill.length);
-        console.log(this.grid);
-
         this.sortWordsToFillByCommonLetters();
         const wordToPlace: IWord = this.wordsToFill.pop();
         const entry: WordAndDefinition = await this.getWord(wordToPlace);
@@ -148,7 +132,6 @@ export class GridFiller {
 
             return false;
         } else {
-
             return true;
         }
     }

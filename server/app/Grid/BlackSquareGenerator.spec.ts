@@ -15,7 +15,7 @@ describe("Verifying BlackSquare generation.", () => {
             });
         });
         expect(nBlackSquares).to.equal(PERCENTAGE_BLACK_SQUARES * STANDARD_SIDE_SIZE * STANDARD_SIDE_SIZE);
-    });
+    }).timeout(5000);
     // tslint:disable-next-line:max-func-body-length
     it("Should have room for at least one word per row/column.", () => {
         const grid: string[][] = new BlackSquareGenerator(STANDARD_SIDE_SIZE, PERCENTAGE_BLACK_SQUARES).Content;
@@ -48,5 +48,5 @@ describe("Verifying BlackSquare generation.", () => {
             }
         }
         expect(enoughRoom).to.equal(true);
-    });
+    }).timeout(5000);
 });

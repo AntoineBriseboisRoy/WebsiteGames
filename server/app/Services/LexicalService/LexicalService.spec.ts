@@ -19,35 +19,34 @@ const DEFINITION_4: string =
 "n\tany of several trees of the genus Populus having leaves on flattened stalks so that they flutter in the lightest wind";
 const DEFINITION_5: string = "n\tusually used in combination: `liverwort'; `milkwort'; `whorlywort'";
 
-
 describe("Verifying LexicalService's searchWords function.", () => {
 
-    it("should return an array of WordAndDefinition", () => {
+    it("should return an array of WordAndDefinition", async () => {
         return testService.searchWords(WORD_1, Difficulty.EASY).then((result: Array<WordAndDefinition>) => {
             expect(result).to.be.an("Array");
         });
     });
 
-    it("should return a common word with its first definition", () => {
+    it("should return a common word with its first definition", async () => {
         return testService.searchWords(WORD_1, Difficulty.EASY).then((result: Array<WordAndDefinition>) => {
             expect(result[0]).to.eql({word: WORD_1, definition: DEFINITION_1});
         });
     });
 
-    it("should return a common word with its random definition (not the first one)", () => {
+    it("should return a common word with its random definition (not the first one)", async () => {
         return testService.searchWords(WORD_2, Difficulty.MEDIUM).then((result: Array<WordAndDefinition>) => {
             expect(result[0]).not.eql({word: WORD_2, definition: DEFINITION_2});
         });
     });
 
-    it("should return a common word with its only definition", () => {
+    it("should return a common word with its only definition", async () => {
         return testService.searchWords(WORD_3, Difficulty.MEDIUM).then((result: Array<WordAndDefinition>) => {
             expect(result[0]).eql({word: WORD_3, definition:
             DEFINITION_3});
         });
     });
 
-    it("should return nothing if the request returns only non common words.", () => {
+    it("should return nothing if the request returns only non common words.", async () => {
         return testService.searchWords(WORD_4, Difficulty.MEDIUM).then((result: Array<WordAndDefinition>) => {
             expect(result[0]).not.eql({word: WORD_4, definition:
             DEFINITION_4});
@@ -55,14 +54,14 @@ describe("Verifying LexicalService's searchWords function.", () => {
         });
     });
 
-    it("should return a non-common word with the only definition of the word", () => {
+    it("should return a non-common word with the only definition of the word", async () => {
         return testService.searchWords(SEARCHED_TEMPLATE_1, Difficulty.HARD).then((result: Array<WordAndDefinition>) => {
             expect(result[0]).to.eql({word: WORD_4, definition:
             DEFINITION_4});
         });
     });
 
-    it("should return a non-common word with its random definition (not the first one)", () => {
+    it("should return a non-common word with its random definition (not the first one)", async () => {
         return testService.searchWords(SEARCHED_TEMPLATE_2, Difficulty.HARD).then((result: Array<WordAndDefinition>) => {
             expect(result[0]).not.eql({word: WORD_2, definition: DEFINITION_1});
             expect(result[0]).to.eql({word: WORD_5, definition: DEFINITION_5});
@@ -81,7 +80,7 @@ describe("Verifying LexicalService's searchWords function.", () => {
         }
     });
 
-    it("verify that invalid requests return an empty array", () => {
+    it("verify that invalid requests return an empty array", async () => {
         const INVALID_REQUEST: string = "/////";
 
         return testService.searchWords(INVALID_REQUEST, Difficulty.HARD).then((result: Array<WordAndDefinition>) => {
@@ -89,7 +88,7 @@ describe("Verifying LexicalService's searchWords function.", () => {
         });
     });
 
-    it("verify an invalid difficulty should return an empty array", () => {
+    it("verify an invalid difficulty should return an empty array", async () => {
 
         return testService.searchWords(SEARCHED_TEMPLATE_3, DIFFICULTY_ERR).then((result: Array<WordAndDefinition>) => {
             expect(result).to.be.eql(Array());
