@@ -32,7 +32,8 @@ import { ModalComponent } from "./modal/modal/modal.component";
 import { ModalService } from "./modal//modal.service";
 import { ModalStateService } from "./modal//modal-state.service";
 import { ModalDirective } from "./modal/modal.directive";
-import { TrackPreviewComponent } from './race/track-view/track-preview/track-preview.component';
+import { TrackPreviewComponent } from "./race/track-view/track-preview/track-preview.component";
+import { StartLineGeneratorService } from "./race/start-line-generator.service";
 
 @NgModule({
     declarations: [
@@ -70,7 +71,8 @@ import { TrackPreviewComponent } from './race/track-view/track-preview/track-pre
         CollisionManager,
         RoadCreator,
         ModalService,
-        ModalStateService
+        ModalStateService,
+        StartLineGeneratorService
     ],
     bootstrap: [AppComponent]
 })
