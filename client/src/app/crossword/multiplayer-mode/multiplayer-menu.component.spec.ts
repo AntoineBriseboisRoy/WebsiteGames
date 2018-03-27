@@ -2,7 +2,7 @@ import { async, ComponentFixture, TestBed } from "@angular/core/testing";
 
 import { MultiplayerMenuComponent } from "./multiplayer-menu.component";
 import { SocketIoService } from "../socket-io.service";
-import { GameRoomManagerService } from "./GameRoomManagerService.service";
+import { GameRoomManagerService } from "./game-room-manager.service";
 import { Router } from "@angular/router";
 import { GameManagerService } from "../game-manager.service";
 
