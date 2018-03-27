@@ -45,6 +45,14 @@ export class RenderService {
         return this.cameraContext;
     }
 
+    public get RoadCreator(): RoadCreator {
+        return this.roadCreator;
+    }
+
+    public get FloorTextures(): Map<TrackType, Texture> {
+        return this.floorTextures;
+    }
+
     public constructor(private collisionManager: CollisionManager, private roadCreator: RoadCreator) {
         this.cars = new Array<Car>();
         for (let i: number = 0; i < NUMBER_OF_CARS; i++) {

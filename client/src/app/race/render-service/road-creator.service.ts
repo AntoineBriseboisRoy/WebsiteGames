@@ -15,15 +15,21 @@ export class RoadCreator {
     private points: Point[];
     private trackMeshes: Mesh[];
     private superposition: number;
+    private roadTexture: Texture;
 
     public get Meshes(): Mesh[] {
         return this.trackMeshes;
+    }
+
+    public get RoadTexture(): Texture {
+        return this.roadTexture;
     }
 
     public constructor() {
         this.points = new Array<Point>();
         this.trackMeshes = new Array<Mesh>();
         this.superposition = 0;
+        this.roadTexture = this.loadTexture(ROAD_TEXTURE_PATH);
     }
 
     public createTrack(points: Point[]): void {
@@ -34,6 +40,10 @@ export class RoadCreator {
         }
     }
 
+    private loadTexture(path: string): Texture {
+        return new TextureLoader().load(path);
+    }
+
     private createRoadSegment(index: number): void {
         const trackDirection: Vector3 = new Vector3(this.points[(index + 1) % this.points.length].x -
                                                     this.points[index].x,
@@ -41,7 +51,7 @@ export class RoadCreator {
                                                     this.points[(index + 1) % this.points.length].y -
                                                     this.points[index].y);
 
-        const trackTexture: Texture = new TextureLoader().load(ROAD_TEXTURE_PATH);
+        const trackTexture: Texture = this.loadTexture(ROAD_TEXTURE_PATH);
         trackTexture.wrapS = RepeatWrapping;
         trackTexture.repeat.set(trackDirection.length() * TEXTURE_TILE_REPETIONS, 1);
 
@@ -68,7 +78,7 @@ export class RoadCreator {
 
     private createIntersection(index: number): void {
         const POLYGONS_NUMBER: number = 32;
-        const trackTexture: Texture = new TextureLoader().load(ROAD_TEXTURE_PATH);
+        const trackTexture: Texture = this.loadTexture(ROAD_TEXTURE_PATH);
         const circle: CircleBufferGeometry = new CircleBufferGeometry(ROAD_WIDTH * HALF, POLYGONS_NUMBER);
         const intersectionMesh: Mesh = new Mesh(circle, new MeshBasicMaterial({ map: trackTexture, side: BackSide }));
 
