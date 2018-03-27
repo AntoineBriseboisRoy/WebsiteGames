@@ -18,7 +18,7 @@ describe("GridService", () => {
                         GameManagerService],
             imports: [RouterTestingModule]
         });
-    );
+    });
 
     it("should be created", inject([GridService], (service: GridService) => {
             expect(service).toBeTruthy();
