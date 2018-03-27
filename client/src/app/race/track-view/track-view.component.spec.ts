@@ -1,8 +1,9 @@
 import { async, ComponentFixture, TestBed } from "@angular/core/testing";
 
 import { TrackViewComponent } from "./track-view.component";
+import { UrlSegment } from "@angular/router/src/url_tree";
 
-describe("TrackViewComponent", () => {
+fdescribe("TrackViewComponent", () => {
   let component: TrackViewComponent;
   let fixture: ComponentFixture<TrackViewComponent>;
 
@@ -21,5 +22,13 @@ describe("TrackViewComponent", () => {
 
   it("should create", () => {
     expect(component).toBeTruthy();
+  });
+
+  it("should show a preview when track is selected", (done: DoneFn) => {
+    component.callModal();
+    component["route"].url.subscribe((resultUrl: UrlSegment[]) => {
+      expect(resultUrl[0].path).toEqual("/race?name=Test");
+    });
+    done();
   });
 });
