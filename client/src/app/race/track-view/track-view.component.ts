@@ -41,7 +41,7 @@ export class TrackViewComponent implements OnInit {
             .then(() => {
                 this.route.queryParams.subscribe((params: Params) => {
                     this.router.navigate(["/race/play/"], { queryParams: { name: params["name"]}});
-                  });
+                });
             },
                   () => { }
             );

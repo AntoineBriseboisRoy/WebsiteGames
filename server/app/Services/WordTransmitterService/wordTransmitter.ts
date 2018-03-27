@@ -17,6 +17,8 @@ export class WordTransmitterService {
         this.indexPosition = new Array();
         this.cells = new Array();
         this.gridWords = new Array<IGridWord>();
+        this.words = undefined;
+        this.gridContent = undefined;
     }
 
     public static get Instance(): WordTransmitterService {
@@ -85,7 +87,6 @@ export class WordTransmitterService {
         }
     }
 
-    // create the array that contain every cell's number that need an index
     private addIndextoCells(): void {
         for (let i: number = 0; i < this.gridContent.length; ++i) {
             if (this.containsIndex(i)) {
