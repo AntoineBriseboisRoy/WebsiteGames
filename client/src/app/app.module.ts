@@ -33,6 +33,7 @@ import { ModalService } from "./modal//modal.service";
 import { ModalStateService } from "./modal//modal-state.service";
 import { ModalDirective } from "./modal/modal.directive";
 import { TrackPreviewComponent } from "./race/track-view/track-preview/track-preview.component";
+import { StartLineGeneratorService } from "./race/start-line-generator.service";
 import { GameManagerService } from "./crossword/game-manager.service";
 
 @NgModule({
@@ -72,6 +73,7 @@ import { GameManagerService } from "./crossword/game-manager.service";
         RoadCreator,
         ModalService,
         ModalStateService,
+        StartLineGeneratorService,
         GameManagerService
     ],
     bootstrap: [AppComponent]
