@@ -9,7 +9,7 @@ describe("TimerService", () => {
         });
     });
 
-    fit("should be created", inject([TimerService], (service: TimerService) => {
+    it("should be created", inject([TimerService], (service: TimerService) => {
         expect(service).toBeTruthy();
     }));
 
