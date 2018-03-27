@@ -26,7 +26,7 @@ import { MongoQueryService } from "./mongo-query.service";
 import { SocketIoService } from "./crossword/socket-io.service";
 import { GameRoomManagerService } from "./crossword/multiplayer-mode/GameRoomManagerService.service";
 import { GameListComponent } from "./crossword/multiplayer-mode/GameList/GameList.component";
-import { CollisionManager } from "./race/car/collision-manager";
+import { CollisionManager } from "./race/car/collision-manager.service";
 import { RoadCreator } from "./race/render-service/road-creator.service";
 import { ModalComponent } from "./modal/modal/modal.component";
 import { ModalService } from "./modal//modal.service";

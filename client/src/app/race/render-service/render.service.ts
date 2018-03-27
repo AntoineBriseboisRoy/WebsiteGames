@@ -9,7 +9,7 @@ import { INITIAL_CAMERA_POSITION_Y, FRUSTUM_RATIO, PI_OVER_2, HALF } from "../..
 import { Skybox } from "../skybox/skybox";
 import { CameraContext } from "../camera/camera-context";
 import { ITrack, TrackType } from "../../../../../common/interfaces/ITrack";
-import { CollisionManager } from "../car/collision-manager";
+import { CollisionManager } from "../car/collision-manager.service";
 import { RoadCreator } from "./road-creator.service";
 
 export const FAR_CLIPPING_PLANE: number = 1000;
@@ -43,6 +43,14 @@ export class RenderService {
 
     public get CameraContext(): CameraContext {
         return this.cameraContext;
+    }
+
+    public get RoadCreator(): RoadCreator {
+        return this.roadCreator;
+    }
+
+    public get FloorTextures(): Map<TrackType, Texture> {
+        return this.floorTextures;
     }
 
     public constructor(private collisionManager: CollisionManager, private roadCreator: RoadCreator) {
@@ -89,9 +97,6 @@ export class RenderService {
         this.cameraContext.update(this.cars[PLAYER]);
         this.lastDate = Date.now();
         this.collisionManager.update();
-        // console.log(this.cars[0].getPosition());
-        // console.log(this.cars[0].Raycasters[0].ray.origin);
-
     }
 
     private async createScene(): Promise<void> {
@@ -116,7 +121,6 @@ export class RenderService {
         this.scene.background = new Skybox().CubeTexture;
         this.createFloorMesh();
         this.generateTrack();
-        this.createFloorCollisionables();
     }
 
     private async createCars(): Promise<void> {
@@ -128,18 +132,14 @@ export class RenderService {
     }
 
     private generateTrack(): void {
-        this.roadCreator.createTrack(this.activeTrack.points).forEach((mesh: Mesh) => {
+        this.roadCreator.createTrack(this.activeTrack.points);
+        this.roadCreator.Meshes.forEach((mesh: Mesh) => {
+            this.collisionManager.addRoadSegment(mesh);
             this.scene.add(mesh);
         });
 
         this.generateStartLine(new Vector2(this.activeTrack.points[1].x - this.activeTrack.points[0].x,
                                            this.activeTrack.points[1].y - this.activeTrack.points[0].y));
-    }
-
-    private createFloorCollisionables(): void {
-        this.roadCreator.Meshes.forEach((mesh: Mesh) => {
-            this.collisionManager.addRoadSegment(mesh);
-        });
     }
 
     private generateStartLine(firstRoad: Vector2): void {
