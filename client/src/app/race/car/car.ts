@@ -138,10 +138,10 @@ export class Car extends Object3D {
     public async init(): Promise<void> {
         this.mesh = await this.load();
         this.add(this.mesh);
+        this.mesh.setRotationFromEuler(INITIAL_MODEL_ROTATION);
         this.initBoundingBox();
         this.mesh.position.add(this.initialPosition);
         this.initRaycasters();
-        this.mesh.setRotationFromEuler(INITIAL_MODEL_ROTATION);
     }
 
     private initBoundingBox(): void {
@@ -149,9 +149,9 @@ export class Car extends Object3D {
         this.boundingBox.setFromObject(helper);
         const material: MeshBasicMaterial = new MeshBasicMaterial();
         material.visible = false;
-        const box: BoxGeometry = new BoxGeometry(this.boundingBox.getSize().x,
+        const box: BoxGeometry = new BoxGeometry(this.boundingBox.getSize().z,
                                                  this.boundingBox.getSize().y,
-                                                 this.boundingBox.getSize().z + EXTRA_BUMPER_LENGTH);
+                                                 this.boundingBox.getSize().x);
         this.hitBox = new Mesh(box, material);
         this.mesh.add(this.hitBox);
     }
