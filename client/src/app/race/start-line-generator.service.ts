@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { Vector2, ObjectLoader, Object3D, PlaneBufferGeometry, MeshBasicMaterial, Mesh, DoubleSide } from "three";
+import { Vector2, ObjectLoader, Object3D, PlaneBufferGeometry, MeshBasicMaterial, Mesh, DoubleSide, TextureLoader } from "three";
 import { Car } from "./car/car";
 import { ITrack, TrackType } from "../../../../common/interfaces/ITrack";
 import { HALF, PI_OVER_2 } from "../constants";
@@ -50,7 +50,8 @@ export class StartLineGeneratorService {
     }
     public createGroundStartLine(startLineBanner: Object3D): Mesh {
         const startLine: Mesh = new Mesh(new PlaneBufferGeometry(STARTLINE_WIDTH, STARTLINE_HEIGHT),
-                                         new MeshBasicMaterial({ color: 0xFFFF00, side: DoubleSide }));
+                                         new MeshBasicMaterial({ map: new TextureLoader().load("../assets/checkerboard.jpg"),
+                                                                 side: DoubleSide }));
         startLine.position.x = startLineBanner.position.x;
         startLine.position.y = startLineBanner.position.y + SUPERPOSITION;
         startLine.position.z = startLineBanner.position.z;
