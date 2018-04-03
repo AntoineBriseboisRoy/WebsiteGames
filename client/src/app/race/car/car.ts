@@ -19,7 +19,6 @@ const FRONT_X_CORRECTION: number = 0.16;
 const FRONT_Z_CORRECTION: number = 0.13;
 const BACK_X_CORRECTION: number = 0.13;
 const BACK_Z_CORRECTION: number = 0.1;
-const EXTRA_BUMPER_LENGTH: number = 0.5;
 
 export class Car extends Object3D {
     public isAcceleratorPressed: boolean;
