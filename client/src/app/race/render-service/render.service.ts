@@ -1,7 +1,8 @@
 import { Injectable } from "@angular/core";
 import Stats = require("stats.js");
-import { WebGLRenderer, Scene, AmbientLight, Mesh, PlaneBufferGeometry, MeshBasicMaterial,
-         Vector2, BackSide, Texture, RepeatWrapping, TextureLoader, Object3D } from "three";
+import {
+    WebGLRenderer, Scene, AmbientLight, Mesh, PlaneBufferGeometry, MeshBasicMaterial,
+    Vector2, BackSide, Texture, RepeatWrapping, TextureLoader, Object3D} from "three";
 import { Car } from "../car/car";
 import { ThirdPersonCamera } from "../camera/camera-perspective";
 import { TopViewCamera } from "../camera/camera-orthogonal";
@@ -142,8 +143,9 @@ export class RenderService {
                                                                      this.activeTrack.points[1].y - this.activeTrack.points[0].y),
                                                          this.cars,
                                                          this.activeTrack)
-        .then((startLine: Object3D) => this.scene.add(startLine))
-        .catch((error: Error) => console.error(error));
+            .then((startLineBanner: Object3D) =>
+                this.scene.add(startLineBanner, this.startLineGeneratorService.createGroundStartLine(startLineBanner)))
+            .catch((error: Error) => console.error(error));
     }
 
     private createFloorMesh(): void {
