@@ -3,7 +3,6 @@ import { TestBed, inject } from "@angular/core/testing";
 import { CollisionManager } from "./collision-manager.service";
 import { Car } from "./car";
 import { Vector3 } from "three";
-import {} from "jasmine";
 
 // tslint:disable:no-magic-numbers
 describe("CollisionManagerService", () => {
