@@ -19,7 +19,6 @@ const FRONT_X_CORRECTION: number = 0.16;
 const FRONT_Z_CORRECTION: number = 0.13;
 const BACK_X_CORRECTION: number = 0.13;
 const BACK_Z_CORRECTION: number = 0.1;
-const EXTRA_BUMPER_LENGTH: number = 0.5;
 const MINIMUM_SPEED: number = 0.05;
 const FRONTAL_SURFACE: number = 3;
 
