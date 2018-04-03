@@ -52,29 +52,19 @@
     background-color: lightblue;
 }
 
-.horizontal-border {
-    border-top: 3px dashed rgb(3, 109, 167);
-    border-bottom: 3px dashed rgb(3, 109, 167);
-}
-
-.vertical-border {
-    border-left: 3px dashed rgb(3, 109, 167);
-    border-right: 3px dashed rgb(3, 109, 167);
-}
-
-.first-case-border-horizontal {
+.left-border {
     border-left: 3px dashed rgb(3, 109, 167);
 }
 
-.last-case-border-horizontal {
+.right-border {
     border-right: 3px dashed rgb(3, 109, 167);
 }
 
-.first-case-border-vertical {
+.top-border {
     border-top: 3px dashed rgb(3, 109, 167);
 }
 
-.last-case-border-vertical {
+.bottom-border {
     border-bottom: 3px dashed rgb(3, 109, 167);
 }
 

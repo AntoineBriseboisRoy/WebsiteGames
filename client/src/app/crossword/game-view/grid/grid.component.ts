@@ -135,7 +135,7 @@ export class GridComponent implements OnInit {
         if (this.focusCell.cells) {
             if (this.focusCell.cells.includes(cell)) {
                 return this.focusCell.Orientation === Orientation.Vertical ?
-                    "vertical-border" : "horizontal-border";
+                    "left-border right-border" : "top-border bottom-border";
             }
         }
 
@@ -146,7 +146,7 @@ export class GridComponent implements OnInit {
         if (this.focusCell.cells) {
             if (this.focusCell.cells[0] === cell) {
                 return this.focusCell.Orientation === Orientation.Vertical ?
-                    "first-case-border-vertical" : "first-case-border-horizontal";
+                    "top-border" : "left-border";
             }
         }
 
@@ -157,7 +157,7 @@ export class GridComponent implements OnInit {
         if (this.focusCell.cells) {
             if (this.focusCell.cells[this.focusCell.cells.length - 1] === cell) {
                 return this.focusCell.Orientation === Orientation.Vertical ?
-                    "last-case-border-vertical" : "last-case-border-horizontal";
+                    "bottom-border" : "right-border";
             }
         }
 
