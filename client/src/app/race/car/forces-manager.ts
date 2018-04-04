@@ -29,12 +29,12 @@ export class ForcesManager {
     private static computeResultingForce(object: IPhysicsObject): Vector3 {
         const resultingForce: Vector3 = new Vector3();
 
-        if (object.speed.length() >= MINIMUM_SPEED) {
-            const dragForce: Vector3 = ForcesManager.getDragForce(object);
-            const rollingResistance: Vector3 = ForcesManager.getRollingResistance(object);
-            const friction: Vector3 = ForcesManager.getLatteralFrictionForce(object);
-            resultingForce.add(dragForce).add(rollingResistance).add(friction);
-        }
+        // if (object.speed.length() >= MINIMUM_SPEED) {
+        //     const dragForce: Vector3 = ForcesManager.getDragForce(object);
+        //     const rollingResistance: Vector3 = ForcesManager.getRollingResistance(object);
+        //     const friction: Vector3 = ForcesManager.getLatteralFrictionForce(object);
+        //     resultingForce.add(dragForce).add(rollingResistance).add(friction);
+        // }
 
         if (object.isAccelerating) {
             const tractionForce: number = ForcesManager.getTractionForce(object);
