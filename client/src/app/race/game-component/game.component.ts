@@ -29,18 +29,12 @@ export class GameComponent implements AfterViewInit {
     @ViewChild("container")
     private containerRef: ElementRef;
     public startingText: string;
-    public lap: number;
-    public totalTime: Date;
-    public lapTime: Date;
     public bestTime: Date;
 
     public constructor(private renderService: RenderService, private inputManagerService: InputManagerService,
                        private mongoQueryService: MongoQueryService , private route: ActivatedRoute, private timer: TimerService) {
         this.containerRef = undefined;
         this.startingText = "";
-        this.lap = 0;
-        this.totalTime = new Date(0, 0, 0, 0, 0, 0, 0);
-        this.lapTime = new Date(0, 0, 0, 0, 0, 0, 0);
         this.bestTime = new Date(0, 0, 0, 0, 0, 0, 0);
     }
 
@@ -109,8 +103,8 @@ export class GameComponent implements AfterViewInit {
 
     private startTimer(): void {
         this.timer.Time.subscribe((time: number) => {
-            this.totalTime.setTime(time);
-            this.lapTime.setTime(time); // À modifier lorsque les tours de piste seront implémenté.
+            this.car.Information.lapTime.setTime(time);
+            this.car.Information.totalTime.setTime(time); // À modifier lorsque les tours de piste seront implémenté.
         });
     }
     public rpmRatio(): number {

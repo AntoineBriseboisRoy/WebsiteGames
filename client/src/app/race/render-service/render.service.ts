@@ -45,10 +45,6 @@ export class RenderService {
         return this.cameraContext;
     }
 
-    public get RoadCreator(): RoadCreator {
-        return this.roadCreator;
-    }
-
     public get FloorTextures(): Map<TrackType, Texture> {
         return this.floorTextures;
     }

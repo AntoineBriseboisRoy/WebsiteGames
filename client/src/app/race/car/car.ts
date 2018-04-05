@@ -3,6 +3,7 @@ import { Vector3, Matrix4, Object3D, ObjectLoader, Euler, Quaternion, Box3,
 import { Engine } from "./engine";
 import { MS_TO_SECONDS, GRAVITY, PI_OVER_2, RAD_TO_DEG } from "../../constants";
 import { Wheel } from "./wheel";
+import { CarInformation } from "./car-information";
 
 export const DEFAULT_WHEELBASE: number = 2.78;
 export const DEFAULT_MASS: number = 1515;
@@ -43,6 +44,7 @@ export class Car extends Object3D {
     private raycasters: Raycaster[];
 
     private raycasterOffsets: Vector3[];
+    private information: CarInformation;
 
     public get Mass(): number {
         return this.mass;
@@ -92,6 +94,10 @@ export class Car extends Object3D {
         return this.mesh.matrix;
     }
 
+    public get Information(): CarInformation {
+        return this.information;
+    }
+
     public get direction(): Vector3 {
         const rotationMatrix: Matrix4 = new Matrix4();
         rotationMatrix.extractRotation(this.mesh.matrix);
@@ -133,10 +139,10 @@ export class Car extends Object3D {
         this.steeringWheelDirection = 0;
         this.weightRear = INITIAL_WEIGHT_DISTRIBUTION;
         this._speed = new Vector3(0, 0, 0);
-
         this.boundingBox = new Box3();
         this.raycasters = new Array<Raycaster>();
         this.raycasterOffsets = new Array<Vector3>();
+        this.information = new CarInformation();
     }
 
     // tslint:disable-next-line:no-suspicious-comment

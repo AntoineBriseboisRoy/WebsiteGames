@@ -155,8 +155,7 @@ export class CollisionManager {
     }
 
     private startLineCollision(car: Car): void {
-        console.log("Tour complété par" + car.uuid);
-        console.log(this.areCarsCollidingWithStartLine);
+        car.Information.lap++;
     }
 
     private getWorldCoordinatesSpeed(car: Car): Vector3 {

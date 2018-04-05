@@ -4,13 +4,13 @@
   <span id="gear" class="text">{{this.renderService.car.currentGear + 1}}</span>
   <img id="speed-background" src="../../assets/HUD_Speed.png">
   <span id="lap-background">
-    <span id="lap" class="text">Lap: {{this.lap}} / 3</span>
+    <span id="lap" class="text">Lap: {{this.car.Information.lap}} / 3</span>
   </span>
   <span id="time-background">
-    <span id="time" class="text">Total time: {{this.totalTime.getTime() | date: 'mm:ss:SS'}}</span>
+    <span id="time" class="text">Total time: {{this.car.Information.totalTime.getTime() | date: 'mm:ss:SS'}}</span>
   </span>
   <span id="lap-time-background"> 
-    <span id="lap-time" class="text"> Lap time: {{this.lapTime.getTime() | date: 'mm:ss:SS'}}</span>
+    <span id="lap-time" class="text"> Lap time: {{this.car.Information.lapTime.getTime() | date: 'mm:ss:SS'}}</span>
   </span>
   <span id="best-time-background">
     <span id="best-time" class="text"> Best time: {{this.bestTime.getTime() | date: 'mm:ss:SS'}}</span>
