@@ -143,8 +143,11 @@ export class RenderService {
                                                                      this.activeTrack.points[1].y - this.activeTrack.points[0].y),
                                                          this.cars,
                                                          this.activeTrack)
-            .then((startLineBanner: Object3D) =>
-                this.scene.add(startLineBanner, this.startLineGeneratorService.createGroundStartLine(startLineBanner)))
+            .then((startLineBanner: Object3D) => {
+                const groundStartLine: Mesh = this.startLineGeneratorService.createGroundStartLine(startLineBanner);
+                this.scene.add(startLineBanner, groundStartLine);
+                this.collisionManager.setStartLine(groundStartLine);
+            })
             .catch((error: Error) => console.error(error));
     }
 

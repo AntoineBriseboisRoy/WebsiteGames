@@ -19,30 +19,39 @@ enum CollisionSide {
 
 @Injectable()
 export class CollisionManager {
-
     private cars: Car[];
     private roadSegments: Mesh[];
+    private startLine: Mesh;
     private timeSinceLastCollision: number;
     private lastDate: number;
+    private areCarsCollidingWithStartLine: Array<boolean>;
 
     public constructor() {
         this.cars = new Array<Car>();
         this.roadSegments = new Array<Mesh>();
+        this.startLine = new Mesh();
         this.timeSinceLastCollision = 0;
         this.lastDate = 0;
+        this.areCarsCollidingWithStartLine = new Array<boolean>();
     }
 
     public addCar(car: Car): void {
         this.cars.push(car);
+        this.areCarsCollidingWithStartLine.push(false);
     }
 
     public addRoadSegment(collisionable: Mesh): void {
         this.roadSegments.push(collisionable);
     }
 
+    public setStartLine(collisionable: Mesh): void {
+        this.startLine = collisionable;
+    }
+
     public update(): void {
         this.verifyCarCollision();
         this.verifyWallCollision();
+        this.verifyStartLineCollision();
     }
 
     private verifyCarCollision(): void {
@@ -129,6 +138,25 @@ export class CollisionManager {
 
         carA.speed = this.getCarCoordinatesSpeed(carA, carANewSpeed);
         carB.speed = this.getCarCoordinatesSpeed(carB, carBNewSpeed);
+    }
+
+    private verifyStartLineCollision(): void {
+        this.cars.forEach((car: Car, index: number) => {
+            const intersections: Intersection[] = car.Raycasters[0].intersectObject(this.startLine);
+            if (intersections.length > 0) {
+                if (!this.areCarsCollidingWithStartLine[index]) {
+                    this.startLineCollision(car);
+                    this.areCarsCollidingWithStartLine[index] = true;
+                }
+            } else {
+                this.areCarsCollidingWithStartLine[index] = false;
+            }
+        });
+    }
+
+    private startLineCollision(car: Car): void {
+        console.log("Tour complété par" + car.uuid);
+        console.log(this.areCarsCollidingWithStartLine);
     }
 
     private getWorldCoordinatesSpeed(car: Car): Vector3 {
