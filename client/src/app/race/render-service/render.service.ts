@@ -6,12 +6,13 @@ import { Car } from "../car/car";
 import { ThirdPersonCamera } from "../camera/camera-perspective";
 import { TopViewCamera } from "../camera/camera-orthogonal";
 import { INITIAL_CAMERA_POSITION_Y, FRUSTUM_RATIO, PI_OVER_2, HALF } from "../../constants";
-import { Skybox } from "../skybox/skybox";
+import { Skybox, DayPeriod } from "../skybox/skybox";
 import { CameraContext } from "../camera/camera-context";
 import { ITrack, TrackType } from "../../../../../common/interfaces/ITrack";
 import { CollisionManager } from "../car/collision-manager.service";
 import { RoadCreator } from "./road-creator.service";
 import { StartLineGeneratorService } from "../start-line-generator.service";
+import { DayPeriodContext } from "../dayToggle-context";
 
 export const FAR_CLIPPING_PLANE: number = 1000;
 export const NEAR_CLIPPING_PLANE: number = 1;
@@ -28,6 +29,7 @@ const NUMBER_OF_CARS: number = 4;
 @Injectable()
 export class RenderService {
     private cameraContext: CameraContext;
+    private dayPeriodContext: DayPeriodContext;
     private container: HTMLDivElement;
     private cars: Array<Car>;
     private renderer: WebGLRenderer;
@@ -42,6 +44,10 @@ export class RenderService {
 
     public get CameraContext(): CameraContext {
         return this.cameraContext;
+    }
+
+    public get DayPeriodContext(): DayPeriodContext {
+        return this.dayPeriodContext;
     }
 
     public get RoadCreator(): RoadCreator {
@@ -61,6 +67,7 @@ export class RenderService {
         this.floorTextures = new Map<TrackType, Texture>();
         this.scene = new Scene();
         this.cameraContext = new CameraContext();
+        this.dayPeriodContext = new DayPeriodContext();
     }
 
     public async initialize(container: HTMLDivElement, track: ITrack): Promise<void> {
@@ -118,9 +125,16 @@ export class RenderService {
         this.cameraContext.setInitialState();
         this.scene.add(new AmbientLight(WHITE, AMBIENT_LIGHT_OPACITY));
 
-        this.scene.background = new Skybox().CubeTexture;
+        this.createSkyboxes();
+        this.scene.background = this.dayPeriodContext.CurrentState.CubeTexture;
         this.createFloorMesh();
         this.generateTrack();
+    }
+
+    private createSkyboxes(): void {
+        this.dayPeriodContext.addState(new Skybox(DayPeriod.DAY));
+        this.dayPeriodContext.addState(new Skybox(DayPeriod.NIGHT));
+        this.dayPeriodContext.setInitialState();
     }
 
     private async createCars(): Promise<void> {

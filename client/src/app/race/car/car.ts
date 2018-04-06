@@ -215,6 +215,10 @@ export class Car extends Object3D {
         this.mesh.rotateY(omega);
     }
 
+    public toggleHeadlights(): void {
+        console.log("Lights toggled");
+    }
+
     public update(deltaTime: number): void {
         deltaTime = deltaTime / MS_TO_SECONDS;
 
