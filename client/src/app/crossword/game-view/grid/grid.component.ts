@@ -135,7 +135,7 @@ export class GridComponent implements OnInit {
         if (this.focusCell.cells) {
             if (this.focusCell.cells.includes(cell)) {
                 return this.focusCell.Orientation === Orientation.Vertical ?
-                    "left-border right-border" : "top-border bottom-border";
+                    "left-border-p1 right-border-p1" : "top-border-p1 bottom-border-p1";
             }
         }
 
@@ -146,7 +146,7 @@ export class GridComponent implements OnInit {
         if (this.focusCell.cells) {
             if (this.focusCell.cells[0] === cell) {
                 return this.focusCell.Orientation === Orientation.Vertical ?
-                    "top-border" : "left-border";
+                    "border-both-p1 top-border-p1" : "border-both-p1 left-border-p1";
             }
         }
 
@@ -157,7 +157,7 @@ export class GridComponent implements OnInit {
         if (this.focusCell.cells) {
             if (this.focusCell.cells[this.focusCell.cells.length - 1] === cell) {
                 return this.focusCell.Orientation === Orientation.Vertical ?
-                    "bottom-border" : "right-border";
+                    "border-both-p1 bottom-border-p1" : "border-both-p1 right-border-p1";
             }
         }
 
@@ -167,11 +167,11 @@ export class GridComponent implements OnInit {
     public addStyleOnFoundWord(cell: ICell): string {
         if (cell.isFound) {
             if ( cell.finder === Finder.player1 ) {
-                return "isFoundCellPlayerOne";
+                return "is-found-cell-p1";
             } else if ( cell.finder === Finder.player2 ) {
-                return "isFoundCellPlayerTwo";
+                return "is-found-cell-p2";
             } else if ( cell.finder === Finder.both ) {
-                return "isFoundCellBoth";
+                return "is-found-cell-both";
             }
         }
 
