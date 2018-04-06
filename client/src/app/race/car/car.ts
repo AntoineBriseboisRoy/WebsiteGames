@@ -192,19 +192,11 @@ export class Car extends Object3D {
     }
 
     public steerLeft(): void {
-        if (this.steeringWheelDirection < MAXIMUM_STEERING_ANGLE) {
-            this.steeringWheelDirection += 0.06;
-        } else {
-            this.steeringWheelDirection = MAXIMUM_STEERING_ANGLE;
-        }
+        this.steeringWheelDirection = MAXIMUM_STEERING_ANGLE;
     }
 
     public steerRight(): void {
-        if (this.steeringWheelDirection > -MAXIMUM_STEERING_ANGLE) {
-            this.steeringWheelDirection -= 0.06;
-        } else {
-            this.steeringWheelDirection = -MAXIMUM_STEERING_ANGLE;
-        }
+        this.steeringWheelDirection = -MAXIMUM_STEERING_ANGLE;
     }
 
     public releaseSteering(): void {
