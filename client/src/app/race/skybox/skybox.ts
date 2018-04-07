@@ -14,9 +14,9 @@ export class Skybox {
 
     public constructor(period: DayPeriod) {
         this.skyboxCube = new CubeTextureLoader().setPath(BACKGROUND_PATH + period).load([
-            "posx.jpg", "negx.jpg",
-            "posy.jpg", "negy.jpg",
-            "posz.jpg", "negz.jpg"
+            "right.png", "left.png",
+            "top.png", "bottom.png",
+            "back.png", "front.png"
         ]);
     }
 
