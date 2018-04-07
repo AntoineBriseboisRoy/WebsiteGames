@@ -19,7 +19,8 @@ export const NEAR_CLIPPING_PLANE: number = 1;
 export const FIELD_OF_VIEW: number = 70;
 
 const WHITE: number = 0xFFFFFF;
-const AMBIENT_LIGHT_OPACITY: number = 0.5;
+const AMBIENT_LIGHT_DAY: number = 0.5;
+const AMBIENT_LIGHT_NIGHT: number = 0.2;
 const TEXTURE_TILE_REPETIONS: number = 200;
 const WORLD_SIZE: number = 1000;
 const FLOOR_SIZE: number = WORLD_SIZE / HALF;
@@ -123,17 +124,17 @@ export class RenderService {
 
         this.cameraContext.initStates(this.cars[PLAYER].getPosition());
         this.cameraContext.setInitialState();
-        this.scene.add(new AmbientLight(WHITE, AMBIENT_LIGHT_OPACITY));
+        this.scene.add(new AmbientLight(WHITE, AMBIENT_LIGHT_DAY));
 
         this.createSkyboxes();
-        this.scene.background = this.dayPeriodContext.CurrentState.CubeTexture;
+        this.scene.background = this.dayPeriodContext.CurrentState["0"].CubeTexture;
         this.createFloorMesh();
         this.generateTrack();
     }
 
     private createSkyboxes(): void {
-        this.dayPeriodContext.addState(new Skybox(DayPeriod.DAY));
-        this.dayPeriodContext.addState(new Skybox(DayPeriod.NIGHT));
+        this.dayPeriodContext.addState([new Skybox(DayPeriod.DAY), new AmbientLight(WHITE, AMBIENT_LIGHT_DAY)]);
+        this.dayPeriodContext.addState([new Skybox(DayPeriod.NIGHT), new AmbientLight(WHITE, AMBIENT_LIGHT_NIGHT)]);
         this.dayPeriodContext.setInitialState();
     }
 

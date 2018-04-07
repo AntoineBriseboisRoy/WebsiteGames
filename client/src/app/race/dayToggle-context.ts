@@ -1,19 +1,18 @@
-import { Skybox } from "./skybox/skybox";
+import { Tuple } from "./types";
 
 const N_SKYBOX_STATES: number = 2;
-
 export class DayPeriodContext {
 
-    private states: Skybox[];
-    private currentState: Skybox;
+    private states: Tuple[];
+    private currentState: Tuple;
     private stateCounter: number;
 
     public constructor() {
-        this.states = new Array<Skybox>();
+        this.states = new Array<Tuple>();
         this.stateCounter = 0;
     }
 
-    public get CurrentState(): Skybox {
+    public get CurrentState(): Tuple {
         return this.currentState;
     }
 
@@ -21,7 +20,7 @@ export class DayPeriodContext {
         return this.states.length;
     }
 
-    public addState(newState: Skybox): void {
+    public addState(newState: Tuple): void {
         this.states.push(newState);
     }
 
