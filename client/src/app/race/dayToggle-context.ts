@@ -1,13 +1,13 @@
 import { Tuple } from "./types";
+import { RenderService } from "./render-service/render.service";
 
-const N_SKYBOX_STATES: number = 2;
 export class DayPeriodContext {
 
     private states: Tuple[];
     private currentState: Tuple;
     private stateCounter: number;
 
-    public constructor() {
+    public constructor(private renderService: RenderService) {
         this.states = new Array<Tuple>();
         this.stateCounter = 0;
     }
@@ -29,7 +29,9 @@ export class DayPeriodContext {
     }
 
     public togglePeriod(): void {
-        this.stateCounter = ++this.stateCounter % N_SKYBOX_STATES;
+        this.renderService.removeLight();
+        this.stateCounter = ++this.stateCounter % this.nStates;
         this.currentState = this.states[this.stateCounter];
+        this.renderService.toggleDayNight();
     }
 }
