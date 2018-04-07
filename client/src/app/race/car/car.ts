@@ -1,5 +1,5 @@
 import { Vector3, Matrix4, Object3D, ObjectLoader, Euler, Quaternion, Box3,
-         BoxHelper, Raycaster, BoxGeometry, MeshBasicMaterial, Mesh } from "three";
+         BoxHelper, Raycaster, BoxGeometry, MeshBasicMaterial, Mesh, SpotLight } from "three";
 import { Engine } from "./engine";
 import { MS_TO_SECONDS, GRAVITY, PI_OVER_2, RAD_TO_DEG } from "../../constants";
 import { Wheel } from "./wheel";
@@ -14,6 +14,7 @@ const INITIAL_WEIGHT_DISTRIBUTION: number = 0.5;
 const MINIMUM_SPEED: number = 0.05;
 const NUMBER_REAR_WHEELS: number = 2;
 const NUMBER_WHEELS: number = 4;
+const NUMBER_OF_HEADLIGHT: number = 2;
 
 const FRONT_X_CORRECTION: number = 0.16;
 const FRONT_Z_CORRECTION: number = 0.13;
@@ -43,6 +44,7 @@ export class Car extends Object3D {
     private raycasters: Raycaster[];
 
     private raycasterOffsets: Vector3[];
+    private headLights: SpotLight[];
 
     public get Mass(): number {
         return this.mass;
@@ -133,10 +135,10 @@ export class Car extends Object3D {
         this.steeringWheelDirection = 0;
         this.weightRear = INITIAL_WEIGHT_DISTRIBUTION;
         this._speed = new Vector3(0, 0, 0);
-
         this.boundingBox = new Box3();
         this.raycasters = new Array<Raycaster>();
         this.raycasterOffsets = new Array<Vector3>();
+        this.headLights = new Array<SpotLight>();
     }
 
     // tslint:disable-next-line:no-suspicious-comment
@@ -156,6 +158,7 @@ export class Car extends Object3D {
         this.initBoundingBox();
         this.mesh.position.add(this.initialPosition);
         this.initRaycasters();
+        this.initHeadLights();
         this.mesh.setRotationFromEuler(INITIAL_MODEL_ROTATION);
     }
 
@@ -174,6 +177,14 @@ export class Car extends Object3D {
     private initRaycasters(): void {
         this.setRaycasterOffsets(new Box3().setFromObject(this.mesh));
         this.setRaycastersFromOffsets();
+    }
+
+    private initHeadLights(): void {
+        for (let i: number = 0; i < NUMBER_OF_HEADLIGHT; ++i) {
+            this.headLights.push(new SpotLight());
+        }
+        this.add(this.headLights[0]);
+        this.add(this.headLights[1]);
     }
 
     private setRaycastersFromOffsets(): void {
