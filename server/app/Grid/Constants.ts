@@ -1,3 +1,6 @@
+import * as fs from "fs";
+
+export const WORD_CACHE: string[][] = JSON.parse(fs.readFileSync("./words.json").toString());
 export const BLACKSQUARE_CHARACTER: string = "*";
 export const EMPTY_SQUARE: string = " ";
 export const MIN_LETTERS_FOR_WORD: number = 3;

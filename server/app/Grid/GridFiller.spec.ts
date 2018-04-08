@@ -6,10 +6,11 @@ import { Difficulty } from "../Services/LexicalService/LexicalService";
 
 const EXTENDED_TIMEOUT: number = 30000;
 
-describe("Verifying 10x10 Grid", () => {
+// tslint:disable-next-line:max-func-body-length
+describe.only("Verifying 10x10 Grid", () => {
     const grid: Grid = new Grid(Difficulty.EASY);
-    it("Should be full (All letters except for blacksquares)", async (done: MochaDone) => {
-        await grid.fillGrid();
+    it.only("Should be full (All letters except for blacksquares)", () => {
+        grid.fillGrid();
         let nEmptySquares: number = 0;
         const EXPECTED_EMPTY_SQUARES: number = 0;
         grid.GridContent.forEach((row: string[]) => {
@@ -20,8 +21,7 @@ describe("Verifying 10x10 Grid", () => {
             });
         });
         expect(nEmptySquares).to.equal(EXPECTED_EMPTY_SQUARES);
-        done();
-    }).timeout(EXTENDED_TIMEOUT);
+    });
     it ("Every word should be different.", async (done: MochaDone) => {
         let repeat: boolean = false;
         for (let i: number = 0; i < grid.Words.length; ++i) {
@@ -33,7 +33,7 @@ describe("Verifying 10x10 Grid", () => {
         }
         expect(repeat).to.equal(false);
         done();
-    }).timeout(EXTENDED_TIMEOUT);
+    });
     it ("There should be no words too short.", async (done: MochaDone) => {
         expect(grid.Words.filter((word: IWord) => word.content.length < MIN_LETTERS_FOR_WORD).length).to.equal(0);
         done();
