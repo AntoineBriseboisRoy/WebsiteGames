@@ -1,7 +1,7 @@
 import { Vector3, Matrix4, Object3D, ObjectLoader, Euler, Quaternion, Box3,
          BoxHelper, Raycaster, BoxGeometry, MeshBasicMaterial, Mesh, SpotLight } from "three";
 import { Engine } from "./engine";
-import { MS_TO_SECONDS, GRAVITY, PI_OVER_2, RAD_TO_DEG } from "../../constants";
+import { MS_TO_SECONDS, GRAVITY, PI_OVER_2, RAD_TO_DEG, PI_OVER_4 } from "../../constants";
 import { Wheel } from "./wheel";
 
 export const DEFAULT_WHEELBASE: number = 2.78;
@@ -181,10 +181,10 @@ export class Car extends Object3D {
 
     private initHeadLights(): void {
         for (let i: number = 0; i < NUMBER_OF_HEADLIGHT; ++i) {
-            this.headLights.push(new SpotLight());
+            this.headLights.push(new SpotLight(0xeeffff, 1, 7, PI_OVER_4, 0));
+            this.mesh.add(this.headLights[i]);
+            this.headLights[i].position.add(this.raycasters[i + 1].ray.origin);
         }
-        this.add(this.headLights[0]);
-        this.add(this.headLights[1]);
     }
 
     private setRaycastersFromOffsets(): void {
@@ -227,7 +227,9 @@ export class Car extends Object3D {
     }
 
     public toggleHeadlights(): void {
-        console.log("Lights toggled");
+        this.headLights.forEach((headLight: SpotLight) => {
+            headLight.visible = !headLight.visible;
+        });
     }
 
     public update(deltaTime: number): void {
