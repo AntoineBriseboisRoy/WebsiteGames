@@ -1,6 +1,7 @@
 import { Car } from "./car";
 import { Vector3, Matrix4, Quaternion, Box3, Mesh, Raycaster, Intersection } from "three";
 import { Injectable } from "@angular/core";
+import { SoundManagerService } from "../sound-manager.service";
 
 const CAR_A_MOMENTUM_FACTOR: number = 2.1;
 const CAR_B_MOMENTUM_FACTOR: number = 1.9;
@@ -25,7 +26,7 @@ export class CollisionManager {
     private timeSinceLastCollision: number;
     private lastDate: number;
 
-    public constructor() {
+    public constructor(private soundManager: SoundManagerService) {
         this.cars = new Array<Car>();
         this.roadSegments = new Array<Mesh>();
         this.timeSinceLastCollision = 0;
@@ -103,6 +104,7 @@ export class CollisionManager {
     }
 
     private carCollision(carA: Car, carB: Car): void {
+        this.soundManager.play("countdown.ogg");
         const intersectBox: Box3 =  carA.BoundingBox.intersect(carB.BoundingBox);
         this.spinCar(carA, carA.getPosition().clone().sub(intersectBox.getCenter()));
         this.spinCar(carB, carB.getPosition().clone().sub(intersectBox.getCenter()));
