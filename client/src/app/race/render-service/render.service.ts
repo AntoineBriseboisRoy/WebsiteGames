@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import Stats = require("stats.js");
 import { WebGLRenderer, Scene, AmbientLight, Mesh, PlaneBufferGeometry, Vector2,
-         BackSide, Texture, RepeatWrapping, TextureLoader, Object3D, MeshPhongMaterial } from "three";
+         BackSide, Texture, RepeatWrapping, TextureLoader, Object3D, MeshPhongMaterial, Vector3 } from "three";
 import { Car } from "../car/car";
 import { ThirdPersonCamera } from "../camera/camera-perspective";
 import { TopViewCamera } from "../camera/camera-orthogonal";
@@ -13,6 +13,7 @@ import { CollisionManager } from "../car/collision-manager.service";
 import { RoadCreator } from "./road-creator.service";
 import { StartLineGeneratorService } from "../start-line-generator.service";
 import { DayPeriodContext } from "../dayToggle-context";
+import { SoundManagerService } from "../sound-manager.service";
 
 export const FAR_CLIPPING_PLANE: number = 1000;
 export const NEAR_CLIPPING_PLANE: number = 1;
@@ -60,7 +61,7 @@ export class RenderService {
     }
 
     public constructor(private collisionManager: CollisionManager, private roadCreator: RoadCreator,
-                       private startLineGeneratorService: StartLineGeneratorService) {
+                       private startLineGeneratorService: StartLineGeneratorService, private soundManager: SoundManagerService) {
         this.cars = new Array<Car>();
         for (let i: number = 0; i < NUMBER_OF_CARS; i++) {
             this.cars.push(new Car());
@@ -147,10 +148,12 @@ export class RenderService {
     }
 
     private async createCars(): Promise<void> {
+        const positionInitiale: Vector3 = new Vector3(WORLD_SIZE, 0, WORLD_SIZE);
         for (const car of this.cars) {
-            await car.init();
+            await car.init(positionInitiale);
             this.collisionManager.addCar(car);
             this.scene.add(car);
+            positionInitiale.add(positionInitiale);
         }
     }
 
@@ -165,7 +168,12 @@ export class RenderService {
                                                                      this.activeTrack.points[1].y - this.activeTrack.points[0].y),
                                                          this.cars,
                                                          this.activeTrack)
-        .then((startLine: Object3D) => this.scene.add(startLine))
+        .then((startLine: Object3D) => {
+            this.scene.add(startLine);
+            for (const car of this.cars) {
+                this.soundManager.init(car);
+            }
+        })
         .catch((error: Error) => console.error(error));
     }
 

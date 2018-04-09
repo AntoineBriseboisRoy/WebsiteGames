@@ -109,7 +109,8 @@ export class Car extends Object3D {
         rearWheel: Wheel = new Wheel(),
         wheelbase: number = DEFAULT_WHEELBASE,
         mass: number = DEFAULT_MASS,
-        dragCoefficient: number = DEFAULT_DRAG_COEFFICIENT) {
+        dragCoefficient: number = DEFAULT_DRAG_COEFFICIENT,
+        ) {
         super();
 
         if (wheelbase <= 0) {
@@ -152,12 +153,12 @@ export class Car extends Object3D {
         });
     }
 
-    public async init(): Promise<void> {
+    public async init(position: Vector3): Promise<void> {
         this.mesh = await this.load();
         this.add(this.mesh);
         this.initBoundingBox();
-        this.mesh.position.add(this.initialPosition);
         this.initRaycasters();
+        this.mesh.position.add(position);
         this.initHeadLights();
         this.mesh.setRotationFromEuler(INITIAL_MODEL_ROTATION);
     }
