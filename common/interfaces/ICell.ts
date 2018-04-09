@@ -18,6 +18,5 @@ export interface ICell {
     cellColor: CellColor;
     content: string;
     isFound: boolean;
-    selected: Finder;
     finder: Finder;
 }

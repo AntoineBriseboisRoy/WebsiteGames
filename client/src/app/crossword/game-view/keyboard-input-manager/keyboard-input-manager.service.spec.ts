@@ -26,18 +26,18 @@ describe("KeyboardInputManagerService", () => {
     it("should have a cell with a content of A", () => {
         cells = [{
             gridIndex: 1, index: 1, answer: "A", cellColor: CellColor.White,
-            content: "", isFound: false, finder: Finder.player1, selected: Finder.nobody
+            content: "", isFound: false, finder: Finder.player1
         },       {
             gridIndex: 2, index: 1, answer: "B", cellColor: CellColor.White,
-            content: "", isFound: false, finder: Finder.player1, selected: Finder.nobody
+            content: "", isFound: false, finder: Finder.player1
         },
                  {
             gridIndex: 3, index: 2, answer: "C", cellColor: CellColor.White,
-            content: "", isFound: false, finder: Finder.player1, selected: Finder.nobody
+            content: "", isFound: false, finder: Finder.player1
         },
                  {
             gridIndex: 4, index: undefined, answer: "", cellColor: CellColor.Black, content: "",
-            isFound: false, finder: Finder.player1, selected: Finder.nobody
+            isFound: false, finder: Finder.player1
         }];
 
         FocusCell.Instance.cell = cells[1];
@@ -51,14 +51,14 @@ describe("KeyboardInputManagerService", () => {
 
     it("should have a cell with a content of nothing", () => {
         cells = [{ gridIndex: 1, index: 1, answer: "A", cellColor: CellColor.White,
-                   content: "", isFound: false, finder: Finder.player1, selected: Finder.nobody },
+                   content: "", isFound: false, finder: Finder.player1 },
                  { gridIndex: 2, index: 1, answer: "B", cellColor: CellColor.White,
-                   content: "", isFound: false, finder: Finder.player1, selected: Finder.nobody },
+                   content: "", isFound: false, finder: Finder.player1},
                  { gridIndex: 3, index: 2, answer: "C", cellColor: CellColor.White,
-                   content: "", isFound: false, finder: Finder.player1, selected: Finder.nobody },
+                   content: "", isFound: false, finder: Finder.player1 },
                  {
                    gridIndex: 4, index: undefined, answer: "", cellColor: CellColor.Black, content: "",
-                   isFound: false, finder: Finder.player1, selected: Finder.nobody
+                   isFound: false, finder: Finder.player1
         }];
 
         FocusCell.Instance.cell = cells[1];
@@ -71,14 +71,14 @@ describe("KeyboardInputManagerService", () => {
 
     it("should contain all letters at least once", () => {
         cells = [{ gridIndex: 1, index: 1, answer: "A", cellColor: CellColor.White,
-                   content: "", isFound: false, finder: Finder.player1, selected: Finder.nobody },
+                   content: "", isFound: false, finder: Finder.player1 },
                  { gridIndex: 2, index: 1, answer: "B", cellColor: CellColor.White,
-                   content: "", isFound: false, finder: Finder.player1, selected: Finder.nobody },
+                   content: "", isFound: false, finder: Finder.player1 },
                  { gridIndex: 3, index: 2, answer: "C", cellColor: CellColor.White,
-                   content: "", isFound: false, finder: Finder.player1, selected: Finder.nobody },
+                   content: "", isFound: false, finder: Finder.player1 },
                  {
                    gridIndex: 4, index: undefined, answer: "", cellColor: CellColor.Black, content: "",
-                   isFound: false, finder: Finder.player1, selected: Finder.nobody
+                   isFound: false, finder: Finder.player1
         }];
 
         FocusCell.Instance.cell = cells[1];
@@ -93,14 +93,14 @@ describe("KeyboardInputManagerService", () => {
 
     it("should have a content of nothing", () => {
         cells = [{ gridIndex: 1, index: 1, answer: "A", cellColor: CellColor.White,
-                   content: "", isFound: false, finder: Finder.player1, selected: Finder.nobody },
+                   content: "", isFound: false, finder: Finder.player1 },
                  { gridIndex: 2, index: 1, answer: "B", cellColor: CellColor.White,
-                   content: "", isFound: false, finder: Finder.player1, selected: Finder.nobody },
+                   content: "", isFound: false, finder: Finder.player1 },
                  { gridIndex: 3, index: 2, answer: "C", cellColor: CellColor.White,
-                   content: "", isFound: false, finder: Finder.player1, selected: Finder.nobody },
+                   content: "", isFound: false, finder: Finder.player1 },
                  {
                    gridIndex: 4, index: undefined, answer: "", cellColor: CellColor.Black, content: "",
-                   isFound: false, finder: Finder.player1, selected: Finder.nobody
+                   isFound: false, finder: Finder.player1
         }];
 
         FocusCell.Instance.cell = cells[1];

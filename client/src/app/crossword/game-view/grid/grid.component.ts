@@ -60,9 +60,11 @@ export class GridComponent implements OnInit {
             this.focusCell.cell = this.isFocusCellinCells(this.clickedWords[0].cells) ?
                 this.clickedWords[1].cells[this.firstUnknownCell(this.clickedWords[1].cells)] :
                 this.clickedWords[0].cells[this.firstUnknownCell(this.clickedWords[0].cells)];
-            this.focusCell.cells = this.focusCell.cells === this.clickedWords[0].cells ?
-                this.clickedWords[1].cells : this.clickedWords[0].cells;
+            const selectedWord: IGridWord =  this.focusCell.cells === this.clickedWords[0].cells ?
+                                this.clickedWords[1] : this.clickedWords[0];
+            this.focusCell.cells = selectedWord.cells;
             this.focusCell.invertOrientation();
+            this.socketIo.SelectedWordsSubject.next([selectedWord]);
         }
     }
     private chooseNewWord(cell: ICell): void {
@@ -71,6 +73,7 @@ export class GridComponent implements OnInit {
             this.focusCell.cell = this.clickedWords[0].cells[this.firstUnknownCell(this.clickedWords[0].cells)];
             this.focusCell.cells = this.clickedWords[0].cells;
             this.focusCell.Orientation = this.clickedWords[0].orientation;
+            this.socketIo.SelectedWordsSubject.next([this.clickedWords[0]]);
         } else {
             this.focusCell.clear();
         }
@@ -146,7 +149,7 @@ export class GridComponent implements OnInit {
         if (this.focusCell.cells) {
             if (this.focusCell.cells[0] === cell) {
                 return this.focusCell.Orientation === Orientation.Vertical ?
-                    "border-both-p1 top-border-p1" : "border-both-p1 left-border-p1";
+                    "top-border-p1" : "left-border-p1";
             }
         }
 
@@ -157,7 +160,7 @@ export class GridComponent implements OnInit {
         if (this.focusCell.cells) {
             if (this.focusCell.cells[this.focusCell.cells.length - 1] === cell) {
                 return this.focusCell.Orientation === Orientation.Vertical ?
-                    "border-both-p1 bottom-border-p1" : "border-both-p1 right-border-p1";
+                    "bottom-border-p1" : "right-border-p1";
             }
         }
 

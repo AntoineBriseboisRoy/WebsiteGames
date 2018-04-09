@@ -55,6 +55,13 @@ export class Room {
         this.setScore(socketId);
     }
 
+    public setWordSelected(word: IGridWord, socketId: string): void {
+        const foundPlayer: Player = this.players.find((player: Player) => player.socketID === socketId);
+        if (foundPlayer) {
+            foundPlayer.selectedWord = word;
+        }
+    }
+
     public clear(): void {
         this.grid.clear();
         this.players.forEach((player: Player) => player.clear());
