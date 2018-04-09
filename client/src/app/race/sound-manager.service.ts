@@ -33,7 +33,8 @@ export class SoundManagerService {
                              (audioBuffer: AudioBuffer) => {
                                 this.sounds.get(name).setBuffer(audioBuffer);
                             },
-                             this.onProgress, this.onError);
+                             () => {/*DO NOTHING*/},
+                             this.onError);
         });
     }
 
@@ -41,11 +42,7 @@ export class SoundManagerService {
         this.sounds.get(name).play();
     }
 
-    private onProgress(xhr: XMLHttpRequest): void {
-    }
-
     private onError(error: Error): void {
         console.error(error);
     }
-
 }
