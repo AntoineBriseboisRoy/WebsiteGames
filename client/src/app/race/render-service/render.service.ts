@@ -20,7 +20,7 @@ export const FIELD_OF_VIEW: number = 70;
 
 const WHITE: number = 0xFFFFFF;
 const AMBIENT_LIGHT_DAY: number = 1;
-const AMBIENT_LIGHT_NIGHT: number = 0.2;
+const AMBIENT_LIGHT_NIGHT: number = 0.5;
 const TEXTURE_TILE_REPETIONS: number = 200;
 const WORLD_SIZE: number = 1000;
 const FLOOR_SIZE: number = WORLD_SIZE / HALF;

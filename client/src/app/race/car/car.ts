@@ -185,7 +185,7 @@ export class Car extends Object3D {
 
     private initHeadLights(): void {
         for (let i: number = 0; i < NUMBER_OF_HEADLIGHT; ++i) {
-            const spotRange: number = 7;
+            const spotRange: number = 20;
             this.headLights.push(new SpotLight(0xFFFFEE, 1, spotRange, PI_OVER_4, 0));
             this.mesh.add(this.headLights[i]);
 

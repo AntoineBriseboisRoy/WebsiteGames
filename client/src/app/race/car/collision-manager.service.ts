@@ -147,7 +147,7 @@ export class CollisionManager {
     }
 
     private startLineCollision(car: Car): void {
-        car.Information.lap++;
+        car.Information.incrementLap();
     }
 
     private getWorldCoordinatesSpeed(car: Car): Vector3 {
