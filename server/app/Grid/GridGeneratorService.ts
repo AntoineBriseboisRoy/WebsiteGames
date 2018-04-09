@@ -11,12 +11,16 @@ export class GridGeneratorService {
         this.grid = new Grid(Difficulty.EASY);
     }
 
+    public async createGrid(): Promise<void> {
+        await this.grid.fillGrid();
+    }
+
     public get Grid(): string {
         return this.grid.GridContent.toString().replace(",", "");
     }
 
-    public get Words(): string {
-        return JSON.stringify(this.grid.Words);
+    public get Words(): Array<IWord> {
+        return this.grid.Words;
     }
 
     public generateNewGrid(): void {

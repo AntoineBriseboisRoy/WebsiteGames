@@ -1,9 +1,8 @@
 import { ICoordXY } from "../../../common/interfaces/ICoordXY";
 import { IWord, Orientation } from "../../../common/interfaces/IWord";
-import { StringService } from "./StringService";
-import { WordAndDefinition } from "../Services/LexicalService/Interfaces";
-import { EMPTY_SQUARE, NOT_FOUND, BLACKSQUARE_CHARACTER, MAX_WORD_QUERY_ATTEMPS, WORD_CACHE } from "./Constants";
+import { EMPTY_SQUARE, BLACKSQUARE_CHARACTER, WORD_CACHE, WORD_CACHE_OFFSET, WORD_CUTOFF } from "./Constants";
 import { Difficulty, LexicalService } from "../Services/LexicalService/LexicalService";
+import { WordAndDefinition } from "../Services/LexicalService/Interfaces";
 
 const lexicalService: LexicalService = new LexicalService();
 export class GridFiller {
@@ -13,7 +12,6 @@ export class GridFiller {
     private wordsToFill: IWord[];
     private sideSize: number;
     private difficulty: number;
-    private problemWord: IWord;
 
     public constructor() {
         this.sideSize = 0;
@@ -22,7 +20,9 @@ export class GridFiller {
         this.wordsToFill = new Array<IWord>();
 
         for (const array of WORD_CACHE) {
-            this.shuffleCars(array);
+            this.shuffle(array[Difficulty.EASY]);
+            this.shuffle(array[Difficulty.MEDIUM]);
+            this.shuffle(array[Difficulty.HARD]);
         }
     }
 
@@ -34,7 +34,7 @@ export class GridFiller {
         return this.grid;
     }
 
-    public fillWords(grid: string[][], sideSize: number, difficulty: Difficulty, wordsToFill: IWord[]): IWord[] {
+    public async fillWords(grid: string[][], sideSize: number, difficulty: Difficulty, wordsToFill: IWord[]): Promise<IWord[]> {
         this.sideSize = sideSize;
         this.grid = grid;
         this.difficulty = difficulty;
@@ -46,21 +46,22 @@ export class GridFiller {
             isDone = this.fillGridWithWords();
         }
         this.fillRemainingSpacesWithBlacksquares();
-        console.log(this.grid);
+        await this.fetchDefinitions();
+
         return this.wordsPlaced;
     }
 
     // Fisher-Yates Algorithm
-    private shuffleCars(cars: Array<string>): void {
-        let currentIndex: number = cars.length;
+    private shuffle(words: Array<string>): void {
+        let currentIndex: number = words.length;
         let temporaryValue: string;
         let randomIndex: number;
         while (currentIndex !== 0) {
             randomIndex = Math.floor(Math.random() * currentIndex);
             currentIndex -= 1;
-            temporaryValue = cars[currentIndex];
-            cars[currentIndex] = cars[randomIndex];
-            cars[randomIndex] = temporaryValue;
+            temporaryValue = words[currentIndex];
+            words[currentIndex] = words[randomIndex];
+            words[randomIndex] = temporaryValue;
         }
     }
 
@@ -93,19 +94,28 @@ export class GridFiller {
         });
     }
 
-    // tslint:disable-next-line:max-func-body-length
+    private async fetchDefinitions(): Promise<void> {
+        const promises: Promise<void>[] = new Array<Promise<void>>();
+        for (const word of this.wordsPlaced) {
+            promises.push(lexicalService.searchWords(word.content, this.difficulty).then((wordAndDefs: WordAndDefinition[]) => {
+                for (const wordAndDef of wordAndDefs) {
+                    if (wordAndDef.word === word.content) {
+                        word.definition = wordAndDef.definition;
+                    }
+                }
+            }));
+        }
+        await Promise.all(promises);
+    }
+
     private fillGridWithWords(): boolean {
         if (this.gridFilled()) {
-            console.log("filled");
             return true;
         }
-        console.log(this.grid);
-        console.log(this.wordsPlaced.length + " -- " + this.wordsToFill.length);
         const wordToPlace: IWord = this.wordsToFill.pop();
         const entries: string[] = this.getWords(wordToPlace);
         if (entries.length === 0) {
             this.wordsToFill.push(wordToPlace);
-            this.problemWord = wordToPlace;
 
             return false;
         }
@@ -118,7 +128,6 @@ export class GridFiller {
             this.sortWordsToFillByCommonLetters();
             const nextWordPlaced: boolean = this.fillGridWithWords();
             if (nextWordPlaced) {
-                console.log("FILLED");
                 return true;
             }
             this.backtrack(wordAdded);
@@ -176,23 +185,6 @@ export class GridFiller {
         return nCommonLetters;
     }
 
-    private haveCommonLetter(leftWord: IWord, rightWord: IWord): boolean {
-        if (leftWord.orientation === rightWord.orientation) {
-            return false;
-        }
-        if (leftWord.orientation === Orientation.Horizontal) {
-            if (leftWord.position.x <= rightWord.position.x && leftWord.position.x + leftWord.content.length >= rightWord.position.x) {
-                return true;
-            }
-        } else {
-            if (leftWord.position.y <= rightWord.position.y && leftWord.position.y + leftWord.content.length >= rightWord.position.y) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
     private letterBelongsOtherWord(position: ICoordXY): boolean {
         let belongs: boolean = false;
         this.wordsPlaced.forEach((word: IWord) => {
@@ -217,14 +209,14 @@ export class GridFiller {
     private getWords(wordToFill: IWord): string[] {
         const template: string = this.getSearchTemplate(wordToFill);
         const validWords: string[] = new Array<string>();
-        for (const word of WORD_CACHE[wordToFill.content.length - 3]) {
+        for (const word of WORD_CACHE[wordToFill.content.length + WORD_CACHE_OFFSET][this.difficulty]) {
             let valid: boolean = true;
             for (let i: number = 0; i < word.length; ++i) {
                 if (template[i] !== "?" && template[i] !== word[i]) {
                     valid = false;
                 }
             }
-            if (valid) {
+            if (valid && !this.verifyAlreadyUsedWord(word) && validWords.length < WORD_CUTOFF) {
                 validWords.push(word);
             }
         }
@@ -250,38 +242,6 @@ export class GridFiller {
         }
 
         return searchTemplate;
-    }
-
-    private async queryWordFromDB(searchTemplate: string): Promise<WordAndDefinition> {
-        const wordsPlaced: WordAndDefinition[] = await lexicalService.searchWords(searchTemplate, this.difficulty);
-
-        if (wordsPlaced.length === 0) {
-            return { word: NOT_FOUND, definition: "" };
-        }
-        const randomInt: number = Math.floor(Math.random() * wordsPlaced.length);
-
-        return {
-            word: StringService.cleanWord(wordsPlaced[randomInt].word).toUpperCase(),
-            definition: wordsPlaced[randomInt].definition
-        };
-
-    }
-
-    private findWordWithCommonLetters(wordCompared: IWord): IWord {
-        const wordsFound: IWord[] = new Array<IWord>();
-        this.wordsPlaced.forEach((word: IWord) => {
-            if (this.haveCommonLetter(word, wordCompared)) {
-                wordsFound.push(word);
-            }
-        });
-        let lowestCountWord: IWord = wordsFound[0];
-        wordsFound.forEach((word: IWord) => {
-            if (this.countLettersBelongingOtherWords(lowestCountWord) > this.countLettersBelongingOtherWords(word)) {
-                lowestCountWord = word;
-            }
-        });
-
-        return lowestCountWord;
     }
 
     private backtrack(wordToErase: IWord): void {
@@ -310,5 +270,4 @@ export class GridFiller {
             }
         }
     }
-// tslint:disable-next-line:max-file-line-count
 }
