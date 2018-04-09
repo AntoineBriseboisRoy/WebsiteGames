@@ -39,7 +39,7 @@ export class RenderService {
     private lastDate: number;
     private activeTrack: ITrack;
     private floorTextures: Map<TrackType, Texture>;
-    public get car(): Car {
+    public get player(): Car {
         return this.cars[PLAYER];
     }
 
