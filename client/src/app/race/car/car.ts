@@ -1,7 +1,7 @@
 import { Vector3, Matrix4, Object3D, ObjectLoader, Euler, Quaternion, Box3,
-         BoxHelper, Raycaster, BoxGeometry, MeshBasicMaterial, Mesh } from "three";
+         BoxHelper, Raycaster, BoxGeometry, MeshBasicMaterial, Mesh, SpotLight } from "three";
 import { Engine } from "./engine";
-import { MS_TO_SECONDS, GRAVITY, PI_OVER_2, RAD_TO_DEG } from "../../constants";
+import { MS_TO_SECONDS, GRAVITY, RAD_TO_DEG, PI_OVER_4 } from "../../constants";
 import { Wheel } from "./wheel";
 import { CarInformation } from "./car-information";
 
@@ -10,11 +10,11 @@ export const DEFAULT_MASS: number = 1515;
 export const DEFAULT_DRAG_COEFFICIENT: number = 0.35;
 
 const MAXIMUM_STEERING_ANGLE: number = 0.25;
-const INITIAL_MODEL_ROTATION: Euler = new Euler(0, PI_OVER_2, 0);
 const INITIAL_WEIGHT_DISTRIBUTION: number = 0.5;
 const MINIMUM_SPEED: number = 0.05;
 const NUMBER_REAR_WHEELS: number = 2;
 const NUMBER_WHEELS: number = 4;
+const NUMBER_OF_HEADLIGHT: number = 2;
 
 const FRONT_X_CORRECTION: number = 0.16;
 const FRONT_Z_CORRECTION: number = 0.13;
@@ -45,6 +45,7 @@ export class Car extends Object3D {
 
     private raycasterOffsets: Vector3[];
     private information: CarInformation;
+    private headLights: SpotLight[];
 
     public get Mass(): number {
         return this.mass;
@@ -115,7 +116,6 @@ export class Car extends Object3D {
         mass: number = DEFAULT_MASS,
         dragCoefficient: number = DEFAULT_DRAG_COEFFICIENT) {
         super();
-
         if (wheelbase <= 0) {
             console.error("Wheelbase should be greater than 0.");
             wheelbase = DEFAULT_WHEELBASE;
@@ -128,7 +128,6 @@ export class Car extends Object3D {
             console.error("Drag coefficient should be greater than 0.");
             dragCoefficient = DEFAULT_DRAG_COEFFICIENT;
         }
-
         this.engine = engine;
         this.rearWheel = rearWheel;
         this.wheelbase = wheelbase;
@@ -143,6 +142,7 @@ export class Car extends Object3D {
         this.raycasters = new Array<Raycaster>();
         this.raycasterOffsets = new Array<Vector3>();
         this.information = new CarInformation();
+        this.headLights = new Array<SpotLight>();
     }
 
     // tslint:disable-next-line:no-suspicious-comment
@@ -162,7 +162,8 @@ export class Car extends Object3D {
         this.initBoundingBox();
         this.mesh.position.add(this.initialPosition);
         this.initRaycasters();
-        this.mesh.setRotationFromEuler(INITIAL_MODEL_ROTATION);
+        this.initHeadLights();
+        // this.mesh.setRotationFromEuler(INITIAL_MODEL_ROTATION);
     }
 
     private initBoundingBox(): void {
@@ -182,6 +183,23 @@ export class Car extends Object3D {
         this.setRaycastersFromOffsets();
     }
 
+    private initHeadLights(): void {
+        for (let i: number = 0; i < NUMBER_OF_HEADLIGHT; ++i) {
+            const spotRange: number = 7;
+            this.headLights.push(new SpotLight(0xFFFFEE, 1, spotRange, PI_OVER_4, 0));
+            this.mesh.add(this.headLights[i]);
+
+            const targetRight: Object3D = new Object3D();
+            this.mesh.add(targetRight);
+
+            const correction: number = Math.pow(-1, i);
+            targetRight.position.add(this.raycasters[0].ray.origin).add(new Vector3(FRONT_X_CORRECTION * correction, 0, 0));
+            this.headLights[i].target = targetRight;
+            const lightCorrectionZ: number = -0.6;
+            this.headLights[i].position.add(new Vector3(FRONT_X_CORRECTION * correction, 0, lightCorrectionZ));
+        }
+    }
+
     private setRaycastersFromOffsets(): void {
         this.raycasterOffsets.forEach((offset: Vector3) => {
             this.raycasters.push(new Raycaster(offset.clone().add(this.getPosition()), new Vector3(0, -1, 0)));
@@ -189,28 +207,20 @@ export class Car extends Object3D {
     }
 
     private setRaycasterOffsets(box: Box3): void {
-        this.raycasterOffsets.push(new Vector3(box.min.x, 1, 0));
-        this.raycasterOffsets.push(new Vector3(box.min.x + FRONT_X_CORRECTION, 1, box.max.z - FRONT_Z_CORRECTION));
-        this.raycasterOffsets.push(new Vector3(box.min.x + FRONT_X_CORRECTION, 1, box.max.z + FRONT_Z_CORRECTION));
-        this.raycasterOffsets.push(new Vector3(box.max.x, 1, 0));
-        this.raycasterOffsets.push(new Vector3(box.max.x - BACK_X_CORRECTION, 1, box.max.z - BACK_Z_CORRECTION));
-        this.raycasterOffsets.push(new Vector3(box.max.x - BACK_X_CORRECTION, 1, box.max.z + BACK_Z_CORRECTION));
+        this.raycasterOffsets.push(new Vector3(0, 1, box.min.x));
+        this.raycasterOffsets.push(new Vector3(box.max.z - FRONT_Z_CORRECTION, 1, box.min.x + FRONT_X_CORRECTION));
+        this.raycasterOffsets.push(new Vector3(box.max.z + FRONT_Z_CORRECTION, 1, box.min.x + FRONT_X_CORRECTION));
+        this.raycasterOffsets.push(new Vector3(0, 1, box.max.x));
+        this.raycasterOffsets.push(new Vector3(box.max.z - BACK_Z_CORRECTION, 1, box.max.x - BACK_X_CORRECTION));
+        this.raycasterOffsets.push(new Vector3(box.max.z + BACK_Z_CORRECTION, 1, box.max.x - BACK_X_CORRECTION));
     }
 
     public steerLeft(): void {
-        if (this.steeringWheelDirection < MAXIMUM_STEERING_ANGLE) {
-            this.steeringWheelDirection += 0.06;
-        } else {
-            this.steeringWheelDirection = MAXIMUM_STEERING_ANGLE;
-        }
+        this.steeringWheelDirection = MAXIMUM_STEERING_ANGLE;
     }
 
     public steerRight(): void {
-        if (this.steeringWheelDirection > -MAXIMUM_STEERING_ANGLE) {
-            this.steeringWheelDirection -= 0.06;
-        } else {
-            this.steeringWheelDirection = -MAXIMUM_STEERING_ANGLE;
-        }
+        this.steeringWheelDirection = -MAXIMUM_STEERING_ANGLE;
     }
 
     public releaseSteering(): void {
@@ -227,6 +237,12 @@ export class Car extends Object3D {
 
     public rotateMeshY(omega: number): void {
         this.mesh.rotateY(omega);
+    }
+
+    public toggleHeadlights(): void {
+        this.headLights.forEach((headLight: SpotLight) => {
+            headLight.visible = !headLight.visible;
+        });
     }
 
     public update(deltaTime: number): void {

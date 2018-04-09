@@ -1,25 +1,26 @@
 import { Injectable } from "@angular/core";
 import Stats = require("stats.js");
-import {
-    WebGLRenderer, Scene, AmbientLight, Mesh, PlaneBufferGeometry, MeshBasicMaterial,
-    Vector2, BackSide, Texture, RepeatWrapping, TextureLoader, Object3D} from "three";
+import { WebGLRenderer, Scene, AmbientLight, Mesh, PlaneBufferGeometry, Vector2,
+         BackSide, Texture, RepeatWrapping, TextureLoader, Object3D, MeshPhongMaterial } from "three";
 import { Car } from "../car/car";
 import { ThirdPersonCamera } from "../camera/camera-perspective";
 import { TopViewCamera } from "../camera/camera-orthogonal";
 import { INITIAL_CAMERA_POSITION_Y, FRUSTUM_RATIO, PI_OVER_2, HALF } from "../../constants";
-import { Skybox } from "../skybox/skybox";
+import { Skybox, DayPeriod } from "../skybox/skybox";
 import { CameraContext } from "../camera/camera-context";
 import { ITrack, TrackType } from "../../../../../common/interfaces/ITrack";
 import { CollisionManager } from "../car/collision-manager.service";
 import { RoadCreator } from "./road-creator.service";
 import { StartLineGeneratorService } from "../start-line-generator.service";
+import { DayPeriodContext } from "../dayToggle-context";
 
 export const FAR_CLIPPING_PLANE: number = 1000;
 export const NEAR_CLIPPING_PLANE: number = 1;
 export const FIELD_OF_VIEW: number = 70;
 
 const WHITE: number = 0xFFFFFF;
-const AMBIENT_LIGHT_OPACITY: number = 0.5;
+const AMBIENT_LIGHT_DAY: number = 1;
+const AMBIENT_LIGHT_NIGHT: number = 0.2;
 const TEXTURE_TILE_REPETIONS: number = 200;
 const WORLD_SIZE: number = 1000;
 const FLOOR_SIZE: number = WORLD_SIZE / HALF;
@@ -29,6 +30,7 @@ const NUMBER_OF_CARS: number = 4;
 @Injectable()
 export class RenderService {
     private cameraContext: CameraContext;
+    private dayPeriodContext: DayPeriodContext;
     private container: HTMLDivElement;
     private cars: Array<Car>;
     private renderer: WebGLRenderer;
@@ -45,6 +47,14 @@ export class RenderService {
         return this.cameraContext;
     }
 
+    public get DayPeriodContext(): DayPeriodContext {
+        return this.dayPeriodContext;
+    }
+
+    public get RoadCreator(): RoadCreator {
+        return this.roadCreator;
+    }
+
     public get FloorTextures(): Map<TrackType, Texture> {
         return this.floorTextures;
     }
@@ -58,6 +68,7 @@ export class RenderService {
         this.floorTextures = new Map<TrackType, Texture>();
         this.scene = new Scene();
         this.cameraContext = new CameraContext();
+        this.dayPeriodContext = new DayPeriodContext(this);
     }
 
     public async initialize(container: HTMLDivElement, track: ITrack): Promise<void> {
@@ -113,11 +124,26 @@ export class RenderService {
 
         this.cameraContext.initStates(this.cars[PLAYER].getPosition());
         this.cameraContext.setInitialState();
-        this.scene.add(new AmbientLight(WHITE, AMBIENT_LIGHT_OPACITY));
 
-        this.scene.background = new Skybox().CubeTexture;
+        this.createSkyboxes();
+        this.scene.add(this.dayPeriodContext.CurrentState["1"]);
+        this.scene.background = this.dayPeriodContext.CurrentState["0"].SkyboxCube;
         this.createFloorMesh();
         this.generateTrack();
+    }
+
+    private createSkyboxes(): void {
+        this.dayPeriodContext.addState([new Skybox(DayPeriod.DAY), new AmbientLight(WHITE, AMBIENT_LIGHT_DAY)]);
+        this.dayPeriodContext.addState([new Skybox(DayPeriod.NIGHT), new AmbientLight(WHITE, AMBIENT_LIGHT_NIGHT)]);
+        this.dayPeriodContext.setInitialState();
+    }
+
+    public removeLight(): void {
+        this.scene.remove(this.dayPeriodContext.CurrentState["1"]);
+    }
+    public toggleDayNight(): void {
+        this.scene.add(this.dayPeriodContext.CurrentState["1"]);
+        this.scene.background = this.dayPeriodContext.CurrentState["0"].SkyboxCube;
     }
 
     private async createCars(): Promise<void> {
@@ -151,7 +177,7 @@ export class RenderService {
         this.floorTextures.get(this.activeTrack.type).wrapS = this.floorTextures.get(this.activeTrack.type).wrapT = RepeatWrapping;
         this.floorTextures.get(this.activeTrack.type).repeat.set(TEXTURE_TILE_REPETIONS, TEXTURE_TILE_REPETIONS);
         const mesh: Mesh = new Mesh(new PlaneBufferGeometry(FLOOR_SIZE, FLOOR_SIZE, 1, 1),
-                                    new MeshBasicMaterial({ map: this.floorTextures.get(this.activeTrack.type), side: BackSide }));
+                                    new MeshPhongMaterial({ map: this.floorTextures.get(this.activeTrack.type), side: BackSide }));
         mesh.rotation.x = PI_OVER_2;
 
         this.scene.add(mesh);
