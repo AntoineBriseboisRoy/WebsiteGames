@@ -4,7 +4,7 @@ export class CarInformation {
     public lapTime: Date;
     private hasStartedAFirstLap: boolean;
     public constructor() {
-        this.lap = 0;
+        this.lap = 1;
         this.totalTime = new Date(0);
         this.lapTime = new Date(0);
         this.hasStartedAFirstLap = false;
