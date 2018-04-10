@@ -36,6 +36,7 @@ import { TrackPreviewComponent } from "./race/track-view/track-preview/track-pre
 import { StartLineGeneratorService } from "./race/start-line-generator.service";
 import { GameManagerService } from "./crossword/game-manager.service";
 import { TimerService } from "./race/timer-service/timer.service";
+import { InputManagerService } from "./race/input-manager-service/input-manager.service";
 
 @NgModule({
     declarations: [
@@ -76,7 +77,8 @@ import { TimerService } from "./race/timer-service/timer.service";
         ModalStateService,
         StartLineGeneratorService,
         GameManagerService,
-        TimerService
+        TimerService,
+        InputManagerService
     ],
     bootstrap: [AppComponent]
 })

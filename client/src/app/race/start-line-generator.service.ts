@@ -1,8 +1,8 @@
 import { Injectable } from "@angular/core";
-import { Vector2, ObjectLoader, Object3D, PlaneBufferGeometry, MeshBasicMaterial, Mesh, DoubleSide, TextureLoader } from "three";
+import { Vector2, ObjectLoader, Object3D, PlaneBufferGeometry, MeshBasicMaterial, Mesh, DoubleSide, TextureLoader, Vector3 } from "three";
 import { Car } from "./car/car";
 import { ITrack, TrackType } from "../../../../common/interfaces/ITrack";
-import { HALF, PI_OVER_2 } from "../constants";
+import { HALF, PI_OVER_2, ROAD_WIDTH } from "../constants";
 import { Point } from "./edit-track/Geometry";
 
 export const FAR_CLIPPING_PLANE: number = 1000;
@@ -13,8 +13,8 @@ const WORLD_SIZE: number = 1000;
 const QUARTER_ROAD_WIDTH: number = 2.5;
 const CAR_OFFSET_FROM_STARTLINE: number = 0.01;
 const SUPERPOSITION: number = 0.01;
-const STARTLINE_WIDTH: number = 10;
 const STARTLINE_HEIGHT: number = 2;
+const DOUBLE: number = 2;
 
 @Injectable()
 export class StartLineGeneratorService {
@@ -48,10 +48,18 @@ export class StartLineGeneratorService {
             return startLineBanner;
         });
     }
-    public createGroundStartLine(startLineBanner: Object3D): Mesh {
-        const startLine: Mesh = new Mesh(new PlaneBufferGeometry(STARTLINE_WIDTH, STARTLINE_HEIGHT),
+    public createGroundStartLine(startLineBanner: Object3D): Array<Mesh> {
+        const verificationPlane: Mesh = new Mesh(new PlaneBufferGeometry(ROAD_WIDTH, 1), 
+                                                 new MeshBasicMaterial({ wireframe: true, opacity: 0 }));
+
+        return new Array<Mesh>(this.createStartLine(startLineBanner),
+                               this.createVerificationPlane(verificationPlane, startLineBanner));
+    }
+
+    private createStartLine(startLineBanner: Object3D): Mesh {
+        const startLine: Mesh = new Mesh(new PlaneBufferGeometry(ROAD_WIDTH, STARTLINE_HEIGHT),
                                          new MeshBasicMaterial({ map: new TextureLoader().load("../assets/checkerboard.jpg"),
-                                                                 side: DoubleSide }));
+                                                                 side: DoubleSide}));
         startLine.position.x = startLineBanner.position.x;
         startLine.position.y = startLineBanner.position.y + SUPERPOSITION;
         startLine.position.z = startLineBanner.position.z;
@@ -61,11 +69,32 @@ export class StartLineGeneratorService {
         return startLine;
     }
 
+    private createVerificationPlane(verificationPlane: Mesh, startLineBanner: Object3D): Mesh {
+        const firstRoadDirection: Vector2 = this.calculateFirstRoadDirection(startLineBanner);
+        verificationPlane.position.x = startLineBanner.position.x + STARTLINE_HEIGHT * firstRoadDirection.x;
+        verificationPlane.position.y = startLineBanner.position.y + SUPERPOSITION;
+        verificationPlane.position.z = startLineBanner.position.z + STARTLINE_HEIGHT * firstRoadDirection.y;
+        verificationPlane.rotation.y = startLineBanner.rotation.y;
+        verificationPlane.rotateX(PI_OVER_2);
+
+        return verificationPlane;
+    }
+
+    private calculateFirstRoadDirection(startLine: Object3D): Vector2 {
+        const firstRoadDirection: Vector2 = new Vector2();
+        firstRoadDirection.x = -(startLine.position.x - this.activeTrack.points[0].x);
+        firstRoadDirection.y = -(startLine.position.y - this.activeTrack.points[0].y);
+        firstRoadDirection.normalize();
+
+        return firstRoadDirection;
+    }
+
     private async loadStartLineBanner(): Promise<Object3D> {
         return new Promise<Object3D>((resolve) => new ObjectLoader().load("../../assets/startLineBanner.json", resolve));
     }
 
     private setStartLineBannerPosition(startLineBanner: Object3D): void {
+        startLineBanner.scale.setX(startLineBanner.scale.x * DOUBLE);
         startLineBanner.position.x = -(this.activeTrack.points[0].y + this.firstRoad.y * HALF) * WORLD_SIZE + WORLD_SIZE * HALF;
         startLineBanner.position.z = -(this.activeTrack.points[0].x + this.firstRoad.x * HALF) * WORLD_SIZE + WORLD_SIZE * HALF;
         startLineBanner.rotation.y = this.firstRoad.x === 0 ? PI_OVER_2 : Math.atan(this.firstRoad.y / this.firstRoad.x);

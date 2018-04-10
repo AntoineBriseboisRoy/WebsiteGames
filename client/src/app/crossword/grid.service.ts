@@ -94,13 +94,13 @@ export class GridService {
     private checkGameStatus(): void {
         if (this.isGridCompleted() && !this.modalService.IsOpen) {
             this.modalService.open({
-                title: "Game Over!", message: "Your score is " + this.gameManagerService.players[0].score +
+                title: "Congratulations!", message: "Your score is " + this.gameManagerService.players[0].score +
                     "! You can choose to replay or go back to home page",
                 firstButton: "Restart", secondButton: "Home", showPreview: false
             })
-                .then(() => window.location.reload(),
-                      () => this.router.navigate([""])
-                );
+            .then(() => window.location.reload(),
+                  () => this.router.navigate([""])
+            );
         }
     }
 

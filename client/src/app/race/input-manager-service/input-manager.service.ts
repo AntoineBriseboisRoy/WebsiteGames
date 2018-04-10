@@ -42,6 +42,11 @@ export class InputManagerService {
         this.setUpKeyBindings(car, cameraContext);
     }
 
+    public deactivate(): void {
+        this.keyDownCommands.clear();
+        this.keyUpCommands.clear();
+    }
+
     private setDownKeyBindings(car: Car, cameraContext: CameraContext, dayPeriodContext: DayPeriodContext): void {
         this.keyDownCommands.set(ACCELERATE_KEYCODE, new AccelerateCarCommand(car));
         this.keyDownCommands.set(LEFT_KEYCODE, new LeftCarCommand(car));

@@ -20,7 +20,6 @@ const MAX_GEAR_BAR_WIDTH: number = 27;
     styleUrls: ["./game.component.css"],
     providers: [
         RenderService,
-        InputManagerService,
         TimerService
     ]
 })
