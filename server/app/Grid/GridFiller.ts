@@ -6,6 +6,7 @@ import { WordAndDefinition } from "../Services/LexicalService/Interfaces";
 
 const lexicalService: LexicalService = new LexicalService();
 export class GridFiller {
+    private tries: number;
     private grid: string[][];
     private wordsPlaced: IWord[];
     private wordsToFill: IWord[];
@@ -33,21 +34,21 @@ export class GridFiller {
         return this.grid;
     }
 
-    public async fillWords(grid: string[][], sideSize: number, difficulty: Difficulty, wordsToFill: IWord[]): Promise<IWord[]> {
+    public async fillWords(grid: string[][], sideSize: number, difficulty: Difficulty, wordsToFill: IWord[]): Promise<boolean> {
         this.sideSize = sideSize;
         this.grid = grid;
         this.difficulty = difficulty;
         this.wordsToFill = wordsToFill;
         this.sortWordsToFillByLength();
 
-        let isDone: boolean = false;
-        while (!isDone) {
-            isDone = this.fillGridWithWords();
+        this.tries = 0;
+        if (!this.fillGridWithWords()) {
+            return false;
         }
         this.fillRemainingSpacesWithBlacksquares();
         await this.fetchDefinitions();
 
-        return this.wordsPlaced;
+        return true;
     }
 
     // Fisher-Yates Algorithm
@@ -112,6 +113,13 @@ export class GridFiller {
         if (this.gridFilled()) {
             return true;
         }
+        console.log(this.tries);
+        if (++this.tries >= 1500) {
+            console.log("STOP");
+            return false;
+        }
+        console.log(this.grid);
+        console.log(this.wordsPlaced.length + " -- " + this.wordsToFill.length);
         const wordToPlace: IWord = this.wordsToFill.pop();
         const entries: string[] = this.getWords(wordToPlace);
         if (entries.length === 0) {

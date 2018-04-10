@@ -16,32 +16,17 @@ export class Grid {
     }
 
     public async fillGrid(): Promise<void> {
-        const blackSquareGenerator: BlackSquareGenerator = new BlackSquareGenerator(this.sideSize, this.percentageOfBlackSquares);
-        this.gridContent = blackSquareGenerator.Content;
+        let isGridGenerated: boolean = false;
         const gridFiller: GridFiller = new GridFiller();
-        // while (this.words === undefined) {
-            // this.words = await gridFiller.fillWords(this.gridContent, this.sideSize, this.difficulty, blackSquareGenerator.WordsToFill);
-        await this.withTimeout(
-            5,
-            gridFiller.fillWords(this.gridContent, this.sideSize, this.difficulty, blackSquareGenerator.WordsToFill)
-        ).catch((error: Error) => console.error(error));
-        // }
-
+        while (!isGridGenerated) {
+            const blackSquareGenerator: BlackSquareGenerator = new BlackSquareGenerator(this.sideSize, this.percentageOfBlackSquares);
+            this.gridContent = blackSquareGenerator.Content;
+            isGridGenerated = await gridFiller.fillWords(this.gridContent, this.sideSize,
+                                                         this.difficulty, blackSquareGenerator.WordsToFill);
+        }
         this.words = gridFiller.Words;
         this.gridContent = gridFiller.Content;
         this.cleanGrid();
-    }
-
-    private withTimeout(millis: number, promise: Promise<IWord[]>): Promise<IWord[]> {
-        const timeout: Promise<IWord[]> = new Promise(() =>
-            setTimeout(
-                () => { throw new Error("oops"); },
-                millis));
-
-        return Promise.race([
-            promise,
-            timeout
-        ]);
     }
 
     public get GridContent(): string[][] {

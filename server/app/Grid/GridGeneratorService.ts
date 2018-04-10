@@ -11,7 +11,8 @@ export class GridGeneratorService {
         this.grid = new Grid(Difficulty.EASY);
     }
 
-    public async createGrid(): Promise<void> {
+    public async createGrid(difficulty: Difficulty): Promise<void> {
+        this.grid = new Grid(difficulty);
         await this.grid.fillGrid();
     }
 
@@ -21,10 +22,6 @@ export class GridGeneratorService {
 
     public get Words(): Array<IWord> {
         return this.grid.Words;
-    }
-
-    public generateNewGrid(): void {
-        this.grid = new Grid(Difficulty.EASY);
     }
 
     // tslint:disable-next-line:max-func-body-length
