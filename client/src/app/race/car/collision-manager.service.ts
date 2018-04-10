@@ -26,7 +26,6 @@ export class CollisionManager {
     private cars: Car[];
     private roadSegments: Mesh[];
     private startLine: Mesh;
-    private verificationPlane: Mesh;
     private timeSinceLastCollision: number;
     private lastDate: number;
     private areCarsCollidingWithStartLine: Array<boolean>;
@@ -40,7 +39,6 @@ export class CollisionManager {
         this.lastDate = 0;
         this.areCarsCollidingWithStartLine = new Array<boolean>();
         this.hadCarsCollidedWithVerificationPlane = new Array<boolean>();
-        this.verificationPlane = new Mesh();
     }
 
     public addCar(car: Car): void {
@@ -52,9 +50,8 @@ export class CollisionManager {
         this.roadSegments.push(collisionable);
     }
 
-    public setStartLine(collisionables: Array<Mesh>): void {
-        this.startLine = collisionables[0];
-        this.verificationPlane = collisionables[1];
+    public setStartLine(collisionable: Mesh): void {
+        this.startLine = collisionable;
     }
 
     public update(): void {
@@ -138,13 +135,12 @@ export class CollisionManager {
                                                   totalSystemMomentum.z / carB.Mass / CAR_B_MOMENTUM_FACTOR);
 
         carA.speed = this.getCarCoordinatesSpeed(carA, carANewSpeed);
-        carB.speed = this.getCarCoordinatesSpeed(carB, carBNewSpeed); 
+        carB.speed = this.getCarCoordinatesSpeed(carB, carBNewSpeed);
     }
 
     private verifyStartLineCollision(): void {
         this.cars.forEach((car: Car, index: number) => {
             const intersections: Intersection[] = car.Raycasters[0].intersectObject(this.startLine);
-            this.verifyIntersectionWithVerificationPlane(car, index);
             if (!this.hadCarsCollidedWithVerificationPlane[index]) {
                 if (intersections.length > 0) {
                     if (!this.areCarsCollidingWithStartLine[index]) {
@@ -157,13 +153,6 @@ export class CollisionManager {
                 }
             }
         });
-    }
-
-    private verifyIntersectionWithVerificationPlane(car: Car, index: number): void {
-        const intersections: Intersection[] = car.Raycasters[0].intersectObject(this.verificationPlane);
-        if (intersections.length > 0) {
-            this.hadCarsCollidedWithVerificationPlane[index] = true;
-        }
     }
 
     private startLineCollision(car: Car): void {

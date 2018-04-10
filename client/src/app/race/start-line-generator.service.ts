@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { Vector2, ObjectLoader, Object3D, PlaneBufferGeometry, MeshBasicMaterial, Mesh, DoubleSide, TextureLoader, Vector3 } from "three";
+import { Vector2, ObjectLoader, Object3D, PlaneBufferGeometry, MeshBasicMaterial, Mesh, DoubleSide, TextureLoader } from "three";
 import { Car } from "./car/car";
 import { ITrack, TrackType } from "../../../../common/interfaces/ITrack";
 import { HALF, PI_OVER_2, ROAD_WIDTH } from "../constants";
@@ -48,15 +48,8 @@ export class StartLineGeneratorService {
             return startLineBanner;
         });
     }
-    public createGroundStartLine(startLineBanner: Object3D): Array<Mesh> {
-        const verificationPlane: Mesh = new Mesh(new PlaneBufferGeometry(ROAD_WIDTH, 1), 
-                                                 new MeshBasicMaterial({ wireframe: true, opacity: 0 }));
 
-        return new Array<Mesh>(this.createStartLine(startLineBanner),
-                               this.createVerificationPlane(verificationPlane, startLineBanner));
-    }
-
-    private createStartLine(startLineBanner: Object3D): Mesh {
+    public createGroundStartLine(startLineBanner: Object3D): Mesh {
         const startLine: Mesh = new Mesh(new PlaneBufferGeometry(ROAD_WIDTH, STARTLINE_HEIGHT),
                                          new MeshBasicMaterial({ map: new TextureLoader().load("../assets/checkerboard.jpg"),
                                                                  side: DoubleSide}));
@@ -67,26 +60,6 @@ export class StartLineGeneratorService {
         startLine.rotateX(PI_OVER_2);
 
         return startLine;
-    }
-
-    private createVerificationPlane(verificationPlane: Mesh, startLineBanner: Object3D): Mesh {
-        const firstRoadDirection: Vector2 = this.calculateFirstRoadDirection(startLineBanner);
-        verificationPlane.position.x = startLineBanner.position.x + STARTLINE_HEIGHT * firstRoadDirection.x;
-        verificationPlane.position.y = startLineBanner.position.y + SUPERPOSITION;
-        verificationPlane.position.z = startLineBanner.position.z + STARTLINE_HEIGHT * firstRoadDirection.y;
-        verificationPlane.rotation.y = startLineBanner.rotation.y;
-        verificationPlane.rotateX(PI_OVER_2);
-
-        return verificationPlane;
-    }
-
-    private calculateFirstRoadDirection(startLine: Object3D): Vector2 {
-        const firstRoadDirection: Vector2 = new Vector2();
-        firstRoadDirection.x = -(startLine.position.x - this.activeTrack.points[0].x);
-        firstRoadDirection.y = -(startLine.position.y - this.activeTrack.points[0].y);
-        firstRoadDirection.normalize();
-
-        return firstRoadDirection;
     }
 
     private async loadStartLineBanner(): Promise<Object3D> {
