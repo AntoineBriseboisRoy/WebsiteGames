@@ -39,8 +39,8 @@ export class RenderService {
     private lastDate: number;
     private activeTrack: ITrack;
     private floorTextures: Map<TrackType, Texture>;
-    public get player(): Car {
-        return this.cars[PLAYER];
+    public get Cars(): Array<Car> {
+        return this.cars;
     }
 
     public get CameraContext(): CameraContext {
@@ -49,10 +49,6 @@ export class RenderService {
 
     public get DayPeriodContext(): DayPeriodContext {
         return this.dayPeriodContext;
-    }
-
-    public get RoadCreator(): RoadCreator {
-        return this.roadCreator;
     }
 
     public get FloorTextures(): Map<TrackType, Texture> {

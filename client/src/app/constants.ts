@@ -28,3 +28,4 @@ export const RIGHT_MOUSE_BUTTON: number = 2;
 export const PRECISION_PIXELS: number = 1;
 export const SKIP_SEGMENT: number = 2;
 export const POINT_BY_LETTER: number = 10;
+export const LAP_NUMBER: number = 3;

@@ -3,6 +3,7 @@ import { Vector3, Matrix4, Quaternion, Box3, Mesh, Raycaster, Intersection } fro
 import { Injectable } from "@angular/core";
 import { ModalService } from "../../modal/modal.service";
 import { Router } from "@angular/router";
+import { LAP_NUMBER } from "../../constants";
 
 const CAR_A_MOMENTUM_FACTOR: number = 2.1;
 const CAR_B_MOMENTUM_FACTOR: number = 1.9;
@@ -14,7 +15,6 @@ const COLLISION_DISTANCE: number = 10;
 const TIME_THRESHHOLD: number = 200; // Milliseconds
 const SLOW_DOWN_FACTOR: number = 0.3;
 
-const LAPS_NUMBER: number = 3;
 enum CollisionSide {
     RIGHT = 0,
     LEFT
@@ -150,8 +150,11 @@ export class CollisionManager {
     }
 
     private startLineCollision(car: Car): void {
-        if (this.cars[0].Information.Lap === LAPS_NUMBER) {
-            this.endRace();
+        if (car.Information.Lap === LAP_NUMBER) {
+            car.Information.stopTimer();
+            if (car === this.cars[0]) {
+                this.endRace();
+            }
         } else {
             car.Information.incrementLap();
         }

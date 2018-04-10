@@ -10,7 +10,7 @@
     <span id="time" class="text">Total time: {{this.player.Information.totalTime.getTime() | date: 'mm:ss:SS'}}</span>
   </span>
   <span id="lap-time-background"> 
-    <span id="lap-time" class="text"> Lap time: {{this.player.Information.lapTime.getTime() | date: 'mm:ss:SS'}}</span>
+    <span id="lap-time" class="text"> Lap time: {{this.player.Information.CurrentLapTime | date: 'mm:ss:SS'}}</span>
   </span>
   <span id="best-time-background">
     <span id="best-time" class="text"> Best time: {{this.bestTime.getTime() | date: 'mm:ss:SS'}}</span>

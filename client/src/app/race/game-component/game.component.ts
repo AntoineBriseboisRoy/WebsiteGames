@@ -70,7 +70,7 @@ export class GameComponent implements AfterViewInit {
     }
 
     public get player(): Car {
-        return this.renderService.player;
+        return this.renderService.Cars[0];
     }
 
     public get CameraContext(): CameraContext {
@@ -96,7 +96,7 @@ export class GameComponent implements AfterViewInit {
             } else if (countdown > -1) {
                 this.inputManagerService.init(this.player, this.CameraContext, this.DayPeriodContext);
                 this.timer.initialize();
-                this.startTimer();
+                this.startTimers();
                 this.startingText = "Start!";
             }
             if (countdown-- < -1) {
@@ -106,11 +106,13 @@ export class GameComponent implements AfterViewInit {
         });
     }
 
-    private startTimer(): void {
-        this.timer.Time.subscribe((time: number) => {
-            this.player.Information.lapTime.setTime(time);
-            this.player.Information.totalTime.setTime(time); // À modifier lorsque les tours de piste seront implémenté.
-        });
+    private startTimers(): void {
+        for (const car of this.renderService.Cars) {
+            const subscription: Subscription = this.timer.Time.subscribe((time: number) => {
+                car.Information.startTimer(subscription);
+                car.Information.totalTime.setTime(time);
+            });
+        }
     }
     public rpmRatio(): number {
         return (this.player.rpm / DEFAULT_SHIFT_RPM) * MAX_GEAR_BAR_WIDTH;
