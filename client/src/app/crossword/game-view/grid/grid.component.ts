@@ -1,12 +1,12 @@
 import { Component, OnInit, HostListener } from "@angular/core";
 import { GRID_WIDTH } from "../../../constants";
-import { Orientation } from "../../../../../../common/constants";
 import { IGridWord } from "../../../../../../common/interfaces/IGridWord";
 import { ICell, CellColor, Finder } from "../../../../../../common/interfaces/ICell";
 import { FocusCell } from "../focusCell";
 import { KeyboardInputManagerService } from "../keyboard-input-manager/keyboard-input-manager.service";
 import { GridService } from "../../grid.service";
 import { SocketIoService } from "../../socket-io.service";
+import { SelectionHandlerService } from "./selection-handler.service";
 
 @Component({
     selector: "app-crossword-grid",
@@ -20,7 +20,8 @@ export class GridComponent implements OnInit {
     private clickedCell: ICell;
     private focusCell: FocusCell;
     private keyboardInputManagerService: KeyboardInputManagerService;
-    public constructor(private gridService: GridService, private socketIo: SocketIoService) {
+    public constructor(private gridService: GridService, private socketIo: SocketIoService,
+                       public selectionHandler: SelectionHandlerService) {
         this.clickedWords = new Array();
         this.clickedCell = undefined;
         this.focusCell = FocusCell.Instance;
@@ -132,39 +133,6 @@ export class GridComponent implements OnInit {
     }
     public addHighlightOnFocus(cell: ICell): string {
         return this.focusCell.cell === cell ? "focus" : "";
-    }
-
-    public addOrientationBorders(cell: ICell): string {
-        if (this.focusCell.cells) {
-            if (this.focusCell.cells.includes(cell)) {
-                return this.focusCell.Orientation === Orientation.Vertical ?
-                    "left-border-p1 right-border-p1" : "top-border-p1 bottom-border-p1";
-            }
-        }
-
-        return "";
-    }
-
-    public addFirstCellBorder(cell: ICell): string {
-        if (this.focusCell.cells) {
-            if (this.focusCell.cells[0] === cell) {
-                return this.focusCell.Orientation === Orientation.Vertical ?
-                    "top-border-p1" : "left-border-p1";
-            }
-        }
-
-        return "";
-    }
-
-    public addLastCellBorder(cell: ICell): string {
-        if (this.focusCell.cells) {
-            if (this.focusCell.cells[this.focusCell.cells.length - 1] === cell) {
-                return this.focusCell.Orientation === Orientation.Vertical ?
-                    "bottom-border-p1" : "right-border-p1";
-            }
-        }
-
-        return "";
     }
 
     public addStyleOnFoundWord(cell: ICell): string {
