@@ -36,6 +36,7 @@
     "socket.io": "^1.7.4",
     "splice": "^1.0.0",
     "systemjs": "0.19.39",
+    "timeout-promise": "^1.0.2",
     "ts-node": "^4.1.0"
   },
   "devDependencies": {

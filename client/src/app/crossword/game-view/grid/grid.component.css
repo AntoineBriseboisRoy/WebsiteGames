@@ -2,7 +2,7 @@
     z-index: 0;
     height: 3.8vw;
     width: 3.8vw;
-    border: 1px solid black;
+    border: 1px solid white;
     float: left;
     text-transform: uppercase;
     display: block;
@@ -52,42 +52,131 @@
     background-color: lightblue;
 }
 
-.horizontal-border {
-    border-top: 3px dashed rgb(3, 109, 167);
-    border-bottom: 3px dashed rgb(3, 109, 167);
-}
+/* Borders for player one */
 
-.vertical-border {
-    border-left: 3px dashed rgb(3, 109, 167);
-    border-right: 3px dashed rgb(3, 109, 167);
-}
-
-.first-case-border-horizontal {
+.left-border-p1 {
     border-left: 3px dashed rgb(3, 109, 167);
 }
 
-.last-case-border-horizontal {
+.right-border-p1 {
     border-right: 3px dashed rgb(3, 109, 167);
 }
 
-.first-case-border-vertical {
+.top-border-p1 {
     border-top: 3px dashed rgb(3, 109, 167);
 }
 
-.last-case-border-vertical {
+.bottom-border-p1 {
     border-bottom: 3px dashed rgb(3, 109, 167);
 }
 
-.isFoundCellPlayerOne {
-    background-color: #0796E5;
+/* Borders for player two */
+
+.left-border-p2 {
+    border-left: 3px dashed rgb(241, 118, 48);
 }
 
-.isFoundCellPlayerTwo {
-    background-color: #F17630;
+.right-border-p2 {
+    border-right: 3px dashed rgb(241, 118, 48);
 }
 
-.isFoundCellBoth {
+.top-border-p2 {
+    border-top: 3px dashed rgb(241, 118, 48);
+}
+
+.bottom-border-p2 {
+    border-bottom: 3px dashed rgb(241, 118, 48);
+}
+
+/* Borders for both players */
+
+.border-both {
+    width: 3.8vw;
+    height: 3.8vw;
+    position: relative;
+    margin: 0 auto;
+}
+
+.left-border-both {
+    border-left: 3px solid rgb(241, 118, 48);
+}
+
+.left-border-both:before {
+    background: none;
+    border-left: 3px dashed rgb(3, 109, 167);
+    content: "";
+    display: block;
+    position: absolute;
+    top: -3px;
+    left: -3px;
+    right: -3px;
+    bottom: -3px;
+    pointer-events: none;
+}
+
+.right-border-both {
+    border-right: 3px solid rgb(241, 118, 48);
+}
+
+.right-border-both:before {
+    background: none;
+    border-right: 3px dashed rgb(3, 109, 167);
+    content: "";
+    display: block;
+    position: absolute;
+    top: -3px;
+    left: -3px;
+    right: -3px;
+    bottom: -3px;
+    pointer-events: none;
+}
+
+.top-border-both {
+    border-top: 3px solid rgb(241, 118, 48);
+}
+
+.top-border-both:before {
+    background: none;
+    border-top: 3px dashed rgb(3, 109, 167);
+    content: "";
+    display: block;
+    position: absolute;
+    top: -3px;
+    left: -3px;
+    right: -3px;
+    bottom: -3px;
+    pointer-events: none;
+}
+
+.bottom-border-both {
+    border-bottom: 3px solid rgb(241, 118, 48);
+}
+
+.bottom-border-both:before {
+    background: none;
+    border-bottom: 3px dashed rgb(3, 109, 167);
+    content: "";
+    display: block;
+    position: absolute;
+    top: -3px;
+    left: -3px;
+    right: -3px;
+    bottom: -3px;
+    pointer-events: none;
+}
+
+/* Background cell color when found */
+
+.is-found-cell-p1 {
+    background-color: rgb(7, 150, 229);
+}
+
+.is-found-cell-p2 {
+    background-color: rgb(241, 118, 48);
+}
+
+.is-found-cell-both {
     background-image: repeating-linear-gradient(-45deg,
-        #0796E5 20px,
+        #0796e5 20px,
         #F17630 40px);
 }

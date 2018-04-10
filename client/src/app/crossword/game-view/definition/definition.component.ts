@@ -4,6 +4,7 @@ import { GridService } from "../../grid.service";
 import { IGridWord } from "../../../../../../common/interfaces/IGridWord";
 import { ICell } from "../../../../../../common/interfaces/ICell";
 import { FocusCell } from "../focusCell";
+import { SocketIoService } from "../../socket-io.service";
 
 @Component({
     selector: "app-crossword-definition",
@@ -17,7 +18,7 @@ export class DefinitionComponent {
     public cheatButtonColor: string;
     private focusCell: FocusCell;
 
-    public constructor(private gridService: GridService) {
+    public constructor(private gridService: GridService, private socketIo: SocketIoService) {
         this.choosedDefinition = "";
         this.cheatModeActive = false;
         this.cheatButtonColor = NO_CHEAT_COLOR;
@@ -34,6 +35,8 @@ export class DefinitionComponent {
                 if (this.isAlreadyFoundWord()) {
                     this.focusCell.clear();
                     this.choosedDefinition = undefined;
+                } else {
+                    this.socketIo.SelectedWordsSubject.next([word]);
                 }
             }
         });

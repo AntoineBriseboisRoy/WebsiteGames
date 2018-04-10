@@ -1,6 +1,8 @@
 import { Car } from "./car";
 import { Vector3, Matrix4, Quaternion, Box3, Mesh, Raycaster, Intersection } from "three";
 import { Injectable } from "@angular/core";
+import { SoundManagerService } from "../sound-manager.service";
+import { COLLISION_SOUND_NAME, WALL_SOUND_NAME } from "../../constants";
 
 const CAR_A_MOMENTUM_FACTOR: number = 2.1;
 const CAR_B_MOMENTUM_FACTOR: number = 1.9;
@@ -9,7 +11,7 @@ const BACK_SECTION: number = -1.55;
 const FRONT_SECTION: number = 1.79;
 const COLLISION_DISTANCE: number = 10;
 
-const TIME_THRESHHOLD: number = 200; // Milliseconds
+const TIME_THRESHHOLD: number = 100; // Milliseconds
 const SLOW_DOWN_FACTOR: number = 0.3;
 
 enum CollisionSide {
@@ -25,7 +27,7 @@ export class CollisionManager {
     private timeSinceLastCollision: number;
     private lastDate: number;
 
-    public constructor() {
+    public constructor(private soundManager: SoundManagerService) {
         this.cars = new Array<Car>();
         this.roadSegments = new Array<Mesh>();
         this.timeSinceLastCollision = 0;
@@ -94,6 +96,7 @@ export class CollisionManager {
     }
 
     private wallCollision(car: Car): void {
+        this.soundManager.play(WALL_SOUND_NAME);
         this.bounce(car);
         car.speed = car.speed.multiplyScalar(SLOW_DOWN_FACTOR);
     }
@@ -103,6 +106,7 @@ export class CollisionManager {
     }
 
     private carCollision(carA: Car, carB: Car): void {
+        this.soundManager.play(COLLISION_SOUND_NAME);
         const intersectBox: Box3 =  carA.BoundingBox.intersect(carB.BoundingBox);
         this.spinCar(carA, carA.getPosition().clone().sub(intersectBox.getCenter()));
         this.spinCar(carB, carB.getPosition().clone().sub(intersectBox.getCenter()));

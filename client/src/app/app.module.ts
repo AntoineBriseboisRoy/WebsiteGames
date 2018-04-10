@@ -35,6 +35,8 @@ import { ModalDirective } from "./modal/modal.directive";
 import { TrackPreviewComponent } from "./race/track-view/track-preview/track-preview.component";
 import { StartLineGeneratorService } from "./race/start-line-generator.service";
 import { GameManagerService } from "./crossword/game-manager.service";
+import { SoundManagerService } from "./race/sound-manager.service";
+import { SelectionHandlerService } from "./crossword/game-view/grid/selection-handler.service";
 
 @NgModule({
     declarations: [
@@ -74,7 +76,9 @@ import { GameManagerService } from "./crossword/game-manager.service";
         ModalService,
         ModalStateService,
         StartLineGeneratorService,
-        GameManagerService
+        GameManagerService,
+        SoundManagerService
+        SelectionHandlerService
     ],
     bootstrap: [AppComponent]
 })

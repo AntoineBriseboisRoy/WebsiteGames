@@ -15,6 +15,7 @@ export class GridService {
     public gridWords: Array<IGridWord>;
     public gridWordsHorizontal: Array<IGridWord>;
     public gridWordsVertical: Array<IGridWord>;
+    public selectedWords: Array<IGridWord>;
     private static compareIndex(a: IGridWord, b: IGridWord): number {
         return a.cells[0].index - b.cells[0].index;
     }
@@ -25,13 +26,14 @@ export class GridService {
         this.gridWords = new Array();
         this.gridWordsHorizontal = new Array();
         this.gridWordsVertical = new Array();
+        this.selectedWords = new Array();
         this.initSinglePlayerGame();
     }
 
     private initSinglePlayerGame(): void {
         if (!this.gameManagerService.isMultiplayer) {
             this.socketIO.PlayGameSubject.next({
-                userCreator: "Claudia",
+                userCreator: "Player One",
                 difficulty: this.gameManagerService.difficulty,
                 userCreatorID: "",
                 userJoiner: ""
@@ -63,18 +65,28 @@ export class GridService {
     private fetchGridWords(obs: Observer<void>): void {
         this.socketIO.GridWords.subscribe((gridWords: Array<IGridWord>) => {
             this.gridWords = gridWords;
-            this.setGridWordsReferencesToGridCells();
+            this.setWordReferencesToCells(this.gridWords);
             this.gridWords.sort(GridService.compareIndex);
             this.splitHorizontalAndVerticalWords();
             this.checkGameStatus();
+            this.fetchSelectedWords();
             obs.next(null);
         });
     }
 
-    private setGridWordsReferencesToGridCells(): void {
-        for (const word of this.gridWords) {
-            for (let i: number = 0; i < word.cells.length; i++) {
-                word.cells[i] = this.gridCells[word.cells[i].gridIndex];
+    private fetchSelectedWords(): void {
+        this.socketIO.SelectedWordsSubject.subscribe((selectedWords: Array<IGridWord>) => {
+            this.selectedWords = selectedWords;
+            this.setWordReferencesToCells(this.selectedWords);
+        });
+    }
+
+    private setWordReferencesToCells(words: Array<IGridWord>): void {
+        for (const word of words) {
+            if (word) {
+                for (let i: number = 0; i < word.cells.length; i++) {
+                    word.cells[i] = this.gridCells[word.cells[i].gridIndex];
+                }
             }
         }
     }

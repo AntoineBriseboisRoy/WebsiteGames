@@ -9,6 +9,7 @@ import { ActivatedRoute, Params } from "@angular/router";
 import { MongoQueryService } from "../../mongo-query.service";
 import { TimerService } from "../timer-service/timer.service";
 import { Subscription } from "rxjs/Subscription";
+import { DayPeriodContext } from "../dayToggle-context";
 
 const MAX_GEAR_BAR_WIDTH: number = 27;
 
@@ -82,6 +83,10 @@ export class GameComponent implements AfterViewInit {
         return this.renderService.CameraContext;
     }
 
+    public get DayPeriodContext(): DayPeriodContext {
+        return this.renderService.DayPeriodContext;
+    }
+
     private startingSequence(): void {
         const COUNTDOWN: number = 3;
         const startingSequence: HTMLAudioElement = new Audio();
@@ -95,7 +100,7 @@ export class GameComponent implements AfterViewInit {
             if (countdown > 0) {
                 this.startingText = (countdown).toString();
             } else if (countdown > -1) {
-                this.inputManagerService.init(this.car, this.CameraContext);
+                this.inputManagerService.init(this.car, this.CameraContext, this.DayPeriodContext);
                 this.timer.initialize();
                 this.startTimer();
                 this.startingText = "Start!";
