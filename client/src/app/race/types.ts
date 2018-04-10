@@ -5,4 +5,4 @@ export default {
     Car: Symbol("Car")
 };
 
-export type Tuple = [Skybox, AmbientLight];
+export type SurroundingsTuple = [Skybox, AmbientLight];

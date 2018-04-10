@@ -1,7 +1,7 @@
 import { Vector3, Matrix4, Object3D, ObjectLoader, Euler, Quaternion, Box3,
          BoxHelper, Raycaster, BoxGeometry, MeshBasicMaterial, Mesh, SpotLight } from "three";
 import { Engine } from "./engine";
-import { MS_TO_SECONDS, GRAVITY, RAD_TO_DEG, PI_OVER_4, PI_OVER_2 } from "../../constants";
+import { MS_TO_SECONDS, RAD_TO_DEG, PI_OVER_4, PI_OVER_2 } from "../../constants";
 import { Wheel } from "./wheel";
 import { ForcesManager } from "./forces-manager";
 import { IPhysicsObject, IRotationalObject } from "./physics-interfaces";
@@ -177,11 +177,10 @@ export class Car extends Object3D {
             const targetRight: Object3D = new Object3D();
             this.mesh.add(targetRight);
 
-            const correction: number = Math.pow(-1, i);
-            targetRight.position.add(headLightsPosition).add(new Vector3(FRONT_X_CORRECTION * correction, 0, 0));
+            targetRight.position.add(headLightsPosition).add(new Vector3(FRONT_X_CORRECTION * Math.pow(-1, i), 0, 0));
             this.headLights[i].target = targetRight;
             const lightCorrectionZ: number = -0.6;
-            this.headLights[i].position.add(new Vector3(FRONT_X_CORRECTION * correction, 0, lightCorrectionZ));
+            this.headLights[i].position.add(new Vector3(FRONT_X_CORRECTION * Math.pow(-1, i), 0, lightCorrectionZ));
         }
     }
 
