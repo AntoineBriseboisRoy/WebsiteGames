@@ -59,7 +59,21 @@ export class MultiplayerMenuComponent {
     }
 
     public difficultySelected(eventTarget: EventTarget): void {
-        this.difficulty = ((eventTarget as HTMLButtonElement).value as Difficulty);
+        switch ((eventTarget as HTMLButtonElement).value) {
+            case "Easy": {
+                this.difficulty = Difficulty.Easy;
+                break;
+            }
+            case "Medium": {
+                this.difficulty = Difficulty.Medium;
+                break;
+            }
+            case "Hard": {
+                this.difficulty = Difficulty.Hard;
+                break;
+            }
+            default: break;
+        }
     }
 
     public hasCompletedForm(): boolean {

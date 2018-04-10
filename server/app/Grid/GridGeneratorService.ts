@@ -17,7 +17,7 @@ export class GridGeneratorService {
     }
 
     public get Grid(): string {
-        return this.grid.GridContent.toString().replace(",", "");
+        return this.grid.GridContent.toString().toUpperCase().replace(/,/gi, "");
     }
 
     public get Words(): Array<IWord> {

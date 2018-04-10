@@ -14,8 +14,7 @@ export class Room {
         this.players = new Array<Player>();
         this.players.push(playerOne);
         this.state = RoomState.Waiting;
-        this.grid = new GridInPlay();
-        this.grid.difficulty = difficulty;
+        this.grid = new GridInPlay(difficulty);
         this.name = name;
     }
 
@@ -37,6 +36,10 @@ export class Room {
 
     public get Cells(): Array<ICell> {
         return this.grid.Cells;
+    }
+
+    public async initializeGrid(): Promise<void> {
+        await this.grid.generateGrid();
     }
 
     public addPlayer(username: string, socketID: string): void {
