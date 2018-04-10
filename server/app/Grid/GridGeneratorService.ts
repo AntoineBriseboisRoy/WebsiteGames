@@ -1,14 +1,14 @@
 import { Grid } from "./Grid";
 import { IWord } from "../../../common/interfaces/IWord";
 import { ICoordXY } from "../../../common/interfaces/ICoordXY";
-import { Difficulty } from "../Services/LexicalService/LexicalService";
+import { Difficulty } from "../../../common/constants";
 
 export class GridGeneratorService {
 
     private grid: Grid;
 
     public constructor() {
-        this.grid = new Grid(Difficulty.EASY);
+        this.grid = new Grid(Difficulty.Easy);
     }
 
     public async createGrid(difficulty: Difficulty): Promise<void> {

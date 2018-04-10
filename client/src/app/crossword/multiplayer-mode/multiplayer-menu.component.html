@@ -7,7 +7,7 @@
           <h4 class="mt-5">Choose a difficulty</h4>
           <div class="text-center" (click)="onButtonGroupClick($event)">
             <button type="button" id="easy-button" class="btn btn-lg btn-outline-success background button-layout" value="Easy" on-click="difficultySelected($event.currentTarget)" [disabled]="this.gameRooms.isDefined()">Easy</button>
-            <button type="button" id="normal-button" class="btn btn-lg btn-outline-warning background button-layout" value="Normal" on-click="difficultySelected($event.currentTarget)" [disabled]="this.gameRooms.isDefined()">Normal</button>
+            <button type="button" id="medium-button" class="btn btn-lg btn-outline-warning background button-layout" value="Medium" on-click="difficultySelected($event.currentTarget)" [disabled]="this.gameRooms.isDefined()">Medium</button>
             <button type="button" id="hard-button" class="btn btn-lg btn-outline-danger background button-layout" value="Hard" on-click="difficultySelected($event.currentTarget)" [disabled]="this.gameRooms.isDefined()">Hard</button>
           </div>
           <h4 class="mt-5">Enter a username</h4>

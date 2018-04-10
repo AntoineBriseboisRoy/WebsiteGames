@@ -39,7 +39,7 @@ describe("DifficultyMenuComponent", () => {
     });
 
     it("should have an active difficulty", () => {
-        component.activateDifficulty(Difficulty.Normal);
+        component.activateDifficulty(Difficulty.Medium);
         expect(component.isActiveDifficulty).toBe(true);
     });
 
