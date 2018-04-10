@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import Stats = require("stats.js");
 import { WebGLRenderer, Scene, AmbientLight, Mesh, PlaneBufferGeometry, Vector2,
-         BackSide, Texture, RepeatWrapping, TextureLoader, Object3D, MeshPhongMaterial } from "three";
+         BackSide, Texture, RepeatWrapping, TextureLoader, Object3D, MeshPhongMaterial, Vector3 } from "three";
 import { Car } from "../car/car";
 import { ThirdPersonCamera } from "../camera/camera-perspective";
 import { TopViewCamera } from "../camera/camera-orthogonal";
@@ -13,6 +13,7 @@ import { CollisionManager } from "../car/collision-manager.service";
 import { RoadCreator } from "./road-creator.service";
 import { StartLineGeneratorService } from "../start-line-generator.service";
 import { DayPeriodContext } from "../dayToggle-context";
+import { SoundManagerService } from "../sound-manager.service";
 
 export const FAR_CLIPPING_PLANE: number = 1000;
 export const NEAR_CLIPPING_PLANE: number = 1;
@@ -26,6 +27,7 @@ const WORLD_SIZE: number = 1000;
 const FLOOR_SIZE: number = WORLD_SIZE / HALF;
 const PLAYER: number = 0;
 const NUMBER_OF_CARS: number = 4;
+const BASE_RPM: number = 3500;
 
 @Injectable()
 export class RenderService {
@@ -60,7 +62,7 @@ export class RenderService {
     }
 
     public constructor(private collisionManager: CollisionManager, private roadCreator: RoadCreator,
-                       private startLineGeneratorService: StartLineGeneratorService) {
+                       private startLineGeneratorService: StartLineGeneratorService, private soundManager: SoundManagerService) {
         this.cars = new Array<Car>();
         for (let i: number = 0; i < NUMBER_OF_CARS; i++) {
             this.cars.push(new Car());
@@ -102,6 +104,7 @@ export class RenderService {
     private update(): void {
         const timeSinceLastFrame: number = Date.now() - this.lastDate;
         this.cars.forEach((car: Car) => car.update(timeSinceLastFrame));
+        this.soundManager.changeCarSoundSpeed(this.cars[PLAYER].rpm / BASE_RPM);
         this.cameraContext.update(this.cars[PLAYER]);
         this.lastDate = Date.now();
         this.collisionManager.update();
@@ -165,7 +168,12 @@ export class RenderService {
                                                                      this.activeTrack.points[1].y - this.activeTrack.points[0].y),
                                                          this.cars,
                                                          this.activeTrack)
-        .then((startLine: Object3D) => this.scene.add(startLine))
+        .then((startLine: Object3D) => {
+            this.scene.add(startLine);
+            for (const car of this.cars) {
+                this.soundManager.init(car);
+            }
+        })
         .catch((error: Error) => console.error(error));
     }
 
