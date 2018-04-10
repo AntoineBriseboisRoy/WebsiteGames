@@ -16,7 +16,7 @@ export const FRUSTUM_RATIO: number = 100;
 export const NO_CHEAT_COLOR: string = "#7BABEF";
 export const CHEAT_COLOR: string = "#FF3E04";
 export const COLLISION_SOUND_NAME: string = "collisionSound.ogg";
-export const ENGINE_SOUND_NAME: string = "engineSound.ogg";
+export const ENGINE_SOUND_NAME: string = "engineSound.wav";
 export const WALL_SOUND_NAME: string = "wallSound.ogg";
 
 // Edit track
