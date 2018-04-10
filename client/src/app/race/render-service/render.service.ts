@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import Stats = require("stats.js");
 import { WebGLRenderer, Scene, AmbientLight, Mesh, PlaneBufferGeometry, Vector2,
-         BackSide, Texture, RepeatWrapping, TextureLoader, Object3D, MeshPhongMaterial, Vector3 } from "three";
+         BackSide, Texture, RepeatWrapping, TextureLoader, Object3D, MeshPhongMaterial } from "three";
 import { Car } from "../car/car";
 import { ThirdPersonCamera } from "../camera/camera-perspective";
 import { TopViewCamera } from "../camera/camera-orthogonal";
