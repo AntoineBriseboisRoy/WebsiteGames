@@ -12,6 +12,9 @@ import { BrakeCarCommand } from "./car-commands/BrakeCarCommand";
 import { ReleaseBrakeCommand } from "./car-commands/ReleaseBrakeCommand";
 import { CameraContext } from "../camera/camera-context";
 import { SwapCameraCommand } from "./camera-commands/SwapCameraCommand";
+import { ToggleCarLightsCommand } from "./car-commands/ToggleCarLightsCommand";
+import { ToggleDayPeriodCommand } from "./dayNight-commands/toggleDayPeriodCommand";
+import { DayPeriodContext } from "../dayToggle-context";
 
 export const ACCELERATE_KEYCODE: number = 87; // w
 export const LEFT_KEYCODE: number = 65;       // a
@@ -20,6 +23,8 @@ export const RIGHT_KEYCODE: number = 68;      // d
 export const ZOOM_IN_KEYCODE: number = 187;    // +
 export const ZOOM_OUT_KEYCODE: number = 189;   // -
 export const SWAP_CAM_KEYCODE: number = 67;   // c
+export const TOGGLE_HEADLIGHTS_KEYCODE: number = 76; // l
+export const TOGGLE_DAYPERIOD_KEYCODE: number = 78; // n
 
 @Injectable()
 export class InputManagerService {
@@ -32,12 +37,12 @@ export class InputManagerService {
         this.keyUpCommands = new Map<number, AbsCommand>();
     }
 
-    public init(car: Car, cameraContext: CameraContext): void {
-        this.setDownKeyBindings(car, cameraContext);
+    public init(car: Car, cameraContext: CameraContext, dayPeriodContext: DayPeriodContext): void {
+        this.setDownKeyBindings(car, cameraContext, dayPeriodContext);
         this.setUpKeyBindings(car, cameraContext);
     }
 
-    private setDownKeyBindings(car: Car, cameraContext: CameraContext): void {
+    private setDownKeyBindings(car: Car, cameraContext: CameraContext, dayPeriodContext: DayPeriodContext): void {
         this.keyDownCommands.set(ACCELERATE_KEYCODE, new AccelerateCarCommand(car));
         this.keyDownCommands.set(LEFT_KEYCODE, new LeftCarCommand(car));
         this.keyDownCommands.set(RIGHT_KEYCODE, new RightCarCommand(car));
@@ -45,6 +50,8 @@ export class InputManagerService {
         this.keyDownCommands.set(ZOOM_OUT_KEYCODE, new ZoomOutCommand(cameraContext));
         this.keyDownCommands.set(BRAKE_KEYCODE, new BrakeCarCommand(car));
         this.keyDownCommands.set(SWAP_CAM_KEYCODE, new SwapCameraCommand(cameraContext));
+        this.keyDownCommands.set(TOGGLE_HEADLIGHTS_KEYCODE, new ToggleCarLightsCommand(car));
+        this.keyDownCommands.set(TOGGLE_DAYPERIOD_KEYCODE, new ToggleDayPeriodCommand(dayPeriodContext));
     }
 
     private setUpKeyBindings(car: Car, cameraContext: CameraContext): void {

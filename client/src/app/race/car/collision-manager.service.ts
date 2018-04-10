@@ -47,7 +47,6 @@ export class CollisionManager {
 
     private verifyCarCollision(): void {
         if (this.cars.length > 1) {
-            let collisioned: boolean = false;
             const carsCollision: Car[] = new Array<Car>();
             for (let i: number = 0; i < this.cars.length; ++i) {
                 carsCollision.push(this.cars[i]);
@@ -55,10 +54,7 @@ export class CollisionManager {
                     carsCollision.push(this.cars[j]);
                     const distanceBetweenCars: Vector3 = carsCollision[0].getPosition().clone().sub(carsCollision[1].getPosition().clone());
                     if (this.isNear(distanceBetweenCars)) {
-                        collisioned = this.raycasterFindCollision(carsCollision[0], carsCollision[1]);
-                        if (!collisioned) {
-                            collisioned = this.raycasterFindCollision(carsCollision[1], carsCollision[0]);
-                        }
+                        this.raycasterFindCollision(carsCollision[0], carsCollision[1]);
                     }
                     carsCollision.pop();
                 }
@@ -72,17 +68,13 @@ export class CollisionManager {
                Math.abs(distance.z) < COLLISION_DISTANCE;
     }
 
-    private raycasterFindCollision(carA: Car, carB: Car): boolean {
-        let collisioned: boolean = false;
+    private raycasterFindCollision(carA: Car, carB: Car): void {
         carA.Raycasters.forEach((raycaster: Raycaster) => {
             const intersections: Intersection[] = raycaster.intersectObject(carB, true);
             if (intersections.length > 0) {
                 this.carCollision(carA, carB);
-                collisioned = true;
             }
         });
-
-        return collisioned;
     }
 
     private verifyWallCollision(): void {
