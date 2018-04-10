@@ -13,5 +13,6 @@ export const PERCENTAGE_BLACK_SQUARES: number = 0.3;
 export const MAX_WORD_QUERY_ATTEMPS: number = 5;
 export const STANDARD_SIDE_SIZE: number = 10;
 export const WORD_CUTOFF: number = 5;
+export const MAX_TRIES_BEFORE_FAIL: number = 1500;
 
 export const EMPTY_CHAR_FOR_QUERY: string = "?";

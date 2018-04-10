@@ -1,6 +1,6 @@
 import { ICoordXY } from "../../../common/interfaces/ICoordXY";
 import { IWord, Orientation } from "../../../common/interfaces/IWord";
-import { EMPTY_SQUARE, BLACKSQUARE_CHARACTER, WORD_CACHE, WORD_CACHE_OFFSET, WORD_CUTOFF } from "./Constants";
+import { EMPTY_SQUARE, BLACKSQUARE_CHARACTER, WORD_CACHE, WORD_CACHE_OFFSET, WORD_CUTOFF, MAX_TRIES_BEFORE_FAIL } from "./Constants";
 import { Difficulty, LexicalService } from "../Services/LexicalService/LexicalService";
 import { WordAndDefinition } from "../Services/LexicalService/Interfaces";
 
@@ -108,18 +108,13 @@ export class GridFiller {
         await Promise.all(promises);
     }
 
-    // tslint:disable-next-line:max-func-body-length
     private fillGridWithWords(): boolean {
         if (this.gridFilled()) {
             return true;
         }
-        console.log(this.tries);
-        if (++this.tries >= 1500) {
-            console.log("STOP");
+        if (++this.tries >= MAX_TRIES_BEFORE_FAIL) {
             return false;
         }
-        console.log(this.grid);
-        console.log(this.wordsPlaced.length + " -- " + this.wordsToFill.length);
         const wordToPlace: IWord = this.wordsToFill.pop();
         const entries: string[] = this.getWords(wordToPlace);
         if (entries.length === 0) {
