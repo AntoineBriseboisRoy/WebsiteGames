@@ -1,7 +1,7 @@
 import { Vector3, Matrix4, Object3D, ObjectLoader, Euler, Quaternion, Box3,
-         BoxHelper, Raycaster, BoxGeometry, MeshBasicMaterial, Mesh } from "three";
+         BoxHelper, Raycaster, BoxGeometry, MeshBasicMaterial, Mesh, SpotLight } from "three";
 import { Engine } from "./engine";
-import { MS_TO_SECONDS, PI_OVER_2, RAD_TO_DEG } from "../../constants";
+import { MS_TO_SECONDS, GRAVITY, RAD_TO_DEG, PI_OVER_4, PI_OVER_2 } from "../../constants";
 import { Wheel } from "./wheel";
 import { ForcesManager } from "./forces-manager";
 import { IPhysicsObject, IRotationalObject } from "./physics-interfaces";
@@ -15,6 +15,8 @@ const INITIAL_MODEL_ROTATION: Euler = new Euler(0, PI_OVER_2, 0);
 const INITIAL_WEIGHT_DISTRIBUTION: number = 0.5;
 const NUMBER_REAR_WHEELS: number = 2;
 const NUMBER_WHEELS: number = 4;
+const NUMBER_OF_HEADLIGHT: number = 2;
+
 const FRONT_X_CORRECTION: number = 0.16;
 const FRONT_Z_CORRECTION: number = 0.13;
 const BACK_X_CORRECTION: number = 0.13;
@@ -22,6 +24,8 @@ const BACK_Z_CORRECTION: number = 0.1;
 const EXTRA_BUMPER_LENGTH: number = 0.5;
 const MINIMUM_SPEED: number = 0.05;
 const FRONTAL_SURFACE: number = 3;
+
+const LIGHT_COLOR: number = 0xFFFFEE;
 
 export class Car extends Object3D {
     public isAcceleratorPressed: boolean;
@@ -31,8 +35,6 @@ export class Car extends Object3D {
     private readonly rearWheel: Wheel;
     private readonly wheelbase: number;
     private readonly dragCoefficient: number;
-
-    private readonly initialPosition: Vector3;
 
     private _speed: Vector3;
     private isBraking: boolean;
@@ -45,6 +47,7 @@ export class Car extends Object3D {
     private raycasters: Raycaster[];
 
     private raycasterOffsets: Vector3[];
+    private headLights: SpotLight[];
 
     public get Mass(): number {
         return this.mass;
@@ -104,9 +107,12 @@ export class Car extends Object3D {
     }
 
     public constructor(
-        initialPosition: Vector3 = new Vector3(), engine: Engine = new Engine(),
-        rearWheel: Wheel = new Wheel(), wheelbase: number = DEFAULT_WHEELBASE,
-        mass: number = DEFAULT_MASS, dragCoefficient: number = DEFAULT_DRAG_COEFFICIENT) {
+        engine: Engine = new Engine(),
+        rearWheel: Wheel = new Wheel(),
+        wheelbase: number = DEFAULT_WHEELBASE,
+        mass: number = DEFAULT_MASS,
+        dragCoefficient: number = DEFAULT_DRAG_COEFFICIENT,
+        ) {
         super();
 
         this.engine = engine;
@@ -114,7 +120,6 @@ export class Car extends Object3D {
         this.wheelbase = wheelbase;
         this.mass = mass;
         this.dragCoefficient = dragCoefficient;
-        this.initialPosition = initialPosition;
         this.isBraking = false;
         this.steeringWheelDirection = 0;
         this.weightRear = INITIAL_WEIGHT_DISTRIBUTION;
@@ -122,6 +127,7 @@ export class Car extends Object3D {
         this.boundingBox = new Box3();
         this.raycasters = new Array<Raycaster>();
         this.raycasterOffsets = new Array<Vector3>();
+        this.headLights = new Array<SpotLight>();
     }
 
     // tslint:disable-next-line:no-suspicious-comment
@@ -139,8 +145,8 @@ export class Car extends Object3D {
         this.mesh = await this.load();
         this.add(this.mesh);
         this.initBoundingBox();
-        this.mesh.position.add(this.initialPosition);
         this.initRaycasters();
+        this.initHeadLights();
         this.mesh.setRotationFromEuler(INITIAL_MODEL_ROTATION);
     }
 
@@ -159,6 +165,28 @@ export class Car extends Object3D {
     private initRaycasters(): void {
         this.setRaycasterOffsets(new Box3().setFromObject(this.mesh));
         this.setRaycastersFromOffsets();
+    }
+
+    private initHeadLights(): void {
+        const headLightsPosition: Vector3 = this.getHeadlightsPosition(new Box3().setFromObject(this.mesh));
+        for (let i: number = 0; i < NUMBER_OF_HEADLIGHT; ++i) {
+            const spotRange: number = 7;
+            this.headLights.push(new SpotLight(LIGHT_COLOR, 1, spotRange, PI_OVER_4, 0));
+            this.mesh.add(this.headLights[i]);
+
+            const targetRight: Object3D = new Object3D();
+            this.mesh.add(targetRight);
+
+            const correction: number = Math.pow(-1, i);
+            targetRight.position.add(headLightsPosition).add(new Vector3(FRONT_X_CORRECTION * correction, 0, 0));
+            this.headLights[i].target = targetRight;
+            const lightCorrectionZ: number = -0.6;
+            this.headLights[i].position.add(new Vector3(FRONT_X_CORRECTION * correction, 0, lightCorrectionZ));
+        }
+    }
+
+    private getHeadlightsPosition(box: Box3): Vector3 {
+        return new Vector3(0, 1, box.min.x);
     }
 
     private setRaycastersFromOffsets(): void {
@@ -198,6 +226,12 @@ export class Car extends Object3D {
 
     public rotateMeshY(omega: number): void {
         this.mesh.rotateY(omega);
+    }
+
+    public toggleHeadlights(): void {
+        this.headLights.forEach((headLight: SpotLight) => {
+            headLight.visible = !headLight.visible;
+        });
     }
 
     public update(deltaTime: number): void {

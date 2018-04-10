@@ -36,11 +36,14 @@ export class StartLineGeneratorService {
         this.activeTrack = activeTrack;
         this.cars = cars;
         this.firstRoad = firstRoad;
+        const startLinePosition: Object3D = new Object3D();
+
+        this.setStartLinePosition(startLinePosition);
+        this.placeCarsBehindStartLine(startLinePosition);
+        this.placeCarsInRow(startLinePosition);
 
         return this.loadStartLine().then((startLine: Object3D) => {
             this.setStartLinePosition(startLine);
-            this.placeCarsBehindStartLine(startLine);
-            this.placeCarsInRow(startLine);
 
             return startLine;
         });

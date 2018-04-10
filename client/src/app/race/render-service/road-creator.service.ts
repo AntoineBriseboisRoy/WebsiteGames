@@ -1,12 +1,12 @@
 import { Injectable } from "@angular/core";
 import { Point } from "../edit-track/Geometry";
 import { Texture, TextureLoader, RepeatWrapping, Vector3, Mesh, PlaneBufferGeometry,
-         MeshBasicMaterial, BackSide, Vector2, CircleBufferGeometry } from "three";
+         BackSide, Vector2, CircleBufferGeometry, MeshPhongMaterial } from "three";
 import { HALF, PI_OVER_2 } from "../../constants";
 
 const TEXTURE_TILE_REPETIONS: number = 200;
 const WORLD_SIZE: number = 1000;
-const ROAD_WIDTH: number = 10;
+const ROAD_WIDTH: number = 20;
 const SUPERPOSITION: number = 0.001;
 const ROAD_TEXTURE_PATH: string = "/assets/uniformRoad.jpg";
 @Injectable()
@@ -56,7 +56,7 @@ export class RoadCreator {
         trackTexture.repeat.set(trackDirection.length() * TEXTURE_TILE_REPETIONS, 1);
 
         const plane: PlaneBufferGeometry = new PlaneBufferGeometry(trackDirection.length() * WORLD_SIZE, ROAD_WIDTH);
-        const roadMesh: Mesh = new Mesh(plane, new MeshBasicMaterial({ map: trackTexture, side: BackSide }));
+        const roadMesh: Mesh = new Mesh(plane, new MeshPhongMaterial({ map: trackTexture, side: BackSide }));
 
         const meshPositionWorld: Vector2 = new Vector2(-(this.points[index].y + trackDirection.z * HALF)
                                                         * WORLD_SIZE + WORLD_SIZE * HALF,
@@ -80,7 +80,7 @@ export class RoadCreator {
         const POLYGONS_NUMBER: number = 32;
         const trackTexture: Texture = this.loadTexture(ROAD_TEXTURE_PATH);
         const circle: CircleBufferGeometry = new CircleBufferGeometry(ROAD_WIDTH * HALF, POLYGONS_NUMBER);
-        const intersectionMesh: Mesh = new Mesh(circle, new MeshBasicMaterial({ map: trackTexture, side: BackSide }));
+        const intersectionMesh: Mesh = new Mesh(circle, new MeshPhongMaterial({ map: trackTexture, side: BackSide }));
 
         intersectionMesh.position.x = -(this.points[index].y) * WORLD_SIZE + WORLD_SIZE * HALF;
         intersectionMesh.position.z = -(this.points[index].x) * WORLD_SIZE + WORLD_SIZE * HALF;
