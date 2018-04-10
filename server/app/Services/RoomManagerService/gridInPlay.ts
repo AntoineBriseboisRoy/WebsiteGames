@@ -42,12 +42,21 @@ export class GridInPlay {
             if (GridInPlay.isSameWord(wordFound, this.gridWords[i])) {
                 this.gridWords[i] = wordFound;
                 this.gridWords[i].isFound = true;
-                this.setCellsToFound(i);
+                this.updateGridCells(i);
             }
         }
     }
 
-    private setCellsToFound(i: number): void {
+    public setWordToSelected(wordFound: IGridWord): void {
+        for (let i: number = 0; i < this.gridWords.length; ++i) {
+            if (GridInPlay.isSameWord(wordFound, this.gridWords[i])) {
+                this.gridWords[i] = wordFound;
+                this.updateGridCells(i);
+            }
+        }
+    }
+
+    private updateGridCells(i: number): void {
         for (const cell of this.gridWords[i].cells) {
             const sameCell: ICell = this.gridCells.find((gridCell: ICell) => GridInPlay.isSameCell(gridCell, cell));
             if (sameCell !== undefined) {
