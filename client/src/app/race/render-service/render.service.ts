@@ -27,6 +27,7 @@ const WORLD_SIZE: number = 1000;
 const FLOOR_SIZE: number = WORLD_SIZE / HALF;
 const PLAYER: number = 0;
 const NUMBER_OF_CARS: number = 4;
+const BASE_RPM: number = 2000;
 
 @Injectable()
 export class RenderService {
@@ -103,6 +104,7 @@ export class RenderService {
     private update(): void {
         const timeSinceLastFrame: number = Date.now() - this.lastDate;
         this.cars.forEach((car: Car) => car.update(timeSinceLastFrame));
+        this.soundManager.changeCarSoundSpeed(this.cars[PLAYER].rpm / BASE_RPM);
         this.cameraContext.update(this.cars[PLAYER]);
         this.lastDate = Date.now();
         this.collisionManager.update();

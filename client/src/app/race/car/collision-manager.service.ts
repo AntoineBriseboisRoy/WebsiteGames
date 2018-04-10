@@ -2,6 +2,7 @@ import { Car } from "./car";
 import { Vector3, Matrix4, Quaternion, Box3, Mesh, Raycaster, Intersection } from "three";
 import { Injectable } from "@angular/core";
 import { SoundManagerService } from "../sound-manager.service";
+import { COLLISION_SOUND_NAME, WALL_SOUND_NAME } from "../../constants";
 
 const CAR_A_MOMENTUM_FACTOR: number = 2.1;
 const CAR_B_MOMENTUM_FACTOR: number = 1.9;
@@ -95,6 +96,7 @@ export class CollisionManager {
     }
 
     private wallCollision(car: Car): void {
+        this.soundManager.play(WALL_SOUND_NAME);
         this.bounce(car);
         car.speed = car.speed.multiplyScalar(SLOW_DOWN_FACTOR);
     }
@@ -104,7 +106,7 @@ export class CollisionManager {
     }
 
     private carCollision(carA: Car, carB: Car): void {
-        this.soundManager.play("countdown.ogg");
+        this.soundManager.play(COLLISION_SOUND_NAME);
         const intersectBox: Box3 =  carA.BoundingBox.intersect(carB.BoundingBox);
         this.spinCar(carA, carA.getPosition().clone().sub(intersectBox.getCenter()));
         this.spinCar(carB, carB.getPosition().clone().sub(intersectBox.getCenter()));

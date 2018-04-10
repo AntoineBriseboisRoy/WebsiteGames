@@ -6,7 +6,7 @@ import { HALF, PI_OVER_2 } from "../../constants";
 
 const TEXTURE_TILE_REPETIONS: number = 200;
 const WORLD_SIZE: number = 1000;
-const ROAD_WIDTH: number = 10;
+const ROAD_WIDTH: number = 20;
 const SUPERPOSITION: number = 0.001;
 const ROAD_TEXTURE_PATH: string = "/assets/uniformRoad.jpg";
 @Injectable()
