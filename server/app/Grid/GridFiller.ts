@@ -6,7 +6,6 @@ import { WordAndDefinition } from "../Services/LexicalService/Interfaces";
 
 const lexicalService: LexicalService = new LexicalService();
 export class GridFiller {
-
     private grid: string[][];
     private wordsPlaced: IWord[];
     private wordsToFill: IWord[];
@@ -108,6 +107,7 @@ export class GridFiller {
         await Promise.all(promises);
     }
 
+    // tslint:disable-next-line:max-func-body-length
     private fillGridWithWords(): boolean {
         if (this.gridFilled()) {
             return true;

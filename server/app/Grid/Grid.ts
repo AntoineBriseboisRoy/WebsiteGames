@@ -19,9 +19,29 @@ export class Grid {
         const blackSquareGenerator: BlackSquareGenerator = new BlackSquareGenerator(this.sideSize, this.percentageOfBlackSquares);
         this.gridContent = blackSquareGenerator.Content;
         const gridFiller: GridFiller = new GridFiller();
-        this.words = await gridFiller.fillWords(this.gridContent, this.sideSize, this.difficulty, blackSquareGenerator.WordsToFill);
+        // while (this.words === undefined) {
+            // this.words = await gridFiller.fillWords(this.gridContent, this.sideSize, this.difficulty, blackSquareGenerator.WordsToFill);
+        await this.withTimeout(
+            5,
+            gridFiller.fillWords(this.gridContent, this.sideSize, this.difficulty, blackSquareGenerator.WordsToFill)
+        ).catch((error: Error) => console.error(error));
+        // }
+
+        this.words = gridFiller.Words;
         this.gridContent = gridFiller.Content;
         this.cleanGrid();
+    }
+
+    private withTimeout(millis: number, promise: Promise<IWord[]>): Promise<IWord[]> {
+        const timeout: Promise<IWord[]> = new Promise(() =>
+            setTimeout(
+                () => { throw new Error("oops"); },
+                millis));
+
+        return Promise.race([
+            promise,
+            timeout
+        ]);
     }
 
     public get GridContent(): string[][] {

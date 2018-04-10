@@ -47,6 +47,7 @@ export class BlackSquareGenerator {
                     this.grid[tempPosition.x][tempPosition.y] = BLACKSQUARE_CHARACTER;
                 }
             }
+            this.eraseOpenSpaces();
         } while (!this.verifyBlackSquareGrid());
     }
 
@@ -76,6 +77,24 @@ export class BlackSquareGenerator {
 
     private allWordsConnected(): boolean {
         return this.breadthFirstSearch(this.getAdjacencyMatrix(this.findAllwordsToFill()));
+    }
+
+    private eraseOpenSpaces(): void {
+        for (let i: number = 0; i < this.sideSize - 2; ++i) {
+            for (let j: number = 0; j < this.sideSize - 2; ++j) {
+                let count: number = 0;
+                for (let k: number = i; k < i + 3; ++k) {
+                    for (let m: number = j; m < j + 3; ++m) {
+                        if (this.grid[k][m] === EMPTY_SQUARE) {
+                            ++count;
+                        }
+                    }
+                }
+                if (count === 9) {
+                    this.grid[i + 1][j + 1] = BLACKSQUARE_CHARACTER;
+                }
+            }
+        }
     }
 
     private getAdjacencyMatrix(words: IWord[]): boolean[][] {
