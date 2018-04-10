@@ -150,12 +150,10 @@ export class RenderService {
     }
 
     private async createCars(): Promise<void> {
-        const positionInitiale: Vector3 = new Vector3(WORLD_SIZE, 0, WORLD_SIZE);
         for (const car of this.cars) {
-            await car.init(positionInitiale);
+            await car.init();
             this.collisionManager.addCar(car);
             this.scene.add(car);
-            positionInitiale.add(positionInitiale);
         }
     }
 

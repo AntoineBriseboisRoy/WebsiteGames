@@ -11,7 +11,7 @@ const BACK_SECTION: number = -1.55;
 const FRONT_SECTION: number = 1.79;
 const COLLISION_DISTANCE: number = 10;
 
-const TIME_THRESHHOLD: number = 200; // Milliseconds
+const TIME_THRESHHOLD: number = 100; // Milliseconds
 const SLOW_DOWN_FACTOR: number = 0.3;
 
 enum CollisionSide {
