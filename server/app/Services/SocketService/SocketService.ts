@@ -9,7 +9,6 @@ import { IGridWord } from "../../../../common/interfaces/IGridWord";
 import { IPlayer } from "../../../../common/interfaces/IPlayer";
 
 export class SocketService {
-
     private static instance: SocketService;
     private socketIo: SocketIO.Server;
 
@@ -33,6 +32,7 @@ export class SocketService {
             this.deleteGame(receivedSocket);
             this.playAGame(receivedSocket);
             this.completeAWord(receivedSocket);
+            this.selectAWord(receivedSocket);
             this.disconnectSocket(receivedSocket);
         });
     }
@@ -80,6 +80,15 @@ export class SocketService {
             room.setWordFound(word, socket.id);
             this.socketIo.in(room.Name).emit("update-score", this.parseToIPlayers(room.Players));
             this.sendGrid(room);
+        });
+    }
+
+    private selectAWord(socket: SocketIO.Socket): void {
+        socket.on("selected-word", (data: string) => {
+            const word: Array<IGridWord> = JSON.parse(data);
+            const room: Room = RoomManagerService.Instance.getRoom(socket.id);
+            room.setWordSelected(word[0], socket.id);
+            this.socketIo.in(room.Name).emit("selected-word", room.Players.map((player: Player) => player.selectedWord));
         });
     }
 

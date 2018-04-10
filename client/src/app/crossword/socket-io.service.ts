@@ -14,6 +14,7 @@ export class SocketIoService {
     private createdGameSubject: Subject<INewGame>;
     private deletedGameSubject: Subject<INewGame>;
     private playGameSubject: Subject<INewGame>;
+    private selectedWordsSubject: Subject<Array<IGridWord>>;
 
     public constructor() {
         this.socket = io("http://localhost:3000/");
@@ -27,6 +28,7 @@ export class SocketIoService {
         this.createNewGame();
         this.deleteCreatedGame();
         this.playGame();
+        this.selectedWords();
     }
 
     public get CreatedGameSubject(): Subject<INewGame> {
@@ -39,6 +41,10 @@ export class SocketIoService {
 
     public get PlayGameSubject(): Subject<INewGame> {
         return this.playGameSubject;
+    }
+
+    public get SelectedWordsSubject(): Subject<Array<IGridWord>> {
+        return this.selectedWordsSubject;
     }
 
     public get GridContent(): Observable<Array<ICell>> {
@@ -69,6 +75,9 @@ export class SocketIoService {
     private playGame(): void {
         this.playGameSubject = this.createSubject<INewGame>("play-game", "Error: Cannot play the game");
     }
+    private selectedWords(): void {
+        this.selectedWordsSubject = this.createSubject<Array<IGridWord>>("selected-word", "Error: Cannot send selected word");
+    }
 
     private createSubject<T>(emitMessage: string, errorMessage: string): Subject<T> {
         return Subject.create(this.createObserver<T>(emitMessage, errorMessage),
@@ -80,7 +89,7 @@ export class SocketIoService {
             next: (data: T) => {
                 this.socket.emit(emitMessage, JSON.stringify(data));
             },
-            error: (err: string) => {
+            error: () => {
                 console.error(errorMessage);
             },
             complete: () => { this.socket.disconnect(); }

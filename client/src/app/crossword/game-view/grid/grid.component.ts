@@ -1,12 +1,12 @@
 import { Component, OnInit, HostListener } from "@angular/core";
 import { GRID_WIDTH } from "../../../constants";
-import { Orientation } from "../../../../../../common/constants";
 import { IGridWord } from "../../../../../../common/interfaces/IGridWord";
 import { ICell, CellColor, Finder } from "../../../../../../common/interfaces/ICell";
 import { FocusCell } from "../focusCell";
 import { KeyboardInputManagerService } from "../keyboard-input-manager/keyboard-input-manager.service";
 import { GridService } from "../../grid.service";
 import { SocketIoService } from "../../socket-io.service";
+import { SelectionHandlerService } from "./selection-handler.service";
 
 @Component({
     selector: "app-crossword-grid",
@@ -20,7 +20,8 @@ export class GridComponent implements OnInit {
     private clickedCell: ICell;
     private focusCell: FocusCell;
     private keyboardInputManagerService: KeyboardInputManagerService;
-    public constructor(private gridService: GridService, private socketIo: SocketIoService) {
+    public constructor(private gridService: GridService, private socketIo: SocketIoService,
+                       public selectionHandler: SelectionHandlerService) {
         this.clickedWords = new Array();
         this.clickedCell = undefined;
         this.focusCell = FocusCell.Instance;
@@ -60,9 +61,11 @@ export class GridComponent implements OnInit {
             this.focusCell.cell = this.isFocusCellinCells(this.clickedWords[0].cells) ?
                 this.clickedWords[1].cells[this.firstUnknownCell(this.clickedWords[1].cells)] :
                 this.clickedWords[0].cells[this.firstUnknownCell(this.clickedWords[0].cells)];
-            this.focusCell.cells = this.focusCell.cells === this.clickedWords[0].cells ?
-                this.clickedWords[1].cells : this.clickedWords[0].cells;
+            const selectedWord: IGridWord =  this.focusCell.cells === this.clickedWords[0].cells ?
+                                this.clickedWords[1] : this.clickedWords[0];
+            this.focusCell.cells = selectedWord.cells;
             this.focusCell.invertOrientation();
+            this.socketIo.SelectedWordsSubject.next([selectedWord]);
         }
     }
     private chooseNewWord(cell: ICell): void {
@@ -71,6 +74,7 @@ export class GridComponent implements OnInit {
             this.focusCell.cell = this.clickedWords[0].cells[this.firstUnknownCell(this.clickedWords[0].cells)];
             this.focusCell.cells = this.clickedWords[0].cells;
             this.focusCell.Orientation = this.clickedWords[0].orientation;
+            this.socketIo.SelectedWordsSubject.next([this.clickedWords[0]]);
         } else {
             this.focusCell.clear();
         }
@@ -131,47 +135,14 @@ export class GridComponent implements OnInit {
         return this.focusCell.cell === cell ? "focus" : "";
     }
 
-    public addOrientationBorders(cell: ICell): string {
-        if (this.focusCell.cells) {
-            if (this.focusCell.cells.includes(cell)) {
-                return this.focusCell.Orientation === Orientation.Vertical ?
-                    "left-border right-border" : "top-border bottom-border";
-            }
-        }
-
-        return "";
-    }
-
-    public addFirstCellBorder(cell: ICell): string {
-        if (this.focusCell.cells) {
-            if (this.focusCell.cells[0] === cell) {
-                return this.focusCell.Orientation === Orientation.Vertical ?
-                    "top-border" : "left-border";
-            }
-        }
-
-        return "";
-    }
-
-    public addLastCellBorder(cell: ICell): string {
-        if (this.focusCell.cells) {
-            if (this.focusCell.cells[this.focusCell.cells.length - 1] === cell) {
-                return this.focusCell.Orientation === Orientation.Vertical ?
-                    "bottom-border" : "right-border";
-            }
-        }
-
-        return "";
-    }
-
     public addStyleOnFoundWord(cell: ICell): string {
         if (cell.isFound) {
             if ( cell.finder === Finder.player1 ) {
-                return "isFoundCellPlayerOne";
+                return "is-found-cell-p1";
             } else if ( cell.finder === Finder.player2 ) {
-                return "isFoundCellPlayerTwo";
+                return "is-found-cell-p2";
             } else if ( cell.finder === Finder.both ) {
-                return "isFoundCellBoth";
+                return "is-found-cell-both";
             }
         }
 
