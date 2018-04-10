@@ -77,7 +77,7 @@ import { SelectionHandlerService } from "./crossword/game-view/grid/selection-ha
         ModalStateService,
         StartLineGeneratorService,
         GameManagerService,
-        SoundManagerService
+        SoundManagerService,
         SelectionHandlerService
     ],
     bootstrap: [AppComponent]
