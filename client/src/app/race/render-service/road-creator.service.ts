@@ -85,7 +85,7 @@ export class RoadCreator {
         intersectionMesh.position.z = -(this.points[index].x) * WORLD_SIZE + WORLD_SIZE * HALF;
         intersectionMesh.rotation.x = PI_OVER_2;
         this.superpose(intersectionMesh);
-
+        intersectionMesh.name = "Intersection";
         this.trackMeshes.push(intersectionMesh);
     }
 

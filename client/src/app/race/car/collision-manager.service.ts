@@ -25,29 +25,37 @@ enum CollisionSide {
 export class CollisionManager {
     private cars: Car[];
     private roadSegments: Mesh[];
+    private roadIntersections: Mesh[];
     private startLine: Mesh;
     private timeSinceLastCollision: number;
     private lastDate: number;
     private areCarsCollidingWithStartLine: Array<boolean>;
-    private hadCarsCollidedWithVerificationPlane: Array<boolean>;
+    private areCarsCollidingWithRoadIntersections: Array<Array<boolean>>;
+
 
     public constructor(private modalService: ModalService, private router: Router, private inputManagerService: InputManagerService) {
         this.cars = new Array<Car>();
         this.roadSegments = new Array<Mesh>();
+        this.roadIntersections = new Array<Mesh>();
         this.startLine = new Mesh();
         this.timeSinceLastCollision = 0;
         this.lastDate = 0;
         this.areCarsCollidingWithStartLine = new Array<boolean>();
-        this.hadCarsCollidedWithVerificationPlane = new Array<boolean>();
+        this.areCarsCollidingWithRoadIntersections = new Array<Array<boolean>>();
     }
 
     public addCar(car: Car): void {
         this.cars.push(car);
         this.areCarsCollidingWithStartLine.push(false);
+        this.areCarsCollidingWithRoadIntersections.push(Array<boolean>());
     }
 
     public addRoadSegment(collisionable: Mesh): void {
         this.roadSegments.push(collisionable);
+        if (collisionable.name === "Intersection") {
+            this.roadIntersections.push(collisionable);
+            this.areCarsCollidingWithRoadIntersections.forEach((array) => array.push(false));
+        }
     }
 
     public setStartLine(collisionable: Mesh): void {
@@ -58,6 +66,7 @@ export class CollisionManager {
         this.verifyCarCollision();
         this.verifyWallCollision();
         this.verifyStartLineCollision();
+        this.verifyRoadIntersectionCollision();
     }
 
     private verifyCarCollision(): void {
@@ -141,16 +150,13 @@ export class CollisionManager {
     private verifyStartLineCollision(): void {
         this.cars.forEach((car: Car, index: number) => {
             const intersections: Intersection[] = car.Raycasters[0].intersectObject(this.startLine);
-            if (!this.hadCarsCollidedWithVerificationPlane[index]) {
-                if (intersections.length > 0) {
-                    if (!this.areCarsCollidingWithStartLine[index]) {
-                        this.startLineCollision(car);
-                        this.areCarsCollidingWithStartLine[index] = true;
-                        this.hadCarsCollidedWithVerificationPlane[index] = false;
-                    }
-                } else {
-                    this.areCarsCollidingWithStartLine[index] = false;
+            if (intersections.length > 0) {
+                if (!this.areCarsCollidingWithStartLine[index]) {
+                    this.startLineCollision(car);
+                    this.areCarsCollidingWithStartLine[index] = true;
                 }
+            } else {
+                this.areCarsCollidingWithStartLine[index] = false;
             }
         });
     }
@@ -164,6 +170,22 @@ export class CollisionManager {
         } else {
             car.Information.incrementLap();
         }
+    }
+
+    private verifyRoadIntersectionCollision(): void {
+        this.cars.forEach((car: Car, indexCar: number) => {
+            this.roadIntersections.forEach((roadIntersection, indexRoad: number) => {
+                const intersections: Intersection[] = car.Raycasters[0].intersectObject(roadIntersection);
+                if (intersections.length > 0) {
+                    if (!this.areCarsCollidingWithRoadIntersections[indexCar][indexRoad]) {
+                        car.Information.updateNextCheckpoint(indexRoad);
+                        this.areCarsCollidingWithRoadIntersections[indexCar][indexRoad] = true;
+                    }
+                } else {
+                    this.areCarsCollidingWithRoadIntersections[indexCar][indexRoad] = false;
+                }
+            });
+        });
     }
 
     private getWorldCoordinatesSpeed(car: Car): Vector3 {

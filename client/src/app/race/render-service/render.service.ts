@@ -72,6 +72,7 @@ export class RenderService {
             this.container = container;
         }
         this.activeTrack = track;
+        this.cars.forEach((car) => car.Information.ActiveTrack = track);
         this.initFloorTextures();
 
         await this.createScene();
