@@ -1,6 +1,7 @@
 import { expect } from "chai";
-import { LexicalService, Difficulty } from "./LexicalService";
+import { LexicalService } from "./LexicalService";
 import { WordAndDefinition } from "./Interfaces";
+import { Difficulty } from "../../../../common/constants";
 
 const DIFFICULTY_ERR: number = -999;
 const testService: LexicalService = new LexicalService();
@@ -22,32 +23,32 @@ const DEFINITION_5: string = "n\tusually used in combination: `liverwort'; `milk
 describe("Verifying LexicalService's searchWords function.", () => {
 
     it("should return an array of WordAndDefinition", async () => {
-        return testService.searchWords(WORD_1, Difficulty.EASY).then((result: Array<WordAndDefinition>) => {
+        return testService.searchWords(WORD_1, Difficulty.Easy).then((result: Array<WordAndDefinition>) => {
             expect(result).to.be.an("Array");
         });
     });
 
     it("should return a common word with its first definition", async () => {
-        return testService.searchWords(WORD_1, Difficulty.EASY).then((result: Array<WordAndDefinition>) => {
+        return testService.searchWords(WORD_1, Difficulty.Easy).then((result: Array<WordAndDefinition>) => {
             expect(result[0]).to.eql({word: WORD_1, definition: DEFINITION_1});
         });
     });
 
     it("should return a common word with its random definition (not the first one)", async () => {
-        return testService.searchWords(WORD_2, Difficulty.MEDIUM).then((result: Array<WordAndDefinition>) => {
+        return testService.searchWords(WORD_2, Difficulty.Medium).then((result: Array<WordAndDefinition>) => {
             expect(result[0]).not.eql({word: WORD_2, definition: DEFINITION_2});
         });
     });
 
     it("should return a common word with its only definition", async () => {
-        return testService.searchWords(WORD_3, Difficulty.MEDIUM).then((result: Array<WordAndDefinition>) => {
+        return testService.searchWords(WORD_3, Difficulty.Medium).then((result: Array<WordAndDefinition>) => {
             expect(result[0]).eql({word: WORD_3, definition:
             DEFINITION_3});
         });
     });
 
     it("should return nothing if the request returns only non common words.", async () => {
-        return testService.searchWords(WORD_4, Difficulty.MEDIUM).then((result: Array<WordAndDefinition>) => {
+        return testService.searchWords(WORD_4, Difficulty.Medium).then((result: Array<WordAndDefinition>) => {
             expect(result[0]).not.eql({word: WORD_4, definition:
             DEFINITION_4});
             expect(result).to.eql(Array());
@@ -55,14 +56,14 @@ describe("Verifying LexicalService's searchWords function.", () => {
     });
 
     it("should return a non-common word with the only definition of the word", async () => {
-        return testService.searchWords(SEARCHED_TEMPLATE_1, Difficulty.HARD).then((result: Array<WordAndDefinition>) => {
+        return testService.searchWords(SEARCHED_TEMPLATE_1, Difficulty.Hard).then((result: Array<WordAndDefinition>) => {
             expect(result[0]).to.eql({word: WORD_4, definition:
             DEFINITION_4});
         });
     });
 
     it("should return a non-common word with its random definition (not the first one)", async () => {
-        return testService.searchWords(SEARCHED_TEMPLATE_2, Difficulty.HARD).then((result: Array<WordAndDefinition>) => {
+        return testService.searchWords(SEARCHED_TEMPLATE_2, Difficulty.Hard).then((result: Array<WordAndDefinition>) => {
             expect(result[0]).not.eql({word: WORD_2, definition: DEFINITION_1});
             expect(result[0]).to.eql({word: WORD_5, definition: DEFINITION_5});
         });
@@ -74,8 +75,8 @@ describe("Verifying LexicalService's searchWords function.", () => {
         const ITERATION_NUMBER: number = 5;
 
         for (let i: number = 0; i < ITERATION_NUMBER; i++) {
-            firstResult = await testService.searchWords(SEARCHED_TEMPLATE_2, Difficulty.HARD);
-            secondResult = await testService.searchWords(SEARCHED_TEMPLATE_2, Difficulty.HARD);
+            firstResult = await testService.searchWords(SEARCHED_TEMPLATE_2, Difficulty.Hard);
+            secondResult = await testService.searchWords(SEARCHED_TEMPLATE_2, Difficulty.Hard);
             expect(firstResult).to.eql(secondResult);
         }
     });
@@ -83,7 +84,7 @@ describe("Verifying LexicalService's searchWords function.", () => {
     it("verify that invalid requests return an empty array", async () => {
         const INVALID_REQUEST: string = "/////";
 
-        return testService.searchWords(INVALID_REQUEST, Difficulty.HARD).then((result: Array<WordAndDefinition>) => {
+        return testService.searchWords(INVALID_REQUEST, Difficulty.Hard).then((result: Array<WordAndDefinition>) => {
             expect(result).to.be.eql(Array());
         });
     });

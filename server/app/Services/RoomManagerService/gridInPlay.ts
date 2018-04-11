@@ -18,11 +18,10 @@ export class GridInPlay {
         return cell1.gridIndex === cell2.gridIndex;
     }
 
-    public constructor() {
+    public constructor(difficulty: Difficulty) {
         this.gridCells = new Array<ICell>();
         this.gridWords = new Array<IGridWord>();
-        this.difficulty = undefined;
-        this.generateGrid();
+        this.difficulty = difficulty;
     }
 
     public get Cells(): Array<ICell> {
@@ -32,6 +31,13 @@ export class GridInPlay {
     public get Words(): Array<IGridWord> {
         return this.gridWords;
     }
+
+    public async generateGrid(): Promise<void> {
+        await WordTransmitterService.Instance.generateNewGrid(this.difficulty);
+        this.gridCells = WordTransmitterService.Instance.Cells.slice();
+        this.gridWords = WordTransmitterService.Instance.GridWords.slice();
+    }
+
     public clear(): void {
         this.gridCells.length = 0;
         this.gridWords.length = 0;
@@ -63,10 +69,5 @@ export class GridInPlay {
                 this.gridCells[sameCell.gridIndex] = cell;
             }
         }
-    }
-
-    private generateGrid(): void {
-        this.gridCells = WordTransmitterService.Instance.getCells().slice();
-        this.gridWords = WordTransmitterService.Instance.getTransformedWords().slice();
     }
 }

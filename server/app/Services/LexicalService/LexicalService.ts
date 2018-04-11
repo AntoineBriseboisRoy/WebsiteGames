@@ -1,11 +1,6 @@
 import * as requestPromise from "request-promise-native";
 import { RequestOptions, WordAndDefinition } from "./Interfaces";
-
-export enum Difficulty {
-    EASY = 5,
-    MEDIUM = 1,
-    HARD = 0
-}
+import { Difficulty } from "../../../../common/constants";
 
 export class LexicalService {
     private difficulty: number;
@@ -53,11 +48,11 @@ export class LexicalService {
 
     private isInFrequencyInterval(wordFrequency: number): boolean {
         switch (this.difficulty) {
-            case Difficulty.EASY: // Fallthrough
-            case Difficulty.MEDIUM:
-                return wordFrequency >= Difficulty.EASY;
-            case Difficulty.HARD:
-                return (wordFrequency < Difficulty.EASY) && (wordFrequency >= Difficulty.HARD);
+            case Difficulty.Easy: // Fallthrough
+            case Difficulty.Medium:
+                return wordFrequency >= Difficulty.Easy;
+            case Difficulty.Hard:
+                return (wordFrequency < Difficulty.Easy) && (wordFrequency >= Difficulty.Hard);
             default:
                 throw new Error("Invalid difficulty");
         }
@@ -83,10 +78,10 @@ export class LexicalService {
             randomDefinition = Math.floor((Math.random() * (NB_DEFS - 1)) + 1);
         }
         switch (this.difficulty) {
-            case Difficulty.EASY:
+            case Difficulty.Easy:
                 return {word: this.requestResult[index].word, definition: this.requestResult[index].defs[0]};
-            case Difficulty.MEDIUM: // Fallthrough
-            case Difficulty.HARD:
+            case Difficulty.Medium: // Fallthrough
+            case Difficulty.Hard:
                 return {word: this.requestResult[index].word, definition: this.requestResult[index].defs[randomDefinition]};
             default:
                 throw new Error("Invalid Difficulty");

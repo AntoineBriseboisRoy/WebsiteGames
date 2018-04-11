@@ -7,8 +7,9 @@ export enum RoomState {
     Waiting = 0,
     Playing = 1
 }
+
 export const enum Difficulty {
-    Easy = "Easy",
-    Normal = "Normal",
-    Hard = "Hard"
+    Easy = 5,
+    Medium = 1,
+    Hard = 0
 }

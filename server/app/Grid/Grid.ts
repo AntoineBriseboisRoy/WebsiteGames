@@ -3,7 +3,7 @@ import { BlackSquareGenerator } from "./BlackSquareGenerator";
 import { StringService } from "./StringService";
 import { GridFiller } from "./GridFiller";
 import { STANDARD_SIDE_SIZE, PERCENTAGE_BLACK_SQUARES } from "./Constants";
-import { Difficulty } from "../Services/LexicalService/LexicalService";
+import { Difficulty } from "../../../common/constants";
 
 export class Grid {
 

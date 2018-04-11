@@ -2,13 +2,13 @@ import { expect } from "chai";
 import { Grid } from "./Grid";
 import { IWord, Orientation } from "../../../common/interfaces/IWord";
 import { EMPTY_SQUARE, MIN_LETTERS_FOR_WORD } from "./Constants";
-import { Difficulty } from "../Services/LexicalService/LexicalService";
+import { Difficulty } from "../../../common/constants";
 
 const EXTENDED_TIMEOUT: number = 30000;
 
 // tslint:disable-next-line:max-func-body-length
 describe("Verifying 10x10 Grid", () => {
-    const grid: Grid = new Grid(Difficulty.EASY);
+    const grid: Grid = new Grid(Difficulty.Easy);
     it("Should be full (All letters except for blacksquares)", async () => {
         await grid.fillGrid();
         let nEmptySquares: number = 0;

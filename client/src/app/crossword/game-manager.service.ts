@@ -11,7 +11,7 @@ export class GameManagerService {
     public players: Array<IPlayer>;
 
     public constructor(private socketIO: SocketIoService) {
-        this.players = [ { username: "Claudia", score: 0 }, { username: "Antoine", score: 0 } ];
+        this.players = [ { username: "Player One", score: 0 }, { username: "Player Two", score: 0 } ];
         this.difficulty = Difficulty.Easy;
         this.isMultiplayer = false;
         this.fetchPlayerScores();

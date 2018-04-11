@@ -1,7 +1,8 @@
 import { ICoordXY } from "../../../common/interfaces/ICoordXY";
 import { IWord, Orientation } from "../../../common/interfaces/IWord";
 import { EMPTY_SQUARE, BLACKSQUARE_CHARACTER, WORD_CACHE, WORD_CACHE_OFFSET, WORD_CUTOFF, MAX_TRIES_BEFORE_FAIL } from "./Constants";
-import { Difficulty, LexicalService } from "../Services/LexicalService/LexicalService";
+import { LexicalService } from "../Services/LexicalService/LexicalService";
+import { Difficulty } from "../../../common/constants";
 import { WordAndDefinition } from "../Services/LexicalService/Interfaces";
 
 const lexicalService: LexicalService = new LexicalService();
@@ -20,9 +21,9 @@ export class GridFiller {
         this.wordsToFill = new Array<IWord>();
 
         for (const array of WORD_CACHE) {
-            this.shuffle(array[Difficulty.EASY]);
-            this.shuffle(array[Difficulty.MEDIUM]);
-            this.shuffle(array[Difficulty.HARD]);
+            this.shuffle(array[Difficulty.Easy]);
+            this.shuffle(array[Difficulty.Medium]);
+            this.shuffle(array[Difficulty.Hard]);
         }
     }
 

@@ -45,14 +45,15 @@ export class SocketService {
     private createNewGame(socket: SocketIO.Socket): void {
         socket.on("new-game", (data: string) => {
             const game: INewGame = JSON.parse(data);
-            this.addNewPlayerToRoom(game, socket);
-            socket.in("waiting-room").broadcast.emit("new-game", {
-                userCreator: game.userCreator,
-                userCreatorID: socket.id,
-                difficulty: game.difficulty,
-                userJoiner: ""
-            });
-            socket.join(RoomManagerService.Instance.getRoom(socket.id).Name);
+            this.createNewRoom(game, socket).then( ()  => {
+                socket.in("waiting-room").broadcast.emit("new-game", {
+                    userCreator: game.userCreator,
+                    userCreatorID: socket.id,
+                    difficulty: game.difficulty,
+                    userJoiner: ""
+                });
+                socket.join(RoomManagerService.Instance.getRoom(socket.id).Name);
+            }).catch((error: Error) => console.error(error));
         });
     }
 
@@ -103,15 +104,18 @@ export class SocketService {
         this.socketIo.in(room.Name).emit("grid-words", room.Words);
     }
 
-    private addNewPlayerToRoom(game: INewGame, socket: SocketIO.Socket): void {
-        RoomManagerService.Instance.push(new Room(new Player(game.userCreator, socket.id), game.difficulty, socket.id));
+    private async createNewRoom(game: INewGame, socket: SocketIO.Socket): Promise<void> {
+        const player: Player = new Player(game.userCreator, socket.id);
+        const room: Room = new Room(player, game.difficulty, socket.id);
+        RoomManagerService.Instance.push(room);
+        await room.initializeGrid();
     }
 
     private addOtherPlayerToRoom(game: INewGame, socket: SocketIO.Socket): Room {
         let room: Room;
         if (this.isSinglePlayer(game)) {
             game.userCreatorID = socket.id;
-            this.addNewPlayerToRoom(game, socket);
+            this.createNewRoom(game, socket);
             room = RoomManagerService.Instance.getRoom(game.userCreatorID);
         } else {
             room = RoomManagerService.Instance.getRoom(game.userCreatorID);

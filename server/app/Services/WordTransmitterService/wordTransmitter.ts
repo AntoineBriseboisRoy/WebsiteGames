@@ -4,6 +4,7 @@ import { IWord, Orientation } from "../../../../common/interfaces/IWord";
 
 import { GridGeneratorService } from "../../Grid/GridGeneratorService";
 import { STANDARD_SIDE_SIZE, BLACKSQUARE_CHARACTER } from "../../Grid/Constants";
+import { Difficulty } from "../../../../common/constants";
 
 export class WordTransmitterService {
     private static instance: WordTransmitterService;
@@ -16,8 +17,8 @@ export class WordTransmitterService {
     private constructor() {
         this.indexPosition = new Array();
         this.cells = new Array();
-        this.gridWords = new Array<IGridWord>();
-        this.words = undefined;
+        this.gridWords = new Array<IGridWord>(0);
+        this.words = new Array<IWord>();
         this.gridContent = undefined;
     }
 
@@ -29,33 +30,33 @@ export class WordTransmitterService {
         return this.instance;
     }
 
-    private generateNewGrid(): void {
-        if (!this.words) {
-            const gridGenerator: GridGeneratorService = new GridGeneratorService();
-            this.gridContent = gridGenerator.getFakeGridContent();
-            this.formatGrid(gridGenerator.getFakeGridWords());
-        }
+    public async generateNewGrid(difficulty: Difficulty): Promise<void> {
+        const gridGenerator: GridGeneratorService = new GridGeneratorService();
+        await gridGenerator.createGrid(difficulty);
+        this.gridContent = gridGenerator.Grid;
+        console.log(this.gridContent);
+        this.words = gridGenerator.Words;
+        console.log("---------------------------------------");
+        console.log(this.words);
+        console.log("---------------------------------------");
+        this.formatGrid();
+        console.log("grid words generated", this.gridWords);
+        console.log("---------------------------------------");
+        console.log("grid cells", this.cells, "-----------------------");
     }
 
-    public getTransformedWords(): Array<IGridWord> {
-        this.generateNewGrid();
-
+    public get GridWords(): Array<IGridWord> {
         return this.gridWords;
     }
 
-    public getCells(): Array<ICell> {
-        this.generateNewGrid();
-
+    public get Cells(): Array<ICell> {
         return this.cells;
     }
 
-    private formatGrid(words: Array<IWord>): void {
-        this.words = words;
-        if (this.gridWords.length === 0) {
-            this.addIndextoCells();
-            this.createCells();
-            this.createWords();
-        }
+    private formatGrid(): void {
+        this.addIndextoCells();
+        this.createCells();
+        this.createWords();
     }
 
     private isABlackSquare(letter: string): boolean {
