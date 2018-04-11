@@ -2,6 +2,7 @@
     font-family: 'Times New Roman', Times, serif;
     font-size: 125%;
     height: 28vh;
+    overflow: scroll;
 }
 
 .word-definition:hover {
