@@ -31,6 +31,8 @@ export class GridGeneratorService {
     }
 
     public get Words(): Array<IWord> {
+        this.grid.Words.forEach((word: IWord) => word.content.toUpperCase());
+
         return this.grid.Words;
     }
 

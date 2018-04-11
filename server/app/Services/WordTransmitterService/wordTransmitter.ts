@@ -84,6 +84,7 @@ export class WordTransmitterService {
     }
 
     private addIndextoCells(): void {
+        this.indexPosition.length = 0;
         for (let i: number = 0; i < this.gridContent.length; ++i) {
             if (this.containsIndex(i)) {
                 this.indexPosition.push(i);
