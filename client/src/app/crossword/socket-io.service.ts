@@ -13,7 +13,7 @@ export class SocketIoService {
     private socket: SocketIOClient.Socket;
     private createdGameSubject: Subject<INewGame>;
     private deletedGameSubject: Subject<INewGame>;
-    private playGameSubject: Subject<INewGame>;
+    private playMultiplayerGameSubject: Subject<INewGame>;
     private selectedWordsSubject: Subject<Array<IGridWord>>;
 
     public constructor() {
@@ -27,7 +27,7 @@ export class SocketIoService {
     private init(): void {
         this.createNewGame();
         this.deleteCreatedGame();
-        this.playGame();
+        this.playMultiplayerGame();
         this.selectedWords();
     }
 
@@ -39,8 +39,8 @@ export class SocketIoService {
         return this.deletedGameSubject;
     }
 
-    public get PlayGameSubject(): Subject<INewGame> {
-        return this.playGameSubject;
+    public get PlayMultiplayerGameSubject(): Subject<INewGame> {
+        return this.playMultiplayerGameSubject;
     }
 
     public get SelectedWordsSubject(): Subject<Array<IGridWord>> {
@@ -60,6 +60,9 @@ export class SocketIoService {
     public get WaitingRoom(): Observable<Array<INewGame>> {
         return this.createObservable<Array<INewGame>>("waiting-room");
     }
+    public get PlaySinglePlayer(): Observer<INewGame> {
+        return this.createObserver<INewGame>("play-single-game", "Error: Cannot send completed word");
+    }
     public get CompletedWords(): Observer<IGridWord> {
         return this.createObserver<IGridWord>("completed-word", "Error: Cannot send completed word");
     }
@@ -72,8 +75,8 @@ export class SocketIoService {
         this.deletedGameSubject = this.createSubject<INewGame>("delete-game", "Error: Cannot delete the game");
     }
 
-    private playGame(): void {
-        this.playGameSubject = this.createSubject<INewGame>("play-game", "Error: Cannot play the game");
+    private playMultiplayerGame(): void {
+        this.playMultiplayerGameSubject = this.createSubject<INewGame>("play-multiplayer-game", "Error: Cannot play the game");
     }
     private selectedWords(): void {
         this.selectedWordsSubject = this.createSubject<Array<IGridWord>>("selected-word", "Error: Cannot send selected word");

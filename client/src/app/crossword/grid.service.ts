@@ -32,7 +32,7 @@ export class GridService {
 
     private initSinglePlayerGame(): void {
         if (!this.gameManagerService.isMultiplayer) {
-            this.socketIO.PlayGameSubject.next({
+            this.socketIO.PlaySinglePlayer.next({
                 userCreator: "Player One",
                 difficulty: this.gameManagerService.difficulty,
                 userCreatorID: "",

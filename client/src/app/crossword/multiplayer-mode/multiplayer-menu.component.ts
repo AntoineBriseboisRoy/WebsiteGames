@@ -28,7 +28,7 @@ export class MultiplayerMenuComponent {
         this.socketService.DeletedGameSubject.subscribe((deletedGame: INewGame) => {
             this.gameRooms.remove(deletedGame);
         });
-        this.socketService.PlayGameSubject.subscribe((gameToPlay: INewGame) => {
+        this.socketService.PlayMultiplayerGameSubject.subscribe((gameToPlay: INewGame) => {
             if (this.gameRooms.canJoinGame(gameToPlay)) {
                 this.gameRooms.setGame(gameToPlay);
                 this.router.navigate(["/crossword/play"]);

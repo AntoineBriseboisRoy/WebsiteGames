@@ -28,7 +28,7 @@ export class GameListComponent {
                                        userJoiner: this.userJoiner[index],
                                        userCreatorID: this.gameRooms.Games[index].userCreatorID};
         this.gameRooms.setGame(gameToPlay);
-        this.socketIO.PlayGameSubject.next(gameToPlay);
+        this.socketIO.PlayMultiplayerGameSubject.next(gameToPlay);
         this.router.navigate(["/crossword/play"]);
     }
 }

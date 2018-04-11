@@ -27,8 +27,22 @@ export class DifficultyMenuComponent {
         }
     }
 
-    public activateDifficulty(difficulty: Difficulty): void {
-        this.gameManagerService.difficulty = difficulty;
+    public activateDifficulty(eventTarget: EventTarget): void {
+        switch ((eventTarget as HTMLButtonElement).value) {
+            case "Easy": {
+                this.gameManagerService.difficulty = Difficulty.Easy;
+                break;
+            }
+            case "Medium": {
+                this.gameManagerService.difficulty = Difficulty.Medium;
+                break;
+            }
+            case "Hard": {
+                this.gameManagerService.difficulty = Difficulty.Hard;
+                break;
+            }
+            default: break;
+        }
         this.isActiveDifficulty = true;
     }
 

@@ -30,7 +30,8 @@ export class SocketService {
             this.joinWaitingRoom(receivedSocket);
             this.createNewGame(receivedSocket);
             this.deleteGame(receivedSocket);
-            this.playAGame(receivedSocket);
+            this.playASinglePlayerGame(receivedSocket);
+            this.playAMultiplayerGame(receivedSocket);
             this.completeAWord(receivedSocket);
             this.selectAWord(receivedSocket);
             this.disconnectSocket(receivedSocket);
@@ -64,12 +65,28 @@ export class SocketService {
             socket.in("waiting-room").broadcast.emit("delete-game", game);
         });
     }
-    private playAGame(socket: SocketIO.Socket): void {
-        socket.on("play-game", (data: string) => {
+
+    // TODO: Ajouter type d'erreur pour le .catch
+    private playASinglePlayerGame(socket: SocketIO.Socket): void {
+        socket.on("play-single-game", (data: string) => {
             const game: INewGame = JSON.parse(data);
-            const room: Room = this.addOtherPlayerToRoom(game, socket);
+            game.userCreatorID = socket.id;
+            this.createNewRoom(game, socket).then(() => {
+                const room: Room = RoomManagerService.Instance.getRoom(game.userCreatorID);
+                room.state = RoomState.Playing;
+                socket.join(room.Name);
+                this.sendGrid(room);
+            }).catch((error: Error) => console.error(error));
+        });
+    }
+    private playAMultiplayerGame(socket: SocketIO.Socket): void {
+        socket.on("play-multiplayer-game", (data: string) => {
+            const game: INewGame = JSON.parse(data);
+            const room: Room = RoomManagerService.Instance.getRoom(game.userCreatorID);
+            RoomManagerService.Instance.addPlayerToRoom(game.userJoiner, socket.id, room.Name);
+            room.state = RoomState.Playing;
             socket.join(room.Name);
-            socket.to(game.userCreatorID).emit("play-game", game);
+            socket.to(game.userCreatorID).emit("play-multiplayer-game", game);
             this.sendGrid(room);
         });
     }
@@ -111,21 +128,6 @@ export class SocketService {
         await room.initializeGrid();
     }
 
-    private addOtherPlayerToRoom(game: INewGame, socket: SocketIO.Socket): Room {
-        let room: Room;
-        if (this.isSinglePlayer(game)) {
-            game.userCreatorID = socket.id;
-            this.createNewRoom(game, socket);
-            room = RoomManagerService.Instance.getRoom(game.userCreatorID);
-        } else {
-            room = RoomManagerService.Instance.getRoom(game.userCreatorID);
-            RoomManagerService.Instance.addPlayerToRoom(game.userJoiner, socket.id, room.Name);
-        }
-        room.state = RoomState.Playing;
-
-        return room;
-    }
-
     private parseToIPlayers(players: Array<Player>): Array<IPlayer> {
         const iPlayers: Array<IPlayer> = new Array<IPlayer>();
         players.forEach((player: Player) => {
@@ -133,9 +135,5 @@ export class SocketService {
         });
 
         return iPlayers;
-    }
-
-    private isSinglePlayer(game: INewGame): boolean {
-        return game.userCreatorID === "";
     }
 }

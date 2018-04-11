@@ -34,15 +34,10 @@ export class WordTransmitterService {
         const gridGenerator: GridGeneratorService = new GridGeneratorService();
         await gridGenerator.createGrid(difficulty);
         this.gridContent = gridGenerator.Grid;
-        console.log(this.gridContent);
         this.words = gridGenerator.Words;
-        console.log("---------------------------------------");
-        console.log(this.words);
-        console.log("---------------------------------------");
+        this.cells.length = 0;
+        this.gridWords.length = 0;
         this.formatGrid();
-        console.log("grid words generated", this.gridWords);
-        console.log("---------------------------------------");
-        console.log("grid cells", this.cells, "-----------------------");
     }
 
     public get GridWords(): Array<IGridWord> {
