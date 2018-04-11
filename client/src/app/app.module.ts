@@ -37,6 +37,8 @@ import { StartLineGeneratorService } from "./race/start-line-generator.service";
 import { GameManagerService } from "./crossword/game-manager.service";
 import { SoundManagerService } from "./race/sound-manager.service";
 import { SelectionHandlerService } from "./crossword/game-view/grid/selection-handler.service";
+import { TimerService } from "./race/timer-service/timer.service";
+import { InputManagerService } from "./race/input-manager-service/input-manager.service";
 
 @NgModule({
     declarations: [
@@ -78,7 +80,9 @@ import { SelectionHandlerService } from "./crossword/game-view/grid/selection-ha
         StartLineGeneratorService,
         GameManagerService,
         SoundManagerService,
-        SelectionHandlerService
+        SelectionHandlerService,
+        TimerService,
+        InputManagerService
     ],
     bootstrap: [AppComponent]
 })

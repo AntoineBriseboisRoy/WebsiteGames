@@ -1,8 +1,9 @@
 import { Vector3, Matrix4, Object3D, ObjectLoader, Euler, Quaternion, Box3,
          BoxHelper, Raycaster, BoxGeometry, MeshBasicMaterial, Mesh, SpotLight } from "three";
 import { Engine } from "./engine";
-import { MS_TO_SECONDS, GRAVITY, RAD_TO_DEG, PI_OVER_4, PI_OVER_2 } from "../../constants";
+import { MS_TO_SECONDS, RAD_TO_DEG, PI_OVER_4, PI_OVER_2 } from "../../constants";
 import { Wheel } from "./wheel";
+import { CarInformation } from "./car-information";
 import { ForcesManager } from "./forces-manager";
 import { IPhysicsObject, IRotationalObject } from "./physics-interfaces";
 
@@ -47,6 +48,7 @@ export class Car extends Object3D {
     private raycasters: Raycaster[];
 
     private raycasterOffsets: Vector3[];
+    private information: CarInformation;
     private headLights: SpotLight[];
 
     public get Mass(): number {
@@ -97,6 +99,10 @@ export class Car extends Object3D {
         return this.mesh.matrix;
     }
 
+    public get Information(): CarInformation {
+        return this.information;
+    }
+
     public get direction(): Vector3 {
         const rotationMatrix: Matrix4 = new Matrix4();
         rotationMatrix.extractRotation(this.mesh.matrix);
@@ -114,7 +120,6 @@ export class Car extends Object3D {
         dragCoefficient: number = DEFAULT_DRAG_COEFFICIENT,
         ) {
         super();
-
         this.engine = engine;
         this.rearWheel = rearWheel;
         this.wheelbase = wheelbase;
@@ -127,6 +132,7 @@ export class Car extends Object3D {
         this.boundingBox = new Box3();
         this.raycasters = new Array<Raycaster>();
         this.raycasterOffsets = new Array<Vector3>();
+        this.information = new CarInformation();
         this.headLights = new Array<SpotLight>();
     }
 
@@ -177,11 +183,10 @@ export class Car extends Object3D {
             const targetRight: Object3D = new Object3D();
             this.mesh.add(targetRight);
 
-            const correction: number = Math.pow(-1, i);
-            targetRight.position.add(headLightsPosition).add(new Vector3(FRONT_X_CORRECTION * correction, 0, 0));
+            targetRight.position.add(headLightsPosition).add(new Vector3(FRONT_X_CORRECTION * Math.pow(-1, i), 0, 0));
             this.headLights[i].target = targetRight;
             const lightCorrectionZ: number = -0.6;
-            this.headLights[i].position.add(new Vector3(FRONT_X_CORRECTION * correction, 0, lightCorrectionZ));
+            this.headLights[i].position.add(new Vector3(FRONT_X_CORRECTION * Math.pow(-1, i), 0, lightCorrectionZ));
         }
     }
 

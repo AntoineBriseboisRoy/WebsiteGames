@@ -20,7 +20,6 @@ const MAX_GEAR_BAR_WIDTH: number = 27;
     styleUrls: ["./game.component.css"],
     providers: [
         RenderService,
-        InputManagerService,
         TimerService
     ]
 })
@@ -30,18 +29,12 @@ export class GameComponent implements AfterViewInit {
     @ViewChild("container")
     private containerRef: ElementRef;
     public startingText: string;
-    public lap: number;
-    public totalTime: Date;
-    public lapTime: Date;
     public bestTime: Date;
 
     public constructor(private renderService: RenderService, private inputManagerService: InputManagerService,
                        private mongoQueryService: MongoQueryService , private route: ActivatedRoute, private timer: TimerService) {
         this.containerRef = undefined;
         this.startingText = "";
-        this.lap = 0;
-        this.totalTime = new Date(0, 0, 0, 0, 0, 0, 0);
-        this.lapTime = new Date(0, 0, 0, 0, 0, 0, 0);
         this.bestTime = new Date(0, 0, 0, 0, 0, 0, 0);
     }
 
@@ -75,8 +68,8 @@ export class GameComponent implements AfterViewInit {
         });
     }
 
-    public get car(): Car {
-        return this.renderService.car;
+    public get player(): Car {
+        return this.renderService.Cars[0];
     }
 
     public get CameraContext(): CameraContext {
@@ -100,9 +93,9 @@ export class GameComponent implements AfterViewInit {
             if (countdown > 0) {
                 this.startingText = (countdown).toString();
             } else if (countdown > -1) {
-                this.inputManagerService.init(this.car, this.CameraContext, this.DayPeriodContext);
+                this.inputManagerService.init(this.player, this.CameraContext, this.DayPeriodContext);
                 this.timer.initialize();
-                this.startTimer();
+                this.startTimers();
                 this.startingText = "Start!";
             }
             if (countdown-- < -1) {
@@ -112,13 +105,15 @@ export class GameComponent implements AfterViewInit {
         });
     }
 
-    private startTimer(): void {
-        this.timer.Time.subscribe((time: number) => {
-            this.totalTime.setTime(time);
-            this.lapTime.setTime(time); // À modifier lorsque les tours de piste seront implémenté.
-        });
+    private startTimers(): void {
+        for (const car of this.renderService.Cars) {
+            const subscription: Subscription = this.timer.Time.subscribe((time: number) => {
+                car.Information.startTimer(subscription);
+                car.Information.totalTime.setTime(time);
+            });
+        }
     }
     public rpmRatio(): number {
-        return (this.car.rpm / DEFAULT_SHIFT_RPM) * MAX_GEAR_BAR_WIDTH;
+        return (this.player.rpm / DEFAULT_SHIFT_RPM) * MAX_GEAR_BAR_WIDTH;
     }
 }

@@ -2,11 +2,10 @@ import { Injectable } from "@angular/core";
 import { Point } from "../edit-track/Geometry";
 import { Texture, TextureLoader, RepeatWrapping, Vector3, Mesh, PlaneBufferGeometry,
          BackSide, Vector2, CircleBufferGeometry, MeshPhongMaterial } from "three";
-import { HALF, PI_OVER_2 } from "../../constants";
+import { HALF, PI_OVER_2, ROAD_WIDTH } from "../../constants";
 
 const TEXTURE_TILE_REPETIONS: number = 200;
 const WORLD_SIZE: number = 1000;
-const ROAD_WIDTH: number = 20;
 const SUPERPOSITION: number = 0.001;
 const ROAD_TEXTURE_PATH: string = "/assets/uniformRoad.jpg";
 @Injectable()
@@ -86,7 +85,7 @@ export class RoadCreator {
         intersectionMesh.position.z = -(this.points[index].x) * WORLD_SIZE + WORLD_SIZE * HALF;
         intersectionMesh.rotation.x = PI_OVER_2;
         this.superpose(intersectionMesh);
-
+        intersectionMesh.name = "Intersection";
         this.trackMeshes.push(intersectionMesh);
     }
 

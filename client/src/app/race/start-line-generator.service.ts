@@ -1,8 +1,8 @@
 import { Injectable } from "@angular/core";
-import { Vector2, ObjectLoader, Object3D } from "three";
+import { Vector2, ObjectLoader, Object3D, PlaneBufferGeometry, MeshBasicMaterial, Mesh, DoubleSide, TextureLoader, Vector3 } from "three";
 import { Car } from "./car/car";
 import { ITrack, TrackType } from "../../../../common/interfaces/ITrack";
-import { HALF, PI_OVER_2 } from "../constants";
+import { HALF, PI_OVER_2, ROAD_WIDTH } from "../constants";
 import { Point } from "./edit-track/Geometry";
 
 export const FAR_CLIPPING_PLANE: number = 1000;
@@ -12,6 +12,9 @@ export const FIELD_OF_VIEW: number = 70;
 const WORLD_SIZE: number = 1000;
 const QUARTER_ROAD_WIDTH: number = 2.5;
 const CAR_OFFSET_FROM_STARTLINE: number = 0.01;
+const SUPERPOSITION: number = 0.01;
+const STARTLINE_HEIGHT: number = 2;
+const DOUBLE: number = 2;
 
 @Injectable()
 export class StartLineGeneratorService {
@@ -36,40 +39,52 @@ export class StartLineGeneratorService {
         this.activeTrack = activeTrack;
         this.cars = cars;
         this.firstRoad = firstRoad;
-        const startLinePosition: Object3D = new Object3D();
 
-        this.setStartLinePosition(startLinePosition);
-        this.placeCarsBehindStartLine(startLinePosition);
-        this.placeCarsInRow(startLinePosition);
+        return this.loadStartLineBanner().then((startLineBanner: Object3D) => {
+            this.setStartLineBannerPosition(startLineBanner);
+            this.placeCarsBehindStartLine(startLineBanner);
+            this.placeCarsInRow();
 
-        return this.loadStartLine().then((startLine: Object3D) => {
-            this.setStartLinePosition(startLine);
-
-            return startLine;
+            return startLineBanner;
         });
     }
-    private async loadStartLine(): Promise<Object3D> {
-        return new Promise<Object3D>((resolve) => new ObjectLoader().load("../../assets/startLine.json", resolve));
+
+    public createGroundStartLine(startLineBanner: Object3D): Mesh {
+        const startLine: Mesh = new Mesh(new PlaneBufferGeometry(ROAD_WIDTH, STARTLINE_HEIGHT),
+                                         new MeshBasicMaterial({ map: new TextureLoader().load("../assets/checkerboard.jpg"),
+                                                                 side: DoubleSide}));
+        startLine.position.x = startLineBanner.position.x;
+        startLine.position.y = startLineBanner.position.y + SUPERPOSITION;
+        startLine.position.z = startLineBanner.position.z;
+        startLine.rotation.y = startLineBanner.rotation.y;
+        startLine.rotateX(PI_OVER_2);
+
+        return startLine;
     }
 
-    private setStartLinePosition(startLine: Object3D): void {
-        startLine.position.x = -(this.activeTrack.points[0].y + this.firstRoad.y * HALF) * WORLD_SIZE + WORLD_SIZE * HALF;
-        startLine.position.z = -(this.activeTrack.points[0].x + this.firstRoad.x * HALF) * WORLD_SIZE + WORLD_SIZE * HALF;
-        startLine.rotation.y = this.firstRoad.x === 0 ? PI_OVER_2 : Math.atan(this.firstRoad.y / this.firstRoad.x);
+    private async loadStartLineBanner(): Promise<Object3D> {
+        return new Promise<Object3D>((resolve) => new ObjectLoader().load("../../assets/startLineBanner.json", resolve));
     }
 
-    private placeCarsBehindStartLine(startLine: Object3D): void {
+    private setStartLineBannerPosition(startLineBanner: Object3D): void {
+        startLineBanner.scale.setX(startLineBanner.scale.x * DOUBLE);
+        startLineBanner.position.x = -(this.activeTrack.points[0].y + this.firstRoad.y * HALF) * WORLD_SIZE + WORLD_SIZE * HALF;
+        startLineBanner.position.z = -(this.activeTrack.points[0].x + this.firstRoad.x * HALF) * WORLD_SIZE + WORLD_SIZE * HALF;
+        startLineBanner.rotation.y = this.firstRoad.x === 0 ? PI_OVER_2 : Math.atan(this.firstRoad.y / this.firstRoad.x);
+    }
+
+    private placeCarsBehindStartLine(startLineBanner: Object3D): void {
         for (const car of this.cars) {
-            car.getPosition().x = startLine.position.x - (CAR_OFFSET_FROM_STARTLINE * WORLD_SIZE) * this.firstRoad.y /
+            car.getPosition().x = startLineBanner.position.x - (CAR_OFFSET_FROM_STARTLINE * WORLD_SIZE) * this.firstRoad.y /
                 this.firstRoad.length();
-            car.getPosition().z = startLine.position.z - (CAR_OFFSET_FROM_STARTLINE * WORLD_SIZE) * this.firstRoad.x /
+            car.getPosition().z = startLineBanner.position.z - (CAR_OFFSET_FROM_STARTLINE * WORLD_SIZE) * this.firstRoad.x /
                 this.firstRoad.length();
-            car.getRotation().y = car.getPosition().length() < startLine.position.length() ?
-                startLine.rotation.y + Math.PI : startLine.rotation.y;
+            car.getRotation().y = car.getPosition().length() < startLineBanner.position.length() ?
+                startLineBanner.rotation.y + Math.PI : startLineBanner.rotation.y;
         }
     }
 
-    private placeCarsInRow(startLine: Object3D): void {
+    private placeCarsInRow(): void {
         const EVEN: number = 2;
         let row: number = 0;
         let column: number = 0;

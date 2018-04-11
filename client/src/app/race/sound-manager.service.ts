@@ -32,11 +32,8 @@ export class SoundManagerService {
         SOUNDS_NAME.forEach((name: string) => {
             this.sounds.set(name, new Audio(this.listener));
             this.loader.load(SOUNDS_PATH + name,
-                             (audioBuffer: AudioBuffer) => {
-                                this.sounds.get(name).setBuffer(audioBuffer);
-                            },
-                             () => {/*DO NOTHING*/},
-                             this.onError);
+                             (audioBuffer: AudioBuffer) => this.sounds.get(name).setBuffer(audioBuffer),
+                             () => {/*DO NOTHING*/}, this.onError);
         });
     }
 
@@ -52,6 +49,7 @@ export class SoundManagerService {
     public changeCarSoundSpeed(speed: number): void {
         this.sounds.get(ENGINE_SOUND_NAME).setPlaybackRate(speed);
     }
+
     private onError(error: Error): void {
         console.error(error);
     }

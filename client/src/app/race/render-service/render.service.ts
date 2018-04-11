@@ -21,12 +21,12 @@ export const FIELD_OF_VIEW: number = 70;
 
 const WHITE: number = 0xFFFFFF;
 const AMBIENT_LIGHT_DAY: number = 1;
-const AMBIENT_LIGHT_NIGHT: number = 0.2;
+const AMBIENT_LIGHT_NIGHT: number = 0.5;
 const TEXTURE_TILE_REPETIONS: number = 200;
 const WORLD_SIZE: number = 1000;
 const FLOOR_SIZE: number = WORLD_SIZE / HALF;
 const PLAYER: number = 0;
-const NUMBER_OF_CARS: number = 4;
+const NUMBER_OF_CARS: number = 1;
 const BASE_RPM: number = 3500;
 
 @Injectable()
@@ -41,8 +41,8 @@ export class RenderService {
     private lastDate: number;
     private activeTrack: ITrack;
     private floorTextures: Map<TrackType, Texture>;
-    public get car(): Car {
-        return this.cars[PLAYER];
+    public get Cars(): Array<Car> {
+        return this.cars;
     }
 
     public get CameraContext(): CameraContext {
@@ -51,10 +51,6 @@ export class RenderService {
 
     public get DayPeriodContext(): DayPeriodContext {
         return this.dayPeriodContext;
-    }
-
-    public get RoadCreator(): RoadCreator {
-        return this.roadCreator;
     }
 
     public get FloorTextures(): Map<TrackType, Texture> {
@@ -78,6 +74,7 @@ export class RenderService {
             this.container = container;
         }
         this.activeTrack = track;
+        this.cars.forEach((car) => car.Information.ActiveTrack = track);
         this.initFloorTextures();
 
         await this.createScene();
@@ -168,13 +165,15 @@ export class RenderService {
                                                                      this.activeTrack.points[1].y - this.activeTrack.points[0].y),
                                                          this.cars,
                                                          this.activeTrack)
-        .then((startLine: Object3D) => {
-            this.scene.add(startLine);
-            for (const car of this.cars) {
-                this.soundManager.init(car);
-            }
-        })
-        .catch((error: Error) => console.error(error));
+            .then((startLine: Object3D) => {
+                const groundStartLine: Mesh = this.startLineGeneratorService.createGroundStartLine(startLine);
+                this.scene.add(startLine, groundStartLine);
+                this.collisionManager.setStartLine(groundStartLine);
+                for (const car of this.cars) {
+                    this.soundManager.init(car);
+                }
+            })
+            .catch((error: Error) => console.error(error));
     }
 
     private createFloorMesh(): void {
