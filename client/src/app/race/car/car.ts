@@ -3,8 +3,12 @@ import { Vector3, Matrix4, Object3D, ObjectLoader, Euler, Quaternion, Box3,
 import { Engine } from "./engine";
 import { MS_TO_SECONDS, RAD_TO_DEG, PI_OVER_4, PI_OVER_2 } from "../../constants";
 import { Wheel } from "./wheel";
+<<<<<<< HEAD
 import { ForcesManager } from "./forces-manager";
 import { IPhysicsObject, IRotationalObject } from "./physics-interfaces";
+=======
+import { CarInformation } from "./car-information";
+>>>>>>> feature/DeroulementCourse
 
 export const DEFAULT_WHEELBASE: number = 2.78;
 export const DEFAULT_MASS: number = 1515;
@@ -47,6 +51,7 @@ export class Car extends Object3D {
     private raycasters: Raycaster[];
 
     private raycasterOffsets: Vector3[];
+    private information: CarInformation;
     private headLights: SpotLight[];
 
     public get Mass(): number {
@@ -97,6 +102,10 @@ export class Car extends Object3D {
         return this.mesh.matrix;
     }
 
+    public get Information(): CarInformation {
+        return this.information;
+    }
+
     public get direction(): Vector3 {
         const rotationMatrix: Matrix4 = new Matrix4();
         rotationMatrix.extractRotation(this.mesh.matrix);
@@ -114,7 +123,22 @@ export class Car extends Object3D {
         dragCoefficient: number = DEFAULT_DRAG_COEFFICIENT,
         ) {
         super();
+<<<<<<< HEAD
 
+=======
+        if (wheelbase <= 0) {
+            console.error("Wheelbase should be greater than 0.");
+            wheelbase = DEFAULT_WHEELBASE;
+        }
+        if (mass <= 0) {
+            console.error("Mass should be greater than 0.");
+            mass = DEFAULT_MASS;
+        }
+        if (dragCoefficient <= 0) {
+            console.error("Drag coefficient should be greater than 0.");
+            dragCoefficient = DEFAULT_DRAG_COEFFICIENT;
+        }
+>>>>>>> feature/DeroulementCourse
         this.engine = engine;
         this.rearWheel = rearWheel;
         this.wheelbase = wheelbase;
@@ -127,6 +151,7 @@ export class Car extends Object3D {
         this.boundingBox = new Box3();
         this.raycasters = new Array<Raycaster>();
         this.raycasterOffsets = new Array<Vector3>();
+        this.information = new CarInformation();
         this.headLights = new Array<SpotLight>();
     }
 
@@ -170,8 +195,13 @@ export class Car extends Object3D {
     private initHeadLights(): void {
         const headLightsPosition: Vector3 = this.getHeadlightsPosition(new Box3().setFromObject(this.mesh));
         for (let i: number = 0; i < NUMBER_OF_HEADLIGHT; ++i) {
+<<<<<<< HEAD
             const spotRange: number = 7;
             this.headLights.push(new SpotLight(LIGHT_COLOR, 1, spotRange, PI_OVER_4, 0));
+=======
+            const spotRange: number = 20;
+            this.headLights.push(new SpotLight(0xFFFFEE, 1, spotRange, PI_OVER_4, 0));
+>>>>>>> feature/DeroulementCourse
             this.mesh.add(this.headLights[i]);
 
             const targetRight: Object3D = new Object3D();

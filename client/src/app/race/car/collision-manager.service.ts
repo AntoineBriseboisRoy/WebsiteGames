@@ -2,7 +2,10 @@ import { Car } from "./car";
 import { Vector3, Matrix4, Quaternion, Box3, Mesh, Raycaster, Intersection } from "three";
 import { Injectable } from "@angular/core";
 import { SoundManagerService } from "../sound-manager.service";
-import { COLLISION_SOUND_NAME, WALL_SOUND_NAME } from "../../constants";
+import { COLLISION_SOUND_NAME, WALL_SOUND_NAME, LAP_NUMBER } from "../../constants";
+import { ModalService } from "../../modal/modal.service";
+import { Router } from "@angular/router";
+import { InputManagerService } from "../input-manager-service/input-manager.service";
 
 const CAR_A_MOMENTUM_FACTOR: number = 2.1;
 const CAR_B_MOMENTUM_FACTOR: number = 1.9;
@@ -21,30 +24,50 @@ enum CollisionSide {
 
 @Injectable()
 export class CollisionManager {
-
     private cars: Car[];
     private roadSegments: Mesh[];
+    private roadIntersections: Mesh[];
+    private startLine: Mesh;
     private timeSinceLastCollision: number;
     private lastDate: number;
+    private areCarsCollidingWithStartLine: Array<boolean>;
+    private areCarsCollidingWithRoadIntersections: Array<Array<boolean>>;
 
-    public constructor(private soundManager: SoundManagerService) {
+    public constructor(private soundManager: SoundManagerService, private modalService: ModalService, private router: Router,
+                       private inputManagerService: InputManagerService) {
         this.cars = new Array<Car>();
         this.roadSegments = new Array<Mesh>();
+        this.roadIntersections = new Array<Mesh>();
+        this.startLine = new Mesh();
         this.timeSinceLastCollision = 0;
         this.lastDate = 0;
+        this.areCarsCollidingWithStartLine = new Array<boolean>();
+        this.areCarsCollidingWithRoadIntersections = new Array<Array<boolean>>();
     }
 
     public addCar(car: Car): void {
         this.cars.push(car);
+        this.areCarsCollidingWithStartLine.push(false);
+        this.areCarsCollidingWithRoadIntersections.push(Array<boolean>());
     }
 
     public addRoadSegment(collisionable: Mesh): void {
         this.roadSegments.push(collisionable);
+        if (collisionable.name === "Intersection") {
+            this.roadIntersections.push(collisionable);
+            this.areCarsCollidingWithRoadIntersections.forEach((array) => array.push(false));
+        }
+    }
+
+    public setStartLine(collisionable: Mesh): void {
+        this.startLine = collisionable;
     }
 
     public update(): void {
         this.verifyCarCollision();
         this.verifyWallCollision();
+        this.verifyStartLineCollision();
+        this.verifyRoadIntersectionCollision();
     }
 
     private verifyCarCollision(): void {
@@ -127,6 +150,47 @@ export class CollisionManager {
         carB.speed = this.getCarCoordinatesSpeed(carB, carBNewSpeed);
     }
 
+    private verifyStartLineCollision(): void {
+        this.cars.forEach((car: Car, index: number) => {
+            const intersections: Intersection[] = car.Raycasters[0].intersectObject(this.startLine);
+            if (intersections.length > 0) {
+                if (!this.areCarsCollidingWithStartLine[index]) {
+                    this.startLineCollision(car);
+                    this.areCarsCollidingWithStartLine[index] = true;
+                }
+            } else {
+                this.areCarsCollidingWithStartLine[index] = false;
+            }
+        });
+    }
+
+    private startLineCollision(car: Car): void {
+        if (car.Information.Lap === LAP_NUMBER) {
+            car.Information.stopTimer();
+            if (car === this.cars[0]) {
+                this.endRace();
+            }
+        } else {
+            car.Information.incrementLap();
+        }
+    }
+
+    private verifyRoadIntersectionCollision(): void {
+        this.cars.forEach((car: Car, indexCar: number) => {
+            this.roadIntersections.forEach((roadIntersection, indexRoad: number) => {
+                const intersections: Intersection[] = car.Raycasters[0].intersectObject(roadIntersection);
+                if (intersections.length > 0) {
+                    if (!this.areCarsCollidingWithRoadIntersections[indexCar][indexRoad]) {
+                        car.Information.updateNextCheckpoint(indexRoad);
+                        this.areCarsCollidingWithRoadIntersections[indexCar][indexRoad] = true;
+                    }
+                } else {
+                    this.areCarsCollidingWithRoadIntersections[indexCar][indexRoad] = false;
+                }
+            });
+        });
+    }
+
     private getWorldCoordinatesSpeed(car: Car): Vector3 {
         const rotation: Matrix4 = new Matrix4();
         rotation.extractRotation(car.getMeshMatrix());
@@ -159,6 +223,24 @@ export class CollisionManager {
             } else {
                 collisionSide === CollisionSide.RIGHT ? car.steerRight() : car.steerLeft();
             }
+        }
+    }
+
+    private endRace(): void  {
+        const PADDING: number = 2;
+        this.inputManagerService.deactivate();
+        if (!this.modalService.IsOpen) {
+            this.modalService.open({
+                title: "Race Over!", message: "Your time is " +
+                this.cars[0].Information.totalTime.getMinutes().toString().padStart(PADDING, "0") + ":" +
+                this.cars[0].Information.totalTime.getSeconds().toString().padStart(PADDING, "0") + ":"  +
+                this.cars[0].Information.totalTime.getMilliseconds().toString().padEnd(PADDING, "0").substr(0, PADDING) +
+                "! You can choose to replay or go back to home page",
+                firstButton: "Race again!", secondButton: "Home", showPreview: true
+            })
+            .then(() => window.location.reload(),
+                  () => this.router.navigate([""])
+            );
         }
     }
 }

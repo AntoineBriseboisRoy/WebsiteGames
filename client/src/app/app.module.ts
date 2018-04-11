@@ -35,8 +35,13 @@ import { ModalDirective } from "./modal/modal.directive";
 import { TrackPreviewComponent } from "./race/track-view/track-preview/track-preview.component";
 import { StartLineGeneratorService } from "./race/start-line-generator.service";
 import { GameManagerService } from "./crossword/game-manager.service";
+<<<<<<< HEAD
 import { SoundManagerService } from "./race/sound-manager.service";
 import { SelectionHandlerService } from "./crossword/game-view/grid/selection-handler.service";
+=======
+import { TimerService } from "./race/timer-service/timer.service";
+import { InputManagerService } from "./race/input-manager-service/input-manager.service";
+>>>>>>> feature/DeroulementCourse
 
 @NgModule({
     declarations: [
@@ -77,8 +82,13 @@ import { SelectionHandlerService } from "./crossword/game-view/grid/selection-ha
         ModalStateService,
         StartLineGeneratorService,
         GameManagerService,
+<<<<<<< HEAD
         SoundManagerService,
         SelectionHandlerService
+=======
+        TimerService,
+        InputManagerService
+>>>>>>> feature/DeroulementCourse
     ],
     bootstrap: [AppComponent]
 })
