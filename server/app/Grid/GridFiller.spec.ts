@@ -7,9 +7,9 @@ import { Difficulty } from "../Services/LexicalService/LexicalService";
 const EXTENDED_TIMEOUT: number = 30000;
 
 // tslint:disable-next-line:max-func-body-length
-describe.only("Verifying 10x10 Grid", () => {
+describe("Verifying 10x10 Grid", () => {
     const grid: Grid = new Grid(Difficulty.EASY);
-    it.only("Should be full (All letters except for blacksquares)", async () => {
+    it("Should be full (All letters except for blacksquares)", async () => {
         await grid.fillGrid();
         let nEmptySquares: number = 0;
         const EXPECTED_EMPTY_SQUARES: number = 0;
@@ -46,9 +46,9 @@ describe.only("Verifying 10x10 Grid", () => {
         }
         for (const word of grid.Words) {
             if (word.orientation === Orientation.Horizontal) {
-                ++wordsInRowsCols[word.position.y][Orientation.Horizontal];
+                ++wordsInRowsCols[word.position.x][Orientation.Horizontal];
             } else {
-                ++wordsInRowsCols[word.position.x][Orientation.Vertical];
+                ++wordsInRowsCols[word.position.y][Orientation.Vertical];
             }
         }
         let valid: boolean = true;

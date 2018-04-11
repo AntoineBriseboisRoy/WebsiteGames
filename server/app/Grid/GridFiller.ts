@@ -40,13 +40,14 @@ export class GridFiller {
         this.difficulty = difficulty;
         this.wordsToFill = wordsToFill;
         this.sortWordsToFillByLength();
-
+        console.log(this.grid);
         this.tries = 0;
         if (!this.fillGridWithWords()) {
             return false;
         }
         this.fillRemainingSpacesWithBlacksquares();
         await this.fetchDefinitions();
+        console.log(this.grid);
 
         return true;
     }
@@ -157,7 +158,7 @@ export class GridFiller {
     private addNewWord (newWord: IWord): void {
         this.wordsPlaced.push(newWord);
         for (let i: number = 0; i < newWord.content.length; i++) {
-            if (newWord.orientation === Orientation.Horizontal) {
+            if (newWord.orientation === Orientation.Vertical) {
                 this.grid[newWord.position.x + i][newWord.position.y] = newWord.content[i];
             } else {
                 this.grid[newWord.position.x][newWord.position.y + i] = newWord.content[i];
@@ -168,7 +169,7 @@ export class GridFiller {
     private countLettersBelongingOtherWords(word: IWord): number {
         let nCommonLetters: number = 0;
         for (let i: number = 0; i < word.content.length; i++) {
-            if (word.orientation === Orientation.Horizontal) {
+            if (word.orientation === Orientation.Vertical) {
                 if (this.letterBelongsOtherWord( { x: word.position.x + i,
                                                    y: word.position.y } as ICoordXY)) {
                     ++nCommonLetters;
@@ -191,7 +192,7 @@ export class GridFiller {
     private letterBelongsOtherWord(position: ICoordXY): boolean {
         let belongs: boolean = false;
         this.wordsPlaced.forEach((word: IWord) => {
-            if (word.orientation === Orientation.Horizontal) {
+            if (word.orientation === Orientation.Vertical) {
                 if (word.position.y === position.y) {
                     if (word.position.x <= position.x && word.position.x + word.content.length - 1 >= position.x) {
                         belongs = true;
@@ -234,7 +235,7 @@ export class GridFiller {
     private getSearchTemplate(nextWord: IWord): string {
         let searchTemplate: string = "";
         for (let i: number = 0; i < nextWord.content.length; i++) {
-            const currentChar: string = (nextWord.orientation === Orientation.Vertical) ?
+            const currentChar: string = (nextWord.orientation === Orientation.Horizontal) ?
                 this.grid[nextWord.position.x][i + nextWord.position.y] :
                 this.grid[nextWord.position.x + i][nextWord.position.y];
             if (currentChar === EMPTY_SQUARE) {
@@ -260,7 +261,7 @@ export class GridFiller {
 
     private removeLastWordFromGrid(lastWord: IWord): void {
         for (let i: number = 0; i < lastWord.content.length; i++) {
-            if (lastWord.orientation === Orientation.Horizontal) {
+            if (lastWord.orientation === Orientation.Vertical) {
                 if (!this.letterBelongsOtherWord({ x: lastWord.position.x + i,
                                                    y: lastWord.position.y } as ICoordXY)) {
                     this.grid[lastWord.position.x + i][lastWord.position.y] = EMPTY_SQUARE;

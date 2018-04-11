@@ -80,17 +80,18 @@ export class BlackSquareGenerator {
     }
 
     private eraseOpenSpaces(): void {
-        for (let i: number = 0; i < this.sideSize - 2; ++i) {
-            for (let j: number = 0; j < this.sideSize - 2; ++j) {
+        const SQUARE_SIZE: number = 3;
+        for (let i: number = 0; i < this.sideSize - SQUARE_SIZE - 1; ++i) {
+            for (let j: number = 0; j < this.sideSize - SQUARE_SIZE - 1; ++j) {
                 let count: number = 0;
-                for (let k: number = i; k < i + 3; ++k) {
-                    for (let m: number = j; m < j + 3; ++m) {
+                for (let k: number = i; k < i + SQUARE_SIZE; ++k) {
+                    for (let m: number = j; m < j + SQUARE_SIZE; ++m) {
                         if (this.grid[k][m] === EMPTY_SQUARE) {
                             ++count;
                         }
                     }
                 }
-                if (count === 9) {
+                if (count === SQUARE_SIZE * SQUARE_SIZE) {
                     this.grid[i + 1][j + 1] = BLACKSQUARE_CHARACTER;
                 }
             }
@@ -156,10 +157,10 @@ export class BlackSquareGenerator {
     }
 
     private haveCommonPosition(horizontalWord: IWord, verticalWord: IWord): boolean {
-        return horizontalWord.position.x + horizontalWord.content.length - 1 >= verticalWord.position.x
-                && horizontalWord.position.x <= verticalWord.position.x
-                && verticalWord.position.y + verticalWord.content.length - 1 >= horizontalWord.position.y
-                && verticalWord.position.y <= horizontalWord.position.y;
+        return horizontalWord.position.y + horizontalWord.content.length - 1 >= verticalWord.position.y
+                && horizontalWord.position.y <= verticalWord.position.y
+                && verticalWord.position.x + verticalWord.content.length - 1 >= horizontalWord.position.x
+                && verticalWord.position.x <= horizontalWord.position.x;
     }
 
     private findAllwordsToFill(): IWord[] {
@@ -181,14 +182,14 @@ export class BlackSquareGenerator {
             } else if (this.grid[i][row] === BLACKSQUARE_CHARACTER) {
                 if (nLettersRow >= MIN_LETTERS_FOR_WORD) {
                     wordsToFill.push(this.createEmptyWord(i - nLettersRow, row,
-                                                          Orientation.Horizontal, nLettersRow));
+                                                          Orientation.Vertical, nLettersRow));
                 }
                 nLettersRow = 0;
             }
         }
         if (nLettersRow >= MIN_LETTERS_FOR_WORD) {
             wordsToFill.push(this.createEmptyWord(this.sideSize - nLettersRow, row,
-                                                  Orientation.Horizontal, nLettersRow));
+                                                  Orientation.Vertical, nLettersRow));
 
         }
 
@@ -204,14 +205,14 @@ export class BlackSquareGenerator {
             } else if (this.grid[column][i] === BLACKSQUARE_CHARACTER) {
                 if (nLettersCol >= MIN_LETTERS_FOR_WORD) {
                     wordsToFill.push(this.createEmptyWord(column, i - nLettersCol,
-                                                          Orientation.Vertical, nLettersCol));
+                                                          Orientation.Horizontal, nLettersCol));
 }
                 nLettersCol = 0;
             }
         }
         if (nLettersCol >= MIN_LETTERS_FOR_WORD) {
             wordsToFill.push(this.createEmptyWord(column, this.sideSize - nLettersCol,
-                                                  Orientation.Vertical, nLettersCol));
+                                                  Orientation.Horizontal, nLettersCol));
         }
 
         return wordsToFill;
