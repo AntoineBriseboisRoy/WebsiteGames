@@ -157,10 +157,10 @@ export class BlackSquareGenerator {
     }
 
     private haveCommonPosition(horizontalWord: IWord, verticalWord: IWord): boolean {
-        return horizontalWord.position.y + horizontalWord.content.length - 1 >= verticalWord.position.y
-                && horizontalWord.position.y <= verticalWord.position.y
-                && verticalWord.position.x + verticalWord.content.length - 1 >= horizontalWord.position.x
-                && verticalWord.position.x <= horizontalWord.position.x;
+        return horizontalWord.position.x + horizontalWord.content.length - 1 >= verticalWord.position.x
+                && horizontalWord.position.x <= verticalWord.position.x
+                && verticalWord.position.y + verticalWord.content.length - 1 >= horizontalWord.position.y
+                && verticalWord.position.y <= horizontalWord.position.y;
     }
 
     private findAllwordsToFill(): IWord[] {
@@ -182,14 +182,14 @@ export class BlackSquareGenerator {
             } else if (this.grid[i][row] === BLACKSQUARE_CHARACTER) {
                 if (nLettersRow >= MIN_LETTERS_FOR_WORD) {
                     wordsToFill.push(this.createEmptyWord(i - nLettersRow, row,
-                                                          Orientation.Vertical, nLettersRow));
+                                                          Orientation.Horizontal, nLettersRow));
                 }
                 nLettersRow = 0;
             }
         }
         if (nLettersRow >= MIN_LETTERS_FOR_WORD) {
             wordsToFill.push(this.createEmptyWord(this.sideSize - nLettersRow, row,
-                                                  Orientation.Vertical, nLettersRow));
+                                                  Orientation.Horizontal, nLettersRow));
 
         }
 
@@ -205,14 +205,14 @@ export class BlackSquareGenerator {
             } else if (this.grid[column][i] === BLACKSQUARE_CHARACTER) {
                 if (nLettersCol >= MIN_LETTERS_FOR_WORD) {
                     wordsToFill.push(this.createEmptyWord(column, i - nLettersCol,
-                                                          Orientation.Horizontal, nLettersCol));
+                                                          Orientation.Vertical, nLettersCol));
 }
                 nLettersCol = 0;
             }
         }
         if (nLettersCol >= MIN_LETTERS_FOR_WORD) {
             wordsToFill.push(this.createEmptyWord(column, this.sideSize - nLettersCol,
-                                                  Orientation.Horizontal, nLettersCol));
+                                                  Orientation.Vertical, nLettersCol));
         }
 
         return wordsToFill;

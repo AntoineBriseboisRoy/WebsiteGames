@@ -1,5 +1,5 @@
 import { Grid } from "./Grid";
-import { IWord } from "../../../common/interfaces/IWord";
+import { IWord, Orientation } from "../../../common/interfaces/IWord";
 import { ICoordXY } from "../../../common/interfaces/ICoordXY";
 import { Difficulty } from "../../../common/constants";
 
@@ -14,6 +14,16 @@ export class GridGeneratorService {
     public async createGrid(difficulty: Difficulty): Promise<void> {
         this.grid = new Grid(difficulty);
         await this.grid.fillGrid();
+        for (const word of this.grid.Words) {
+            word.orientation = (word.orientation === Orientation.Horizontal) ? Orientation.Vertical : Orientation.Horizontal;
+            this.switchPos(word);
+        }
+    }
+
+    private switchPos(word: IWord): void {
+        const xTemp: number = word.position.x;
+        word.position.x = word.position.y;
+        word.position.y = xTemp;
     }
 
     public get Grid(): string {
