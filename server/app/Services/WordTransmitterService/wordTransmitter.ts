@@ -132,7 +132,7 @@ export class WordTransmitterService {
                 }
             }
             this.gridWords.push({
-                cells: wordCells, correctAnswer: word.content,
+                cells: wordCells, correctAnswer: word.content.toUpperCase(),
                 definition: word.definition, orientation: word.orientation, isFound: false
             } as IGridWord);
             wordCells = [];
