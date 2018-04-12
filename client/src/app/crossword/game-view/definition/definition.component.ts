@@ -2,7 +2,7 @@ import { Component } from "@angular/core";
 import { NO_CHEAT_COLOR, CHEAT_COLOR } from "../../../constants";
 import { GridService } from "../../grid.service";
 import { IGridWord } from "../../../../../../common/interfaces/IGridWord";
-import { ICell } from "../../../../../../common/interfaces/ICell";
+import { ICell, Finder } from "../../../../../../common/interfaces/ICell";
 import { FocusCell } from "../focusCell";
 import { SocketIoService } from "../../socket-io.service";
 
@@ -50,6 +50,26 @@ export class DefinitionComponent {
     public cheatModeToString(): string {
         return this.cheatModeActive ? "CHEAT MODE ACTIVATE!" : "Click to activate Cheat Mode";
     }
+
+    public isFoundBy(word: IGridWord): string {
+        if (word.isFound) {
+            return this.isWordFoundByPlayer(word.cells, Finder.player1) ? "word-definition-found is-found-p1" :
+                                                                          "word-definition-found is-found-p2";
+        }
+
+        return "";
+    }
+
+    private isWordFoundByPlayer(cells: Array<ICell>, player: Finder): boolean {
+        for (const cell of cells) {
+            if (cell.finder !== Finder.both) {
+                return cell.finder === player;
+            }
+        }
+
+        return false;
+    }
+
     private firstUnknownCell(cells: Array<ICell>): number {
         for (let i: number = 0; i < cells.length; i++) {
             if (!cells[i].isFound) {

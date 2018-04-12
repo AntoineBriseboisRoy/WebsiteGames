@@ -13,6 +13,16 @@
     text-decoration: line-through;
 }
 
+.is-found-p1 {
+    -webkit-text-decoration-color: rgb(3, 109, 167);
+    text-decoration-color: rgb(3, 109, 167);
+}
+
+.is-found-p2 {
+    -webkit-text-decoration-color: rgb(241, 118, 48);
+    text-decoration-color: rgb(241, 118, 48);
+}
+
 .title-layout-name {
     border: 2px solid rgba(109, 97, 97, 0.603);
     width: 50%;
