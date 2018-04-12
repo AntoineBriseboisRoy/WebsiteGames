@@ -168,7 +168,7 @@ export class RenderService {
             if (mesh.name === "Intersection") {
                 this.collisionManager.addRoadIntersections(mesh);
                 this.cars.forEach((car: Car) => {
-                    car.Information.addCheckpoint(new Vector2(mesh.position.x, mesh.position.z));
+                    car.Information.addCheckpoint(new Vector2(mesh.getWorldPosition().x, mesh.getWorldPosition().z));
                 });
             }
             this.scene.add(mesh);

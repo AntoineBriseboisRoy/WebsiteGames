@@ -67,6 +67,6 @@ export class CarInformation {
 
     public updateDistanceToNextCheckpoint(meshPosition: Vector2): void {
         this.distanceToNextCheckpoint.subVectors(this.nextCheckpoint, meshPosition);
-        //console.log(this.distanceToNextCheckpoint);
+        console.log(this.distanceToNextCheckpoint.length());
     }
 }
