@@ -33,3 +33,9 @@ export const SKIP_SEGMENT: number = 2;
 export const POINT_BY_LETTER: number = 10;
 export const LAP_NUMBER: number = 3;
 export const ROAD_WIDTH: number = 20;
+
+export enum DifficultyView {
+    Easy = "Easy",
+    Medium = "Medium",
+    Hard = "Hard"
+}
