@@ -22,15 +22,20 @@ export class SelectionHandlerService {
                 return this.isVerticalOrientation(Player.player2) ?
                     "left-border-p2 right-border-p2" : "top-border-p2 bottom-border-p2";
             } else if (this.isSelectedByBoth(cell)) {
-                // TODO: operateur ternaire a regler
-                return this.isSameSelection() ?
-                    (this.isVerticalOrientation(Player.player1) ?
-                        "border-both left-border-both right-border-both" : "border-both top-border-both bottom-border-both") :
-                    "border-both top-border-both bottom-border-both left-border-both right-border-both";
+                return this.applyStyleForBoth();
             }
         }
 
         return "";
+    }
+    private applyStyleForBoth(): string {
+        // return this.isSameSelection() ?
+        if (this.isSameSelection()) {
+            return (this.isVerticalOrientation(Player.player1) ?
+                "border-both left-border-both right-border-both" : "border-both top-border-both bottom-border-both");
+        }
+
+        return "border-both top-border-both bottom-border-both left-border-both right-border-both";
     }
     private isSelectedByOne(player: Player, cell: ICell): boolean {
         if (player === Player.player1) {
@@ -41,16 +46,25 @@ export class SelectionHandlerService {
     }
 
     private isCaseSelectedByOne(player: Player, cell: ICell, index: number): boolean {
-        if (player === Player.player1) {
-            return this.isCaseSelectedByPlayer(Player.player1, cell, index) && !this.isCaseSelectedByPlayer(Player.player2, cell, index);
+        if (index >= 0) {
+            if (player === Player.player1) {
+                return this.isCaseSelectedByPlayer(Player.player1, cell, index) &&
+                !this.isCaseSelectedByPlayer(Player.player2, cell, index);
+            }
+
+            return this.isCaseSelectedByPlayer(Player.player2, cell, index) && !this.isCaseSelectedByPlayer(Player.player1, cell, index);
         }
 
-        return this.isCaseSelectedByPlayer(Player.player2, cell, index) && !this.isCaseSelectedByPlayer(Player.player1, cell, index);
+        return false;
     }
 
     private isSameSelection(): boolean {
-        return this.gridService.selectedWords[Player.player1].correctAnswer
-            === this.gridService.selectedWords[Player.player2].correctAnswer;
+        if (this.isSelectedWordDefined(Player.player1) && this.isSelectedWordDefined(Player.player2)) {
+            return this.gridService.selectedWords[Player.player1].correctAnswer
+                === this.gridService.selectedWords[Player.player2].correctAnswer;
+        }
+
+        return false;
     }
     private isVerticalOrientation(player: Player): boolean {
         return this.gridService.selectedWords[player].orientation === Orientation.Vertical;
@@ -74,18 +88,18 @@ export class SelectionHandlerService {
     }
 
     public addLastCellBorder(cell: ICell): string {
-        // if (this.gridService.selectedWords) {
-        //     if (this.isCaseSelectedByOne(Player.player1, cell)) {
-        //         return this.isVerticalOrientation(Player.player1) ?
-        //             "bottom-border-p1" : "right-border-p1";
-        //     } else if (this.isCaseSelectedByOne(Player.player2, cell)) {
-        //         return this.isVerticalOrientation(Player.player2) ?
-        //             "bottom-border-p2" : "right-border-p2";
-        //     } else if (this.isCaseSelectedByBoth(cell) && this.isSameSelection()) {
-        //         return this.isVerticalOrientation(Player.player1) ?
-        //             "bottom-border-both" : "right-border-both";
-        //     }
-        // }
+        if (this.gridService.selectedWords) {
+            if (this.isCaseSelectedByOne(Player.player1, cell, this.selectedWordLength(Player.player1) - 1)) {
+                return this.isVerticalOrientation(Player.player1) ?
+                    "bottom-border-p1" : "right-border-p1";
+            } else if (this.isCaseSelectedByOne(Player.player2, cell, this.selectedWordLength(Player.player2) - 1)) {
+                return this.isVerticalOrientation(Player.player2) ?
+                    "bottom-border-p2" : "right-border-p2";
+            } else if (this.isSameSelection() && this.isCaseSelectedByBoth(cell, this.selectedWordLength(Player.player1) - 1)) {
+                return this.isVerticalOrientation(Player.player1) ?
+                    "bottom-border-both" : "right-border-both";
+            }
+        }
 
         return "";
     }
@@ -113,6 +127,13 @@ export class SelectionHandlerService {
         return this.gridService.selectedWords[player] !== undefined &&
             this.gridService.selectedWords[player] !== null &&
             this.gridService.selectedWords[player].cells !== undefined;
+    }
+    private selectedWordLength(player: Player): number {
+        if (this.isSelectedWordDefined(player)) {
+            return this.gridService.selectedWords[player].cells.length;
+        }
+
+        return -1;
     }
 
 }
