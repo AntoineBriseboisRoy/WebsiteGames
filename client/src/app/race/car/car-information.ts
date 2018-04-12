@@ -1,7 +1,6 @@
 import { Subscription } from "rxjs/Subscription";
 import { LAP_NUMBER } from "../../constants";
 import { Vector2 } from "three";
-import { ITrack } from "../../../../../common/interfaces/ITrack";
 
 export class CarInformation {
     private lap: number;
@@ -10,10 +9,12 @@ export class CarInformation {
     private hasStartedAFirstLap: boolean;
     private lapTimes: Array<Date>;
     private subscription: Subscription;
-    private distanceToNextCheckpoint: number;
-    private activeTrack: ITrack;
-    public nextCheckpoint: number;
-    private ranking: number;
+
+    // For AI :
+    private checkpoints: Array<Vector2>;
+    public nextCheckpoint: Vector2;
+    private distanceToNextCheckpoint: Vector2;
+    // -----
     public constructor() {
         this.lap = 1;
         this.totalTime = new Date(0);
@@ -21,10 +22,9 @@ export class CarInformation {
         this.lapTimes = new Array<Date>();
         this.subscription = new Subscription();
         this.way = true;
-        this.distanceToNextCheckpoint = 0;
-        this.nextCheckpoint = 0;
-        this.ranking = 0;
-        this.activeTrack = {} as ITrack;
+        this.checkpoints = new Array<Vector2>();
+        this.distanceToNextCheckpoint = new Vector2();
+        this.nextCheckpoint = new Vector2();
     }
 
     public get Lap(): number {
@@ -35,8 +35,8 @@ export class CarInformation {
         return this.totalTime.getTime() - this.lapTimes.reduce((a, b) => a + b.getTime(), 0);
     }
 
-    public set ActiveTrack(track: ITrack) {
-        this.activeTrack = track;
+    public addCheckpoint( checkpoint: Vector2): void {
+        this.checkpoints.push(checkpoint);
     }
 
     public incrementLap(): void {
@@ -58,21 +58,15 @@ export class CarInformation {
         this.subscription.unsubscribe();
     }
 
-    public updateNextCheckpoint( checkpoint: number ): void {
-        console.log(checkpoint);
+    public setNextCheckpoint( checkpoint: number ): void {
+        this.nextCheckpoint = this.checkpoints[checkpoint];
+        console.log("----------------------");
+        console.log("PROCHAIN CHECKPOINT: " + checkpoint);
+        console.log("----------------------");
     }
 
-    private updateDistanceToNextCheckpoint(carPosition: Vector2): void {
-        const distance: Vector2 = new Vector2(this.activeTrack.points[this.nextCheckpoint].x - carPosition.x,
-                                              this.activeTrack.points[this.nextCheckpoint].y - carPosition.y);
-        this.distanceToNextCheckpoint = distance.length();
-    }
-
-    private updateRanking(): void {
-    }
-
-    public update(carPosition: Vector2): void {
-        this.updateDistanceToNextCheckpoint(carPosition);
-        this.updateRanking();
+    public updateDistanceToNextCheckpoint(meshPosition: Vector2): void {
+        this.distanceToNextCheckpoint.subVectors(this.nextCheckpoint, meshPosition);
+        //console.log(this.distanceToNextCheckpoint);
     }
 }
