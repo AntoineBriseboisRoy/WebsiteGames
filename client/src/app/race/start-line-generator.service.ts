@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { Vector2, ObjectLoader, Object3D, PlaneBufferGeometry, MeshBasicMaterial, Mesh, DoubleSide, TextureLoader, Vector3 } from "three";
+import { Vector2, ObjectLoader, Object3D, PlaneBufferGeometry, MeshBasicMaterial, Mesh, DoubleSide, TextureLoader } from "three";
 import { Car } from "./car/car";
 import { ITrack, TrackType } from "../../../../common/interfaces/ITrack";
 import { HALF, PI_OVER_2, ROAD_WIDTH } from "../constants";
@@ -70,17 +70,16 @@ export class StartLineGeneratorService {
         startLineBanner.scale.setX(startLineBanner.scale.x * DOUBLE);
         startLineBanner.position.x = -(this.activeTrack.points[0].y + this.firstRoad.y * HALF) * WORLD_SIZE + WORLD_SIZE * HALF;
         startLineBanner.position.z = -(this.activeTrack.points[0].x + this.firstRoad.x * HALF) * WORLD_SIZE + WORLD_SIZE * HALF;
-        startLineBanner.rotation.y = this.firstRoad.x === 0 ? PI_OVER_2 : Math.atan(this.firstRoad.y / this.firstRoad.x);
+        startLineBanner.rotation.y = Math.atan(this.firstRoad.y / this.firstRoad.x);
     }
 
     private placeCarsBehindStartLine(startLineBanner: Object3D): void {
         for (const car of this.cars) {
-            car.getPosition().x = startLineBanner.position.x - (CAR_OFFSET_FROM_STARTLINE * WORLD_SIZE) * this.firstRoad.y /
+            car.getPosition().x = startLineBanner.position.x + (CAR_OFFSET_FROM_STARTLINE * WORLD_SIZE) * this.firstRoad.y /
                 this.firstRoad.length();
-            car.getPosition().z = startLineBanner.position.z - (CAR_OFFSET_FROM_STARTLINE * WORLD_SIZE) * this.firstRoad.x /
+            car.getPosition().z = startLineBanner.position.z + (CAR_OFFSET_FROM_STARTLINE * WORLD_SIZE) * this.firstRoad.x /
                 this.firstRoad.length();
-            car.getRotation().y = car.getPosition().length() < startLineBanner.position.length() ?
-                startLineBanner.rotation.y + Math.PI : startLineBanner.rotation.y;
+            car.getRotation().y = this.firstRoad.x > 0 ? startLineBanner.rotation.y : startLineBanner.rotation.y + Math.PI;
         }
     }
 
