@@ -53,10 +53,11 @@ export class CollisionManager {
 
     public addRoadSegment(collisionable: Mesh): void {
         this.roadSegments.push(collisionable);
-        if (collisionable.name === "Intersection") {
-            this.roadIntersections.push(collisionable);
-            this.areCarsCollidingWithRoadIntersections.forEach((array) => array.push(false));
-        }
+    }
+
+    public addRoadIntersections(collisionable: Mesh): void {
+        this.roadIntersections.push(collisionable);
+        this.areCarsCollidingWithRoadIntersections.forEach((array) => array.push(false));
     }
 
     public setStartLine(collisionable: Mesh): void {
@@ -181,7 +182,7 @@ export class CollisionManager {
                 const intersections: Intersection[] = car.Raycasters[0].intersectObject(roadIntersection);
                 if (intersections.length > 0) {
                     if (!this.areCarsCollidingWithRoadIntersections[indexCar][indexRoad]) {
-                        car.Information.updateNextCheckpoint(indexRoad);
+                        car.Information.setNextCheckpoint(indexRoad);
                         this.areCarsCollidingWithRoadIntersections[indexCar][indexRoad] = true;
                     }
                 } else {

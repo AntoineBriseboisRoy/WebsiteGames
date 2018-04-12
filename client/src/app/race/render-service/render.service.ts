@@ -26,7 +26,7 @@ const TEXTURE_TILE_REPETIONS: number = 200;
 const WORLD_SIZE: number = 1000;
 const FLOOR_SIZE: number = WORLD_SIZE / HALF;
 const PLAYER: number = 0;
-const NUMBER_OF_CARS: number = 4;
+const NUMBER_OF_CARS: number = 1;
 const BASE_RPM: number = 3500;
 
 @Injectable()
@@ -74,7 +74,6 @@ export class RenderService {
             this.container = container;
         }
         this.activeTrack = track;
-        this.cars.forEach((car) => car.Information.ActiveTrack = track);
         this.initFloorTextures();
 
         await this.createScene();
@@ -105,6 +104,9 @@ export class RenderService {
         this.cameraContext.update(this.cars[PLAYER]);
         this.lastDate = Date.now();
         this.collisionManager.update();
+        this.cars.forEach((car) => {
+            car.Information.updateDistanceToNextCheckpoint(new Vector2(car.getPosition().x, car.getPosition().z));
+        });
     }
 
     private async createScene(): Promise<void> {
@@ -156,24 +158,36 @@ export class RenderService {
 
     private generateTrack(): void {
         this.roadCreator.createTrack(this.activeTrack.points);
+        this.createCheckpoints();
+        this.createStartLine();
+    }
+
+    private createCheckpoints(): void {
         this.roadCreator.Meshes.forEach((mesh: Mesh) => {
             this.collisionManager.addRoadSegment(mesh);
+            if (mesh.name === "Intersection") {
+                this.collisionManager.addRoadIntersections(mesh);
+                this.cars.forEach((car: Car) => {
+                    car.Information.addCheckpoint(new Vector2(mesh.position.x, mesh.position.z));
+                });
+            }
             this.scene.add(mesh);
         });
+    }
 
+    private createStartLine(): void {
         this.startLineGeneratorService.generateStartLine(new Vector2(this.activeTrack.points[1].x - this.activeTrack.points[0].x,
                                                                      this.activeTrack.points[1].y - this.activeTrack.points[0].y),
-                                                         this.cars,
-                                                         this.activeTrack)
-            .then((startLine: Object3D) => {
-                const groundStartLine: Mesh = this.startLineGeneratorService.createGroundStartLine(startLine);
-                this.scene.add(startLine, groundStartLine);
-                this.collisionManager.setStartLine(groundStartLine);
-                for (const car of this.cars) {
-                    this.soundManager.init(car);
-                }
-            })
-            .catch((error: Error) => console.error(error));
+                                                         this.cars, this.activeTrack)
+        .then((startLine: Object3D) => {
+            const groundStartLine: Mesh = this.startLineGeneratorService.createGroundStartLine(startLine);
+            this.scene.add(startLine, groundStartLine);
+            this.collisionManager.setStartLine(groundStartLine);
+            for (const car of this.cars) {
+                this.soundManager.init(car);
+            }
+        })
+        .catch((error: Error) => console.error(error));
     }
 
     private createFloorMesh(): void {
