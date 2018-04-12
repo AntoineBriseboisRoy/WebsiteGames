@@ -8,7 +8,7 @@
   </div>
   <div *ngFor="let game of gameRooms.Games; index as i;">
     <div class="card-body">
-      <h5 class="card-title">{{game.userCreator}} is waiting for an opponent : {{game.difficulty}}</h5>
+      <h5 class="card-title">{{game.userCreator}} is waiting for an opponent : {{viewDifficulty(game.difficulty)}}</h5>
       <form class="form-inline ">
         <div class="form-group mx-sm-3 mb-2">
           <input class="form-control" placeholder="Username" [(ngModel)]= "userJoiner[i]" [ngModelOptions]="{standalone: true}" [disabled]="this.gameRooms.isDefined()">
