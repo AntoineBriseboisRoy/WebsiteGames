@@ -158,21 +158,22 @@ export class RenderService {
 
     private generateTrack(): void {
         this.roadCreator.createTrack(this.activeTrack.points);
-        this.createCheckpoints();
+        this.roadCreator.Meshes.forEach((mesh: Mesh) => {
+            this.scene.add(mesh);
+            this.collisionManager.addRoadSegment(mesh);
+        });
+        this.addCheckpoints();
         this.createStartLine();
     }
 
-    private createCheckpoints(): void {
-        this.roadCreator.Meshes.forEach((mesh: Mesh) => {
-            this.collisionManager.addRoadSegment(mesh);
-            if (mesh.name === "Intersection") {
-                this.collisionManager.addRoadIntersections(mesh);
-                this.cars.forEach((car: Car) => {
-                    car.Information.addCheckpoint(new Vector2(mesh.getWorldPosition().x, mesh.getWorldPosition().z));
-                });
-            }
+    private addCheckpoints(): void {
+        for (const mesh of this.roadCreator.CheckpointMeshes) {
+            this.collisionManager.addCheckpoint(mesh);
+            this.cars.forEach((car: Car) => {
+                car.Information.addCheckpoint(new Vector2(mesh.getWorldPosition().x, mesh.getWorldPosition().z));
+            });
             this.scene.add(mesh);
-        });
+        }
     }
 
     private createStartLine(): void {

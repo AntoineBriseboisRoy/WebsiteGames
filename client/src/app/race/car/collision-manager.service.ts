@@ -26,38 +26,38 @@ enum CollisionSide {
 export class CollisionManager {
     private cars: Car[];
     private roadSegments: Mesh[];
-    private roadIntersections: Mesh[];
+    private checkpoints: Mesh[];
     private startLine: Mesh;
     private timeSinceLastCollision: number;
     private lastDate: number;
     private areCarsCollidingWithStartLine: Array<boolean>;
-    private areCarsCollidingWithRoadIntersections: Array<Array<boolean>>;
+    private areCarsCollidingWithCheckpoints: Array<Array<boolean>>;
 
     public constructor(private soundManager: SoundManagerService, private modalService: ModalService, private router: Router,
                        private inputManagerService: InputManagerService) {
         this.cars = new Array<Car>();
         this.roadSegments = new Array<Mesh>();
-        this.roadIntersections = new Array<Mesh>();
+        this.checkpoints = new Array<Mesh>();
         this.startLine = new Mesh();
         this.timeSinceLastCollision = 0;
         this.lastDate = 0;
         this.areCarsCollidingWithStartLine = new Array<boolean>();
-        this.areCarsCollidingWithRoadIntersections = new Array<Array<boolean>>();
+        this.areCarsCollidingWithCheckpoints = new Array<Array<boolean>>();
     }
 
     public addCar(car: Car): void {
         this.cars.push(car);
         this.areCarsCollidingWithStartLine.push(false);
-        this.areCarsCollidingWithRoadIntersections.push(Array<boolean>());
+        this.areCarsCollidingWithCheckpoints.push(Array<boolean>());
     }
 
     public addRoadSegment(collisionable: Mesh): void {
         this.roadSegments.push(collisionable);
     }
 
-    public addRoadIntersections(collisionable: Mesh): void {
-        this.roadIntersections.push(collisionable);
-        this.areCarsCollidingWithRoadIntersections.forEach((array) => array.push(false));
+    public addCheckpoint(collisionable: Mesh): void {
+        this.checkpoints.push(collisionable);
+        this.areCarsCollidingWithCheckpoints.forEach((array) => array.push(false));
     }
 
     public setStartLine(collisionable: Mesh): void {
@@ -178,16 +178,16 @@ export class CollisionManager {
 
     private verifyRoadIntersectionCollision(): void {
         this.cars.forEach((car: Car, indexCar: number) => {
-            this.roadIntersections.forEach((roadIntersection, indexRoad: number) => {
+            this.checkpoints.forEach((roadIntersection, indexRoad: number) => {
                 const intersections: Intersection[] = car.Raycasters[0].intersectObject(roadIntersection);
                 if (intersections.length > 0) {
-                    if (!this.areCarsCollidingWithRoadIntersections[indexCar][indexRoad]) {
-                        const nextCheckpoint: number = (indexRoad + 1) % this.roadIntersections.length;
+                    if (!this.areCarsCollidingWithCheckpoints[indexCar][indexRoad]) {
+                        const nextCheckpoint: number = (indexRoad + 1) % this.checkpoints.length;
                         car.Information.setNextCheckpoint(nextCheckpoint);
-                        this.areCarsCollidingWithRoadIntersections[indexCar][indexRoad] = true;
+                        this.areCarsCollidingWithCheckpoints[indexCar][indexRoad] = true;
                     }
                 } else {
-                    this.areCarsCollidingWithRoadIntersections[indexCar][indexRoad] = false;
+                    this.areCarsCollidingWithCheckpoints[indexCar][indexRoad] = false;
                 }
             });
         });

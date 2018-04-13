@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { Point } from "../edit-track/Geometry";
 import { Texture, TextureLoader, RepeatWrapping, Vector3, Mesh, PlaneBufferGeometry,
-         BackSide, Vector2, CircleBufferGeometry, MeshPhongMaterial } from "three";
+         BackSide, Vector2, CircleBufferGeometry, MeshPhongMaterial, Material, MeshBasicMaterial, DoubleSide } from "three";
 import { HALF, PI_OVER_2, ROAD_WIDTH } from "../../constants";
 
 const TEXTURE_TILE_REPETIONS: number = 200;
@@ -10,32 +10,33 @@ const SUPERPOSITION: number = 0.001;
 const ROAD_TEXTURE_PATH: string = "/assets/uniformRoad.jpg";
 @Injectable()
 export class RoadCreator {
-
     private points: Point[];
     private trackMeshes: Mesh[];
+    private checkpointMeshes: Mesh[];
     private superposition: number;
-    private roadTexture: Texture;
 
     public get Meshes(): Mesh[] {
         return this.trackMeshes;
     }
 
-    public get RoadTexture(): Texture {
-        return this.roadTexture;
+    public get CheckpointMeshes(): Mesh[] {
+        return this.checkpointMeshes;
     }
 
     public constructor() {
         this.points = new Array<Point>();
         this.trackMeshes = new Array<Mesh>();
+        this.checkpointMeshes = new Array<Mesh>();
         this.superposition = 0;
-        this.roadTexture = this.loadTexture(ROAD_TEXTURE_PATH);
     }
 
     public createTrack(points: Point[]): void {
         this.points = points;
         for (let i: number = 0; i < this.points.length - 1; ++i) {
-            this.createRoadSegment(i);
+            const trackDirection: Vector3 = this.calculateTrackDirection(i);
+            this.createRoadSegment(i, trackDirection);
             this.createIntersection(i);
+            this.createCheckpoint((i + 1) % (this.points.length - 1), trackDirection);
         }
     }
 
@@ -43,13 +44,12 @@ export class RoadCreator {
         return new TextureLoader().load(path);
     }
 
-    private createRoadSegment(index: number): void {
-        const trackDirection: Vector3 = new Vector3(this.points[(index + 1) % this.points.length].x -
-                                                    this.points[index].x,
-                                                    0,
-                                                    this.points[(index + 1) % this.points.length].y -
-                                                    this.points[index].y);
+    private calculateTrackDirection(i: number): Vector3 {
+        return new Vector3(this.points[(i + 1) % this.points.length].x - this.points[i].x, 0,
+                           this.points[(i + 1) % this.points.length].y - this.points[i].y);
+    }
 
+    private createRoadSegment(index: number, trackDirection: Vector3): void {
         const trackTexture: Texture = this.loadTexture(ROAD_TEXTURE_PATH);
         trackTexture.wrapS = RepeatWrapping;
         trackTexture.repeat.set(trackDirection.length() * TEXTURE_TILE_REPETIONS, 1);
@@ -85,8 +85,18 @@ export class RoadCreator {
         intersectionMesh.position.z = -(this.points[index].x) * WORLD_SIZE + WORLD_SIZE * HALF;
         intersectionMesh.rotation.x = PI_OVER_2;
         this.superpose(intersectionMesh);
-        intersectionMesh.name = "Intersection";
         this.trackMeshes.push(intersectionMesh);
+    }
+
+    private createCheckpoint(index: number, trackDirection: Vector3): void {
+        const checkpointMesh: Mesh = new Mesh(new PlaneBufferGeometry(1, ROAD_WIDTH),
+                                              new MeshBasicMaterial({ wireframe: true, opacity: 0, transparent: false, side: DoubleSide }));
+        checkpointMesh.position.x = -(this.points[index].y) * WORLD_SIZE + WORLD_SIZE * HALF + 10 * trackDirection.normalize().z;
+        checkpointMesh.position.z = -(this.points[index].x) * WORLD_SIZE + WORLD_SIZE * HALF + 10 * trackDirection.normalize().x;
+        checkpointMesh.rotation.x = PI_OVER_2;
+        checkpointMesh.rotation.z = (trackDirection.z === 0) ? PI_OVER_2 : Math.atan(trackDirection.x / trackDirection.z);
+        this.superpose(checkpointMesh);
+        this.checkpointMeshes.push(checkpointMesh);
     }
 
     private superpose(mesh: Mesh): void {
