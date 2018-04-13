@@ -43,14 +43,11 @@ export class CarInformation {
         this.checkpoints.push(checkpoint);
     }
 
-    public incrementLap(): void {
+    public completeALap(): void {
         if (this.isGoingForward) {
             if (!this.hasCrossedStartLineBackward) {
                 if (this.hasStartedAFirstLap) {
-                    this.lapTimes.push(new Date(this.CurrentLapTime));
-                    if (this.lap !== LAP_NUMBER ) {
-                        this.lap++;
-                    }
+                    this.incrementLap();
                 } else {
                     this.hasStartedAFirstLap = true;
                 }
@@ -59,6 +56,13 @@ export class CarInformation {
             }
         } else {
             this.hasCrossedStartLineBackward = true;
+        }
+    }
+
+    private incrementLap(): void {
+        this.lapTimes.push(new Date(this.CurrentLapTime));
+        if (this.lap !== LAP_NUMBER) {
+            this.lap++;
         }
     }
 
@@ -71,6 +75,7 @@ export class CarInformation {
     }
 
     public setNextCheckpoint( checkpoint: number ): void {
+        console.log(this.nextCheckpoint);
         this.nextCheckpoint = this.checkpoints[checkpoint];
         console.log("----------------------");
         console.log("PROCHAIN CHECKPOINT: " + checkpoint);
