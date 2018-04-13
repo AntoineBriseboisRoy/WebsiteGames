@@ -57,7 +57,7 @@ export class CollisionManager {
 
     public addCheckpoint(collisionable: Mesh): void {
         this.checkpoints.push(collisionable);
-        this.areCarsCollidingWithCheckpoints.forEach((array) => array.push(false));
+        this.areCarsCollidingWithCheckpoints.forEach((carArray) => carArray.push(false));
     }
 
     public setStartLine(collisionable: Mesh): void {
@@ -68,7 +68,7 @@ export class CollisionManager {
         this.verifyCarCollision();
         this.verifyWallCollision();
         this.verifyStartLineCollision();
-        this.verifyRoadIntersectionCollision();
+        this.verifyCheckpointCollision();
     }
 
     private verifyCarCollision(): void {
@@ -176,10 +176,10 @@ export class CollisionManager {
         }
     }
 
-    private verifyRoadIntersectionCollision(): void {
+    private verifyCheckpointCollision(): void {
         this.cars.forEach((car: Car, indexCar: number) => {
-            this.checkpoints.forEach((roadIntersection, indexRoad: number) => {
-                const intersections: Intersection[] = car.Raycasters[0].intersectObject(roadIntersection);
+            this.checkpoints.forEach((checkpoint, indexRoad: number) => {
+                const intersections: Intersection[] = car.Raycasters[0].intersectObject(checkpoint);
                 if (intersections.length > 0) {
                     if (!this.areCarsCollidingWithCheckpoints[indexCar][indexRoad]) {
                         const nextCheckpoint: number = (indexRoad + 1) % this.checkpoints.length;
