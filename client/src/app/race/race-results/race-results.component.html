@@ -1,0 +1,31 @@
+<div id="track-view-page" class="container-fluid">
+  <div class="container">
+    <div class="track-list row">
+      <h3>Best Times of</h3>
+      <ul *ngFor="let trackTime of TrackBestTimes; index as i">
+        <li class="board row">
+          <div>
+            <h5>{{i+1}}. {{trackTime.playerName}}: <span id="time-notation">{{getFormattedTime(trackTime.time)}}</span></h5>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div class="container">
+    <ul class="track-list">
+      <h3>Results</h3>
+      <div *ngFor="let carInformation of CarInformations">
+        <li class="board row">
+          <div class="general-info">
+            <h3>{{carInformation.PlayerName}}</h3>
+          </div>
+          <div class="time-info">
+          </div>
+        </li>
+      </div>
+    </ul>
+  </div>
+</div>
+<ng-template appModalDirective>
+  <app-modal></app-modal>
+</ng-template>

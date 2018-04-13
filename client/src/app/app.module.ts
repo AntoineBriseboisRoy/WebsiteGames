@@ -39,6 +39,8 @@ import { SoundManagerService } from "./race/sound-manager.service";
 import { SelectionHandlerService } from "./crossword/game-view/grid/selection-handler.service";
 import { TimerService } from "./race/timer-service/timer.service";
 import { InputManagerService } from "./race/input-manager-service/input-manager.service";
+import { RaceResultsComponent } from "./race/race-results/race-results.component";
+import { RenderService } from "./race/render-service/render.service";
 
 @NgModule({
     declarations: [
@@ -58,7 +60,8 @@ import { InputManagerService } from "./race/input-manager-service/input-manager.
         GameListComponent,
         ModalComponent,
         ModalDirective,
-        TrackPreviewComponent
+        TrackPreviewComponent,
+        RaceResultsComponent
     ],
     imports: [
         BrowserModule,
@@ -69,6 +72,7 @@ import { InputManagerService } from "./race/input-manager-service/input-manager.
     ],
     providers: [
         { provide: APP_BASE_HREF, useValue: "/" },
+        RenderService,
         MongoQueryService,
         GridService,
         GameRoomManagerService,
@@ -82,7 +86,7 @@ import { InputManagerService } from "./race/input-manager-service/input-manager.
         SoundManagerService,
         SelectionHandlerService,
         TimerService,
-        InputManagerService
+        InputManagerService,
     ],
     bootstrap: [AppComponent]
 })

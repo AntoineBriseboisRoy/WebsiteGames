@@ -26,7 +26,7 @@ const TEXTURE_TILE_REPETIONS: number = 200;
 const WORLD_SIZE: number = 1000;
 const FLOOR_SIZE: number = WORLD_SIZE / HALF;
 const PLAYER: number = 0;
-const NUMBER_OF_CARS: number = 4;
+const NUMBER_OF_CARS: number = 1;
 const BASE_RPM: number = 3500;
 
 @Injectable()
@@ -57,6 +57,10 @@ export class RenderService {
         return this.floorTextures;
     }
 
+    public get ActiveTrack(): ITrack {
+        return this.activeTrack;
+    }
+
     public constructor(private collisionManager: CollisionManager, private roadCreator: RoadCreator,
                        private startLineGeneratorService: StartLineGeneratorService, private soundManager: SoundManagerService) {
         this.cars = new Array<Car>();
@@ -74,6 +78,7 @@ export class RenderService {
             this.container = container;
         }
         this.activeTrack = track;
+
         this.cars.forEach((car) => car.Information.ActiveTrack = track);
         this.initFloorTextures();
 

@@ -14,6 +14,8 @@ export class CarInformation {
     private activeTrack: ITrack;
     public nextCheckpoint: number;
     private ranking: number;
+    private playerName: string;
+
     public constructor() {
         this.lap = 1;
         this.totalTime = new Date(0);
@@ -23,14 +25,21 @@ export class CarInformation {
         this.way = true;
         this.distanceToNextCheckpoint = 0;
         this.nextCheckpoint = 0;
-        this.ranking = 0;
+        this.ranking = 1;
         this.activeTrack = {} as ITrack;
+    }
+
+    public get PlayerName(): string {
+        return this.playerName;
     }
 
     public get Lap(): number {
         return this.lap;
     }
 
+    public get Ranking(): number {
+        return this.ranking;
+    }
     public get CurrentLapTime(): number {
         return this.totalTime.getTime() - this.lapTimes.reduce((a, b) => a + b.getTime(), 0);
     }
