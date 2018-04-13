@@ -8,6 +8,7 @@ const TEXTURE_TILE_REPETIONS: number = 200;
 const WORLD_SIZE: number = 1000;
 const SUPERPOSITION: number = 0.001;
 const ROAD_TEXTURE_PATH: string = "/assets/uniformRoad.jpg";
+const CHECKPOINT_OFFSET: number = 19;
 @Injectable()
 export class RoadCreator {
     private points: Point[];
@@ -89,14 +90,27 @@ export class RoadCreator {
     }
 
     private createCheckpoint(index: number, trackDirection: Vector3): void {
+        const angle: number = this.calculateAngle(index, trackDirection);
+
         const checkpointMesh: Mesh = new Mesh(new PlaneBufferGeometry(1, ROAD_WIDTH),
                                               new MeshBasicMaterial({ wireframe: true, opacity: 0, transparent: false, side: DoubleSide }));
-        checkpointMesh.position.x = -(this.points[index].y) * WORLD_SIZE + WORLD_SIZE * HALF + 10 * trackDirection.normalize().z;
-        checkpointMesh.position.z = -(this.points[index].x) * WORLD_SIZE + WORLD_SIZE * HALF + 10 * trackDirection.normalize().x;
+        checkpointMesh.position.x = -(this.points[index].y) * WORLD_SIZE + WORLD_SIZE * HALF + (1 / angle) * CHECKPOINT_OFFSET *
+                                    trackDirection.normalize().z;
+        checkpointMesh.position.z = -(this.points[index].x) * WORLD_SIZE + WORLD_SIZE * HALF + (1 / angle) * CHECKPOINT_OFFSET *
+                                    trackDirection.normalize().x;
         checkpointMesh.rotation.x = PI_OVER_2;
         checkpointMesh.rotation.z = (trackDirection.z === 0) ? PI_OVER_2 : Math.atan(trackDirection.x / trackDirection.z);
         this.superpose(checkpointMesh);
         this.checkpointMeshes.push(checkpointMesh);
+    }
+
+    private calculateAngle(index: number, trackDirection: Vector3): number {
+        const nextSegmentDirection: Vector3 = new Vector3(-(this.points[(index + 1) % (this.points.length - 1)].x - this.points[index].x),
+                                                          0,
+                                                          -(this.points[(index + 1) % (this.points.length - 1)].y - this.points[index].y));
+
+        return Math.acos(nextSegmentDirection.dot(trackDirection) /
+            (nextSegmentDirection.length() * trackDirection.length()));
     }
 
     private superpose(mesh: Mesh): void {
