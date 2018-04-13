@@ -62,9 +62,22 @@
     min-width: 50%;
     display: inline-block;
     margin: 1%;
-    text-align: left;
+    text-align: center;
+    vertical-align: top;
 }
 
+#track-name {
+    text-decoration: underline;
+}
+
+#best-time {
+    margin-bottom: 1px;
+}
+
+#position {
+    font-weight: bold;
+    color: rgb(255, 145, 0);
+}
 .time-info {
     min-width: 40%;
     display: inline-block;

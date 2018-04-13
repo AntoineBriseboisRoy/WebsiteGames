@@ -4,6 +4,7 @@ import { RenderService } from "../render-service/render.service";
 import { Car } from "../car/car";
 import { MongoQueryService } from "../../mongo-query.service";
 import { ITrack, BestTime } from "../../../../../common/interfaces/ITrack";
+import { DateFormatter } from "../date-formatter";
 
 const N_BEST_TIMES: number = 5;
 const PLAYER_INDEX: number = 0;
@@ -84,11 +85,7 @@ export class RaceResultsComponent implements OnInit {
     }
 
     public getFormattedTime(time: Date): string {
-        const PADDING: number = 2;
-
-        return time.getMinutes().toString().padStart(PADDING, "0") + ":" +
-               time.getSeconds().toString().padStart(PADDING, "0") + ":"  +
-               time.getMilliseconds().toString().padEnd(PADDING, "0").substr(0, PADDING);
+        return DateFormatter.DateToMinSecMillisec(time);
     }
 
     private editTrackBestTimesDB(): void {
