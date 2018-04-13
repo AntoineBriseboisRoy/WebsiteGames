@@ -1,7 +1,11 @@
 <div id="track-view-page" class="container-fluid">
+    <div class="row title-box" *ngIf="isInBestTimes">
+        <h1 id="main-title">Congratulations!</h1>
+        <h2>You finished first and classed yourself among the best!</h2>
+    </div>
   <div class="container">
     <div class="track-list row">
-      <h3>Best Times of</h3>
+      <h3>Best Times of {{renderService.ActiveTrack.name}}</h3>
       <ul *ngFor="let trackTime of TrackBestTimes; index as i">
         <li class="board row">
           <div>

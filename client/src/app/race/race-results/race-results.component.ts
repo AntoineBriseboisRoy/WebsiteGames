@@ -18,6 +18,7 @@ export class RaceResultsComponent implements OnInit {
     private carInformations: CarInformation[];
     private trackBestTimes: BestTime[];
 
+    private isInBestTimes: boolean = false;
     public get CarInformations(): CarInformation[] {
         return this.carInformations;
     }
@@ -68,8 +69,10 @@ export class RaceResultsComponent implements OnInit {
             if (this.trackBestTimes.length > N_BEST_TIMES) {
                 this.trackBestTimes.pop();
             }
+            this.inBestTimes();
         }
         this.renderService.ActiveTrack.bestTimes = this.TrackBestTimes;
+        this.renderService.ActiveTrack.nTimesPlayed++;
         this.editTrackBestTimesDB();
     }
 
@@ -78,7 +81,6 @@ export class RaceResultsComponent implements OnInit {
             .then((track: ITrack) => {
                 track.bestTimes.slice(0, N_BEST_TIMES).forEach((bestTime: BestTime) => {
                     this.trackBestTimes.push({playerName: bestTime.playerName, time: new Date(bestTime.time)}); });
-
                 this.verifyBestTime();
             })
             .catch((error: Error) => console.error(error));
@@ -93,5 +95,10 @@ export class RaceResultsComponent implements OnInit {
         .then()
         .catch((err: Error) => { console.error(err); }
         );
+    }
+
+    private inBestTimes(): void {
+        this.isInBestTimes = this.carInformations[PLAYER_INDEX].totalTime < this.trackBestTimes[this.trackBestTimes.length - 1].time
+                             || this.trackBestTimes.length < N_BEST_TIMES;
     }
 }

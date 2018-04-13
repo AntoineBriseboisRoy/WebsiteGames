@@ -236,9 +236,9 @@ export class CollisionManager {
                 this.cars[0].Information.totalTime.getSeconds().toString().padStart(PADDING, "0") + ":"  +
                 this.cars[0].Information.totalTime.getMilliseconds().toString().padEnd(PADDING, "0").substr(0, PADDING) +
                 "! You can choose to replay or go back to home page",
-                firstButton: "Race again!", secondButton: "See race results!", showPreview: true
+                firstButton: "See race results!", secondButton: "See race results again!", showPreview: true
             })
-            .then(() => window.location.reload(),
+            .then(() => this.router.navigate(["race/results"]),
                   () => this.router.navigate(["race/results"])
             );
         }
