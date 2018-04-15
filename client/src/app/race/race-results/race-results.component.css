@@ -64,6 +64,11 @@ h5 {
     background: white;
 }
 
+#name-best-time {
+    max-width: 20%;
+    display: inline-block;
+}
+
 .track-times {
     padding: 2%;
     margin-left: auto;
