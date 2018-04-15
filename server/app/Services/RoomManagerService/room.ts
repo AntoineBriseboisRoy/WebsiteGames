@@ -56,12 +56,20 @@ export class Room {
         });
         this.grid.setWordToFound(word);
         this.setScore(socketId);
+        this.deselectWord(socketId);
     }
 
-    public setWordSelected(word: IGridWord, socketId: string): void {
+    public selectWord(word: IGridWord, socketId: string): void {
         const foundPlayer: Player = this.players.find((player: Player) => player.socketID === socketId);
         if (foundPlayer) {
             foundPlayer.selectedWord = word;
+        }
+    }
+
+    private deselectWord(socketId: string): void {
+        const foundPlayer: Player = this.players.find((player: Player) => player.socketID === socketId);
+        if (foundPlayer) {
+            foundPlayer.selectedWord = undefined;
         }
     }
 
