@@ -97,6 +97,7 @@ export class SocketService {
             const room: Room = RoomManagerService.Instance.getRoom(socket.id);
             room.setWordFound(word, socket.id);
             this.socketIo.in(room.Name).emit("update-score", this.parseToIPlayers(room.Players));
+            this.socketIo.in(room.Name).emit("selected-word", room.Players.map((player: Player) => player.selectedWord));
             this.sendGrid(room);
         });
     }
@@ -105,7 +106,7 @@ export class SocketService {
         socket.on("selected-word", (data: string) => {
             const word: Array<IGridWord> = JSON.parse(data);
             const room: Room = RoomManagerService.Instance.getRoom(socket.id);
-            room.setWordSelected(word[0], socket.id);
+            room.selectWord(word[0], socket.id);
             this.socketIo.in(room.Name).emit("selected-word", room.Players.map((player: Player) => player.selectedWord));
         });
     }
