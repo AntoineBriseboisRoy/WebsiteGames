@@ -113,6 +113,11 @@ export class SocketService {
     private disconnectSocket(socket: SocketIO.Socket): void {
         socket.on("disconnect", () => {
             console.warn("Disconnect: ", socket.id);
+            const room: Room = RoomManagerService.Instance.getRoom(socket.id);
+            if (room) {
+                this.socketIo.in(room.Name).emit("disconnected-player", room.Players.map((player: Player) => player.selectedWord));
+                RoomManagerService.Instance.deleteRoom(socket.id);
+            }
         });
     }
 

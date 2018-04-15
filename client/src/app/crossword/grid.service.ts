@@ -28,6 +28,7 @@ export class GridService {
         this.gridWordsVertical = new Array();
         this.selectedWords = new Array();
         this.initSinglePlayerGame();
+        this.socketIO.DisconnectedPlayer.subscribe(() => this.alertDisconnectedPlayer());
     }
 
     private initSinglePlayerGame(): void {
@@ -101,6 +102,16 @@ export class GridService {
                 this.gridWordsVertical.push(word);
             }
         });
+    }
+
+    private alertDisconnectedPlayer(): void {
+        this.modalService.open({
+            title: "Sorry!", message: "The other player left the game. Would you like to play another game?",
+            firstButton: "Start a new game", secondButton: "Home", showPreview: false
+        })
+        .then(() => this.router.navigate(["crossword"]),
+              () => this.router.navigate([""])
+        );
     }
 
     private checkGameStatus(): void {

@@ -60,6 +60,9 @@ export class SocketIoService {
     public get WaitingRoom(): Observable<Array<INewGame>> {
         return this.createObservable<Array<INewGame>>("waiting-room");
     }
+    public get DisconnectedPlayer(): Observable<void> {
+        return this.createObservable<void>("disconnected-player");
+    }
     public get PlaySinglePlayer(): Observer<INewGame> {
         return this.createObserver<INewGame>("play-single-game", "Error: Cannot send completed word");
     }
