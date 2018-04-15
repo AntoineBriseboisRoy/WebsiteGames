@@ -39,3 +39,7 @@ export enum DifficultyView {
     Medium = "Medium",
     Hard = "Hard"
 }
+
+export const WINNER_TITLE: string = "Congratulations!";
+export const LOSER_TITLE: string = "Too bad, you lost...";
+export const TIE_TITLE: string = "It's a tie!";

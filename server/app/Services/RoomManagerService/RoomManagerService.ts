@@ -65,8 +65,8 @@ export class RoomManagerService {
         return waitingGames;
     }
 
-    public addPlayerToRoom(playerName: string, playerId: string, roomName: string): void {
-        const index: number = this.findRoom(roomName);
+    public addPlayerToRoom(playerName: string, playerId: string, otherPlayerID: string): void {
+        const index: number = this.findRoom(otherPlayerID);
         if (index !== ID_NOT_FOUND) {
             this.rooms[index].addPlayer(playerName, playerId);
         }

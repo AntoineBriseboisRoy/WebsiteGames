@@ -1,11 +1,12 @@
 import { SocketService } from "../SocketService/SocketService";
 import { RoomManagerService } from "./RoomManagerService";
 import { INewGame } from "../../../../common/interfaces/INewGame";
-import { RoomState } from "../../../../common/constants";
+import { RoomState, GameOutcome } from "../../../../common/constants";
 import { Room } from "./room";
 import { IGridWord } from "../../../../common/interfaces/IGridWord";
 import { Player } from "../../player";
 import { IPlayer } from "../../../../common/interfaces/IPlayer";
+import { IEndGame } from "../../../../common/interfaces/IEndGame";
 import { Observer } from "rxjs/Observer";
 import { Observable } from "rxjs/Observable";
 
@@ -64,7 +65,7 @@ export class MessageHandler {
     }
     private playAMultiplayerGame(game: INewGame): void {
         const room: Room = RoomManagerService.Instance.getRoom(game.userCreatorID);
-        RoomManagerService.Instance.addPlayerToRoom(game.userJoiner, this.socket.id, room.Name);
+        RoomManagerService.Instance.addPlayerToRoom(game.userJoiner, this.socket.id, game.userCreatorID);
         room.state = RoomState.Playing;
         this.socket.join(room.Name);
         this.socket.to(game.userCreatorID).emit("play-multiplayer-game", game);
@@ -77,12 +78,58 @@ export class MessageHandler {
         SocketService.Instance.socketIo.in(room.Name).emit("update-score", this.parseToIPlayers(room.Players));
         SocketService.Instance.socketIo.in(room.Name).emit("selected-word", room.Players.map((player: Player) => player.selectedWord));
         this.sendGrid(room);
+        this.checkEndGame(room);
+    }
+
+    // tslint:disable-next-line:max-func-body-length
+    private checkEndGame(room: Room): void {
+        if (room.isGridCompleted()) {
+            if (room.Players.length === 1) {
+                SocketService.Instance.socketIo.in(room.Name).emit("grid-completed",
+                                                                   { Winner: this.parseToIPlayer(room.Players[0]),
+                                                                     Outcome: GameOutcome.Win });
+            } else {
+                let endgame: IEndGame;
+                switch (this.getGameOutcome(room.Players[0], room.Players[1])) {
+                    case GameOutcome.Lose:
+                        endgame = { Winner: this.parseToIPlayer(room.Players[1]),
+                                    Loser: this.parseToIPlayer(room.Players[0]),
+                                    Outcome: GameOutcome.Win};
+                        SocketService.Instance.socketIo.to(room.Players[1].socketID).emit("grid-completed", endgame);
+                        endgame.Outcome = GameOutcome.Lose;
+                        SocketService.Instance.socketIo.to(room.Players[0].socketID).emit("grid-completed", endgame);
+                        break;
+                    case GameOutcome.Win:
+                        endgame = { Winner: this.parseToIPlayer(room.Players[0]),
+                                    Loser: this.parseToIPlayer(room.Players[1]),
+                                    Outcome: GameOutcome.Win};
+                        SocketService.Instance.socketIo.to(room.Players[0].socketID).emit("grid-completed", endgame);
+                        endgame.Outcome = GameOutcome.Lose;
+                        SocketService.Instance.socketIo.to(room.Players[1].socketID).emit("grid-completed", endgame);
+                        break;
+                    case GameOutcome.Tie:
+                        SocketService.Instance.socketIo.to(room.Players[1].socketID).emit("grid-completed", { Outcome: GameOutcome.Tie });
+                        break;
+                    default: break;
+                }
+            }
+        }
     }
 
     private selectAWord(word: Array<IGridWord>): void {
         const room: Room = RoomManagerService.Instance.getRoom(this.socket.id);
         room.selectWord(word[0], this.socket.id);
         SocketService.Instance.socketIo.in(room.Name).emit("selected-word", room.Players.map((player: Player) => player.selectedWord));
+    }
+    private getGameOutcome(playerReceiver: Player, otherPlayer: Player): GameOutcome {
+        const scoreDifference: number = playerReceiver.score - otherPlayer.score;
+        if (scoreDifference === 0) {
+            return GameOutcome.Tie;
+        } else if (scoreDifference < 0) {
+            return GameOutcome.Lose;
+        } else {
+            return GameOutcome.Win;
+        }
     }
 
     private disconnect(): void {
@@ -102,7 +149,7 @@ export class MessageHandler {
 
     private async createNewRoom(game: INewGame): Promise<void> {
         const player: Player = new Player(game.userCreator, this.socket.id);
-        const room: Room = new Room(player, game.difficulty, this.socket.id);
+        const room: Room = new Room(player, game.difficulty, game.userCreatorID);
         RoomManagerService.Instance.push(room);
         await room.initializeGrid();
     }
@@ -110,9 +157,13 @@ export class MessageHandler {
     private parseToIPlayers(players: Array<Player>): Array<IPlayer> {
         const iPlayers: Array<IPlayer> = new Array<IPlayer>();
         players.forEach((player: Player) => {
-            iPlayers.push({ username: player.username, score: player.score });
+            iPlayers.push(this.parseToIPlayer(player));
         });
 
         return iPlayers;
+    }
+
+    private parseToIPlayer(player: Player): IPlayer {
+        return { username: player.username, score: player.score };
     }
 }

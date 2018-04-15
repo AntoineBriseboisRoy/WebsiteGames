@@ -32,6 +32,16 @@ export class GridInPlay {
         return this.gridWords;
     }
 
+    public isGridCompleted(): boolean {
+        for (const word of this.gridWords) {
+            if (!word.isFound) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     public async generateGrid(): Promise<void> {
         await WordTransmitterService.Instance.generateNewGrid(this.difficulty);
         this.gridCells = WordTransmitterService.Instance.Cells.slice();

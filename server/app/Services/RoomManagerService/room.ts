@@ -4,6 +4,8 @@ import { RoomState, Difficulty } from "../../../../common/constants";
 import { IGridWord } from "../../../../common/interfaces/IGridWord";
 import { ICell, Finder } from "../../../../common/interfaces/ICell";
 
+const ROOM_NAME_OFFSET: string = "a";
+
 export class Room {
     public state: RoomState;
     private grid: GridInPlay;
@@ -15,7 +17,7 @@ export class Room {
         this.players.push(playerOne);
         this.state = RoomState.Waiting;
         this.grid = new GridInPlay(difficulty);
-        this.name = name;
+        this.name = name + ROOM_NAME_OFFSET;
     }
 
     public get Players(): Array<Player> {
@@ -41,7 +43,9 @@ export class Room {
     public async initializeGrid(): Promise<void> {
         await this.grid.generateGrid();
     }
-
+    public isGridCompleted(): boolean {
+        return this.grid.isGridCompleted();
+    }
     public addPlayer(username: string, socketID: string): void {
         this.players.push(new Player(username, socketID));
     }

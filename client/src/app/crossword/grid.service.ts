@@ -3,11 +3,13 @@ import { Observable } from "rxjs/Observable";
 import { SocketIoService } from "./socket-io.service";
 import { IGridWord } from "../../../../common/interfaces/IGridWord";
 import { ICell } from "../../../../common/interfaces/ICell";
-import { Orientation } from "../../../../common/constants";
+import { Orientation, GameOutcome } from "../../../../common/constants";
 import { Observer } from "rxjs/Observer";
 import { ModalService } from "../modal/modal.service";
 import { Router } from "@angular/router";
 import { GameManagerService } from "./game-manager.service";
+import { IEndGame } from "../../../../common/interfaces/IEndGame";
+import { WINNER_TITLE, LOSER_TITLE, TIE_TITLE } from "../constants";
 
 @Injectable()
 export class GridService {
@@ -29,6 +31,7 @@ export class GridService {
         this.selectedWords = new Array();
         this.initSinglePlayerGame();
         this.socketIO.DisconnectedPlayer.subscribe(() => this.alertDisconnectedPlayer());
+        this.socketIO.CompletedGrid.subscribe((endGame: IEndGame) => this.alertCompletedGrid(endGame));
     }
 
     private initSinglePlayerGame(): void {
@@ -69,7 +72,6 @@ export class GridService {
             this.setWordReferencesToCells(this.gridWords);
             this.gridWords.sort(GridService.compareIndex);
             this.splitHorizontalAndVerticalWords();
-            this.checkGameStatus();
             this.fetchSelectedWords();
             obs.next(null);
         });
@@ -109,31 +111,41 @@ export class GridService {
             title: "Sorry!", message: "The other player left the game. Would you like to play another game?",
             firstButton: "Start a new game", secondButton: "Home", showPreview: false
         })
-        .then(() => this.router.navigate(["crossword"]),
-              () => this.router.navigate([""])
-        );
+            .then(() => this.router.navigate(["crossword"]),
+                  () => this.router.navigate([""])
+            );
     }
 
-    private checkGameStatus(): void {
-        if (this.isGridCompleted() && !this.modalService.IsOpen) {
-            this.modalService.open({
-                title: "Congratulations!", message: "Your score is " + this.gameManagerService.players[0].score +
-                    "! You can choose to replay or go back to home page",
-                firstButton: "Restart", secondButton: "Home", showPreview: false
-            })
+    private alertCompletedGrid(endGame: IEndGame): void {
+        let message: string;
+        switch ( endGame.Outcome ) {
+            case GameOutcome.Win:
+                message = "Your score is " + endGame.Winner.score;
+                message += this.gameManagerService.isMultiplayer ? ". " + endGame.Loser.username +
+                           " has a score of " + endGame.Loser.score : "";
+                this.openEndGameModal(WINNER_TITLE, message);
+                break;
+            case GameOutcome.Lose:
+                message = "Your score is " + endGame.Loser.score + ". " +
+                          endGame.Winner.username + " has a score of " + endGame.Winner.score;
+                this.openEndGameModal(LOSER_TITLE, message);
+                break;
+            case GameOutcome.Tie:
+                message = "You both have a score of " + this.gameManagerService.players[0].score;
+                this.openEndGameModal(TIE_TITLE, message);
+                break;
+            default:
+                break;
+        }
+    }
+
+    private openEndGameModal(title: string, message: string): void {
+        this.modalService.open({
+            title: title, message: message + "! You can choose to replay or go back to home page",
+            firstButton: "Restart", secondButton: "Home", showPreview: false
+        })
             .then(() => window.location.reload(),
                   () => this.router.navigate([""])
             );
-        }
-    }
-
-    private isGridCompleted(): boolean {
-        for (const word of this.gridWords) {
-            if (!word.isFound) {
-                return false;
-            }
-        }
-
-        return true;
     }
 }

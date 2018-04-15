@@ -7,6 +7,7 @@ import { INewGame } from "../../../../common/interfaces/INewGame";
 import { ICell } from "../../../../common/interfaces/ICell";
 import { IGridWord } from "../../../../common/interfaces/IGridWord";
 import { IPlayer } from "../../../../common/interfaces/IPlayer";
+import { IEndGame } from "../../../../common/interfaces/IEndGame";
 
 @Injectable()
 export class SocketIoService {
@@ -62,6 +63,9 @@ export class SocketIoService {
     }
     public get DisconnectedPlayer(): Observable<void> {
         return this.createObservable<void>("disconnected-player");
+    }
+    public get CompletedGrid(): Observable<IEndGame> {
+        return this.createObservable<IEndGame>("grid-completed");
     }
     public get PlaySinglePlayer(): Observer<INewGame> {
         return this.createObserver<INewGame>("play-single-game", "Error: Cannot send completed word");
