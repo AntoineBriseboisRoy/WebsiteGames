@@ -60,9 +60,9 @@ export class RaceResultsComponent implements OnInit {
     private sortRaceTimes(): void {
         this.carInformations = this.carInformations.sort((a: CarInformation, b: CarInformation) => {
             if (a.totalTime < b.totalTime) {
-                return 1;
-            } else if (b.totalTime < a.totalTime) {
                 return -1;
+            } else if (b.totalTime < a.totalTime) {
+                return 1;
             } else {
                 return 1;
             }

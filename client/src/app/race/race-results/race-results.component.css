@@ -83,9 +83,15 @@ h5 {
     display: inline-block;
     margin: 1%;
     text-align: left;
+    vertical-align: top;
 }
 
-.time-info {
+.general-info h3 {
+    color: black;
+    text-align: left;
+}
+
+.laps-info {
     min-width: 40%;
     display: inline-block;
     margin: 1%;

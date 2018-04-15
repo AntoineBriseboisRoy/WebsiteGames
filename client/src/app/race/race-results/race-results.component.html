@@ -1,6 +1,6 @@
 <div id="track-view-page" class="container-fluid">
   <div class="row title-box">
-      <!-- *ngIf="isInBestTimes" -->
+    <!-- *ngIf="isInBestTimes" -->
     <h1 id="main-title">Congratulations!</h1>
     <h2>You finished first and classed yourself among the best!</h2>
     <div *ngIf="!HasSavedName;then showSaveName else showSaveMessage"></div>
@@ -29,13 +29,24 @@
   </div>
   <div class="container">
     <ul class="track-list">
-      <h3>Results</h3>
-      <div *ngFor="let carInformation of CarInformations">
+      <h3>Results for this race</h3>
+      <div *ngFor="let carInformation of CarInformations; index as i">
         <li class="board row">
           <div class="general-info">
-            <h3>{{carInformation.PlayerName}}</h3>
+            <h3>{{i+1}}. {{carInformation.PlayerName}}</h3>
+            <h4>Total time: {{getFormattedTime(carInformation.totalTime)}}</h4>
           </div>
-          <div class="time-info">
+          <div class="laps-info">
+            <h4>Individual Lap Times</h4>
+            <div *ngIf="carInformation.LapTimes.length > 0; then laps else noLap"></div>
+            <ng-template #noLap>
+              <h5>No laps yet.</h5>
+            </ng-template>
+            <ng-template #laps>
+              <div *ngFor="let lap of carInformation.LapTimes; index as j">
+                <h5>Lap {{j+1}}: {{getFormattedTime(lap)}}</h5>
+              </div>
+            </ng-template>
           </div>
         </li>
       </div>

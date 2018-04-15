@@ -167,10 +167,11 @@ export class CollisionManager {
     private startLineCollision(car: Car): void {
         if (car.Information.Lap === LAP_NUMBER) {
             car.Information.stopTimer();
+            car.Information.addFinalLap();
             if (car === this.cars[0]) {
                 this.endRace();
             }
-        } else {
+        } else if (car.Information.Lap < LAP_NUMBER) {
             car.Information.incrementLap();
         }
     }

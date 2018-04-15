@@ -27,6 +27,7 @@ export class CarInformation {
         this.nextCheckpoint = 0;
         this.ranking = 1;
         this.activeTrack = {} as ITrack;
+        this.playerName = "PLAYER";
     }
 
     public get PlayerName(): string {
@@ -39,6 +40,10 @@ export class CarInformation {
 
     public get Ranking(): number {
         return this.ranking;
+    }
+
+    public get LapTimes(): Array<Date> {
+        return this.lapTimes;
     }
     public get CurrentLapTime(): number {
         return this.totalTime.getTime() - this.lapTimes.reduce((a, b) => a + b.getTime(), 0);
@@ -57,6 +62,10 @@ export class CarInformation {
         } else {
             this.hasStartedAFirstLap = true;
         }
+    }
+
+    public addFinalLap(): void {
+        this.lapTimes.push(new Date(this.CurrentLapTime));
     }
 
     public startTimer(subscription: Subscription): void {
