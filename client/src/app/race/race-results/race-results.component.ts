@@ -101,4 +101,16 @@ export class RaceResultsComponent implements OnInit {
         this.isInBestTimes = this.carInformations[PLAYER_INDEX].totalTime < this.trackBestTimes[this.trackBestTimes.length - 1].time
                              || this.trackBestTimes.length < N_BEST_TIMES;
     }
+
+    public replay(): void {
+        window.open("/race/play?name=" + this.renderService.ActiveTrack.name, "_self");
+    }
+
+    public goBackHome(): void {
+        window.open("/", "_self");
+    }
+
+    public goBackTracks(): void {
+        window.open("/race/", "_self");
+    }
 }

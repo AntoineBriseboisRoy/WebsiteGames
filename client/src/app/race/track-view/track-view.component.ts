@@ -1,5 +1,5 @@
 import { Component, OnInit } from "@angular/core";
-import { ITrack, BestTime } from "../../../../../common/interfaces/ITrack";
+import { ITrack } from "../../../../../common/interfaces/ITrack";
 import { MongoQueryService } from "../../mongo-query.service";
 import { ModalService } from "../../modal/modal.service";
 import { ModalOptions } from "../../modal/interfaces";

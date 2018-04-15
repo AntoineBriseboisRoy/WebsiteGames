@@ -89,3 +89,11 @@ h5 {
 .play-btn {
     border-radius: 0.85em;
 }
+
+.button-zone {
+    text-align: center;
+}
+
+.centered-button {
+    display: inline-block;
+}
