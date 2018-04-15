@@ -5,7 +5,7 @@ import { TRACK_WIDTH, DEFAULT_LINE_WIDTH, FULL_CIRCLE_RAD,
          DEFAULT_CIRCLE_RADIUS, RIGHT_MOUSE_BUTTON } from "../../constants";
 import { Constraints } from "./constraints";
 import { MouseManagerService } from "./mouse-manager.service";
-import { ITrack, TrackType } from "../../../../../common/interfaces/ITrack";
+import { ITrack, TrackType, BestTime } from "../../../../../common/interfaces/ITrack";
 import { MongoQueryService } from "../../mongo-query.service";
 import { Params } from "@angular/router/src/shared";
 
@@ -33,7 +33,7 @@ export class EditTrackComponent implements OnInit {
                        name: "",
                        description: "",
                        nTimesPlayed: 0,
-                       bestTimes: new Array<string>("Never played"),
+                       bestTimes: new Array<BestTime>(),
                        type: TrackType.REGULAR,
                        points: new Array<Point>()} as ITrack;
      }

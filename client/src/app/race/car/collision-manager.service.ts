@@ -168,6 +168,7 @@ export class CollisionManager {
     private startLineCollision(car: Car): void {
         if (car.Information.Lap === LAP_NUMBER) {
             car.Information.stopTimer();
+            car.Information.addFinalLap();
             if (car === this.cars[0]) {
                 this.endRace();
             }
@@ -238,10 +239,10 @@ export class CollisionManager {
                 this.cars[0].Information.totalTime.getSeconds().toString().padStart(PADDING, "0") + ":"  +
                 this.cars[0].Information.totalTime.getMilliseconds().toString().padEnd(PADDING, "0").substr(0, PADDING) +
                 "! You can choose to replay or go back to home page",
-                firstButton: "Race again!", secondButton: "Home", showPreview: true
+                firstButton: "See race results!", secondButton: "See race results again!", showPreview: true
             })
-            .then(() => window.location.reload(),
-                  () => this.router.navigate([""])
+            .then(() => this.router.navigate(["race/results"]),
+                  () => this.router.navigate(["race/results"])
             );
         }
     }

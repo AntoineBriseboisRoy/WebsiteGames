@@ -9,16 +9,16 @@
                 <div *ngFor="let track of tracks">
                     <li class="track row">
                         <div class="general-info">
-                            <h3>{{track.name}}</h3>
-                            <p>{{track.description}}
+                            <h2 id="track-name">{{track.name}}</h2>
+                            <h5>{{track.description}}
                                 <br> Type: {{track.type}}
-                                <br> Times played: {{track.nTimesPlayed}}</p>
+                                <br> Times played: {{track.nTimesPlayed}}</h5>
                         </div>
                         <div class="time-info">
                             <h4>Best Times</h4>
                             <ul class="track-times">
-                                <li *ngFor="let time of track.bestTimes">
-                                    {{time}}
+                                <li *ngFor="let bestTime of track.bestTimes; index as i">
+                                    <p id="best-time"><span id="position">{{i+1}}. </span> {{bestTime.playerName}}: {{getFormattedTime(bestTime.time)}}</p>
                                 </li>
                             </ul>
                         </div>
