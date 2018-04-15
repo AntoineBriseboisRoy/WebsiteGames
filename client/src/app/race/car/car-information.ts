@@ -13,6 +13,7 @@ export class CarInformation {
 
     // For AI :
     private checkpoints: Array<[Vector2, Vector2]>;
+    private intersectionPositions: Array<Vector2>;
     public nextCheckpoint: number;
     private precedentDistanceToNextCheckpoint: number;
     private distanceToNextCheckpoint: number;
@@ -26,6 +27,7 @@ export class CarInformation {
         this.hasCrossedStartLineBackward = false;
         this.subscription = new Subscription();
         this.checkpoints = new Array<[Vector2, Vector2]>();
+        this.intersectionPositions = new Array<Vector2>();
         this.precedentDistanceToNextCheckpoint = 0;
         this.distanceToNextCheckpoint = 0;
         this.nextCheckpoint = 1;
@@ -45,6 +47,14 @@ export class CarInformation {
 
     public get Checkpoints(): Array<[Vector2, Vector2]> {
         return this.checkpoints;
+    }
+
+    public get IntersectionPositions(): Array<Vector2> {
+        return this.intersectionPositions;
+    }
+
+    public addIntersectionPosition ( intersection: Vector2 ): void {
+        this.intersectionPositions.push(intersection);
     }
 
     public addCheckpoint( checkpoint: [Vector2, Vector2]): void {
@@ -87,7 +97,7 @@ export class CarInformation {
                               (checkpoint + 1) % this.checkpoints.length : checkpoint;
 
         console.log("----------------------");
-        console.log("PROCHAIN CHECKPOINT: " + "\nLeft: " + this.checkpoints[this.nextCheckpoint][0].toArray() +
+        console.log("PROCHAIN CHECKPOINT: " + this.nextCheckpoint +  "\nLeft: " + this.checkpoints[this.nextCheckpoint][0].toArray() +
                     "\nRight: " + this.checkpoints[this.nextCheckpoint][1].toArray() + "\nDirection: " + this.isGoingForward);
         console.log("----------------------");
     }

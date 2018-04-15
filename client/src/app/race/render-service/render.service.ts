@@ -169,6 +169,12 @@ export class RenderService {
         this.roadCreator.Meshes.forEach((mesh: Mesh) => {
             this.scene.add(mesh);
             this.collisionManager.addRoadSegment(mesh);
+            if ( mesh.name === "Intersection" ) {
+                for (const car of this.cars) {
+                    car.Information.addIntersectionPosition(new Vector2(mesh.position.x, mesh.position.z));
+                    console.log("Mesh Position: " + mesh.position.toArray());
+                }
+            }
         });
     }
 
@@ -176,7 +182,11 @@ export class RenderService {
         this.roadCreator.CheckpointMeshes.forEach((mesh, index) => {
             this.collisionManager.addCheckpoint(mesh);
             this.cars.forEach((car: Car) => {
-                car.Information.addCheckpoint(this.roadCreator.CheckpointsSegments[index]);
+                if (index - 1 < 0) {
+                    car.Information.addCheckpoint(this.roadCreator.CheckpointsSegments[this.roadCreator.CheckpointMeshes.length - 1]);
+                } else {
+                    car.Information.addCheckpoint(this.roadCreator.CheckpointsSegments[index - 1]);
+                }
             });
             this.scene.add(mesh);
         });

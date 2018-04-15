@@ -80,7 +80,6 @@ export class StartLineGeneratorService {
             car.getPosition().z = startLineBanner.position.z + (CAR_OFFSET_FROM_STARTLINE * WORLD_SIZE) * this.firstRoad.x /
                 this.firstRoad.length();
             car.getRotation().y = this.firstRoad.x > 0 ? startLineBanner.rotation.y : startLineBanner.rotation.y + Math.PI;
-            car.Information.setNextCheckpoint(0);
         }
     }
 

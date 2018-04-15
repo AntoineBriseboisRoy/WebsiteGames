@@ -182,7 +182,7 @@ export class CollisionManager {
                 const intersections: Intersection[] = car.Raycasters[0].intersectObject(checkpoint);
                 if (intersections.length > 0) {
                     if (!this.areCarsCollidingWithCheckpoints[indexCar][indexCheckpoint]) {
-                        car.Information.setNextCheckpoint(indexCheckpoint);
+                        car.Information.setNextCheckpoint((indexCheckpoint + 1) % this.checkpoints.length);
                         this.areCarsCollidingWithCheckpoints[indexCar][indexCheckpoint] = true;
                     }
                 } else {
