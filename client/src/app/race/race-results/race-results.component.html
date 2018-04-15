@@ -1,15 +1,26 @@
 <div id="track-view-page" class="container-fluid">
-    <div class="row title-box" *ngIf="isInBestTimes">
-        <h1 id="main-title">Congratulations!</h1>
-        <h2>You finished first and classed yourself among the best!</h2>
-    </div>
+  <div class="row title-box" *ngIf="isInBestTimes">
+    <h1 id="main-title">Congratulations!</h1>
+    <h2>You finished first and classed yourself among the best!</h2>
+    <div *ngIf="!HasSavedName;then showSaveName else showSaveMessage"></div>
+    <ng-template #showSaveName>
+      <input class="form-control mr-sm-2" type="name" placeholder="Your Name" aria-label="Name" [(ngModel)]="renderService.ActiveTrack.bestTimes[BestTimeRanking].playerName"
+        name="NAME" #ctrl="ngModel" required>
+      <button (click)="editTrackBestTimesDB()" type="submit" class="btn btn-primary">Save</button>
+    </ng-template>
+    <ng-template #showSaveMessage>
+      <h4>Your name has been saved to the leaderboard.</h4>
+    </ng-template>
+  </div>
   <div class="container">
     <div class="track-list row">
       <h3>Best Times of {{renderService.ActiveTrack.name}}</h3>
       <ul *ngFor="let trackTime of TrackBestTimes; index as i">
         <li class="board row">
           <div>
-            <h5>{{i+1}}. {{trackTime.playerName}}: <span id="time-notation">{{getFormattedTime(trackTime.time)}}</span></h5>
+            <h5>{{i+1}}. {{trackTime.playerName}}:
+              <span id="time-notation">{{getFormattedTime(trackTime.time)}}</span>
+            </h5>
           </div>
         </li>
       </ul>
