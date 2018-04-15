@@ -2,6 +2,7 @@
     font-family: 'Times New Roman', Times, serif;
     font-size: 125%;
     height: 28vh;
+    overflow: scroll;
 }
 
 .word-definition:hover {
@@ -10,6 +11,16 @@
 
 .word-definition-found {
     text-decoration: line-through;
+}
+
+.is-found-p1 {
+    -webkit-text-decoration-color: rgb(3, 109, 167);
+    text-decoration-color: rgb(3, 109, 167);
+}
+
+.is-found-p2 {
+    -webkit-text-decoration-color: rgb(241, 118, 48);
+    text-decoration-color: rgb(241, 118, 48);
 }
 
 .title-layout-name {

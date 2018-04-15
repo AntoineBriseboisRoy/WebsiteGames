@@ -172,7 +172,7 @@ export class CollisionManager {
                 this.endRace();
             }
         } else {
-            car.Information.incrementLap();
+            car.Information.completeALap();
         }
     }
 
