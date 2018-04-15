@@ -14,6 +14,7 @@ export class RoadCreator {
     private points: Point[];
     private trackMeshes: Mesh[];
     private checkpointMeshes: Mesh[];
+    private checkpointsSegments: Array<[Vector2, Vector2]>;
     private superposition: number;
 
     public get Meshes(): Mesh[] {
@@ -24,10 +25,15 @@ export class RoadCreator {
         return this.checkpointMeshes;
     }
 
+    public get CheckpointsSegments(): Array<[Vector2, Vector2]> {
+        return this.checkpointsSegments;
+    }
+
     public constructor() {
         this.points = new Array<Point>();
         this.trackMeshes = new Array<Mesh>();
         this.checkpointMeshes = new Array<Mesh>();
+        this.checkpointsSegments = new Array<[Vector2, Vector2]>();
         this.superposition = 0;
     }
 
@@ -102,6 +108,18 @@ export class RoadCreator {
         checkpointMesh.rotation.z = (trackDirection.z === 0) ? PI_OVER_2 : Math.atan(trackDirection.x / trackDirection.z);
         this.superpose(checkpointMesh);
         this.checkpointMeshes.push(checkpointMesh);
+        this.createCheckpointSegment(checkpointMesh, trackDirection);
+    }
+
+    private createCheckpointSegment(checkpointMesh: Mesh, trackDirection: Vector3): void {
+        const perpendicularToTrackDirection: Vector2 = new Vector2(-trackDirection.x, trackDirection.z);
+        const leftPoint: Vector2 = new Vector2(checkpointMesh.position.x + ROAD_WIDTH * HALF * perpendicularToTrackDirection.normalize().x,
+                                               checkpointMesh.position.z + ROAD_WIDTH * HALF * perpendicularToTrackDirection.normalize().y
+                                              );
+        const rightPoint: Vector2 = new Vector2(checkpointMesh.position.x - ROAD_WIDTH * HALF * perpendicularToTrackDirection.normalize().x,
+                                                checkpointMesh.position.z - ROAD_WIDTH * HALF * perpendicularToTrackDirection.normalize().y
+                                               );
+        this.checkpointsSegments.push([leftPoint, rightPoint]);
     }
 
     private calculateAngle(index: number, trackDirection: Vector3): number {
