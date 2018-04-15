@@ -4,31 +4,31 @@ import { Vector2 } from "three";
 
 export class CarInformation {
     private lap: number;
+    private lapTimes: Array<Date>;
     public totalTime: Date;
     private isGoingForward: boolean;
     private hasStartedAFirstLap: boolean;
     private hasCrossedStartLineBackward: boolean;
-    private lapTimes: Array<Date>;
     private subscription: Subscription;
 
     // For AI :
     private checkpoints: Array<[Vector2, Vector2]>;
-    public nextCheckpoint: [Vector2, Vector2];
+    public nextCheckpoint: number;
     private precedentDistanceToNextCheckpoint: number;
     private distanceToNextCheckpoint: number;
     // -----
     public constructor() {
         this.lap = 1;
+        this.lapTimes = new Array<Date>();
         this.totalTime = new Date(0);
+        this.isGoingForward = true;
         this.hasStartedAFirstLap = false;
         this.hasCrossedStartLineBackward = false;
-        this.lapTimes = new Array<Date>();
         this.subscription = new Subscription();
-        this.isGoingForward = true;
         this.checkpoints = new Array<[Vector2, Vector2]>();
         this.precedentDistanceToNextCheckpoint = 0;
         this.distanceToNextCheckpoint = 0;
-        this.nextCheckpoint = [new Vector2(), new Vector2()];
+        this.nextCheckpoint = 1;
     }
 
     public get Lap(): number {
@@ -39,9 +39,16 @@ export class CarInformation {
         return this.totalTime.getTime() - this.lapTimes.reduce((a, b) => a + b.getTime(), 0);
     }
 
-    // TODO: Add checkpoint mesh position for AI
-    public addCheckpoint( checkpointPosition: Vector2, checkpointSegment: [Vector2, Vector2]): void {
-        this.checkpoints.push(checkpointSegment);
+    public get DistanceToNextCheckpoint(): number {
+        return this.distanceToNextCheckpoint;
+    }
+
+    public get Checkpoints(): Array<[Vector2, Vector2]> {
+        return this.checkpoints;
+    }
+
+    public addCheckpoint( checkpoint: [Vector2, Vector2]): void {
+        this.checkpoints.push(checkpoint);
     }
 
     public completeALap(): void {
@@ -76,10 +83,12 @@ export class CarInformation {
     }
 
     public setNextCheckpoint( checkpoint: number ): void {
-        console.log(this.nextCheckpoint);
-        this.nextCheckpoint = this.checkpoints[checkpoint];
+        this.nextCheckpoint = this.nextCheckpoint === checkpoint ?
+                              (checkpoint + 1) % this.checkpoints.length : checkpoint;
+
         console.log("----------------------");
-        console.log("PROCHAIN CHECKPOINT: " + checkpoint);
+        console.log("PROCHAIN CHECKPOINT: " + "\nLeft: " + this.checkpoints[this.nextCheckpoint][0].toArray() +
+                    "\nRight: " + this.checkpoints[this.nextCheckpoint][1].toArray() + "\nDirection: " + this.isGoingForward);
         console.log("----------------------");
     }
 
@@ -89,17 +98,17 @@ export class CarInformation {
     }
 
     private shortestDistanceFromCarToCheckpoint(carMeshPosition: Vector2): number {
-        return Math.abs((this.nextCheckpoint[1].y - this.nextCheckpoint[0].y) * carMeshPosition.x -
-                        (this.nextCheckpoint[1].x - this.nextCheckpoint[0].x) * carMeshPosition.y +
-                        this.nextCheckpoint[1].x * this.nextCheckpoint[0].y - this.nextCheckpoint[1].y * this.nextCheckpoint[0].x) /
-                        new Vector2().subVectors(this.nextCheckpoint[1], this.nextCheckpoint[0]).length();
+        return Math.abs((this.checkpoints[this.nextCheckpoint][1].y - this.checkpoints[this.nextCheckpoint][0].y) * carMeshPosition.x -
+                        (this.checkpoints[this.nextCheckpoint][1].x - this.checkpoints[this.nextCheckpoint][0].x) * carMeshPosition.y +
+                        this.checkpoints[this.nextCheckpoint][1].x * this.checkpoints[this.nextCheckpoint][0].y -
+                        this.checkpoints[this.nextCheckpoint][1].y * this.checkpoints[this.nextCheckpoint][0].x) /
+                        new Vector2().subVectors(this.checkpoints[this.nextCheckpoint][1],
+                                                 this.checkpoints[this.nextCheckpoint][0]).length();
     }
 
     public updateDistanceToNextCheckpoint(carMeshPosition: Vector2): void {
         this.distanceToNextCheckpoint = this.shortestDistanceFromCarToCheckpoint(carMeshPosition);
         this.verifyWay();
         this.precedentDistanceToNextCheckpoint = this.distanceToNextCheckpoint;
-        console.log(this.distanceToNextCheckpoint);
-        console.log(this.isGoingForward);
     }
 }

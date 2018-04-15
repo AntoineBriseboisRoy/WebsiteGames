@@ -178,16 +178,15 @@ export class CollisionManager {
 
     private verifyCheckpointCollision(): void {
         this.cars.forEach((car: Car, indexCar: number) => {
-            this.checkpoints.forEach((checkpoint, indexRoad: number) => {
+            this.checkpoints.forEach((checkpoint, indexCheckpoint: number) => {
                 const intersections: Intersection[] = car.Raycasters[0].intersectObject(checkpoint);
                 if (intersections.length > 0) {
-                    if (!this.areCarsCollidingWithCheckpoints[indexCar][indexRoad]) {
-                        const nextCheckpoint: number = (indexRoad + 1) % this.checkpoints.length;
-                        car.Information.setNextCheckpoint(nextCheckpoint);
-                        this.areCarsCollidingWithCheckpoints[indexCar][indexRoad] = true;
+                    if (!this.areCarsCollidingWithCheckpoints[indexCar][indexCheckpoint]) {
+                        car.Information.setNextCheckpoint(indexCheckpoint);
+                        this.areCarsCollidingWithCheckpoints[indexCar][indexCheckpoint] = true;
                     }
                 } else {
-                    this.areCarsCollidingWithCheckpoints[indexCar][indexRoad] = false;
+                    this.areCarsCollidingWithCheckpoints[indexCar][indexCheckpoint] = false;
                 }
             });
         });

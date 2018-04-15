@@ -14,6 +14,7 @@ import { RoadCreator } from "./road-creator.service";
 import { StartLineGeneratorService } from "../start-line-generator.service";
 import { DayPeriodContext } from "../dayToggle-context";
 import { SoundManagerService } from "../sound-manager.service";
+import { CarAI } from "../car/car-ai";
 
 export const FAR_CLIPPING_PLANE: number = 1000;
 export const NEAR_CLIPPING_PLANE: number = 1;
@@ -60,8 +61,9 @@ export class RenderService {
     public constructor(private collisionManager: CollisionManager, private roadCreator: RoadCreator,
                        private startLineGeneratorService: StartLineGeneratorService, private soundManager: SoundManagerService) {
         this.cars = new Array<Car>();
-        for (let i: number = 0; i < NUMBER_OF_CARS; i++) {
-            this.cars.push(new Car());
+        this.cars.push(new CarAI());
+        for (let i: number = 1; i < NUMBER_OF_CARS; i++) {
+            this.cars.push(new CarAI());
         }
         this.floorTextures = new Map<TrackType, Texture>();
         this.scene = new Scene();
@@ -174,8 +176,7 @@ export class RenderService {
         this.roadCreator.CheckpointMeshes.forEach((mesh, index) => {
             this.collisionManager.addCheckpoint(mesh);
             this.cars.forEach((car: Car) => {
-                car.Information.addCheckpoint(new Vector2(mesh.getWorldPosition().x, mesh.getWorldPosition().z),
-                                              this.roadCreator.CheckpointsSegments[index]);
+                car.Information.addCheckpoint(this.roadCreator.CheckpointsSegments[index]);
             });
             this.scene.add(mesh);
         });

@@ -399,5 +399,4 @@ export class Car extends Object3D {
         // tslint:disable-next-line:no-magic-numbers
         return this.speed.normalize().dot(this.direction) > 0.05;
     }
-
 }
