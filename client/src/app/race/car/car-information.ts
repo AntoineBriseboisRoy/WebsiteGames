@@ -108,12 +108,14 @@ export class CarInformation {
     }
 
     private shortestDistanceFromCarToCheckpoint(carMeshPosition: Vector2): number {
-        return Math.abs((this.checkpoints[this.nextCheckpoint][1].y - this.checkpoints[this.nextCheckpoint][0].y) * carMeshPosition.x -
-                        (this.checkpoints[this.nextCheckpoint][1].x - this.checkpoints[this.nextCheckpoint][0].x) * carMeshPosition.y +
+        const checkpointVector: Vector2 = new Vector2().subVectors(this.checkpoints[this.nextCheckpoint][1],
+                                                                   this.checkpoints[this.nextCheckpoint][0]);
+
+        return Math.abs((checkpointVector.y) * carMeshPosition.x -
+                        (checkpointVector.x) * carMeshPosition.y +
                         this.checkpoints[this.nextCheckpoint][1].x * this.checkpoints[this.nextCheckpoint][0].y -
                         this.checkpoints[this.nextCheckpoint][1].y * this.checkpoints[this.nextCheckpoint][0].x) /
-                        new Vector2().subVectors(this.checkpoints[this.nextCheckpoint][1],
-                                                 this.checkpoints[this.nextCheckpoint][0]).length();
+                        checkpointVector.length();
     }
 
     public updateDistanceToNextCheckpoint(carMeshPosition: Vector2): void {
