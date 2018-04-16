@@ -5,7 +5,7 @@ import { Point } from "./race/edit-track/Geometry";
 import { TrackType, ITrack, BestTime } from "../../../common/interfaces/ITrack";
 import { HttpClient, HttpHandler } from "@angular/common/http";
 
-fdescribe("MongoQueryService", () => {
+describe("MongoQueryService", () => {
     beforeEach(() => {
         TestBed.configureTestingModule({
             providers: [MongoQueryService, HttpClient, HttpHandler]

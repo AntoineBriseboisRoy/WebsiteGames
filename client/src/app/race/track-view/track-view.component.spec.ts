@@ -3,7 +3,7 @@ import { async, ComponentFixture, TestBed } from "@angular/core/testing";
 import { TrackViewComponent } from "./track-view.component";
 import { UrlSegment } from "@angular/router/src/url_tree";
 
-fdescribe("TrackViewComponent", () => {
+describe("TrackViewComponent", () => {
   let component: TrackViewComponent;
   let fixture: ComponentFixture<TrackViewComponent>;
 
