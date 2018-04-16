@@ -41,6 +41,7 @@ import { TimerService } from "./race/timer-service/timer.service";
 import { InputManagerService } from "./race/input-manager-service/input-manager.service";
 import { WaitingScreenComponent } from "./crossword/waiting-screen/waiting-screen.component";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
+import { EndGameService } from "./crossword/end-game.service";
 
 @NgModule({
     declarations: [
@@ -86,7 +87,8 @@ import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
         SoundManagerService,
         SelectionHandlerService,
         TimerService,
-        InputManagerService
+        InputManagerService,
+        EndGameService
     ],
     bootstrap: [AppComponent]
 })
