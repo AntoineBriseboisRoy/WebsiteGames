@@ -61,7 +61,7 @@ export class RenderService {
     public constructor(private collisionManager: CollisionManager, private roadCreator: RoadCreator,
                        private startLineGeneratorService: StartLineGeneratorService, private soundManager: SoundManagerService) {
         this.cars = new Array<Car>();
-        this.cars.push(new Car());
+        this.cars.push(new CarAI());
         for (let i: number = 1; i < NUMBER_OF_CARS; i++) {
             this.cars.push(new CarAI());
         }
@@ -81,6 +81,12 @@ export class RenderService {
         await this.createScene();
         this.initStats();
         this.startRenderingLoop();
+    }
+
+    public initializeAI(): void {
+        for (const car of this.cars) {
+            (car as CarAI).isInitialized = true;
+        }
     }
 
     public onResize(): void {

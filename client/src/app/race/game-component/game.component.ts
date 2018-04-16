@@ -95,6 +95,7 @@ export class GameComponent implements AfterViewInit {
             } else if (countdown > -1) {
                 this.inputManagerService.init(this.player, this.CameraContext, this.DayPeriodContext);
                 this.timer.initialize();
+                this.renderService.initializeAI();
                 this.startTimers();
                 this.startingText = "Start!";
             }
