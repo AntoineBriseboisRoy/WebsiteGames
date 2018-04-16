@@ -81,7 +81,6 @@ export class MessageHandler {
         this.checkEndGame(room);
     }
 
-    // tslint:disable-next-line:max-func-body-length
     private checkEndGame(room: Room): void {
         if (room.isGridCompleted()) {
             if (room.Players.length === 1) {
@@ -89,31 +88,36 @@ export class MessageHandler {
                                                                    { Winner: this.parseToIPlayer(room.Players[0]),
                                                                      Outcome: GameOutcome.Win });
             } else {
-                let endgame: IEndGame;
-                switch (this.getGameOutcome(room.Players[0], room.Players[1])) {
-                    case GameOutcome.Lose:
-                        endgame = { Winner: this.parseToIPlayer(room.Players[1]),
-                                    Loser: this.parseToIPlayer(room.Players[0]),
-                                    Outcome: GameOutcome.Win};
-                        SocketService.Instance.socketIo.to(room.Players[1].socketID).emit("grid-completed", endgame);
-                        endgame.Outcome = GameOutcome.Lose;
-                        SocketService.Instance.socketIo.to(room.Players[0].socketID).emit("grid-completed", endgame);
-                        break;
-                    case GameOutcome.Win:
-                        endgame = { Winner: this.parseToIPlayer(room.Players[0]),
-                                    Loser: this.parseToIPlayer(room.Players[1]),
-                                    Outcome: GameOutcome.Win};
-                        SocketService.Instance.socketIo.to(room.Players[0].socketID).emit("grid-completed", endgame);
-                        endgame.Outcome = GameOutcome.Lose;
-                        SocketService.Instance.socketIo.to(room.Players[1].socketID).emit("grid-completed", endgame);
-                        break;
-                    case GameOutcome.Tie:
-                        SocketService.Instance.socketIo.to(room.Players[1].socketID).emit("grid-completed", { Outcome: GameOutcome.Tie });
-                        break;
-                    default: break;
-                }
+                this.handleMultiplayerEndGame(room);
             }
         }
+    }
+
+    private handleMultiplayerEndGame(room: Room): void {
+        switch (this.getGameOutcome(room.Players[0], room.Players[1])) {
+            case GameOutcome.Lose:
+                this.emitEndGame(room, 1);
+                break;
+            case GameOutcome.Win:
+                this.emitEndGame(room, 0);
+                break;
+            case GameOutcome.Tie:
+                SocketService.Instance.socketIo.to(room.Name).emit("grid-completed", { Outcome: GameOutcome.Tie });
+                break;
+            default: break;
+        }
+    }
+
+    private emitEndGame(room: Room, indexWinner: number): void {
+        const indexLoser: number = indexWinner === 0 ? 1 : 0;
+        const endgame: IEndGame = {
+            Winner: this.parseToIPlayer(room.Players[indexWinner]),
+            Loser: this.parseToIPlayer(room.Players[indexLoser]),
+            Outcome: GameOutcome.Win
+        };
+        SocketService.Instance.socketIo.to(room.Players[indexWinner].socketID).emit("grid-completed", endgame);
+        endgame.Outcome = GameOutcome.Lose;
+        SocketService.Instance.socketIo.to(room.Players[indexLoser].socketID).emit("grid-completed", endgame);
     }
 
     private selectAWord(word: Array<IGridWord>): void {
