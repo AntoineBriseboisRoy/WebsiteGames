@@ -7,27 +7,18 @@ import { STANDARD_SIDE_SIZE, BLACKSQUARE_CHARACTER } from "../../Grid/Constants"
 import { Difficulty } from "../../../../common/constants";
 
 export class WordTransmitterService {
-    private static instance: WordTransmitterService;
     private indexPosition: number[];
     private cells: Array<ICell>;
     private gridWords: Array<IGridWord>;
     private gridContent: string;
     private words: Array<IWord>;
 
-    private constructor() {
+    public constructor() {
         this.indexPosition = new Array();
         this.cells = new Array();
         this.gridWords = new Array<IGridWord>(0);
         this.words = new Array<IWord>();
         this.gridContent = undefined;
-    }
-
-    public static get Instance(): WordTransmitterService {
-        if (!this.instance) {
-            this.instance = new WordTransmitterService();
-        }
-
-        return this.instance;
     }
 
     public async generateNewGrid(difficulty: Difficulty): Promise<void> {

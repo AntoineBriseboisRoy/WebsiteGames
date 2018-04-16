@@ -43,9 +43,10 @@ export class GridInPlay {
     }
 
     public async generateGrid(): Promise<void> {
-        await WordTransmitterService.Instance.generateNewGrid(this.difficulty);
-        this.gridCells = WordTransmitterService.Instance.Cells.slice();
-        this.gridWords = WordTransmitterService.Instance.GridWords.slice();
+        const wordTransmitter: WordTransmitterService = new WordTransmitterService();
+        await wordTransmitter.generateNewGrid(this.difficulty);
+        this.gridCells = wordTransmitter.Cells.slice();
+        this.gridWords = wordTransmitter.GridWords.slice();
     }
 
     public clear(): void {
