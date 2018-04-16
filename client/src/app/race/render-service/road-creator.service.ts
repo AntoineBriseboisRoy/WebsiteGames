@@ -99,7 +99,7 @@ export class RoadCreator {
     private createCheckpoint(index: number, trackDirection: Vector3): void {
         const angle: number = this.calculateAngle(index, trackDirection);
 
-        const checkpointMesh: Mesh = new Mesh(new PlaneBufferGeometry(1, ROAD_WIDTH),
+        const checkpointMesh: Mesh = new Mesh(new PlaneBufferGeometry(2, ROAD_WIDTH),
                                               new MeshBasicMaterial({ wireframe: true, opacity: 0, transparent: false, side: DoubleSide }));
         checkpointMesh.position.x = -(this.points[index].y) * WORLD_SIZE + WORLD_SIZE * HALF + (1 / angle) * CHECKPOINT_OFFSET *
                                     trackDirection.normalize().z;

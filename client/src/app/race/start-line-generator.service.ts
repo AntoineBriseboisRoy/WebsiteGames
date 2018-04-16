@@ -102,13 +102,13 @@ export class StartLineGeneratorService {
     private setCarInitialPosition(car: Car, row: number, column: number, perpendicularDirection: Vector2): void {
         const CAR_OFFSET_FROM_EACH_OTHER: number = 5;
         car.getPosition().x += (row * CAR_OFFSET_FROM_EACH_OTHER - QUARTER_ROAD_WIDTH)
-            * this.firstRoad.y / this.firstRoad.length();
+                                * this.firstRoad.y / this.firstRoad.length();
         car.getPosition().z += (row * CAR_OFFSET_FROM_EACH_OTHER - QUARTER_ROAD_WIDTH)
-            * this.firstRoad.x / this.firstRoad.length();
+                                * this.firstRoad.x / this.firstRoad.length();
         car.getPosition().x += Math.pow(-1, column) * CAR_OFFSET_FROM_EACH_OTHER * perpendicularDirection.y /
-        perpendicularDirection.length();
+                                                                                   perpendicularDirection.length();
         car.getPosition().z += Math.pow(-1, column) * CAR_OFFSET_FROM_EACH_OTHER * perpendicularDirection.x /
-        perpendicularDirection.length();
+                                                                                   perpendicularDirection.length();
     }
 
     // Fisher-Yates Algorithm
