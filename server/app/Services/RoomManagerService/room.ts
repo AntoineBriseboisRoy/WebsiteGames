@@ -52,7 +52,22 @@ export class Room {
     public isPlayerInRoom(socketId: string): boolean {
         return this.players.some((player: Player) => player.socketID === socketId);
     }
+    public clear(): void {
+        this.grid.clear();
+        this.players.forEach((player: Player) => player.clear());
+    }
+    public clearGame(): void {
+        this.grid.clear();
+        this.players.forEach((player: Player) => player.score = 0);
+    }
+    public getOtherPlayer(socketId: string): Player {
+        const foundPlayer: Player = this.players.find((player: Player) => player.socketID === socketId);
+        if (foundPlayer) {
+            return this.players.find((currentPlayer: Player) => currentPlayer !== foundPlayer);
+        }
 
+        return undefined;
+    }
     public setWordFound(word: IGridWord, socketId: string): void {
         word.cells.forEach((cell: ICell) => {
             cell.isFound = true;
@@ -62,26 +77,18 @@ export class Room {
         this.setScore(socketId);
         this.deselectWord(socketId);
     }
-
     public selectWord(word: IGridWord, socketId: string): void {
         const foundPlayer: Player = this.players.find((player: Player) => player.socketID === socketId);
         if (foundPlayer) {
             foundPlayer.selectedWord = word;
         }
     }
-
     private deselectWord(socketId: string): void {
         const foundPlayer: Player = this.players.find((player: Player) => player.socketID === socketId);
         if (foundPlayer) {
             foundPlayer.selectedWord = undefined;
         }
     }
-
-    public clear(): void {
-        this.grid.clear();
-        this.players.forEach((player: Player) => player.clear());
-    }
-
     private identifyFinder(cell: ICell, playerId: string): Finder {
         const finder: Finder = this.players.findIndex((player: Player) => player.socketID === playerId);
         if (cell.finder === Finder.nobody || cell.finder === finder) {
@@ -90,7 +97,6 @@ export class Room {
             return Finder.both;
         }
     }
-
     private setScore(socketId: string): void {
         const foundPlayer: Player = this.players.find((player: Player) => player.socketID === socketId);
         if (foundPlayer) {

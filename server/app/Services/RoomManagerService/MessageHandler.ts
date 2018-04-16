@@ -7,6 +7,7 @@ import { IGridWord } from "../../../../common/interfaces/IGridWord";
 import { Player } from "../../player";
 import { IPlayer } from "../../../../common/interfaces/IPlayer";
 import { IEndGame } from "../../../../common/interfaces/IEndGame";
+import { IRestartGame } from "../../../../common/interfaces/IRestartGame";
 import { Observer } from "rxjs/Observer";
 import { Observable } from "rxjs/Observable";
 
@@ -20,7 +21,8 @@ export class MessageHandler {
         this.getEvent("waiting-room").subscribe(()                      => this.joinWaitingRoom());
         this.getEvent("new-game").subscribe((data: string)              => this.createNewGame(JSON.parse(data)));
         this.getEvent("delete-game").subscribe((data: string)           => this.deleteGame(JSON.parse(data)));
-        this.getEvent("play-single-game").subscribe((data: string)      => this.playASinglePlayerGame(JSON.parse(data)));
+        this.getEvent("start-game").subscribe((data: string)            => this.startGame(JSON.parse(data)));
+        this.getEvent("restart-game").subscribe((data: string)          => this.restartGame(JSON.parse(data)));
         this.getEvent("play-multiplayer-game").subscribe((data: string) => this.playAMultiplayerGame(JSON.parse(data)));
         this.getEvent("completed-word").subscribe((data: string)        => this.completeAWord(JSON.parse(data)));
         this.getEvent("selected-word").subscribe((data: string)         => this.selectAWord(JSON.parse(data)));
@@ -54,7 +56,7 @@ export class MessageHandler {
     }
 
     // TODO: Ajouter type d'erreur pour le .catch
-    private playASinglePlayerGame(game: INewGame): void {
+    private startGame(game: INewGame): void {
         game.userCreatorID = this.socket.id;
         this.createNewRoom(game).then(() => {
             const room: Room = RoomManagerService.Instance.getRoom(game.userCreatorID);
@@ -63,6 +65,30 @@ export class MessageHandler {
             this.sendGrid(room);
         }).catch((error: Error) => console.error(error));
     }
+
+    private restartGame(game: IRestartGame): void {
+        const room: Room = RoomManagerService.Instance.getRoom(this.socket.id);
+        if (room) {
+            if (game.requestSent) {
+                this.socket.to(room.getOtherPlayer(this.socket.id).socketID).emit("restart-game", game);
+            } else {
+                if (game.requestAccepted) {
+                    room.initializeGrid().then(() => {
+                        room.state = RoomState.Playing;
+                        this.socket.to(room.Name).emit("restart-game", {requestSent: false, requestAccepted: true});
+                        SocketService.Instance.socketIo.in(room.Name).emit("update-score", this.parseToIPlayers(room.Players));
+                        this.sendGrid(room);
+                    });
+                } else {
+                    this.socket.to(room.getOtherPlayer(this.socket.id).socketID)
+                                .emit("restart-game", {requestSent: false, requestAccepted: false});
+                }
+            }
+        } else {
+            console.error("Error");
+        }
+    }
+
     private playAMultiplayerGame(game: INewGame): void {
         const room: Room = RoomManagerService.Instance.getRoom(game.userCreatorID);
         RoomManagerService.Instance.addPlayerToRoom(game.userJoiner, this.socket.id, game.userCreatorID);
@@ -90,6 +116,7 @@ export class MessageHandler {
             } else {
                 this.handleMultiplayerEndGame(room);
             }
+            room.clearGame();
         }
     }
 

@@ -6,16 +6,21 @@ import { ModalOptions } from "./interfaces";
 @Injectable()
 export class ModalService {
 
-  public constructor(private modalService: NgbModal, private state: ModalStateService) {}
+    public constructor(private modalService: NgbModal, private state: ModalStateService) { }
 
-  public async open(options: ModalOptions): Promise<void> {
-    this.state.options = options;
-    this.state.modal = this.modalService.open(this.state.template);
+    public async open(options: ModalOptions): Promise<void> {
+        this.state.options = options;
+        this.state.modal = this.modalService.open(this.state.template);
 
-    return this.state.modal.result;
-  }
+        return this.state.modal.result;
+    }
 
-  public get IsOpen(): boolean {
-      return this.state.isOpen;
-  }
+    public get IsOpen(): boolean {
+        return this.state.isOpen;
+    }
+
+    public close(): void {
+        this.state.isOpen = false;
+        this.state.modal.close("confirmed");
+    }
 }

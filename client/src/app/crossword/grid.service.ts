@@ -10,6 +10,7 @@ import { Router } from "@angular/router";
 import { GameManagerService } from "./game-manager.service";
 import { IEndGame } from "../../../../common/interfaces/IEndGame";
 import { WINNER_TITLE, LOSER_TITLE, TIE_TITLE } from "../constants";
+import { IRestartGame } from "../../../../common/interfaces/IRestartGame";
 
 @Injectable()
 export class GridService {
@@ -18,6 +19,7 @@ export class GridService {
     public gridWordsHorizontal: Array<IGridWord>;
     public gridWordsVertical: Array<IGridWord>;
     public selectedWords: Array<IGridWord>;
+    private hasReceivedRestartRequest: boolean;
     private static compareIndex(a: IGridWord, b: IGridWord): number {
         return a.cells[0].index - b.cells[0].index;
     }
@@ -29,6 +31,7 @@ export class GridService {
         this.gridWordsHorizontal = new Array();
         this.gridWordsVertical = new Array();
         this.selectedWords = new Array();
+        this.hasReceivedRestartRequest = true;
         this.initSinglePlayerGame();
         this.socketIO.DisconnectedPlayer.subscribe(() => this.alertDisconnectedPlayer());
         this.socketIO.CompletedGrid.subscribe((endGame: IEndGame) => this.alertCompletedGrid(endGame));
@@ -36,7 +39,7 @@ export class GridService {
 
     private initSinglePlayerGame(): void {
         if (!this.gameManagerService.isMultiplayer) {
-            this.socketIO.PlaySinglePlayer.next({
+            this.socketIO.StartGame.next({
                 userCreator: "Player One",
                 difficulty: this.gameManagerService.difficulty,
                 userCreatorID: "",
@@ -142,10 +145,61 @@ export class GridService {
     private openEndGameModal(title: string, message: string): void {
         this.modalService.open({
             title: title, message: message + "! You can choose to replay or go back to home page",
-            firstButton: "Restart", secondButton: "Home", showPreview: false
+            firstButton: "Restart Game", secondButton: "Home", showPreview: false
         })
-            .then(() => window.location.reload(),
+            .then(() => this.restartGame(),
                   () => this.router.navigate([""])
+            );
+        this.socketIO.RestartedGameSubject.subscribe((game: IRestartGame) => {
+            this.hasReceivedRestartRequest = false;
+            this.modalService.close();
+        });
+    }
+
+    private restartGame(): void {
+        if (this.gameManagerService.isMultiplayer && this.hasReceivedRestartRequest) {
+            this.socketIO.RestartedGameSubject.next({ requestSent: true });
+            this.gridWords.length = 0;
+            this.gridCells.length = 0;
+            this.router.navigate(["crossword/waiting"]);
+        } else if (this.gameManagerService.isMultiplayer && !this.hasReceivedRestartRequest) {
+            this.restartGameModal();
+        } else {
+            this.socketIO.RestartedGameSubject.next({ requestSent: false, requestAccepted: true });
+        }
+    }
+
+    private restartGameModal(): void {
+        this.modalService.open({
+            title: "Your opponent would like to play again", message: "Do you want to play with the same configuration?",
+            firstButton: "Yes", secondButton: "No", showPreview: false
+        })
+            .then(() => {
+                this.socketIO.RestartedGameSubject.next({ requestSent: false, requestAccepted: true });
+                this.gridWords.length = 0;
+                this.gridCells.length = 0;
+                this.socketIO.RestartedGameSubject.subscribe((restartGame: IRestartGame) => {
+                    if (restartGame.requestAccepted) {
+                        this.router.navigate(["crossword/play"]);
+                    } else {
+                        this.openRefusedRestartGameModal();
+                    }
+                });
+            },
+                  () => {
+                this.socketIO.RestartedGameSubject.next({ requestSent: false, requestAccepted: false });
+                this.router.navigate([""]);
+            });
+    }
+
+    private openRefusedRestartGameModal(): void {
+        this.modalService.open({
+            title: "Your opponent doesn't want to play again",
+            message: "You can play another crossword game or try our fabulous race game.",
+            firstButton: "Home", secondButton: "Start a solo game ", showPreview: false
+        })
+            .then(() => this.router.navigate([""]),
+                  () => this.router.navigate(["crossword/play"])
             );
     }
 }

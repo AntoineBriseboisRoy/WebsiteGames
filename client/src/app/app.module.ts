@@ -39,6 +39,8 @@ import { SoundManagerService } from "./race/sound-manager.service";
 import { SelectionHandlerService } from "./crossword/game-view/grid/selection-handler.service";
 import { TimerService } from "./race/timer-service/timer.service";
 import { InputManagerService } from "./race/input-manager-service/input-manager.service";
+import { WaitingScreenComponent } from "./crossword/waiting-screen/waiting-screen.component";
+import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 
 @NgModule({
     declarations: [
@@ -58,13 +60,15 @@ import { InputManagerService } from "./race/input-manager-service/input-manager.
         GameListComponent,
         ModalComponent,
         ModalDirective,
-        TrackPreviewComponent
+        TrackPreviewComponent,
+        WaitingScreenComponent
     ],
     imports: [
         BrowserModule,
         HttpClientModule,
         FormsModule,
         AppRoutingModule,
+        MatProgressSpinnerModule,
         NgbModule.forRoot()
     ],
     providers: [

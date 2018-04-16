@@ -10,6 +10,7 @@ import { TrackViewComponent } from "./race/track-view/track-view.component";
 import { PlayerMenuComponent } from "./crossword/player-menu/player-menu.component";
 import { DifficultyMenuComponent } from "./crossword/difficulty-menu/difficulty-menu.component";
 import { MultiplayerMenuComponent } from "./crossword/multiplayer-mode/multiplayer-menu.component";
+import { WaitingScreenComponent } from "./crossword/waiting-screen/waiting-screen.component";
 
 const routes: Routes = [
     { path: "", component: DashboardComponent },
@@ -17,6 +18,7 @@ const routes: Routes = [
     { path: "crossword/difficulty", component: DifficultyMenuComponent },
     { path: "crossword/multiplayer", component: MultiplayerMenuComponent },
     { path: "crossword/play", component: CrosswordViewComponent },
+    { path: "crossword/waiting", component: WaitingScreenComponent },
     { path: "edit", component: EditTrackComponent },
     { path: "race/play", component: GameComponent },
     { path: "admin", component: AdminSectionComponent },
