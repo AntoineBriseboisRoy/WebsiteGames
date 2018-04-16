@@ -29,7 +29,7 @@ export class CarAI extends Car {
                 this.alignCarDirectionWithTrackDirection();
             }
         }
-        if ( this.shortestDistanceFromCarToMiddleOfRoad() < 6) {
+        if ( this.shortestDistanceFromCarToMiddleOfRoad() < 7) {
             this.isReachingRoadCenter = false;
         }
     }

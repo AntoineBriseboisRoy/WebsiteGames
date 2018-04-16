@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core";
 import { Vector2, ObjectLoader, Object3D, PlaneBufferGeometry, MeshBasicMaterial, Mesh, DoubleSide, TextureLoader } from "three";
 import { Car } from "./car/car";
 import { ITrack, TrackType } from "../../../../common/interfaces/ITrack";
-import { HALF, PI_OVER_2, ROAD_WIDTH } from "../constants";
+import { HALF, PI_OVER_2, ROAD_WIDTH, COLLISION_SOUND_NAME } from "../constants";
 import { Point } from "./edit-track/Geometry";
 
 export const FAR_CLIPPING_PLANE: number = 1000;
@@ -102,13 +102,13 @@ export class StartLineGeneratorService {
     private setCarInitialPosition(car: Car, row: number, column: number, perpendicularDirection: Vector2): void {
         const CAR_OFFSET_FROM_EACH_OTHER: number = 5;
         car.getPosition().x += (row * CAR_OFFSET_FROM_EACH_OTHER - QUARTER_ROAD_WIDTH)
-            * perpendicularDirection.y / perpendicularDirection.length();
+            * this.firstRoad.y / this.firstRoad.length();
         car.getPosition().z += (row * CAR_OFFSET_FROM_EACH_OTHER - QUARTER_ROAD_WIDTH)
-            * perpendicularDirection.x / perpendicularDirection.length();
-        car.getPosition().x += Math.pow(-1, column) * CAR_OFFSET_FROM_EACH_OTHER * this.firstRoad.y /
-            this.firstRoad.length();
-        car.getPosition().z += Math.pow(-1, column) * CAR_OFFSET_FROM_EACH_OTHER * this.firstRoad.x /
-            this.firstRoad.length();
+            * this.firstRoad.x / this.firstRoad.length();
+        car.getPosition().x += Math.pow(-1, column) * CAR_OFFSET_FROM_EACH_OTHER * perpendicularDirection.y /
+        perpendicularDirection.length();
+        car.getPosition().z += Math.pow(-1, column) * CAR_OFFSET_FROM_EACH_OTHER * perpendicularDirection.x /
+        perpendicularDirection.length();
     }
 
     // Fisher-Yates Algorithm

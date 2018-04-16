@@ -27,7 +27,7 @@ const TEXTURE_TILE_REPETIONS: number = 200;
 const WORLD_SIZE: number = 1000;
 const FLOOR_SIZE: number = WORLD_SIZE / HALF;
 const PLAYER: number = 0;
-const NUMBER_OF_CARS: number = 1;
+const NUMBER_OF_CARS: number = 16;
 const BASE_RPM: number = 3500;
 
 @Injectable()
