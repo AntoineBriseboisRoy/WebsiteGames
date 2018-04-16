@@ -6,6 +6,7 @@ import { COLLISION_SOUND_NAME, WALL_SOUND_NAME, LAP_NUMBER } from "../../constan
 import { ModalService } from "../../modal/modal.service";
 import { Router } from "@angular/router";
 import { InputManagerService } from "../input-manager-service/input-manager.service";
+import { CarAI } from "./car-ai";
 
 const CAR_A_MOMENTUM_FACTOR: number = 2.1;
 const CAR_B_MOMENTUM_FACTOR: number = 1.9;
@@ -123,6 +124,7 @@ export class CollisionManager {
         this.soundManager.play(WALL_SOUND_NAME);
         this.bounce(car);
         car.speed = car.speed.multiplyScalar(SLOW_DOWN_FACTOR);
+        (car as CarAI).isStuck =  true;
     }
 
     private bounce(car: Car): void {

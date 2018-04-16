@@ -95,7 +95,7 @@ describe("Engine", () => {
         engine = new Engine(gears, driveRatio, 800, 1000, 5000, transmissionEfficiency);
         expect(engine.currentGear).toBe(0);
         const stoppedTorque: number = engine.getDriveTorque();
-        engine.update(500, 1);
+        engine.update(500, 1, true);
         const movingTorque: number = engine.getDriveTorque();
         expect(movingTorque).toBeGreaterThan(stoppedTorque);
     });
@@ -103,14 +103,14 @@ describe("Engine", () => {
     it("should have minimum rpm when speed is small", () => {
         engine = new Engine(DEFAULT_GEAR_RATIOS, DEFAULT_DRIVE_RATIO, 100, DEFAULT_MINIMUM_RPM, 1000);
         expect(engine.rpm).toBe(DEFAULT_MINIMUM_RPM);
-        engine.update(0, 1);
+        engine.update(0, 1, true);
         expect(engine.rpm).toBe(DEFAULT_MINIMUM_RPM);
     });
 
     it("should have rpm between min and max when moving", () => {
         engine = new Engine(DEFAULT_GEAR_RATIOS, DEFAULT_DRIVE_RATIO, 100, DEFAULT_MINIMUM_RPM, 1000);
         expect(engine.rpm).toBe(DEFAULT_MINIMUM_RPM);
-        engine.update(10, 1);
+        engine.update(10, 1, true);
         expect(engine.rpm).toBeGreaterThan(DEFAULT_MINIMUM_RPM);
         expect(engine.rpm).toBeLessThan(DEFAULT_MAX_RPM);
     });
@@ -120,22 +120,22 @@ describe("Engine", () => {
         expect(engine.currentGear).toBe(0);
 
         let speed: number = 100;
-        engine.update(speed, 1);
+        engine.update(speed, 1, true);
         expect(engine.currentGear).toBeGreaterThan(0);
 
         speed = 0;
-        engine.update(speed, 1);
+        engine.update(speed, 1, true);
         expect(engine.currentGear).toBe(0);
     });
 
     it("should not calculate rpm using a negative speed.", () => {
         engine = new Engine();
-        engine.update(-10, 1);
+        engine.update(-10, 1, true);
         expect(engine.rpm).toBe(engine["minimumRPM"]);
     });
 
     it("should throw an error when wheel radius is invalid.", () => {
         engine = new Engine();
-        expect(() => { engine.update(10, 0); }).toThrowError();
+        expect(() => { engine.update(10, 0, true); }).toThrowError();
     });
 });
