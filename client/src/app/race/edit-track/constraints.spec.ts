@@ -55,8 +55,8 @@ describe("constraints", () => {
 
     it("should check if segments are not too short", () => {
         const array: Point[] = [{ x: 0, y: 0, start: true, end: false },
-                                { x: cst.TWICE_TRACK_WIDTH - 1, y: 0, start: true, end: false },
-                                { x: cst.TWICE_TRACK_WIDTH - 1, y: cst.TWICE_TRACK_WIDTH * 10, start: true, end: false }];
+                                { x: cst.MINIMUM_TRACK_LENGTH - 1, y: 0, start: true, end: false },
+                                { x: cst.MINIMUM_TRACK_LENGTH - 1, y: cst.MINIMUM_TRACK_LENGTH * 10, start: true, end: false }];
         constraints.checkConstraints(array, false, new ClientRect());
         expect(constraints.Segments[0].broken).toBeTruthy();
         expect(constraints.Segments[1].broken).toBeFalsy();

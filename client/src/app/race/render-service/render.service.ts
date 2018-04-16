@@ -27,7 +27,7 @@ const TEXTURE_TILE_REPETIONS: number = 200;
 const WORLD_SIZE: number = 1000;
 const FLOOR_SIZE: number = WORLD_SIZE / HALF;
 const PLAYER: number = 0;
-const NUMBER_OF_CARS: number = 1;
+const NUMBER_OF_CARS: number = 2;
 const BASE_RPM: number = 3500;
 
 @Injectable()
@@ -61,7 +61,7 @@ export class RenderService {
     public constructor(private collisionManager: CollisionManager, private roadCreator: RoadCreator,
                        private startLineGeneratorService: StartLineGeneratorService, private soundManager: SoundManagerService) {
         this.cars = new Array<Car>();
-        this.cars.push(new CarAI());
+        this.cars.push(new Car());
         for (let i: number = 1; i < NUMBER_OF_CARS; i++) {
             this.cars.push(new CarAI());
         }

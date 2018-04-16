@@ -74,7 +74,7 @@ export class Constraints {
 
     private checkSegmentLength(): void {
         for (const segment of this.segments) {
-            if (segment.getLength() < cst.TWICE_TRACK_WIDTH / this.clientRect.width) {
+            if (segment.getLength() < cst.MINIMUM_TRACK_LENGTH / this.clientRect.width) {
                 segment.broken = true;
             }
         }

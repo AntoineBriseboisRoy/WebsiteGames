@@ -11,8 +11,22 @@ export class CarAI extends Car {
     }
 
     private steer(): void {
-        if (this.calculateAngle() > -0.1 && this.calculateAngle() < 0.1) {
+        const angle: number = this.calculateAngle();
+
+        const previousCheckpoint: number = (this.Information.nextCheckpoint - 1 < 0) ? this.Information.Checkpoints.length - 1 :
+        this.Information.nextCheckpoint - 1;
+        const trackDirection: Vector2 =
+        new Vector2().subVectors(this.Information.IntersectionPositions[this.Information.nextCheckpoint],
+                                 this.Information.IntersectionPositions[previousCheckpoint]).normalize();
+        const carDirection: Vector2 = new Vector2( this.calculateDirection().x, this.calculateDirection().z).normalize();
+
+        // const perpendicularToTrackDirection: Vector2 = new Vector2(-trackDirection.y, trackDirection.x);
+        // const vector: Vector2 = new Vector2(Math.tan(angle) * trackDirection.x, Math.tan(angle) * trackDirection.y);
+
+        if (angle > -0.1 && angle < 0.1) {
             this.releaseSteering();
+        } else if (trackDirection.x * carDirection.y - trackDirection.y * carDirection.x >= 0) {
+            this.steerLeft();
         } else {
             this.steerRight();
         }
@@ -21,7 +35,7 @@ export class CarAI extends Car {
     private calculateAngle(): number {
         const previousCheckpoint: number = (this.Information.nextCheckpoint - 1 < 0) ? this.Information.Checkpoints.length - 1 :
                                                                                  this.Information.nextCheckpoint - 1;
-        const wantedDirectionVector: Vector2 =
+        const trackDirection: Vector2 =
                             new Vector2().subVectors(this.Information.IntersectionPositions[this.Information.nextCheckpoint],
                                                      this.Information.IntersectionPositions[previousCheckpoint]).normalize();
 
@@ -30,8 +44,8 @@ export class CarAI extends Car {
             return 0;
         }
 
-        return Math.acos(wantedDirectionVector.dot(carDirection) /
-            (wantedDirectionVector.length() * carDirection.length()));
+        return Math.acos(trackDirection.dot(carDirection) /
+            (trackDirection.length() * carDirection.length()));
     }
 
     public update(deltaTime: number): void {

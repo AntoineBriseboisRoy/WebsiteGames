@@ -240,7 +240,10 @@ export class CollisionManager {
                 firstButton: "Race again!", secondButton: "Home", showPreview: true
             })
             .then(() => window.location.reload(),
-                  () => this.router.navigate([""])
+                  () => {
+                    this.router.navigate([""]);
+                    window.location.reload();
+                  }
             );
         }
     }
