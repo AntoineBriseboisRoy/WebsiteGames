@@ -1,6 +1,6 @@
 import { Vector3, Matrix4, Object3D, ObjectLoader, Euler, Quaternion, Box3,
          BoxHelper, Raycaster, BoxGeometry, MeshBasicMaterial, Mesh, SpotLight } from "three";
-import { Engine } from "./engine";
+import { Engine, DEFAULT_SHIFT_RPM } from "./engine";
 import { MS_TO_SECONDS, RAD_TO_DEG, PI_OVER_4, PI_OVER_2, GRAVITY } from "../../constants";
 import { Wheel } from "./wheel";
 import { CarInformation } from "./car-information";
@@ -281,7 +281,7 @@ export class Car extends Object3D {
 
     private physicsUpdate(deltaTime: number): void {
         this.rearWheel.angularVelocity += this.getAngularAcceleration() * deltaTime;
-        this.engine.update(this._speed.length(), this.rearWheel.radius);
+        this.engine.update(this._speed.length(), this.rearWheel.radius, this.isGoingForward());
         this.weightRear = this.getWeightDistribution();
         this._speed.add(this.getDeltaSpeed(deltaTime));
         this._speed.setLength(this._speed.length() <= MINIMUM_SPEED ? 0 : this._speed.length());
@@ -298,6 +298,7 @@ export class Car extends Object3D {
         /* tslint:enable:no-magic-numbers */
     }
 
+    // tslint:disable-next-line:max-func-body-length
     private getForces(): Vector3 {
         const resultingForce: Vector3 = new Vector3();
 
@@ -309,13 +310,26 @@ export class Car extends Object3D {
         }
 
         if (this.isAcceleratorPressed) {
+            if (!this.isGoingForward()) {
+                const brakeForce: Vector3 = this.getBrakeForce();
+                resultingForce.sub(brakeForce);
+            }
             const tractionForce: number = this.getTractionForce();
             const accelerationForce: Vector3 = this.direction;
             accelerationForce.multiplyScalar(tractionForce);
             resultingForce.add(accelerationForce);
-        } else if (this.isBraking && this.isGoingForward()) {
-            const brakeForce: Vector3 = this.getBrakeForce();
-            resultingForce.add(brakeForce);
+        } else if (this.isBraking) {
+            if (this.isGoingForward()) {
+                const brakeForce: Vector3 = this.getBrakeForce();
+                resultingForce.add(brakeForce);
+            } else {
+                const tractionForce: number = this.getTractionForce();
+                const accelerationForce: Vector3 = this.direction;
+                accelerationForce.multiplyScalar(tractionForce);
+                if (this.engine.rpm < DEFAULT_SHIFT_RPM) {
+                    resultingForce.sub(accelerationForce);
+                }
+            }
         }
 
         return resultingForce;
