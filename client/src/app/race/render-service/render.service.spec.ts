@@ -22,6 +22,7 @@ describe("RenderService", () => {
                            {name: "", description: "", points: new Array<Point>(), type: TrackType.REGULAR} as ITrack)
                            .catch((error: Error) => { console.error(error); });
 
-        expect(service.RoadCreator.RoadTexture.sourceFile).not.toEqual(service.FloorTextures.get(TrackType.REGULAR).sourceFile);
+        expect(service["roadCreator"]["loadTexture"]("/assets/uniformRoad.jpg").sourceFile)
+        .not.toEqual(service.FloorTextures.get(TrackType.REGULAR).sourceFile);
     }));
 });
