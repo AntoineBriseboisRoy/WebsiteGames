@@ -10,6 +10,7 @@ import { MongoQueryService } from "../../mongo-query.service";
 import { TimerService } from "../timer-service/timer.service";
 import { Subscription } from "rxjs/Subscription";
 import { DayPeriodContext } from "../dayToggle-context";
+import { DateFormatter } from "../date-formatter";
 
 const MAX_GEAR_BAR_WIDTH: number = 27;
 
@@ -28,7 +29,7 @@ export class GameComponent implements AfterViewInit {
     @ViewChild("container")
     private containerRef: ElementRef;
     public startingText: string;
-    public bestTime: Date;
+    private bestTime: Date;
 
     public constructor(private renderService: RenderService, private inputManagerService: InputManagerService,
                        private mongoQueryService: MongoQueryService , private route: ActivatedRoute, private timer: TimerService) {
@@ -55,12 +56,12 @@ export class GameComponent implements AfterViewInit {
     public ngAfterViewInit(): void {
         this.route.queryParams.subscribe((params: Params) => {
             this.mongoQueryService.getTrack(params["name"]).then((track: ITrack) => {
-                this.renderService
-                .initialize(this.containerRef.nativeElement, track)
+                this.renderService.initialize(this.containerRef.nativeElement, track)
                 .then((data) => {
                     this.startingSequence();
                 })
                 .catch((err) => console.error(err));
+                this.bestTime = new Date(track.bestTimes[0].time);
             }).catch((error: Error) => {
                 console.error(error);
             });
@@ -77,6 +78,14 @@ export class GameComponent implements AfterViewInit {
 
     public get DayPeriodContext(): DayPeriodContext {
         return this.renderService.DayPeriodContext;
+    }
+
+    public get BestTime(): string {
+        return DateFormatter.DateToMinSecMillisec(this.bestTime);
+    }
+
+    public rpmRatio(): number {
+        return (this.player.rpm / DEFAULT_SHIFT_RPM) * MAX_GEAR_BAR_WIDTH;
     }
 
     private startingSequence(): void {
@@ -111,8 +120,5 @@ export class GameComponent implements AfterViewInit {
                 car.Information.totalTime.setTime(time);
             });
         }
-    }
-    public rpmRatio(): number {
-        return (this.player.rpm / DEFAULT_SHIFT_RPM) * MAX_GEAR_BAR_WIDTH;
     }
 }
