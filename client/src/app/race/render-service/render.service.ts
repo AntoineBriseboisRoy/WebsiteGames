@@ -27,7 +27,7 @@ const TEXTURE_TILE_REPETIONS: number = 200;
 const WORLD_SIZE: number = 1000;
 const FLOOR_SIZE: number = WORLD_SIZE / HALF;
 const PLAYER: number = 0;
-const NUMBER_OF_CARS: number = 16;
+const NUMBER_OF_CARS: number = 4;
 const BASE_RPM: number = 3500;
 
 @Injectable()
@@ -61,7 +61,7 @@ export class RenderService {
     public constructor(private collisionManager: CollisionManager, private roadCreator: RoadCreator,
                        private startLineGeneratorService: StartLineGeneratorService, private soundManager: SoundManagerService) {
         this.cars = new Array<Car>();
-        this.cars.push(new CarAI());
+        this.cars.push(new Car());
         for (let i: number = 1; i < NUMBER_OF_CARS; i++) {
             this.cars.push(new CarAI());
         }
@@ -114,6 +114,8 @@ export class RenderService {
         this.collisionManager.update();
         this.cars.forEach((car) => {
             car.Information.updateDistanceToNextCheckpoint(new Vector2(car.getPosition().x, car.getPosition().z));
+            car.Information.updatePlayerSituation(this.cars[PLAYER].Information.Lap, this.cars[PLAYER].Information.nextCheckpoint,
+                                                  this.cars[PLAYER].Information.DistanceToNextCheckpoint);
         });
     }
 
@@ -178,7 +180,6 @@ export class RenderService {
             if ( mesh.name === "Intersection" ) {
                 for (const car of this.cars) {
                     car.Information.addIntersectionPosition(new Vector2(mesh.position.x, mesh.position.z));
-                    console.log("Mesh Position: " + mesh.position.toArray());
                 }
             }
         });

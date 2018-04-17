@@ -114,6 +114,7 @@ export class GameComponent implements AfterViewInit {
             });
         }
     }
+
     public rpmRatio(): number {
         return (this.player.rpm / DEFAULT_SHIFT_RPM) * MAX_GEAR_BAR_WIDTH;
     }

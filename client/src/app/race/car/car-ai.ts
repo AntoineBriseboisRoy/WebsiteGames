@@ -8,6 +8,7 @@ export class CarAI extends Car {
     public isStuck: boolean;
     private positionAtStuckPoint: Vector3;
     private isReachingRoadCenter: boolean;
+
     public constructor() {
         super();
         this.isInitialized = false;
@@ -47,7 +48,6 @@ export class CarAI extends Car {
     }
 
     private reachRoadCenter(): void {
-        console.log(this.isCarOnLeftSideOfRoad());
         this.isReachingRoadCenter = true;
         if (this.isCarOnLeftSideOfRoad()) {
             this.steerRight();
@@ -85,16 +85,35 @@ export class CarAI extends Car {
         if (this.isStuck) {
             this.stuckRoutine();
         } else {
-            this.isAcceleratorPressed = true;
+            if ( this.Information.DistanceToNextCheckpoint < this.distanceForBraking() ) {
+                if (this.speed.length() > 0) {
+                    this.brake();
+                    this.isAcceleratorPressed = false;
+                }
+            } else {
+                this.releaseBrakes();
+                this.isAcceleratorPressed = true;
+            }
             this.steer();
         }
+    }
+
+    private distanceForBraking(): number {
+        const previousCheckpoint: number = this.Information.nextCheckpoint - 1 < 0 ? this.Information.Checkpoints.length - 1 :
+                                                                                     this.Information.nextCheckpoint - 1;
+        const segmentLength: number = this.Information.trackLengthToCheckpoint(this.Information.nextCheckpoint) -
+                                      this.Information.trackLengthToCheckpoint(previousCheckpoint);
+        if ( this.Information.distanceGapToPlayer() > 0 ) {
+            return (15 * Math.atan(0.002 * this.Information.distanceGapToPlayer() - 3) + 20) * segmentLength / 50;
+        }
+
+        return 0;
     }
 
     private stuckRoutine(): void {
         if (this.positionAtStuckPoint === undefined) {
             this.positionAtStuckPoint = this.getPosition().clone();
         }
-        console.log("ShouldMoveFwrd: " + this.shouldMoveForward());
         if (!this.shouldMoveForward()) {
             this.isAcceleratorPressed = false;
             this.brake();

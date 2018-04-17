@@ -260,8 +260,6 @@ export class Car extends Object3D {
         // Angular rotation of the car
         const omega: number = this._speed.length() / R;
         this.rotateMeshY(omega);
-
-        //console.log("Car Position: " + this.getPosition().toArray());
     }
 
     private updateRaycasters(deltaTime: number, theta: number): void {
