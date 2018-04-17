@@ -23,6 +23,7 @@ export class EndGameService {
     }
 
     public initSubscriptions(): void {
+        this.socketIO.RestartedGameSubject.unsubscribe();
         this.socketIO.DisconnectedPlayer.subscribe(() => this.alertDisconnectedPlayer());
         this.socketIO.CompletedGrid.subscribe((endGame: IEndGame) => this.alertCompletedGrid(endGame));
     }
@@ -99,8 +100,10 @@ export class EndGameService {
 
     private subscribeToRestartRequest(): void {
         this.socketIO.RestartedGameSubject.subscribe((game: IRestartGame) => {
-            this.hasReceivedRestartRequest = true;
-            this.modalService.closeWithFirstButton();
+            if (game.requestSent) {
+                this.hasReceivedRestartRequest = true;
+                this.modalService.closeWithFirstButton();
+            }
         });
     }
 
