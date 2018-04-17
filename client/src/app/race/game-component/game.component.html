@@ -1,10 +1,14 @@
 <div #container>
+  {{this.playerRanking()}}
   <span id="speed" class="text">{{this.player.speed.length() * 3.6 | number :'2.2-2'}}</span>
   <span id="speed-unit" class="text">km/h</span>
   <span id="gear" class="text">{{this.player.currentGear + 1}}</span>
   <img id="speed-background" src="../../assets/HUD_Speed.png">
   <span id="lap-background">
     <span id="lap" class="text">Lap: {{this.player.Information.Lap}} / 3</span>
+  </span>
+  <span id="rank-background">
+    <span id="rank" class="text">{{this.playerRanking()}}/{{this.renderService.Cars.length}}</span>
   </span>
   <span id="time-background">
     <span id="time" class="text">Total time: {{this.player.Information.totalTime.getTime() | date: 'mm:ss:SS'}}</span>
@@ -18,7 +22,7 @@
 
   <div id="rpm-background">
     <div id="rpm-bar"  [style.width.%]="this.rpmRatio()"></div>
-    <span id="rpm-text" class="justify-content-center d-flex position-absolute w-100">{{this.player.rpm | number:'2.0-0'}} RPM</span>
+    <span id="rpm-text" class="justify-content-center d-flex position-absolute w-100">{{this.player.rpm | number:'2.0-0'}} RPM </span>
   </div>
 
   <span id="starting-text" class="text">{{this.startingText}}</span>

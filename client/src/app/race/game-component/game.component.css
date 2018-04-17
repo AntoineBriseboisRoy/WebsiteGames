@@ -73,6 +73,22 @@ div {
     background: rgba(64, 64, 64, 0.5);
 }
 
+#rank {
+    font-size: 12vh;
+    bottom: 5%;
+    left: 2%;
+}
+
+#rank-background {
+    position: fixed;
+    bottom: 5%;
+    left: 0%;
+    height: 15%;
+    width: 12%;
+    background: rgba(64, 64, 64);
+    background: rgba(64, 64, 64, 0.5);
+}
+
 #time-background {
     position: fixed;
     top: 4%;

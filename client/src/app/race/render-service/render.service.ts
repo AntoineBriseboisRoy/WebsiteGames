@@ -32,6 +32,7 @@ const BASE_RPM: number = 3500;
 
 @Injectable()
 export class RenderService {
+    private isInitialized: boolean;
     private cameraContext: CameraContext;
     private dayPeriodContext: DayPeriodContext;
     private container: HTMLDivElement;
@@ -60,6 +61,7 @@ export class RenderService {
 
     public constructor(private collisionManager: CollisionManager, private roadCreator: RoadCreator,
                        private startLineGeneratorService: StartLineGeneratorService, private soundManager: SoundManagerService) {
+        this.isInitialized = false;
         this.cars = new Array<Car>();
         this.cars.push(new Car());
         for (let i: number = 1; i < NUMBER_OF_CARS; i++) {
@@ -71,6 +73,10 @@ export class RenderService {
         this.dayPeriodContext = new DayPeriodContext(this);
     }
 
+    public get IsInitialized(): boolean {
+        return this.isInitialized;
+    }
+
     public async initialize(container: HTMLDivElement, track: ITrack): Promise<void> {
         if (container) {
             this.container = container;
@@ -80,6 +86,7 @@ export class RenderService {
 
         await this.createScene();
         this.initStats();
+        this.isInitialized = true;
         this.startRenderingLoop();
     }
 
