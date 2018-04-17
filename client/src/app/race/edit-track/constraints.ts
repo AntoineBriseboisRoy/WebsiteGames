@@ -1,5 +1,5 @@
 import { Point, Segment, Interval } from "./Geometry";
-import * as cst from "../../constants";
+import { COMPLEMENT_PI_OVER_4, TWICE_TRACK_WIDTH, SKIP_SEGMENT, DEFAULT_CIRCLE_RADIUS } from "../../constants";
 export class Constraints {
 
     private segments: Segment[];
@@ -20,8 +20,6 @@ export class Constraints {
 
         return false;
     }
-
-    public constructor() { }
 
     public checkConstraints(points: Point[], trackComplete: boolean, clientRect: ClientRect): void {
         this.points = points;
@@ -64,7 +62,7 @@ export class Constraints {
     }
 
     private checkAngleBetweenTwoSegments(segment1: Segment, segment2: Segment): boolean {
-        return this.getAngleBetweenTwoSegments(segment1, segment2) < cst.COMPLEMENT_PI_OVER_4;
+        return this.getAngleBetweenTwoSegments(segment1, segment2) < COMPLEMENT_PI_OVER_4;
     }
 
     private getAngleBetweenTwoSegments(segment1: Segment, segment2: Segment): number {
@@ -74,7 +72,7 @@ export class Constraints {
 
     private checkSegmentLength(): void {
         for (const segment of this.segments) {
-            if (segment.getLength() < cst.TWICE_TRACK_WIDTH / this.clientRect.width) {
+            if (segment.getLength() < TWICE_TRACK_WIDTH / this.clientRect.width) {
                 segment.broken = true;
             }
         }
@@ -82,19 +80,21 @@ export class Constraints {
 
     private checkSegmentOverlap(): void {
         for (let i: number = 0; i < this.segments.length; ++i) {
-            for (let j: number = i + cst.SKIP_SEGMENT; j < this.segments.length; ++j) {
-                if (!(this.trackComplete && i === 0 && j === this.segments.length - 1)
-                    && this.intersect(this.segments[i], this.segments[j])) {
-                    this.segments[i].broken = true;
-                    this.segments[j].broken = true;
+            for (let j: number = i + SKIP_SEGMENT; j < this.segments.length; ++j) {
+                if (!this.areFirstAndLastSegments(i, j) && this.intersect(this.segments[i], this.segments[j])) {
+                    this.segments[i].broken = this.segments[j].broken = true;
                 }
             }
         }
     }
 
+    private areFirstAndLastSegments(firstSegment: number, secondSegment: number): boolean {
+        return (this.trackComplete && firstSegment === 0 && secondSegment === this.segments.length - 1);
+    }
+
     private intersect(segment1: Segment, segment2: Segment): boolean {
-        const longerSegment1: Segment = this.elongateSegment(segment1);
-        const longerSegment2: Segment = this.elongateSegment(segment2);
+        const longerSegment1: Segment = this.makeSegmentLonger(segment1);
+        const longerSegment2: Segment = this.makeSegmentLonger(segment2);
 
         if (!this.haveCommonXcoordinates(longerSegment1, longerSegment2)) {
             return false;
@@ -134,10 +134,12 @@ export class Constraints {
                (segment1.getSlope() - segment2.getSlope());
     }
 
-    private elongateSegment(segment: Segment): Segment {
+    private makeSegmentLonger(segment: Segment): Segment {
         const newSegment: Segment = new Segment(segment.FirstPoint.index, this.points, segment.broken);
-        newSegment.FirstPointPosition = { x: (this.getXElongated(segment.FirstPoint.x, segment.SecondPoint.x)), y: segment.FirstPoint.y };
-        newSegment.SecondPointPosition = { x: (this.getXElongated(segment.SecondPoint.x, segment.FirstPoint.x)), y: segment.SecondPoint.y };
+        newSegment.FirstPointPosition = { x: this.getXElongated(segment.FirstPoint.x, segment.SecondPoint.x),
+                                          y: segment.FirstPoint.y };
+        newSegment.SecondPointPosition = { x: this.getXElongated(segment.SecondPoint.x, segment.FirstPoint.x),
+                                           y: segment.SecondPoint.y };
 
         return newSegment;
     }
@@ -148,7 +150,11 @@ export class Constraints {
     }
 
     private getXElongated(currPos: number, otherPos: number): number {
-        return currPos + ((Math.max(currPos, otherPos) === currPos) ? cst.DEFAULT_CIRCLE_RADIUS / this.clientRect.width
-                : -cst.DEFAULT_CIRCLE_RADIUS / this.clientRect.width);
+        return  currPos + (this.currPosIsLeftmost(currPos, otherPos) ? DEFAULT_CIRCLE_RADIUS / this.clientRect.width :
+                                                                      -DEFAULT_CIRCLE_RADIUS / this.clientRect.width);
+    }
+
+    private currPosIsLeftmost(currPos: number, otherPos: number): boolean {
+        return Math.max(currPos, otherPos) === currPos;
     }
 }

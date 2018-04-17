@@ -9,6 +9,13 @@ import { ITrack, TrackType, BestTime } from "../../../../../common/interfaces/IT
 import { MongoQueryService } from "../../mongo-query.service";
 import { Params } from "@angular/router/src/shared";
 
+const COLOUR_RED: string = "red";
+const COLOUR_BLUE: string = "blue";
+const COLOUR_BLACK: string = "black";
+const COLOUR_GREEN: string = "green";
+const TRACK_INCOMPLETE_ERR: string = "The current track is incomplete.";
+const BROKEN_CONSTRAINTS_ERR: string = "Some constraints have been broken.";
+const NAME_DESCRIPTION_ERR: string = "Please write a track name and description.";
 @Component({
     selector: "app-edit-track",
     templateUrl: "./edit-track.component.html",
@@ -46,13 +53,11 @@ export class EditTrackComponent implements OnInit {
             if (params["name"] !== undefined) {
                 this.mongoQueryService.getTrack(params["name"]).then((track: ITrack) => {
                     this.track = track;
-                    this.initializeMouseEvents();
                 }).catch((error: Error) => {
                     console.error(error);
                 });
-            } else {
-                this.initializeMouseEvents();
             }
+            this.initializeMouseEvents();
         });
     }
 
@@ -101,11 +106,11 @@ export class EditTrackComponent implements OnInit {
     public getPopoverContent(): string {
         let content: string = "";
         if (!this.mouseManagerService.trackComplete) {
-            content += "The current track is incomplete.";
+            content += TRACK_INCOMPLETE_ERR;
         } else if (this.constraints.isBroken) {
-            content += "Some constraints have been broken.";
+            content += BROKEN_CONSTRAINTS_ERR;
         } else if (!this.areFieldsComplete) {
-            content += "Please write a track name and description.";
+            content += NAME_DESCRIPTION_ERR;
         }
 
         return content;
@@ -129,7 +134,7 @@ export class EditTrackComponent implements OnInit {
                                 segments[i].FirstPoint.y * this.Canvas.getBoundingClientRect().height);
             this.context.lineTo(segments[i].SecondPoint.x * this.Canvas.getBoundingClientRect().width,
                                 segments[i].SecondPoint.y * this.Canvas.getBoundingClientRect().height);
-            this.context.strokeStyle = segments[i].broken ? "red" : (i === 0) ? "green" : "black";
+            this.context.strokeStyle = segments[i].broken ? COLOUR_RED : (i === 0) ? COLOUR_GREEN : COLOUR_BLACK;
             this.context.stroke();
             this.context.closePath();
         }
@@ -140,11 +145,11 @@ export class EditTrackComponent implements OnInit {
             this.context.beginPath();
             this.context.lineWidth = DEFAULT_LINE_WIDTH;
             this.context.lineJoin = "round";
-            this.context.fillStyle = "black";
+            this.context.fillStyle = COLOUR_BLACK;
             this.context.arc(iterator.x * this.Canvas.getBoundingClientRect().width,
                              iterator.y * this.Canvas.getBoundingClientRect().height,
                              DEFAULT_CIRCLE_RADIUS, 0, FULL_CIRCLE_RAD, false);
-            this.context.strokeStyle = (iterator.start || iterator.end) ? "green" : "blue";
+            this.context.strokeStyle = (iterator.start || iterator.end) ? COLOUR_GREEN : COLOUR_BLUE;
             this.context.stroke();
             this.context.fill();
             this.context.closePath();
