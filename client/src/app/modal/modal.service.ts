@@ -19,8 +19,13 @@ export class ModalService {
         return this.state.isOpen;
     }
 
-    public close(): void {
+    public closeWithFirstButton(): void {
         this.state.isOpen = false;
         this.state.modal.close("confirmed");
+    }
+
+    public closeWithSecondButton(): void {
+        this.state.isOpen = false;
+        this.state.modal.dismiss("not confirmed");
     }
 }

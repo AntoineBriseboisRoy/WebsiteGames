@@ -27,13 +27,17 @@ export class EndGameService {
         this.socketIO.CompletedGrid.subscribe((endGame: IEndGame) => this.alertCompletedGrid(endGame));
     }
     private alertDisconnectedPlayer(): void {
-        this.modalService.open({
-            title: "Sorry!", message: "The other player left the game. Would you like to play another game?",
-            firstButton: "Start a new game", secondButton: "Home", showPreview: false
-        })
-            .then(() => this.router.navigate(["crossword"]),
-                  () => this.router.navigate([""])
-            );
+        if (this.modalService.IsOpen) {
+            this.modalService.closeWithSecondButton();
+        } else {
+            this.modalService.open({
+                title: "Sorry!", message: "The other player left the game. Would you like to play another game?",
+                firstButton: "Start a new game", secondButton: "Home", showPreview: false
+            })
+                .then(() => this.router.navigate(["crossword"]),
+                      () => this.router.navigate([""])
+                );
+        }
     }
 
     private alertCompletedGrid(endGame: IEndGame): void {
@@ -67,7 +71,10 @@ export class EndGameService {
             firstButton: "Restart Game", secondButton: "Home", showPreview: false
         })
             .then(() => this.restartGame(),
-                  () => this.router.navigate([""])
+                  () => {
+                            this.socketIO.RestartedGameSubject.complete();
+                            this.router.navigate([""]);
+                        }
             );
         this.subscribeToRestartRequest();
     }
@@ -93,7 +100,7 @@ export class EndGameService {
     private subscribeToRestartRequest(): void {
         this.socketIO.RestartedGameSubject.subscribe((game: IRestartGame) => {
             this.hasReceivedRestartRequest = true;
-            this.modalService.close(); // Triggers the first button of the end game modal
+            this.modalService.closeWithFirstButton();
         });
     }
 
@@ -136,10 +143,10 @@ export class EndGameService {
         this.modalService.open({
             title: "Your opponent doesn't want to play again",
             message: "You can play another crossword game or try our fabulous race game.",
-            firstButton: "Home", secondButton: "Start a solo game ", showPreview: false
+            firstButton: "Start a solo game", secondButton: "Home", showPreview: false
         })
-            .then(() => this.router.navigate([""]),
-                  () => this.router.navigate(["crossword/difficulty"])
+            .then(() => this.router.navigate(["crossword/difficulty"]),
+                  () => this.router.navigate([""])
             );
     }
 }
