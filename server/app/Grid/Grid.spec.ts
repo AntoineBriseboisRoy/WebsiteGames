@@ -35,6 +35,21 @@ describe("Verifying letter validity.", () => {
     });
 });
 
+const testGridDifficulty: Function =  async (grid: Grid, difficulty: Difficulty): Promise<boolean> => {
+    const promises: Array<Promise<void>> = new Array<Promise<void>>();
+    let valid: boolean = true;
+    for (const word of grid.Words) {
+        promises.push(lexicalService.searchWords(word.content, difficulty).then((results: WordAndDefinition[]) => {
+            if (results.length === 0 || results[0].word !== word.content) {
+                valid = false;
+            }
+        }));
+    }
+    await Promise.all(promises);
+
+    return valid;
+};
+
 describe("Verifying generation of an EASY grid", () => {
     const grid: Grid = new Grid(Difficulty.Easy);
     it("Should be created", async () => {
@@ -67,18 +82,3 @@ describe("Verifying generation of an HARD grid", () => {
         expect(await testGridDifficulty(grid, Difficulty.Hard)).to.equal(true);
     });
 });
-
-const testGridDifficulty: Function =  async (grid: Grid, difficulty: Difficulty): Promise<boolean> => {
-    const promises: Array<Promise<void>> = new Array<Promise<void>>();
-    let valid: boolean = true;
-    for (const word of grid.Words) {
-        promises.push(lexicalService.searchWords(word.content, difficulty).then((results: WordAndDefinition[]) => {
-            if (results.length === 0 || results[0].word !== word.content) {
-                valid = false;
-            }
-        }));
-    }
-    await Promise.all(promises);
-
-    return valid;
-};
