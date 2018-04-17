@@ -10,6 +10,7 @@ import { MongoQueryService } from "../../mongo-query.service";
 import { TimerService } from "../timer-service/timer.service";
 import { Subscription } from "rxjs/Subscription";
 import { DayPeriodContext } from "../dayToggle-context";
+import { LAP_NUMBER } from "../../constants";
 
 const MAX_GEAR_BAR_WIDTH: number = 27;
 
@@ -30,12 +31,14 @@ export class GameComponent implements AfterViewInit {
     private containerRef: ElementRef;
     public startingText: string;
     public bestTime: Date;
+    private lapNumber: number;
 
     public constructor(private renderService: RenderService, private inputManagerService: InputManagerService,
                        private mongoQueryService: MongoQueryService , private route: ActivatedRoute, private timer: TimerService) {
         this.containerRef = undefined;
         this.startingText = "";
         this.bestTime = new Date(0, 0, 0, 0, 0, 0, 0);
+        this.lapNumber = LAP_NUMBER;
     }
 
     @HostListener("window:resize", ["$event"])

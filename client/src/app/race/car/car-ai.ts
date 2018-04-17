@@ -2,36 +2,59 @@ import { Car } from "./car";
 import { Vector2, Vector3, Matrix3 } from "three";
 
 const MINIMUM_ANGLE_FOR_STEERING: number = 0.1;
+const BRAKING_DISTANCE: number = 0.15;
+const DISTANCE_FROM_CENTER: number = 7;
+const BACKWARD_DISTANCE: number = 10;
 
 export class CarAI extends Car {
     public isInitialized: boolean;
     public isStuck: boolean;
     private positionAtStuckPoint: Vector3;
-    private isReachingRoadCenter: boolean;
+    private isMovingAwayFromEdges: boolean;
 
     public constructor() {
         super();
         this.isInitialized = false;
         this.isStuck = false;
         this.positionAtStuckPoint = undefined;
-        this.isReachingRoadCenter = false;
+        this.isMovingAwayFromEdges = false;
     }
 
     private steer(): void {
         if (this.angleBetweenTrackAndCarDirection() < MINIMUM_ANGLE_FOR_STEERING) {
-            if ( this.shortestDistanceFromCarToMiddleOfRoad() > 6) {
-                this.reachRoadCenter();
-            } else {
-                this.isReachingRoadCenter = false;
-                this.releaseSteering();
-            }
+            this.checkToMoveAwayFromEdges();
         } else {
-            if ( !this.isReachingRoadCenter) {
-                this.alignCarDirectionWithTrackDirection();
-            }
+            this.checkToAlignCarWithTrack();
         }
-        if ( this.shortestDistanceFromCarToMiddleOfRoad() < 7) {
-            this.isReachingRoadCenter = false;
+        this.checkToChangeIsMovingAwayFromEdges();
+    }
+
+    private checkToMoveAwayFromEdges(): void {
+        if (this.shortestDistanceFromCarToMiddleOfRoad() >= DISTANCE_FROM_CENTER) {
+            this.moveAwayFromEdges();
+        } else {
+            this.isMovingAwayFromEdges = false;
+            this.releaseSteering();
+        }
+    }
+
+    private checkToAlignCarWithTrack(): void {
+        if (!this.isMovingAwayFromEdges) {
+            this.alignCarDirectionWithTrackDirection();
+        }
+    }
+    private checkToChangeIsMovingAwayFromEdges(): void {
+        if (this.shortestDistanceFromCarToMiddleOfRoad() < DISTANCE_FROM_CENTER) {
+            this.isMovingAwayFromEdges = false;
+        }
+    }
+
+    private moveAwayFromEdges(): void {
+        this.isMovingAwayFromEdges = true;
+        if (this.isCarOnLeftSideOfRoad()) {
+            this.steerRight();
+        } else {
+            this.steerLeft();
         }
     }
 
@@ -45,15 +68,6 @@ export class CarAI extends Car {
 
     private isCarDirectionLeftOfTrackDirection(): boolean {
         return this.trackDirection().x * this.direction.z - this.trackDirection().y * this.direction.x < 0;
-    }
-
-    private reachRoadCenter(): void {
-        this.isReachingRoadCenter = true;
-        if (this.isCarOnLeftSideOfRoad()) {
-            this.steerRight();
-        } else {
-            this.steerLeft();
-        }
     }
 
     private shortestDistanceFromCarToMiddleOfRoad(): number {
@@ -77,29 +91,8 @@ export class CarAI extends Car {
         return Math.acos(this.trackDirection().dot(carDirection) / (this.trackDirection().length() * carDirection.length()));
     }
 
-    public update(deltaTime: number): void {
-        super.update(deltaTime);
-        if (!this.isInitialized) {
-            return;
-        }
-        if (this.isStuck) {
-            this.stuckRoutine();
-        } else {
-            if ( this.Information.DistanceToNextCheckpoint < this.distanceForBraking() ) {
-                if (this.speed.length() > 0) {
-                    this.brake();
-                    this.isAcceleratorPressed = false;
-                }
-            } else {
-                this.releaseBrakes();
-                this.isAcceleratorPressed = true;
-            }
-            this.steer();
-        }
-    }
-
-    private distanceForBraking(): number {
-        return this.speed.length() * 0.15;
+    private brakingDistance(): number {
+        return this.speed.length() * BRAKING_DISTANCE;
     }
 
     private stuckRoutine(): void {
@@ -107,15 +100,19 @@ export class CarAI extends Car {
             this.positionAtStuckPoint = this.getPosition().clone();
         }
         if (!this.shouldMoveForward()) {
-            this.isAcceleratorPressed = false;
-            this.brake();
-            if (this.getPosition().clone().sub(this.positionAtStuckPoint).length() >= 10) {
-                this.releaseBrakes();
-                this.isStuck = false;
-                this.positionAtStuckPoint = undefined;
-            }
+            this.driveBackward();
         } else {
             this.isStuck = false;
+        }
+    }
+
+    private driveBackward(): void {
+        this.isAcceleratorPressed = false;
+        this.brake();
+        if (this.getPosition().clone().sub(this.positionAtStuckPoint).length() >= BACKWARD_DISTANCE) {
+            this.releaseBrakes();
+            this.isStuck = false;
+            this.positionAtStuckPoint = undefined;
         }
     }
 
@@ -149,5 +146,34 @@ export class CarAI extends Car {
 
         return new Vector2().subVectors(this.Information.IntersectionPositions[this.Information.nextCheckpoint],
                                         this.Information.IntersectionPositions[previousCheckpoint]);
+    }
+
+    private adjustSpeed(): void {
+        if (this.Information.DistanceToNextCheckpoint < this.brakingDistance()) {
+            if (this.speed.length() > 0) {
+                this.brake();
+                this.isAcceleratorPressed = false;
+            }
+        } else {
+            this.releaseBrakes();
+            this.isAcceleratorPressed = true;
+        }
+    }
+
+    private drive(): void {
+        this.adjustSpeed();
+        this.steer();
+    }
+
+    public update(deltaTime: number): void {
+        super.update(deltaTime);
+        if (!this.isInitialized) {
+            return;
+        }
+        if (this.isStuck) {
+            this.stuckRoutine();
+        } else {
+            this.drive();
+        }
     }
 }

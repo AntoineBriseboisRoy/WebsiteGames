@@ -63,7 +63,7 @@ export class RenderService {
                        private startLineGeneratorService: StartLineGeneratorService, private soundManager: SoundManagerService) {
         this.isInitialized = false;
         this.cars = new Array<Car>();
-        this.cars.push(new Car());
+        this.cars.push(new CarAI());
         for (let i: number = 1; i < NUMBER_OF_CARS; i++) {
             this.cars.push(new CarAI());
         }

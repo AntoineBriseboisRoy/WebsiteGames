@@ -4,7 +4,7 @@
   <span id="gear" class="text">{{this.player.currentGear + 1}}</span>
   <img id="speed-background" src="../../assets/HUD_Speed.png">
   <span id="lap-background">
-    <span id="lap" class="text">Lap: {{this.player.Information.Lap}} / 3</span>
+    <span id="lap" class="text">Lap: {{this.player.Information.Lap}} / {{lapNumber}}</span>
   </span>
   <span id="time-background">
     <span id="time" class="text">Total time: {{this.player.Information.totalTime.getTime() | date: 'mm:ss:SS'}}</span>
