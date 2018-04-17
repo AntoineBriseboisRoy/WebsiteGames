@@ -67,17 +67,19 @@ export class EndGameService {
     }
 
     private openEndGameModal(title: string, message: string): void {
-        this.modalService.open({
-            title: title, message: message + "! You can choose to replay or go back to home page",
-            firstButton: "Restart Game", secondButton: "Home", showPreview: false
-        })
-            .then(() => this.restartGame(),
-                  () => {
-                            this.socketIO.RestartedGameSubject.complete();
-                            this.router.navigate([""]);
-                        }
-            );
-        this.subscribeToRestartRequest();
+        if (!this.modalService.IsOpen) {
+            this.modalService.open({
+                title: title, message: message + "! You can choose to replay or go back to home page",
+                firstButton: "Restart Game", secondButton: "Home", showPreview: false
+            })
+                .then(() => this.restartGame(),
+                      () => {
+                                this.socketIO.RestartedGameSubject.complete();
+                                this.router.navigate([""]);
+                            }
+                );
+            this.subscribeToRestartRequest();
+        }
     }
 
     private restartGame(): void {
