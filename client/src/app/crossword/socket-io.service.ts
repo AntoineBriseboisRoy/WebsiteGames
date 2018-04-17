@@ -123,7 +123,7 @@ export class SocketIoService {
                 obs.next(data);
             });
 
-            return () => this.socket.disconnect();
+            return () => console.warn("observable unsubscribe");
         });
     }
 }
