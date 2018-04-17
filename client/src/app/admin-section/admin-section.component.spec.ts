@@ -29,9 +29,7 @@ describe("AdminSectionComponent", () => {
     });
 
     it("should create", () => {
-        expect(component).toBeTruthy().catch((error: Error) => {
-            console.error(error);
-        });
+        expect(component).toBeTruthy();
     });
 
     it("should delete from MongoDB properly", inject([MongoQueryService], (mongoQueryService: MongoQueryService)  => {

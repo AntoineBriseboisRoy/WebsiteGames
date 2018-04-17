@@ -4,7 +4,35 @@ import { RaceResultsComponent } from "./race-results.component";
 import { CarInformation } from "../car/car-information";
 import { RenderService } from "../render-service/render.service";
 import { MongoQueryService } from "../../mongo-query.service";
+import { FormsModule } from "@angular/forms";
+import { CollisionManager } from "../car/collision-manager.service";
+import { SoundManagerService } from "../sound-manager.service";
+import { ModalService } from "../../modal/modal.service";
+import { NgbModule } from "@ng-bootstrap/ng-bootstrap";
+import { ModalStateService } from "../../modal/modal-state.service";
+import { NgbModalStack } from "@ng-bootstrap/ng-bootstrap/modal/modal-stack";
+import { APP_BASE_HREF } from "@angular/common";
+import { InputManagerService } from "../input-manager-service/input-manager.service";
+import { RoadCreator } from "../render-service/road-creator.service";
+import { StartLineGeneratorService } from "../start-line-generator.service";
+import { RouterTestingModule } from "@angular/router/testing";
+import { Routes } from "@angular/router";
+import { BestTime } from "../../../../../common/interfaces/ITrack";
+import { HttpClientTestingModule } from "@angular/common/http/testing";
 
+const routes: Routes = [
+    {path: "", redirectTo: "home", pathMatch: "full"}
+  ];
+class FakeMongoService {
+    public BASE_URL: string = `bidon`;
+    public trackBestTimes: BestTime[];
+
+    public getTrackBestTimes = (): void => {
+        this.trackBestTimes = [
+            { playerName: "ad", time: new Date()}
+        ];
+    }
+}
 // tslint:disable:no-magic-numbers
 describe("RaceResultsComponent", () => {
     const wantedName: string = "NYAN";
@@ -14,8 +42,11 @@ describe("RaceResultsComponent", () => {
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
+            imports: [FormsModule, NgbModule, HttpClientTestingModule, RouterTestingModule.withRoutes(routes)],
             declarations: [RaceResultsComponent],
-            providers: [RenderService, MongoQueryService]
+            providers: [RenderService, {provide: MongoQueryService, useClass: FakeMongoService}, CollisionManager, SoundManagerService,
+                        ModalService, ModalStateService, NgbModalStack, {provide: APP_BASE_HREF, useValue: "/"},
+                        InputManagerService, RoadCreator, StartLineGeneratorService]
         }).compileComponents();
     }));
 
@@ -26,7 +57,6 @@ describe("RaceResultsComponent", () => {
 
         carInformation = new CarInformation();
         component.CarInformations.push(carInformation);
-
         component.TrackBestTimes.push(
             { playerName: "[Anonymous Player]", time: new Date("1970-01-01T00:00:02.875Z") },
             { playerName: "Test", time: new Date("1970-01-01T00:00:03.216Z") },
