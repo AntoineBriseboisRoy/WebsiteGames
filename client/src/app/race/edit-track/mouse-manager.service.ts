@@ -69,11 +69,9 @@ export class MouseManagerService {
     }
 
     private getDistance(index: number, x: number, y: number): number {
-        const xDistance: number = x - this.points[index].x;
-        const yDistance: number = y - this.points[index].y;
+        const SQUARE: number = 2;
 
-        // tslint:disable-next-line:no-magic-numbers
-        return Math.sqrt(Math.pow(xDistance, 2) + Math.pow(yDistance, 2));
+        return Math.sqrt(Math.pow(x - this.points[index].x, SQUARE) + Math.pow(y - this.points[index].y, SQUARE));
     }
 
     private isOnOtherPoint(x: number, y: number): number {
