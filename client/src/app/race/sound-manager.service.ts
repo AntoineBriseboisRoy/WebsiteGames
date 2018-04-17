@@ -38,7 +38,13 @@ export class SoundManagerService {
     }
 
     public play(name: string): void {
-        this.sounds.get(name).play();
+        // if (window.URL.name.includes("play")) {
+            this.sounds.get(name).play();
+        // }
+    }
+
+    public stop(): void {
+        this.sounds.forEach((sound: Audio) => sound.stop());
     }
 
     private playLoop(name: string): void {

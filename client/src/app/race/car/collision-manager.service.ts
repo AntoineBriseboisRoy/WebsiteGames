@@ -66,10 +66,12 @@ export class CollisionManager {
     }
 
     public update(): void {
-        this.verifyCarCollision();
-        this.verifyWallCollision();
-        this.verifyStartLineCollision();
-        this.verifyCheckpointCollision();
+        if (window.location.pathname.includes("play")) {
+            this.verifyCarCollision();
+            this.verifyWallCollision();
+            this.verifyStartLineCollision();
+            this.verifyCheckpointCollision();
+        }
     }
 
     private verifyCarCollision(): void {
@@ -239,9 +241,14 @@ export class CollisionManager {
                 "! Let's go see your results... You have two magnificient buttons to do so.",
                 firstButton: "See race results!", secondButton: "See race results again!", showPreview: true
             })
-            .then(() => this.router.navigate(["race/results"]),
-                  () => this.router.navigate(["race/results"])
+            .then(() => this.goToResults(),
+                  () => this.goToResults()
             );
         }
+    }
+
+    private goToResults(): void {
+        this.soundManager.stop();
+        this.router.navigate(["race/results"]);
     }
 }

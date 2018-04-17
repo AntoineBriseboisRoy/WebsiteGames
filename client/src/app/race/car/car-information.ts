@@ -95,11 +95,7 @@ export class CarInformation {
     }
 
     public setNextCheckpoint( checkpoint: number ): void {
-        console.log(this.nextCheckpoint);
         this.nextCheckpoint = this.checkpoints[checkpoint];
-        console.log("----------------------");
-        console.log("PROCHAIN CHECKPOINT: " + checkpoint);
-        console.log("----------------------");
     }
 
     private verifyWay(): void {
@@ -111,6 +107,5 @@ export class CarInformation {
         this.distanceToNextCheckpoint.subVectors(this.nextCheckpoint, meshPosition);
         this.verifyWay();
         this.precedentDistanceToNextCheckpoint = this.distanceToNextCheckpoint.clone();
-        console.log(this.isGoingForward);
     }
 }
