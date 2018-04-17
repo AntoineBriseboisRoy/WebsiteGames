@@ -23,6 +23,7 @@ export class RaceResultsComponent implements OnInit {
     private hasSavedName: boolean;
 
     private isInBestTimes: boolean;
+
     public get CarInformations(): CarInformation[] {
         return this.carInformations;
     }
@@ -48,11 +49,36 @@ export class RaceResultsComponent implements OnInit {
     }
 
     public ngOnInit(): void {
-        this.getSortedCarInformations();
+        this.sortCarInformations();
         this.getTrackBestTimes();
     }
 
-    private getSortedCarInformations(): void {
+    public replay(): void {
+        window.open("/race/play?name=" + this.renderService.ActiveTrack.name, "_self");
+    }
+
+    public goBackHome(): void {
+        window.open("/", "_self");
+    }
+
+    public goBackTracks(): void {
+        window.open("/race/", "_self");
+    }
+
+    public getFormattedTime(time: Date): string {
+        return DateFormatter.DateToMinSecMillisec(time);
+    }
+
+    public editTrackBestTimesDB(): void {
+        if (this.renderService.ActiveTrack.bestTimes[this.bestTimeRanking].playerName === PLAYER_NAME_PLACEHOLDER) {
+            this.renderService.ActiveTrack.bestTimes[this.bestTimeRanking].playerName = ANONYMOUS_PLAYER_NAME;
+        }
+        this.queryService.putTrack(this.renderService.ActiveTrack.name, this.renderService.ActiveTrack)
+        .then(() => this.hasSavedName = true)
+        .catch((err: Error) => { console.error(err); });
+    }
+
+    private sortCarInformations(): void {
         this.renderService.Cars.forEach((car: Car) => this.carInformations.push(car.Information));
         this.sortRaceTimes();
     }
@@ -101,20 +127,6 @@ export class RaceResultsComponent implements OnInit {
             .catch((error: Error) => console.error(error));
     }
 
-    public getFormattedTime(time: Date): string {
-        return DateFormatter.DateToMinSecMillisec(time);
-    }
-
-    public editTrackBestTimesDB(): void {
-        if (this.renderService.ActiveTrack.bestTimes[this.bestTimeRanking].playerName === PLAYER_NAME_PLACEHOLDER) {
-            this.renderService.ActiveTrack.bestTimes[this.bestTimeRanking].playerName = ANONYMOUS_PLAYER_NAME;
-        }
-        this.queryService.putTrack(this.renderService.ActiveTrack.name, this.renderService.ActiveTrack)
-        .then(() => this.hasSavedName = true)
-        .catch((err: Error) => { console.error(err); }
-        );
-    }
-
     private inBestTimes(): void {
         this.isInBestTimes = this.carInformations[PLAYER_INDEX].totalTime <= this.trackBestTimes[this.trackBestTimes.length - 1].time;
     }
@@ -122,20 +134,8 @@ export class RaceResultsComponent implements OnInit {
     private findPlayerRank(): void {
         if (this.isInBestTimes) {
             this.bestTimeRanking = this.trackBestTimes.findIndex((bestTime: BestTime) =>
-            bestTime.playerName === PLAYER_NAME_PLACEHOLDER
-            && bestTime.time === this.carInformations[PLAYER_INDEX].totalTime);
+                bestTime.playerName === PLAYER_NAME_PLACEHOLDER
+                && bestTime.time === this.carInformations[PLAYER_INDEX].totalTime);
         }
-    }
-
-    public replay(): void {
-        window.open("/race/play?name=" + this.renderService.ActiveTrack.name, "_self");
-    }
-
-    public goBackHome(): void {
-        window.open("/", "_self");
-    }
-
-    public goBackTracks(): void {
-        window.open("/race/", "_self");
     }
 }

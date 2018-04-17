@@ -34,7 +34,7 @@ class FakeMongoService {
     }
 }
 // tslint:disable:no-magic-numbers
-fdescribe("RaceResultsComponent", () => {
+describe("RaceResultsComponent", () => {
     const wantedName: string = "NYAN";
     let component: RaceResultsComponent;
     let fixture: ComponentFixture<RaceResultsComponent>;
