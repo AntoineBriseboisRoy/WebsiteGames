@@ -121,8 +121,6 @@ export class RenderService {
         this.collisionManager.update();
         this.cars.forEach((car) => {
             car.Information.updateDistanceToNextCheckpoint(new Vector2(car.getPosition().x, car.getPosition().z));
-            car.Information.updatePlayerSituation(this.cars[PLAYER].Information.Lap, this.cars[PLAYER].Information.nextCheckpoint,
-                                                  this.cars[PLAYER].Information.DistanceToNextCheckpoint);
         });
     }
 

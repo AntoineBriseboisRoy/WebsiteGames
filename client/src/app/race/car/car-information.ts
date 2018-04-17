@@ -2,12 +2,6 @@ import { Subscription } from "rxjs/Subscription";
 import { LAP_NUMBER } from "../../constants";
 import { Vector2 } from "three";
 
-const enum PlayerSituation {
-    LAP = 0,
-    NEXT_CHECKPOINT,
-    DISTANCE_TO_NEXT_CHECKPOINT
-}
-
 export class CarInformation {
     private lap: number;
     private lapTimes: Array<Date>;
@@ -16,15 +10,11 @@ export class CarInformation {
     private hasStartedAFirstLap: boolean;
     private hasCrossedStartLineBackward: boolean;
     private subscription: Subscription;
-
-    // For AI :
     private checkpoints: Array<[Vector2, Vector2]>;
     private intersectionPositions: Array<Vector2>;
     public nextCheckpoint: number;
     private precedentDistanceToNextCheckpoint: number;
     private distanceToNextCheckpoint: number;
-    private playerSituation: [number, number, number];
-    // -----
     public constructor() {
         this.lap = 1;
         this.lapTimes = new Array<Date>();
@@ -38,7 +28,6 @@ export class CarInformation {
         this.precedentDistanceToNextCheckpoint = 0;
         this.distanceToNextCheckpoint = 0;
         this.nextCheckpoint = 1;
-        this.playerSituation = [0, 0, 0];
     }
 
     public get Lap(): number {
@@ -103,12 +92,6 @@ export class CarInformation {
     public setNextCheckpoint( checkpoint: number ): void {
         this.nextCheckpoint = this.nextCheckpoint === checkpoint ?
                               (checkpoint + 1) % this.checkpoints.length : checkpoint;
-
-        console.log("----------------------");
-        console.log("PROCHAIN CHECKPOINT: " + this.nextCheckpoint +  "\nLeft: " + this.checkpoints[this.nextCheckpoint][0].toArray() +
-                    "\nRight: " + this.checkpoints[this.nextCheckpoint][1].toArray() + "\nDirection: " + this.isGoingForward);
-        console.log("----------------------");
-        console.log("DISTANCE AVEC JOUEUR: " + this.distanceGapToPlayer());
     }
 
     private verifyWay(): void {
@@ -127,18 +110,6 @@ export class CarInformation {
                         checkpointVector.length();
     }
 
-    public distanceGapToPlayer(): number {
-        const lapDistance: number = (this.lap - 1) * this.trackLengthToCheckpoint(this.checkpoints.length - 1);
-        const currentLapDistance: number = this.trackLengthToCheckpoint(this.nextCheckpoint) - this.distanceToNextCheckpoint;
-        const playerLapDistance: number = (this.playerSituation[PlayerSituation.LAP] - 1) *
-                                          this.trackLengthToCheckpoint(this.checkpoints.length - 1);
-        const playerCurrentLapDistance: number = this.trackLengthToCheckpoint(
-                                                 this.playerSituation[PlayerSituation.NEXT_CHECKPOINT]) -
-                                                 this.playerSituation[PlayerSituation.DISTANCE_TO_NEXT_CHECKPOINT];
-
-        return lapDistance + currentLapDistance - playerLapDistance - playerCurrentLapDistance;
-    }
-
     public trackLengthToCheckpoint(checkpoint: number): number {
         let trackLength: number = 0;
         for (let i: number = 0; i < checkpoint; i++ ) {
@@ -147,12 +118,6 @@ export class CarInformation {
         }
 
         return trackLength;
-    }
-
-    public updatePlayerSituation(lap: number, nextCheckpoint: number, distanceToNextCheckpoint: number): void {
-        this.playerSituation[PlayerSituation.LAP] = lap;
-        this.playerSituation[PlayerSituation.NEXT_CHECKPOINT] = nextCheckpoint;
-        this.playerSituation[PlayerSituation.DISTANCE_TO_NEXT_CHECKPOINT] = distanceToNextCheckpoint;
     }
 
     public updateDistanceToNextCheckpoint(carMeshPosition: Vector2): void {

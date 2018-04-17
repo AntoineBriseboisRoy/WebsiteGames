@@ -99,15 +99,7 @@ export class CarAI extends Car {
     }
 
     private distanceForBraking(): number {
-        const previousCheckpoint: number = this.Information.nextCheckpoint - 1 < 0 ? this.Information.Checkpoints.length - 1 :
-                                                                                     this.Information.nextCheckpoint - 1;
-        const segmentLength: number = this.Information.trackLengthToCheckpoint(this.Information.nextCheckpoint) -
-                                      this.Information.trackLengthToCheckpoint(previousCheckpoint);
-        if ( this.Information.distanceGapToPlayer() > 0 ) {
-            return (15 * Math.atan(0.002 * this.Information.distanceGapToPlayer() - 3) + 20) * segmentLength / 50;
-        }
-
-        return 0;
+        return this.speed.length() * 0.15;
     }
 
     private stuckRoutine(): void {

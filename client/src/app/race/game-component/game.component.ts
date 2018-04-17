@@ -115,21 +115,6 @@ export class GameComponent implements AfterViewInit {
         }
     }
 
-    public playerRanking(): number {
-        if (this.renderService.IsInitialized) {
-            const ranking: Array<Car> = this.renderService.Cars.slice();
-            const player: Car = ranking[0];
-            ranking.sort((a, b) => a.Information.distanceGapToPlayer() - b.Information.distanceGapToPlayer());
-            for (let i: number = 0; i < ranking.length; i++) {
-                if (player === ranking[i]) {
-                    return ranking.length - i;
-                }
-            }
-        }
-
-        return -1;
-    }
-
     public rpmRatio(): number {
         return (this.player.rpm / DEFAULT_SHIFT_RPM) * MAX_GEAR_BAR_WIDTH;
     }
