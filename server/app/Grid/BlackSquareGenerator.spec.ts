@@ -1,13 +1,14 @@
 import { expect } from "chai";
 import { BlackSquareGenerator } from "./BlackSquareGenerator";
-import { STANDARD_SIDE_SIZE, PERCENTAGE_BLACK_SQUARES, BLACKSQUARE_CHARACTER, MIN_LETTERS_FOR_WORD,
-         MIN_WORDS_PER_LINE } from "./Constants";
+import { STANDARD_SIDE_SIZE, PERCENTAGE_BLACK_SQUARES, BLACKSQUARE_CHARACTER } from "./Constants";
+import { IWord, Orientation } from "../../../common/interfaces/IWord";
 
 const EXTENDED_TIMEOUT: number = 5000;
 
 describe("Verifying BlackSquare generation.", () => {
-    it ("Should have the correct percentage of BlackSquares.", () => {
-        const grid: string[][] = new BlackSquareGenerator(STANDARD_SIDE_SIZE, PERCENTAGE_BLACK_SQUARES).Content;
+    const blacksquareGrid: BlackSquareGenerator = new BlackSquareGenerator(STANDARD_SIDE_SIZE, PERCENTAGE_BLACK_SQUARES);
+    it ("Should have approximately the correct percentage of BlackSquares.", () => {
+        const grid: string[][] = blacksquareGrid.Content;
         let nBlackSquares: number = 0;
         grid.forEach((row: string[]) => {
             row.forEach((letter: string) => {
@@ -16,39 +17,36 @@ describe("Verifying BlackSquare generation.", () => {
                 }
             });
         });
-        expect(nBlackSquares).to.equal(PERCENTAGE_BLACK_SQUARES * STANDARD_SIDE_SIZE * STANDARD_SIDE_SIZE);
+        const ERROR_MARGIN: number = 0.05;
+        expect(nBlackSquares).to.be.greaterThan((PERCENTAGE_BLACK_SQUARES - ERROR_MARGIN) * STANDARD_SIDE_SIZE * STANDARD_SIDE_SIZE);
+        expect(nBlackSquares).to.be.lessThan((PERCENTAGE_BLACK_SQUARES + ERROR_MARGIN) * STANDARD_SIDE_SIZE * STANDARD_SIDE_SIZE);
     }).timeout(EXTENDED_TIMEOUT);
-    // tslint:disable-next-line:max-func-body-length
     it("Should have room for at least one word per row/column.", () => {
-        const grid: string[][] = new BlackSquareGenerator(STANDARD_SIDE_SIZE, PERCENTAGE_BLACK_SQUARES).Content;
-        let enoughRoom: boolean = true;
-        for (let i: number = 0; i < STANDARD_SIDE_SIZE; i++) {
-            let previousBlackSquarePosRow: number = -1, previousBlackSquarePosCol: number = -1,
-                nWordsOnRow: number = 0, nWordsOnCol: number = 0;
-            for (let j: number = 0; j < STANDARD_SIDE_SIZE; j++) {
-                if (grid[i][j] === BLACKSQUARE_CHARACTER) {
-                    if (previousBlackSquarePosRow < j - MIN_LETTERS_FOR_WORD) {
-                        ++nWordsOnRow;
-                    }
-                    previousBlackSquarePosRow = j;
-                }
-                if (grid[j][i] === BLACKSQUARE_CHARACTER) {
-                    if (previousBlackSquarePosCol < j - MIN_LETTERS_FOR_WORD) {
-                        ++nWordsOnCol;
-                    }
-                    previousBlackSquarePosCol = j;
-                }
-            }
-            if (previousBlackSquarePosCol < grid[0].length - MIN_LETTERS_FOR_WORD) {
-                ++nWordsOnCol;
-            }
-            if (previousBlackSquarePosRow < grid[0].length - MIN_LETTERS_FOR_WORD) {
-                ++nWordsOnRow;
-            }
-            if ((nWordsOnCol < MIN_WORDS_PER_LINE) || (nWordsOnRow < MIN_WORDS_PER_LINE)) {
-                enoughRoom = false;
+        const wordsToFill: IWord[] = blacksquareGrid.WordsToFill;
+        const wordsInRowsCols: number[][] = new Array<Array<number>>();
+        for (let i: number = 0; i < STANDARD_SIDE_SIZE; ++i) {
+            wordsInRowsCols[i] = new Array<number>();
+            wordsInRowsCols[i][0] = wordsInRowsCols[i][1] = 0;
+        }
+        for (const word of wordsToFill) {
+            if (word.orientation === Orientation.Horizontal) {
+                ++wordsInRowsCols[word.position.y][Orientation.Horizontal];
+            } else {
+                ++wordsInRowsCols[word.position.x][Orientation.Vertical];
             }
         }
-        expect(enoughRoom).to.equal(true);
+        let valid: boolean = true;
+        for (let i: number = 0; i < STANDARD_SIDE_SIZE; ++i) {
+            if (wordsInRowsCols[i][0] === 0 || wordsInRowsCols[i][1] === 0) {
+                valid = false;
+            }
+        }
+        expect(valid).to.equal(true);
+    }).timeout(EXTENDED_TIMEOUT);
+    it("Should have the correct size.", () => {
+        expect(blacksquareGrid.Content.length).to.equal(STANDARD_SIDE_SIZE);
+        for (const array of blacksquareGrid.Content) {
+            expect(array.length).to.equal(STANDARD_SIDE_SIZE);
+        }
     }).timeout(EXTENDED_TIMEOUT);
 });
