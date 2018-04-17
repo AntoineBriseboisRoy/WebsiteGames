@@ -17,8 +17,6 @@ export class TopBarComponent {
     }
 
     public difficultyToString(): string {
-        console.log(this.gameManager.difficulty);
-
         switch (this.gameManager.difficulty) {
             case Difficulty.Easy: return DifficultyView.Easy;
             case Difficulty.Medium: return DifficultyView.Medium;

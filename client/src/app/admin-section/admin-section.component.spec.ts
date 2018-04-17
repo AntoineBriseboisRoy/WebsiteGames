@@ -4,7 +4,7 @@ import { AdminSectionComponent } from "./admin-section.component";
 import { RouterModule, Router } from "@angular/router";
 import { MongoQueryService } from "../mongo-query.service";
 import { HttpClient, HttpClientModule } from "@angular/common/http";
-import { ITrack, TrackType, BestTime } from "../../../../common/interfaces/ITrack";
+import { ITrack, TrackType, IBestTime } from "../../../../common/interfaces/ITrack";
 import { Point } from "../race/edit-track/Geometry";
 
 describe("AdminSectionComponent", () => {
@@ -37,7 +37,7 @@ describe("AdminSectionComponent", () => {
                                        name: "test",
                                        description: "test",
                                        nTimesPlayed: 0,
-                                       bestTimes: new Array<BestTime>(),
+                                       bestTimes: new Array<IBestTime>(),
                                        type: TrackType.REGULAR,
                                        points: Array<Point>() } as ITrack;
 

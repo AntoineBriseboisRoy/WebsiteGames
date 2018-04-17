@@ -17,7 +17,7 @@ import { RoadCreator } from "../render-service/road-creator.service";
 import { StartLineGeneratorService } from "../start-line-generator.service";
 import { RouterTestingModule } from "@angular/router/testing";
 import { Routes } from "@angular/router";
-import { BestTime } from "../../../../../common/interfaces/ITrack";
+import { IBestTime } from "../../../../../common/interfaces/ITrack";
 import { HttpClientTestingModule } from "@angular/common/http/testing";
 
 const routes: Routes = [
@@ -25,7 +25,7 @@ const routes: Routes = [
   ];
 class FakeMongoService {
     public BASE_URL: string = `bidon`;
-    public trackBestTimes: BestTime[];
+    public trackBestTimes: IBestTime[];
 
     public getTrackBestTimes = (): void => {
         this.trackBestTimes = [
@@ -47,7 +47,7 @@ describe("RaceResultsComponent", () => {
             providers: [RenderService, {provide: MongoQueryService, useClass: FakeMongoService}, CollisionManager, SoundManagerService,
                         ModalService, ModalStateService, NgbModalStack, {provide: APP_BASE_HREF, useValue: "/"},
                         InputManagerService, RoadCreator, StartLineGeneratorService]
-        }).compileComponents();
+        }).compileComponents().catch((error: Error) => console.error(error));
     }));
 
     beforeEach(() => {

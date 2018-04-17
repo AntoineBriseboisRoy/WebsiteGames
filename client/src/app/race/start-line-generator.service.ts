@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { Vector2, ObjectLoader, Object3D, PlaneBufferGeometry, MeshBasicMaterial, Mesh, DoubleSide, TextureLoader } from "three";
 import { Car } from "./car/car";
-import { ITrack, TrackType, BestTime } from "../../../../common/interfaces/ITrack";
+import { ITrack, TrackType, IBestTime } from "../../../../common/interfaces/ITrack";
 import { HALF, PI_OVER_2, ROAD_WIDTH } from "../constants";
 import { Point } from "./edit-track/Geometry";
 
@@ -27,7 +27,7 @@ export class StartLineGeneratorService {
             name: "",
             description: "",
             nTimesPlayed: 0,
-            bestTimes: Array<BestTime>(),
+            bestTimes: Array<IBestTime>(),
             type: TrackType.REGULAR,
             points: Array<Point>()
         } as ITrack;
