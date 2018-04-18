@@ -1,8 +1,8 @@
 import { expect } from "chai";
 import { Grid } from "./Grid";
-import { IWord, Orientation } from "../../../common/interfaces/IWord";
+import { IWord } from "../../../common/interfaces/IWord";
 import { EMPTY_SQUARE, MIN_LETTERS_FOR_WORD } from "./Constants";
-import { Difficulty } from "../../../common/constants";
+import { Difficulty, Orientation } from "../../../common/constants";
 import { StringService } from "./StringService";
 
 const EXTENDED_TIMEOUT: number = 30000;
