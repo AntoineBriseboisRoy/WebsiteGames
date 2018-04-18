@@ -3,12 +3,17 @@ export enum TrackType {
     DESERT = "Desert", REGULAR = "Regular"
 }
 
+export interface IBestTime {
+    playerName: string;
+    time: Date;
+}
+
 export interface ITrack {
     _id: string;
     name: string;
     description: string;
     nTimesPlayed: number;
-    bestTimes: string[];
+    bestTimes: IBestTime[];
     type: TrackType;
     points: Array<Point>;
 }

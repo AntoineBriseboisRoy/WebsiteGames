@@ -17,6 +17,9 @@ export class CarInformation {
     private precedentDistanceToNextCheckpoint: Vector2;
     private distanceToNextCheckpoint: Vector2;
     // -----
+    private ranking: number;
+    private playerName: string;
+
     public constructor() {
         this.lap = 1;
         this.totalTime = new Date(0);
@@ -29,12 +32,25 @@ export class CarInformation {
         this.precedentDistanceToNextCheckpoint = new Vector2(0);
         this.distanceToNextCheckpoint = new Vector2();
         this.nextCheckpoint = new Vector2();
+        this.ranking = 1;
+        this.playerName = "PLAYER";
+    }
+
+    public get PlayerName(): string {
+        return this.playerName;
     }
 
     public get Lap(): number {
         return this.lap;
     }
 
+    public get Ranking(): number {
+        return this.ranking;
+    }
+
+    public get LapTimes(): Array<Date> {
+        return this.lapTimes;
+    }
     public get CurrentLapTime(): number {
         return this.totalTime.getTime() - this.lapTimes.reduce((a, b) => a + b.getTime(), 0);
     }
@@ -66,6 +82,10 @@ export class CarInformation {
         }
     }
 
+    public addFinalLap(): void {
+        this.lapTimes.push(new Date(this.CurrentLapTime));
+    }
+
     public startTimer(subscription: Subscription): void {
         this.subscription = subscription;
     }
@@ -75,11 +95,7 @@ export class CarInformation {
     }
 
     public setNextCheckpoint( checkpoint: number ): void {
-        console.log(this.nextCheckpoint);
         this.nextCheckpoint = this.checkpoints[checkpoint];
-        console.log("----------------------");
-        console.log("PROCHAIN CHECKPOINT: " + checkpoint);
-        console.log("----------------------");
     }
 
     private verifyWay(): void {
@@ -91,6 +107,5 @@ export class CarInformation {
         this.distanceToNextCheckpoint.subVectors(this.nextCheckpoint, meshPosition);
         this.verifyWay();
         this.precedentDistanceToNextCheckpoint = this.distanceToNextCheckpoint.clone();
-        console.log(this.isGoingForward);
     }
 }

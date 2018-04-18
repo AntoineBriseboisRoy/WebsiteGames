@@ -1,4 +1,4 @@
-import { TestBed} from "@angular/core/testing";
+import { TestBed } from "@angular/core/testing";
 import {
   InputManagerService, ACCELERATE_KEYCODE, LEFT_KEYCODE,
   BRAKE_KEYCODE, RIGHT_KEYCODE, ZOOM_IN_KEYCODE,
@@ -6,17 +6,21 @@ import {
 } from "./input-manager.service";
 import {Car} from "../car/car";
 import { CameraContext } from "../camera/camera-context";
+import { DayPeriodContext } from "../dayToggle-context";
+import { RenderService } from "../render-service/render.service";
 
 const car: Car = new Car();
 const cameraContext: CameraContext = new CameraContext();
 const service: InputManagerService = new InputManagerService();
+let dayPeriodContext: DayPeriodContext;
 
 describe("InputManagerService", () => {
-  service.init(car, cameraContext);
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [InputManagerService]
+      providers: [InputManagerService, RenderService]
     });
+    dayPeriodContext = new DayPeriodContext(TestBed.get(RenderService));
+    service.init(car, cameraContext, dayPeriodContext);
   });
 
   it("should be created", () => {

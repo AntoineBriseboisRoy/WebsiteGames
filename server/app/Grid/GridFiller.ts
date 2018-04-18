@@ -1,6 +1,7 @@
 import { ICoordXY } from "../../../common/interfaces/ICoordXY";
 import { IWord, Orientation } from "../../../common/interfaces/IWord";
-import { EMPTY_SQUARE, BLACKSQUARE_CHARACTER, WORD_CACHE, WORD_CACHE_OFFSET, WORD_CUTOFF, MAX_TRIES_BEFORE_FAIL } from "./Constants";
+import { EMPTY_SQUARE, BLACKSQUARE_CHARACTER, WORD_CACHE, WORD_CACHE_OFFSET, WORD_CUTOFF, MAX_TRIES_BEFORE_FAIL,
+         EMPTY_CHAR_FOR_QUERY } from "./Constants";
 import { LexicalService } from "../Services/LexicalService/LexicalService";
 import { Difficulty } from "../../../common/constants";
 import { WordAndDefinition } from "../Services/LexicalService/Interfaces";
@@ -43,7 +44,7 @@ export class GridFiller {
         this.sortWordsToFillByLength();
 
         this.tries = 0;
-        if (!this.fillGridWithWords()) {
+        if (!this.fillGridWithWordsRecursive()) {
             return false;
         }
         this.fillRemainingSpacesWithBlacksquares();
@@ -109,7 +110,7 @@ export class GridFiller {
         await Promise.all(promises);
     }
 
-    private fillGridWithWords(): boolean {
+    private fillGridWithWordsRecursive(): boolean {
         if (this.gridFilled()) {
             return true;
         }
@@ -130,7 +131,7 @@ export class GridFiller {
 
             this.addNewWord(wordAdded);
             this.sortWordsToFillByCommonLetters();
-            const nextWordPlaced: boolean = this.fillGridWithWords();
+            const nextWordPlaced: boolean = this.fillGridWithWordsRecursive();
             if (nextWordPlaced) {
                 return true;
             }
@@ -216,7 +217,7 @@ export class GridFiller {
         for (const word of WORD_CACHE[wordToFill.content.length + WORD_CACHE_OFFSET][this.difficulty]) {
             let valid: boolean = true;
             for (let i: number = 0; i < word.length; ++i) {
-                if (template[i] !== "?" && template[i] !== word[i]) {
+                if (template[i] !== EMPTY_CHAR_FOR_QUERY && template[i] !== word[i]) {
                     valid = false;
                 }
             }
@@ -236,10 +237,10 @@ export class GridFiller {
         let searchTemplate: string = "";
         for (let i: number = 0; i < nextWord.content.length; i++) {
             const currentChar: string = (nextWord.orientation === Orientation.Vertical) ?
-                this.grid[nextWord.position.x][i + nextWord.position.y] :
-                this.grid[nextWord.position.x + i][nextWord.position.y];
+                                                                this.grid[nextWord.position.x][i + nextWord.position.y] :
+                                                                this.grid[nextWord.position.x + i][nextWord.position.y];
             if (currentChar === EMPTY_SQUARE) {
-                searchTemplate += "?";
+                searchTemplate += EMPTY_CHAR_FOR_QUERY;
             } else {
                 searchTemplate += currentChar;
             }

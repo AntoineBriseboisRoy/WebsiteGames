@@ -6,6 +6,7 @@ import { COLLISION_SOUND_NAME, WALL_SOUND_NAME, LAP_NUMBER } from "../../constan
 import { ModalService } from "../../modal/modal.service";
 import { Router } from "@angular/router";
 import { InputManagerService } from "../input-manager-service/input-manager.service";
+import { DateFormatter } from "../date-formatter";
 
 const CAR_A_MOMENTUM_FACTOR: number = 2.1;
 const CAR_B_MOMENTUM_FACTOR: number = 1.9;
@@ -65,10 +66,12 @@ export class CollisionManager {
     }
 
     public update(): void {
-        this.verifyCarCollision();
-        this.verifyWallCollision();
-        this.verifyStartLineCollision();
-        this.verifyCheckpointCollision();
+        if (window.location.pathname.includes("play")) {
+            this.verifyCarCollision();
+            this.verifyWallCollision();
+            this.verifyStartLineCollision();
+            this.verifyCheckpointCollision();
+        }
     }
 
     private verifyCarCollision(): void {
@@ -168,6 +171,7 @@ export class CollisionManager {
     private startLineCollision(car: Car): void {
         if (car.Information.Lap === LAP_NUMBER) {
             car.Information.stopTimer();
+            car.Information.addFinalLap();
             if (car === this.cars[0]) {
                 this.endRace();
             }
@@ -229,20 +233,22 @@ export class CollisionManager {
     }
 
     private endRace(): void  {
-        const PADDING: number = 2;
         this.inputManagerService.deactivate();
         if (!this.modalService.IsOpen) {
             this.modalService.open({
                 title: "Race Over!", message: "Your time is " +
-                this.cars[0].Information.totalTime.getMinutes().toString().padStart(PADDING, "0") + ":" +
-                this.cars[0].Information.totalTime.getSeconds().toString().padStart(PADDING, "0") + ":"  +
-                this.cars[0].Information.totalTime.getMilliseconds().toString().padEnd(PADDING, "0").substr(0, PADDING) +
-                "! You can choose to replay or go back to home page",
-                firstButton: "Race again!", secondButton: "Home", showPreview: true
+                DateFormatter.DateToMinSecMillisec(this.cars[0].Information.totalTime) +
+                "! Let's go see your results... You have two magnificient buttons to do so.",
+                firstButton: "See race results!", secondButton: "See race results again!", showPreview: true
             })
-            .then(() => window.location.reload(),
-                  () => this.router.navigate([""])
+            .then(() => this.goToResults(),
+                  () => this.goToResults()
             );
         }
+    }
+
+    private goToResults(): void {
+        this.soundManager.stop();
+        this.router.navigate(["race/results"]);
     }
 }

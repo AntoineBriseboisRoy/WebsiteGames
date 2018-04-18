@@ -2,7 +2,7 @@ import { IWord } from "../../../common/interfaces/IWord";
 import { BlackSquareGenerator } from "./BlackSquareGenerator";
 import { StringService } from "./StringService";
 import { GridFiller } from "./GridFiller";
-import { STANDARD_SIDE_SIZE, PERCENTAGE_BLACK_SQUARES } from "./Constants";
+import { STANDARD_SIDE_SIZE, PERCENTAGE_BLACK_SQUARES, BLACKSQUARE_CHARACTER } from "./Constants";
 import { Difficulty } from "../../../common/constants";
 
 export class Grid {
@@ -44,9 +44,11 @@ export class Grid {
     private cleanGrid(): void {
         this.gridContent.forEach((row: string[]) => {
             row.forEach((letter: string) => {
-                letter = StringService.eliminateSpecialChars(letter);
-                letter = StringService.replaceAccentedChars(letter);
-                letter = letter.toUpperCase();
+                if (letter !== BLACKSQUARE_CHARACTER) {
+                    letter = StringService.eliminateSpecialChars(letter);
+                    letter = StringService.replaceAccentedChars(letter);
+                    letter = letter.toUpperCase();
+                }
             });
         });
     }

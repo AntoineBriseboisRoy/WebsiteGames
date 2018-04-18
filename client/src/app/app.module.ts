@@ -42,6 +42,8 @@ import { InputManagerService } from "./race/input-manager-service/input-manager.
 import { WaitingScreenComponent } from "./crossword/waiting-screen/waiting-screen.component";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { EndGameService } from "./crossword/end-game.service";
+import { RaceResultsComponent } from "./race/race-results/race-results.component";
+import { RenderService } from "./race/render-service/render.service";
 
 @NgModule({
     declarations: [
@@ -62,7 +64,8 @@ import { EndGameService } from "./crossword/end-game.service";
         ModalComponent,
         ModalDirective,
         TrackPreviewComponent,
-        WaitingScreenComponent
+        WaitingScreenComponent,
+        RaceResultsComponent
     ],
     imports: [
         BrowserModule,
@@ -74,6 +77,7 @@ import { EndGameService } from "./crossword/end-game.service";
     ],
     providers: [
         { provide: APP_BASE_HREF, useValue: "/" },
+        RenderService,
         MongoQueryService,
         GridService,
         GameRoomManagerService,

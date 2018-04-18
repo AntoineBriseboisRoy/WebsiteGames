@@ -4,6 +4,7 @@ import { MongoQueryService } from "../../mongo-query.service";
 import { ModalService } from "../../modal/modal.service";
 import { ModalOptions } from "../../modal/interfaces";
 import { Router, Params, ActivatedRoute } from "@angular/router";
+import { DateFormatter } from "../date-formatter";
 
 @Component({
     selector: "app-track-view",
@@ -28,9 +29,19 @@ export class TrackViewComponent implements OnInit {
         this.mongoQueryService.getAllTracks()
         .then((tracks: Array<ITrack>) => {
             this.tracks = tracks;
+
+            this.tracks.forEach((track: ITrack) => {
+                for (let i: number = 0; i < track.bestTimes.length; i++) {
+                    track.bestTimes[i] = {playerName: track.bestTimes[i].playerName, time: new Date(track.bestTimes[i].time)};
+                }
+            });
         })
         .catch((err: Error) => { console.error(err); }
         );
+    }
+
+    public getFormattedTime(time: Date): string {
+        return DateFormatter.DateToMinSecMillisec(time);
     }
 
     public callModal(): void {

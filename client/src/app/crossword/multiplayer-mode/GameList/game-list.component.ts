@@ -14,7 +14,7 @@ export class GameListComponent {
 
     public userJoiner: Array<string>;
     public constructor(public gameRooms: GameRoomManagerService, private socketIO: SocketIoService,
-        private router: Router) {
+                       private router: Router) {
         this.userJoiner = new Array<string>(this.gameRooms.Games.length);
     }
 

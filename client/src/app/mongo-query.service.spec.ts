@@ -2,10 +2,10 @@ import { TestBed, inject } from "@angular/core/testing";
 
 import { MongoQueryService } from "./mongo-query.service";
 import { Point } from "./race/edit-track/Geometry";
-import { TrackType, ITrack } from "../../../common/interfaces/ITrack";
+import { TrackType, ITrack, IBestTime } from "../../../common/interfaces/ITrack";
 import { HttpClient, HttpHandler } from "@angular/common/http";
 
-fdescribe("MongoQueryService", () => {
+describe("MongoQueryService", () => {
     beforeEach(() => {
         TestBed.configureTestingModule({
             providers: [MongoQueryService, HttpClient, HttpHandler]
@@ -22,7 +22,7 @@ fdescribe("MongoQueryService", () => {
             name: "LaTrack",
             description: "test",
             nTimesPlayed: 0,
-            bestTimes: new Array<string>(),
+            bestTimes: new Array<IBestTime>(),
             type: TrackType.REGULAR,
             points: Array<Point>()
         } as ITrack;
@@ -39,7 +39,7 @@ fdescribe("MongoQueryService", () => {
             name: "test99",
             description: "test99",
             nTimesPlayed: 0,
-            bestTimes: new Array<string>(),
+            bestTimes: new Array<IBestTime>(),
             type: TrackType.REGULAR,
             points: Array<Point>()
         } as ITrack;
@@ -58,7 +58,7 @@ fdescribe("MongoQueryService", () => {
             name: "test10",
             description: "test10",
             nTimesPlayed: 0,
-            bestTimes: new Array<string>(),
+            bestTimes: new Array<IBestTime>(),
             type: TrackType.REGULAR,
             points: Array<Point>()
         } as ITrack;
@@ -67,7 +67,7 @@ fdescribe("MongoQueryService", () => {
             name: "test10",
             description: "autreDescription",
             nTimesPlayed: 0,
-            bestTimes: new Array<string>(),
+            bestTimes: new Array<IBestTime>(),
             type: TrackType.REGULAR,
             points: Array<Point>()
         } as ITrack;

@@ -1,0 +1,110 @@
+#track-view-page {
+    background: url("../../crossword/images/background.jpg") no-repeat fixed;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+h3 {
+    color: #fff;
+    text-align: center;
+    margin-top: 2px;
+}
+
+h5 {
+    margin-bottom: 0px;
+}
+
+.container {
+    padding: 0%;
+}
+
+.row {
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+}
+
+.title-box {
+    border: medium solid orange;
+    border-radius: 1em;
+    background: url("../../crossword/images/background-blur.jpg") no-repeat fixed;
+    color: #fff;
+    text-align: center;
+    padding: 1%;
+}
+
+.track-list {
+    list-style-type: none;
+    border: medium solid orange;
+    border-radius: 1em;
+    margin: 5% 0%;
+    padding: 0% 5%;
+    overflow: auto;
+    background: url("../../crossword/images/background-blur.jpg") no-repeat fixed;
+}
+
+#time-notation {
+    /* font-size: 125%; */
+    color: orange;
+}
+
+.board {
+    margin: 2.5% 10% 2.5% 10%;
+    float: center;
+    text-align: center;
+    width: auto;
+    min-width: 50%;
+    padding: 2%;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    border: medium solid #666;
+    border-radius:  1em;
+    color: black;
+    background: white;
+}
+
+#name-best-time {
+    max-width: 20%;
+    display: inline-block;
+}
+
+.track-times {
+    padding: 2%;
+    margin-left: auto;
+    margin-right: auto;
+    border: medium solid #666;
+    border-radius:  1em;
+    list-style-type: none;
+}
+
+.general-info {
+    min-width: 50%;
+    display: inline-block;
+    margin: 1%;
+    text-align: left;
+    vertical-align: top;
+}
+
+.general-info h3 {
+    color: black;
+    text-align: left;
+}
+
+.laps-info {
+    min-width: 40%;
+    display: inline-block;
+    margin: 1%;
+}
+
+.play-btn {
+    border-radius: 0.85em;
+}
+
+.button-zone {
+    text-align: center;
+}
+
+.centered-button {
+    display: inline-block;
+}
