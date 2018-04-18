@@ -11,5 +11,6 @@ export interface ICheckpointInformation {
     nextCheckpoint: number;
     precedentDistanceToNextCheckpoint: number;
     distanceToNextCheckpoint: number;
+    isGoingForward: boolean;
     checkpointCounter: number;
 }

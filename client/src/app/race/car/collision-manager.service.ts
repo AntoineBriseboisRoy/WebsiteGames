@@ -168,13 +168,13 @@ export class CollisionManager {
     }
 
     private startLineCollision(car: Car): void {
-        if (car.Information.Lap === LAP_NUMBER) {
+        car.Information.completeALap();
+        if (car.Information.HasEndRace) {
             car.Information.stopTimer();
             if (car === this.cars[0]) {
                 this.endRace();
             }
         }
-        car.Information.completeALap();
     }
 
     private verifyCheckpointCollision(): void {

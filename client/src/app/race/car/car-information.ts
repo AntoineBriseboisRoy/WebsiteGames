@@ -6,7 +6,6 @@ import { ILapInformation, ICheckpointInformation } from "../../interfaces";
 export class CarInformation {
     private lapInformation: ILapInformation;
     private checkpointInformation: ICheckpointInformation;
-    private isGoingForward: boolean;
     private hasStartedAFirstLap: boolean;
     private hasCrossedStartLineBackward: boolean;
     private hasEndRace: boolean;
@@ -15,8 +14,7 @@ export class CarInformation {
     public constructor() {
         this.lapInformation = {lap: 1, lapTimes: new Array<Date>(), totalTime: new Date(0)} as ILapInformation;
         this.checkpointInformation = {checkpoints: new Array<[Vector2, Vector2]>(), nextCheckpoint: 1, precedentDistanceToNextCheckpoint: 0,
-                                      distanceToNextCheckpoint: 0, checkpointCounter: 0} as ICheckpointInformation;
-        this.isGoingForward = true;
+                                      distanceToNextCheckpoint: 0, isGoingForward: true, checkpointCounter: 0} as ICheckpointInformation;
         this.hasStartedAFirstLap = false;
         this.hasCrossedStartLineBackward = false;
         this.hasEndRace = false;
@@ -87,10 +85,11 @@ export class CarInformation {
     }
 
     public completeALap(): void {
-        if (this.isGoingForward) {
+        if (this.checkpointInformation.isGoingForward) {
             if (!this.hasCrossedStartLineBackward) {
                 if (this.hasStartedAFirstLap) {
                     if (!this.hasEndRace) {
+                        console.log(this.hasCrossedStartLineBackward);
                         this.incrementLap();
                     }
                 } else {
@@ -126,13 +125,13 @@ export class CarInformation {
                                                                        this.NextCheckpoint][0]);
 
         return Math.abs((checkpointVector.y) * carMeshPosition.x - (checkpointVector.x) * carMeshPosition.y +
-                        this.checkpointInformation.checkpoints[this.NextCheckpoint][1].x * this.Checkpoints[this.NextCheckpoint][0].y -
-                        this.checkpointInformation.checkpoints[this.NextCheckpoint][1].y * this.Checkpoints[this.NextCheckpoint][0].x) /
+                        this.Checkpoints[this.NextCheckpoint][1].x * this.Checkpoints[this.NextCheckpoint][0].y -
+                        this.Checkpoints[this.NextCheckpoint][1].y * this.Checkpoints[this.NextCheckpoint][0].x) /
                              checkpointVector.length();
     }
 
     private verifyWay(): void {
         const deltaDistance: number  = this.checkpointInformation.precedentDistanceToNextCheckpoint - this.DistanceToNextCheckpoint;
-        this.isGoingForward = deltaDistance >= 0;
+        this.checkpointInformation.isGoingForward = deltaDistance >= 0;
     }
 }
