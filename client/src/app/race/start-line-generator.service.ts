@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core";
 import { Vector2, ObjectLoader, Object3D, PlaneBufferGeometry, MeshBasicMaterial, Mesh, DoubleSide, TextureLoader } from "three";
 import { Car } from "./car/car";
 import { ITrack, TrackType } from "../../../../common/interfaces/ITrack";
-import { HALF, PI_OVER_2, ROAD_WIDTH, COLLISION_SOUND_NAME } from "../constants";
+import { HALF, PI_OVER_2, ROAD_WIDTH } from "../constants";
 import { Point } from "./edit-track/Geometry";
 
 export const FAR_CLIPPING_PLANE: number = 1000;

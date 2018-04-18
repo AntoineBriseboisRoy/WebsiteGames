@@ -101,7 +101,6 @@ export class GameComponent implements AfterViewInit {
                 this.renderService.initializeAI();
                 this.startTimers();
                 this.startingText = "Start!";
-                // calculate start line pos
             }
             if (countdown-- < -1) {
                 this.startingText = "";
@@ -123,28 +122,54 @@ export class GameComponent implements AfterViewInit {
         return (this.player.rpm / DEFAULT_SHIFT_RPM) * MAX_GEAR_BAR_WIDTH;
     }
 
-    // tslint:disable-next-line:max-func-body-length
     public playerRanking(): number {
         const ranking: Array<Car> = this.renderService.Cars.slice();
         const player: Car = ranking[0];
-        ranking.sort((a, b) => {
-            if (a.Information.HasEndRace && !b.Information.HasEndRace) {
-                return -1;
-            } else if (!a.Information.HasEndRace && b.Information.HasEndRace) {
-                return 1;
-            } else if (a.Information.HasEndRace && b.Information.HasEndRace) {
-                return 0;
-            }
-            if (a.Information.Lap === b.Information.Lap) {
-                if (a.Information.nextCheckpoint === b.Information.nextCheckpoint) {
-                    return a.Information.DistanceToNextCheckpoint - b.Information.DistanceToNextCheckpoint;
-                } else {
-                    return b.Information.CheckpointCounter - a.Information.CheckpointCounter;
-                }
+        ranking.sort((a, b) => this.sortRanking(a, b) );
+
+        return this.playerIndexInRanking(player, ranking);
+    }
+
+    private sortRanking( a: Car, b: Car): number {
+        if (a.Information.HasEndRace && !b.Information.HasEndRace) {
+            return -1;
+        } else if (!a.Information.HasEndRace && b.Information.HasEndRace) {
+            return 1;
+        } else if (a.Information.HasEndRace && b.Information.HasEndRace) {
+            return this.sortByTotalTime(a, b);
+        }
+
+        return this.sortByTraveledDistance(a, b);
+    }
+
+    private sortByTotalTime(a: Car, b: Car): number {
+        return a.Information.totalTime.getTime() - b.Information.totalTime.getTime();
+    }
+
+    private sortByTraveledDistance(a: Car, b: Car): number {
+        if (a.Information.Lap === b.Information.Lap) {
+            if (a.Information.nextCheckpoint === b.Information.nextCheckpoint) {
+                return this.sortByDistanceToNextCheckpoint(a, b);
             } else {
-                return b.Information.Lap - a.Information.Lap;
+                return this.sortByCheckpoint(a, b);
             }
-        });
+        }
+
+        return this.sortByLap(a, b);
+    }
+
+    private sortByDistanceToNextCheckpoint(a: Car, b: Car): number {
+        return a.Information.DistanceToNextCheckpoint - b.Information.DistanceToNextCheckpoint;
+    }
+
+    private sortByCheckpoint(a: Car, b: Car): number {
+        return b.Information.CheckpointCounter - a.Information.CheckpointCounter;
+    }
+
+    private sortByLap(a: Car, b: Car): number {
+        return b.Information.Lap - a.Information.Lap;
+    }
+    private playerIndexInRanking( player: Car, ranking: Array<Car> ): number {
         for (let i: number = 0; i < ranking.length; i++) {
             if (player === ranking[i]) {
                 return i + 1;
@@ -152,9 +177,5 @@ export class GameComponent implements AfterViewInit {
         }
 
         return -1;
-    }
-
-    private changeOrderCheckpoints(nextCheckpoint: number): number {
-        return (nextCheckpoint + this.player.Information.Checkpoints.length - 1) % this.player.Information.Checkpoints.length;
     }
 }
