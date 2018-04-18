@@ -1,21 +1,15 @@
+import { injectable } from "inversify";
 import { Room } from "./room";
 import { INewGame } from "../../../../common/interfaces/INewGame";
 import { RoomState } from "../../../../common/constants";
 
 const ID_NOT_FOUND: number = -1;
 
+@injectable()
 export class RoomManagerService {
-    public static get Instance(): RoomManagerService {
-        if (!this.instance) {
-            this.instance = new RoomManagerService();
-        }
-
-        return this.instance;
-    }
-    private static instance: RoomManagerService;
     private rooms: Array<Room>;
 
-    private constructor() {
+    public constructor() {
         this.rooms = new Array<Room>();
     }
 

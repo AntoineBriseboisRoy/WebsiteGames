@@ -10,10 +10,13 @@ import { IEndGame } from "../../../../common/interfaces/IEndGame";
 import { IRestartGame } from "../../../../common/interfaces/IRestartGame";
 import { Observer } from "rxjs/Observer";
 import { Observable } from "rxjs/Observable";
+import { inject, injectable } from "inversify";
+import Types from "../../types";
 
+@injectable()
 export class MessageHandler {
     private socket: SocketIO.Socket;
-    public constructor() {
+    public constructor(@inject(Types.RoomManagerService) private roomManagerService: RoomManagerService) {
         this.socket = undefined;
     }
     public init(socket: SocketIO.Socket): void {
@@ -36,7 +39,7 @@ export class MessageHandler {
 
     private joinWaitingRoom(): void {
         this.socket.join("waiting-room");
-        SocketService.Instance.socketIo.in(this.socket.id).emit("waiting-room", RoomManagerService.Instance.getWaitingGames());
+        SocketService.Instance.socketIo.in(this.socket.id).emit("waiting-room", this.roomManagerService.getWaitingGames());
     }
     private createNewGame(game: INewGame): void {
         this.createNewRoom(game).then(() => {
@@ -46,12 +49,12 @@ export class MessageHandler {
                 difficulty: game.difficulty,
                 userJoiner: ""
             });
-            this.socket.join(RoomManagerService.Instance.getRoom(this.socket.id).Name);
+            this.socket.join(this.roomManagerService.getRoom(this.socket.id).Name);
         }).catch((error: Error) => console.error(error));
     }
 
     private deleteGame(game: INewGame): void {
-        RoomManagerService.Instance.deleteRoom(this.socket.id);
+        this.roomManagerService.deleteRoom(this.socket.id);
         this.socket.in("waiting-room").broadcast.emit("delete-game", game);
     }
 
@@ -59,7 +62,7 @@ export class MessageHandler {
     private startGame(game: INewGame): void {
         game.userCreatorID = this.socket.id;
         this.createNewRoom(game).then(() => {
-            const room: Room = RoomManagerService.Instance.getRoom(game.userCreatorID);
+            const room: Room = this.roomManagerService.getRoom(game.userCreatorID);
             room.state = RoomState.Playing;
             this.socket.join(room.Name);
             this.sendGrid(room);
@@ -67,7 +70,7 @@ export class MessageHandler {
     }
 
     private restartGame(game: IRestartGame): void {
-        const room: Room = RoomManagerService.Instance.getRoom(this.socket.id);
+        const room: Room = this.roomManagerService.getRoom(this.socket.id);
         if (room) {
             if (game.requestSent) {
                 this.socket.to(room.getOtherPlayer(this.socket.id).socketID).emit("restart-game", game);
@@ -90,8 +93,8 @@ export class MessageHandler {
     }
 
     private playAMultiplayerGame(game: INewGame): void {
-        const room: Room = RoomManagerService.Instance.getRoom(game.userCreatorID);
-        RoomManagerService.Instance.addPlayerToRoom(game.userJoiner, this.socket.id, game.userCreatorID);
+        const room: Room = this.roomManagerService.getRoom(game.userCreatorID);
+        this.roomManagerService.addPlayerToRoom(game.userJoiner, this.socket.id, game.userCreatorID);
         room.state = RoomState.Playing;
         this.socket.join(room.Name);
         this.socket.to(game.userCreatorID).emit("play-multiplayer-game", game);
@@ -99,7 +102,7 @@ export class MessageHandler {
     }
 
     private completeAWord(word: IGridWord): void {
-        const room: Room = RoomManagerService.Instance.getRoom(this.socket.id);
+        const room: Room = this.roomManagerService.getRoom(this.socket.id);
         room.setWordFound(word, this.socket.id);
         SocketService.Instance.socketIo.in(room.Name).emit("update-score", this.parseToIPlayers(room.Players));
         SocketService.Instance.socketIo.in(room.Name).emit("selected-word", room.Players.map((player: Player) => player.selectedWord));
@@ -148,7 +151,7 @@ export class MessageHandler {
     }
 
     private selectAWord(word: Array<IGridWord>): void {
-        const room: Room = RoomManagerService.Instance.getRoom(this.socket.id);
+        const room: Room = this.roomManagerService.getRoom(this.socket.id);
         room.selectWord(word[0], this.socket.id);
         SocketService.Instance.socketIo.in(room.Name).emit("selected-word", room.Players.map((player: Player) => player.selectedWord));
     }
@@ -165,11 +168,11 @@ export class MessageHandler {
 
     private disconnect(): void {
         console.warn("Disconnect: ", this.socket.id);
-        const room: Room = RoomManagerService.Instance.getRoom(this.socket.id);
+        const room: Room = this.roomManagerService.getRoom(this.socket.id);
         if (room) {
             SocketService.Instance.socketIo.in(room.Name).emit("disconnected-player",
                                                                room.Players.map((player: Player) => player.selectedWord));
-            RoomManagerService.Instance.deleteRoom(this.socket.id);
+            this.roomManagerService.deleteRoom(this.socket.id);
         }
     }
 
@@ -181,7 +184,7 @@ export class MessageHandler {
     private async createNewRoom(game: INewGame): Promise<void> {
         const player: Player = new Player(game.userCreator, this.socket.id);
         const room: Room = new Room(player, game.difficulty, game.userCreatorID);
-        RoomManagerService.Instance.push(room);
+        this.roomManagerService.push(room);
         await room.initializeGrid();
     }
 
