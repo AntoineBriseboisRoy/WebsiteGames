@@ -16,12 +16,12 @@ import Types from "../../types";
 export class MessageHandler {
     private socketServer: SocketIO.Server;
     private socket: SocketIO.Socket;
-    public constructor(@inject(Types.RoomManagerService) private roomManagerService: RoomManagerService) {
-        this.socket = undefined;
-    }
-    public init(socket: SocketIO.Socket, socketServer: SocketIO.Server): void {
+    public constructor(@inject(Types.RoomManagerService) private roomManagerService: RoomManagerService, 
+                       socket: SocketIO.Socket, socketServer: SocketIO.Server) {
         this.socket = socket;
         this.socketServer = socketServer;
+    }
+    public init(): void {
         this.getEvent("waiting-room").subscribe(()                      => this.joinWaitingRoom());
         this.getEvent("new-game").subscribe((data: string)              => this.createNewGame(JSON.parse(data)));
         this.getEvent("delete-game").subscribe((data: string)           => this.deleteGame(JSON.parse(data)));
