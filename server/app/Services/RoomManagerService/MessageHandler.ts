@@ -15,7 +15,7 @@ import Types from "../../types";
 export class MessageHandler {
     private socketServer: SocketIO.Server;
     private socket: SocketIO.Socket;
-    public constructor(@inject(Types.RoomManagerService) private roomManagerService: RoomManagerService, 
+    public constructor(@inject(Types.RoomManagerService) private roomManagerService: RoomManagerService,
                        socket: SocketIO.Socket, socketServer: SocketIO.Server) {
         this.socket = socket;
         this.socketServer = socketServer;
@@ -42,13 +42,9 @@ export class MessageHandler {
         this.socketServer.in(this.socket.id).emit("waiting-room", this.roomManagerService.getWaitingGames());
     }
     private createNewGame(game: INewGame): void {
-        this.createNewRoom(game).then(() => {
-            this.socket.in("waiting-room").broadcast.emit("new-game", {
-                userCreator: game.userCreator,
-                userCreatorID: this.socket.id,
-                difficulty: game.difficulty,
-                userJoiner: ""
-            });
+        game.userCreatorID = this.socket.id;
+        this.roomManagerService.createNewRoom(game).then(() => {
+            this.socket.in("waiting-room").broadcast.emit("new-game", game);
             this.socket.join(this.roomManagerService.getRoom(this.socket.id).Name);
         }).catch((error: Error) => console.error(error));
     }
@@ -61,7 +57,7 @@ export class MessageHandler {
     // TODO: Ajouter type d'erreur pour le .catch
     private startGame(game: INewGame): void {
         game.userCreatorID = this.socket.id;
-        this.createNewRoom(game).then(() => {
+        this.roomManagerService.createNewRoom(game).then(() => {
             const room: Room = this.roomManagerService.getRoom(game.userCreatorID);
             room.state = RoomState.Playing;
             this.socket.join(room.Name);
@@ -73,19 +69,9 @@ export class MessageHandler {
         const room: Room = this.roomManagerService.getRoom(this.socket.id);
         if (room) {
             if (game.requestSent) {
-                this.socket.to(room.getOtherPlayer(this.socket.id).socketID).emit("restart-game", game);
+                this.socket.to(room.getOtherPlayerId(this.socket.id)).emit("restart-game", game);
             } else {
-                if (game.requestAccepted) {
-                    room.initializeGrid().then(() => {
-                        room.state = RoomState.Playing;
-                        this.socket.to(room.Name).emit("restart-game", {requestSent: false, requestAccepted: true});
-                        this.socketServer.in(room.Name).emit("update-score", room.IPlayers);
-                        this.sendGrid(room);
-                    });
-                } else {
-                    this.socket.to(room.getOtherPlayer(this.socket.id).socketID)
-                                .emit("restart-game", {requestSent: false, requestAccepted: false});
-                }
+                this.handleRestartRequestResponse(game, room);
             }
         } else {
             console.error("Error");
@@ -124,13 +110,6 @@ export class MessageHandler {
                                                  room.Players.map((player: Player) => player.selectedWord));
             this.roomManagerService.deleteRoom(this.socket.id);
         }
-    }
-
-    private async createNewRoom(game: INewGame): Promise<void> {
-        const player: Player = new Player(game.userCreator, this.socket.id);
-        const room: Room = new Room(player, game.difficulty, game.userCreatorID);
-        this.roomManagerService.push(room);
-        await room.initializeGrid();
     }
 
     private sendGrid(room: Room): void {
@@ -176,5 +155,23 @@ export class MessageHandler {
         this.socketServer.to(room.Players[indexWinner].socketID).emit("grid-completed", endgame);
         endgame.Outcome = GameOutcome.Lose;
         this.socketServer.to(room.Players[indexLoser].socketID).emit("grid-completed", endgame);
+    }
+
+    private handleRestartRequestResponse(game: IRestartGame, room: Room): void {
+        if (game.requestAccepted) {
+            this.reinitializeGrid(room);
+        } else {
+            this.socket.to(room.getOtherPlayerId(this.socket.id))
+                .emit("restart-game", { requestSent: false, requestAccepted: false });
+        }
+    }
+
+    private reinitializeGrid(room: Room): void {
+        room.initializeGrid().then(() => {
+            room.state = RoomState.Playing;
+            this.socket.to(room.Name).emit("restart-game", { requestSent: false, requestAccepted: true });
+            this.socketServer.in(room.Name).emit("update-score", room.IPlayers);
+            this.sendGrid(room);
+        });
     }
 }

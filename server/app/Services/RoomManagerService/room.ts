@@ -70,10 +70,10 @@ export class Room {
         this.grid.clear();
         this.players.forEach((player: Player) => player.score = 0);
     }
-    public getOtherPlayer(socketId: string): Player {
+    public getOtherPlayerId(socketId: string): string {
         const foundPlayer: Player = this.players.find((player: Player) => player.socketID === socketId);
         if (foundPlayer) {
-            return this.players.find((currentPlayer: Player) => currentPlayer !== foundPlayer);
+            return this.players.find((currentPlayer: Player) => currentPlayer !== foundPlayer).socketID;
         }
 
         return undefined;
