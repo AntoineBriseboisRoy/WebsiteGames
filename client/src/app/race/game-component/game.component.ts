@@ -117,7 +117,7 @@ export class GameComponent implements AfterViewInit {
         for (const car of this.renderService.Cars) {
             const subscription: Subscription = this.timer.Time.subscribe((time: number) => {
                 car.Information.startTimer(subscription);
-                car.Information.totalTime.setTime(time);
+                car.Information.TotalTime.setTime(time);
             });
         }
     }

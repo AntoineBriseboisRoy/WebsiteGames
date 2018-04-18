@@ -76,14 +76,14 @@ div {
 #rank {
     font-size: 12vh;
     bottom: 4%;
-    left: 7%;
+    left: 1%;
 }
 
 #rank-background {
     position: fixed;
     bottom: 5%;
     left: 0%;
-    height: 12%;
+    height: 15%;
     width: 15%;
     background: rgba(64, 64, 64);
     background: rgba(64, 64, 64, 0.5);

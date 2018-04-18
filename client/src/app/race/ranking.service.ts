@@ -35,12 +35,12 @@ export class RankingService {
     }
 
     private sortByTotalTime(a: Car, b: Car): number {
-        return a.Information.totalTime.getTime() - b.Information.totalTime.getTime();
+        return a.Information.TotalTime.getTime() - b.Information.TotalTime.getTime();
     }
 
     private sortByTraveledDistance(a: Car, b: Car): number {
         if (a.Information.Lap === b.Information.Lap) {
-            if (a.Information.nextCheckpoint === b.Information.nextCheckpoint) {
+            if (a.Information.NextCheckpoint === b.Information.NextCheckpoint) {
                 return this.sortByDistanceToNextCheckpoint(a, b);
             } else {
                 return this.sortByCheckpoint(a, b);

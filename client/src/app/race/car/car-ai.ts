@@ -72,13 +72,13 @@ export class CarAI extends Car {
 
     private shortestDistanceFromCarToMiddleOfRoad(): number {
         const intersections: Array<Vector2> = this.Information.IntersectionPositions;
-        const previousCheckpoint: number = this.Information.nextCheckpoint - 1 < 0 ? this.Information.Checkpoints.length - 1 :
-                                                                                     this.Information.nextCheckpoint - 1;
+        const previousCheckpoint: number = this.Information.NextCheckpoint - 1 < 0 ? this.Information.Checkpoints.length - 1 :
+                                                                                     this.Information.NextCheckpoint - 1;
 
         return Math.abs(this.trackDirection().y * this.getPosition().x -
                         this.trackDirection().x * this.getPosition().z +
-                        intersections[this.Information.nextCheckpoint].x * intersections[previousCheckpoint].y -
-                        intersections[this.Information.nextCheckpoint].y * intersections[previousCheckpoint].x) /
+                        intersections[this.Information.NextCheckpoint].x * intersections[previousCheckpoint].y -
+                        intersections[this.Information.NextCheckpoint].y * intersections[previousCheckpoint].x) /
                         this.trackDirection().length();
     }
 
@@ -119,12 +119,12 @@ export class CarAI extends Car {
     // https://mathoverflow.net/a/44098
     private isCarOnLeftSideOfRoad(): boolean {
         const intersections: Array<Vector2> = this.Information.IntersectionPositions;
-        const previousCheckpoint: number = this.Information.nextCheckpoint - 1 < 0 ? this.Information.Checkpoints.length - 1 :
-            this.Information.nextCheckpoint - 1;
+        const previousCheckpoint: number = this.Information.NextCheckpoint - 1 < 0 ? this.Information.Checkpoints.length - 1 :
+            this.Information.NextCheckpoint - 1;
         const triangle: Matrix3 = new Matrix3().fromArray(
             [1, 1, 1,
-             this.getPosition().x, intersections[this.Information.nextCheckpoint].x, intersections[previousCheckpoint].x,
-             this.getPosition().z, intersections[this.Information.nextCheckpoint].y, intersections[previousCheckpoint].y]);
+             this.getPosition().x, intersections[this.Information.NextCheckpoint].x, intersections[previousCheckpoint].x,
+             this.getPosition().z, intersections[this.Information.NextCheckpoint].y, intersections[previousCheckpoint].y]);
 
         return triangle.determinant() > 0;
     }
@@ -141,10 +141,10 @@ export class CarAI extends Car {
     }
 
     private trackDirection(): Vector2 {
-        const previousCheckpoint: number = (this.Information.nextCheckpoint - 1 < 0) ? this.Information.Checkpoints.length - 1 :
-            this.Information.nextCheckpoint - 1;
+        const previousCheckpoint: number = (this.Information.NextCheckpoint - 1 < 0) ? this.Information.Checkpoints.length - 1 :
+            this.Information.NextCheckpoint - 1;
 
-        return new Vector2().subVectors(this.Information.IntersectionPositions[this.Information.nextCheckpoint],
+        return new Vector2().subVectors(this.Information.IntersectionPositions[this.Information.NextCheckpoint],
                                         this.Information.IntersectionPositions[previousCheckpoint]);
     }
 

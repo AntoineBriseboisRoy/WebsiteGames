@@ -1,53 +1,47 @@
 import { Subscription } from "rxjs/Subscription";
 import { LAP_NUMBER } from "../../constants";
 import { Vector2 } from "three";
+import { ILapInformation, ICheckpointInformation } from "../../interfaces";
 
 export class CarInformation {
-    private lap: number;
-    private lapTimes: Array<Date>;
-    public totalTime: Date;
+    private lapInformation: ILapInformation;
+    private checkpointInformation: ICheckpointInformation;
     private isGoingForward: boolean;
     private hasStartedAFirstLap: boolean;
     private hasCrossedStartLineBackward: boolean;
     private hasEndRace: boolean;
-    private subscription: Subscription;
-    private checkpoints: Array<[Vector2, Vector2]>;
+    private timerSubscription: Subscription;
     private intersectionPositions: Array<Vector2>;
-    public nextCheckpoint: number;
-    private precedentDistanceToNextCheckpoint: number;
-    private distanceToNextCheckpoint: number;
-    private checkpointCounter: number;
     public constructor() {
-        this.lap = 1;
-        this.lapTimes = new Array<Date>();
-        this.totalTime = new Date(0);
+        this.lapInformation = {lap: 1, lapTimes: new Array<Date>(), totalTime: new Date(0)} as ILapInformation;
+        this.checkpointInformation = {checkpoints: new Array<[Vector2, Vector2]>(), nextCheckpoint: 1, precedentDistanceToNextCheckpoint: 0,
+                                      distanceToNextCheckpoint: 0, checkpointCounter: 0} as ICheckpointInformation;
         this.isGoingForward = true;
         this.hasStartedAFirstLap = false;
         this.hasCrossedStartLineBackward = false;
         this.hasEndRace = false;
-        this.subscription = new Subscription();
-        this.checkpoints = new Array<[Vector2, Vector2]>();
+        this.timerSubscription = new Subscription();
         this.intersectionPositions = new Array<Vector2>();
-        this.precedentDistanceToNextCheckpoint = 0;
-        this.distanceToNextCheckpoint = 0;
-        this.nextCheckpoint = 1;
-        this.checkpointCounter = 0;
     }
 
     public get Lap(): number {
-        return this.lap;
+        return this.lapInformation.lap;
     }
 
     public get CurrentLapTime(): number {
-        return this.totalTime.getTime() - this.lapTimes.reduce((a, b) => a + b.getTime(), 0);
+        return this.lapInformation.totalTime.getTime() - this.lapInformation.lapTimes.reduce((a, b) => a + b.getTime(), 0);
+    }
+
+    public get TotalTime(): Date {
+        return this.lapInformation.totalTime;
     }
 
     public get DistanceToNextCheckpoint(): number {
-        return this.distanceToNextCheckpoint;
+        return this.checkpointInformation.distanceToNextCheckpoint;
     }
 
     public get Checkpoints(): Array<[Vector2, Vector2]> {
-        return this.checkpoints;
+        return this.checkpointInformation.checkpoints;
     }
 
     public get IntersectionPositions(): Array<Vector2> {
@@ -59,7 +53,11 @@ export class CarInformation {
     }
 
     public get CheckpointCounter(): number {
-        return this.checkpointCounter;
+        return this.checkpointInformation.checkpointCounter;
+    }
+
+    public get NextCheckpoint(): number {
+        return this.checkpointInformation.nextCheckpoint;
     }
 
     public addIntersectionPosition ( intersection: Vector2 ): void {
@@ -67,7 +65,25 @@ export class CarInformation {
     }
 
     public addCheckpoint( checkpoint: [Vector2, Vector2]): void {
-        this.checkpoints.push(checkpoint);
+        this.Checkpoints.push(checkpoint);
+    }
+
+    public setNextCheckpoint( checkpoint: number ): void {
+        if (this.NextCheckpoint === checkpoint) {
+            this.checkpointInformation.nextCheckpoint = (checkpoint + 1) % this.Checkpoints.length;
+            this.checkpointInformation.checkpointCounter++;
+        } else {
+            this.checkpointInformation.nextCheckpoint = checkpoint;
+            this.checkpointInformation.checkpointCounter--;
+        }
+    }
+
+    public startTimer(subscription: Subscription): void {
+        this.timerSubscription = subscription;
+    }
+
+    public stopTimer(): void {
+        this.timerSubscription.unsubscribe();
     }
 
     public completeALap(): void {
@@ -88,62 +104,35 @@ export class CarInformation {
         }
     }
 
+    public updateDistanceToNextCheckpoint(carMeshPosition: Vector2): void {
+        this.checkpointInformation.distanceToNextCheckpoint = this.shortestDistanceFromCarToCheckpoint(carMeshPosition);
+        this.verifyWay();
+        this.checkpointInformation.precedentDistanceToNextCheckpoint = this.DistanceToNextCheckpoint;
+    }
+
     private incrementLap(): void {
-        this.lapTimes.push(new Date(this.CurrentLapTime));
-        if (this.lap === LAP_NUMBER) {
+        this.lapInformation.lapTimes.push(new Date(this.CurrentLapTime));
+        if (this.lapInformation.lap === LAP_NUMBER) {
             this.hasEndRace = true;
         } else {
-            this.lap++;
+            this.lapInformation.lap++;
         }
-    }
-
-    public startTimer(subscription: Subscription): void {
-        this.subscription = subscription;
-    }
-
-    public stopTimer(): void {
-        this.subscription.unsubscribe();
-    }
-
-    public setNextCheckpoint( checkpoint: number ): void {
-        if (this.nextCheckpoint === checkpoint) {
-            this.nextCheckpoint = (checkpoint + 1) % this.checkpoints.length;
-            this.checkpointCounter++;
-        } else {
-            this.nextCheckpoint = checkpoint;
-            this.checkpointCounter--;
-        }
-    }
-
-    private verifyWay(): void {
-        const deltaDistance: number  = this.precedentDistanceToNextCheckpoint - this.distanceToNextCheckpoint;
-        this.isGoingForward = deltaDistance >= 0;
     }
 
     private shortestDistanceFromCarToCheckpoint(carMeshPosition: Vector2): number {
-        const checkpointVector: Vector2 = new Vector2().subVectors(this.checkpoints[this.nextCheckpoint][1],
-                                                                   this.checkpoints[this.nextCheckpoint][0]);
+        const checkpointVector: Vector2 = new Vector2().subVectors(this.checkpointInformation.checkpoints[
+                                                                    this.NextCheckpoint][1],
+                                                                   this.checkpointInformation.checkpoints[
+                                                                       this.NextCheckpoint][0]);
 
-        return Math.abs((checkpointVector.y) * carMeshPosition.x -
-                        (checkpointVector.x) * carMeshPosition.y +
-                        this.checkpoints[this.nextCheckpoint][1].x * this.checkpoints[this.nextCheckpoint][0].y -
-                        this.checkpoints[this.nextCheckpoint][1].y * this.checkpoints[this.nextCheckpoint][0].x) /
-                        checkpointVector.length();
+        return Math.abs((checkpointVector.y) * carMeshPosition.x - (checkpointVector.x) * carMeshPosition.y +
+                        this.checkpointInformation.checkpoints[this.NextCheckpoint][1].x * this.Checkpoints[this.NextCheckpoint][0].y -
+                        this.checkpointInformation.checkpoints[this.NextCheckpoint][1].y * this.Checkpoints[this.NextCheckpoint][0].x) /
+                             checkpointVector.length();
     }
 
-    public trackLengthToCheckpoint(checkpoint: number): number {
-        let trackLength: number = 0;
-        for (let i: number = 0; i < checkpoint; i++ ) {
-            trackLength += new Vector2().subVectors(this.intersectionPositions[(i + 1) % this.intersectionPositions.length],
-                                                    this.intersectionPositions[i]).length();
-        }
-
-        return trackLength;
-    }
-
-    public updateDistanceToNextCheckpoint(carMeshPosition: Vector2): void {
-        this.distanceToNextCheckpoint = this.shortestDistanceFromCarToCheckpoint(carMeshPosition);
-        this.verifyWay();
-        this.precedentDistanceToNextCheckpoint = this.distanceToNextCheckpoint;
+    private verifyWay(): void {
+        const deltaDistance: number  = this.checkpointInformation.precedentDistanceToNextCheckpoint - this.DistanceToNextCheckpoint;
+        this.isGoingForward = deltaDistance >= 0;
     }
 }

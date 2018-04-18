@@ -241,9 +241,9 @@ export class CollisionManager {
         if (!this.modalService.IsOpen) {
             this.modalService.open({
                 title: "Race Over!", message: "Your time is " +
-                    this.cars[0].Information.totalTime.getMinutes().toString().padStart(MODAL_PADDING, "0") + ":" +
-                    this.cars[0].Information.totalTime.getSeconds().toString().padStart(MODAL_PADDING, "0") + ":" +
-                    this.cars[0].Information.totalTime.getMilliseconds().toString().padEnd(MODAL_PADDING, "0").substr(0, MODAL_PADDING) +
+                    this.cars[0].Information.TotalTime.getMinutes().toString().padStart(MODAL_PADDING, "0") + ":" +
+                    this.cars[0].Information.TotalTime.getSeconds().toString().padStart(MODAL_PADDING, "0") + ":" +
+                    this.cars[0].Information.TotalTime.getMilliseconds().toString().padEnd(MODAL_PADDING, "0").substr(0, MODAL_PADDING) +
                     "! You can choose to replay or go back to home page",
                 firstButton: "Race again!", secondButton: "Home", showPreview: true
             })
