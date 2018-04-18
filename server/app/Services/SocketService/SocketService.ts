@@ -7,19 +7,12 @@ import { MessageHandler } from "../RoomManagerService/MessageHandler";
 import { container } from "../../inversify.config";
 import { RoomManagerService } from "../RoomManagerService/RoomManagerService";
 import Types from "../../types";
+import { injectable } from "inversify";
 
+@injectable()
 export class SocketService {
-    private static instance: SocketService;
     public socketIo: SocketIO.Server;
     private roomManagerService: RoomManagerService;
-
-    public static get Instance(): SocketService {
-        if (!this.instance) {
-            this.instance = new SocketService();
-        }
-
-        return this.instance;
-    }
 
     private init(server: http.Server): void {
         this.socketIo = io(server);
@@ -31,7 +24,7 @@ export class SocketService {
         this.getConnectionEvent().subscribe((socket: SocketIO.Socket) => {
             console.warn("Connected to", socket.id);
             const handler: MessageHandler = new MessageHandler(this.roomManagerService);
-            handler.init(socket);
+            handler.init(socket, this.socketIo);
         });
     }
 

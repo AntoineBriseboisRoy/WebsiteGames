@@ -11,7 +11,8 @@ export class Server {
     private readonly baseDix: number = 10;
     private server: http.Server;
 
-    constructor(@inject(Types.Application) private application: Application) { }
+    constructor(@inject(Types.Application) private application: Application,
+                @inject(Types.SocketService) private socketService: SocketService) { }
 
     public init(): void {
         this.application.app.set("port", this.appPort);
@@ -20,7 +21,7 @@ export class Server {
         this.server.listen(this.appPort);
         this.server.on("error", (error: NodeJS.ErrnoException) => this.onError(error));
         this.server.on("listening", () => this.onListening());
-        SocketService.Instance.connect(this.server);
+        this.socketService.connect(this.server);
     }
 
     private normalizePort(val: number | string): number | string | boolean {

@@ -1,4 +1,3 @@
-import { SocketService } from "../SocketService/SocketService";
 import { RoomManagerService } from "./RoomManagerService";
 import { INewGame } from "../../../../common/interfaces/INewGame";
 import { RoomState, GameOutcome } from "../../../../common/constants";
@@ -15,12 +14,14 @@ import Types from "../../types";
 
 @injectable()
 export class MessageHandler {
+    private socketServer: SocketIO.Server;
     private socket: SocketIO.Socket;
     public constructor(@inject(Types.RoomManagerService) private roomManagerService: RoomManagerService) {
         this.socket = undefined;
     }
-    public init(socket: SocketIO.Socket): void {
+    public init(socket: SocketIO.Socket, socketServer: SocketIO.Server): void {
         this.socket = socket;
+        this.socketServer = socketServer;
         this.getEvent("waiting-room").subscribe(()                      => this.joinWaitingRoom());
         this.getEvent("new-game").subscribe((data: string)              => this.createNewGame(JSON.parse(data)));
         this.getEvent("delete-game").subscribe((data: string)           => this.deleteGame(JSON.parse(data)));
@@ -39,7 +40,7 @@ export class MessageHandler {
 
     private joinWaitingRoom(): void {
         this.socket.join("waiting-room");
-        SocketService.Instance.socketIo.in(this.socket.id).emit("waiting-room", this.roomManagerService.getWaitingGames());
+        this.socketServer.in(this.socket.id).emit("waiting-room", this.roomManagerService.getWaitingGames());
     }
     private createNewGame(game: INewGame): void {
         this.createNewRoom(game).then(() => {
@@ -79,7 +80,7 @@ export class MessageHandler {
                     room.initializeGrid().then(() => {
                         room.state = RoomState.Playing;
                         this.socket.to(room.Name).emit("restart-game", {requestSent: false, requestAccepted: true});
-                        SocketService.Instance.socketIo.in(room.Name).emit("update-score", this.parseToIPlayers(room.Players));
+                        this.socketServer.in(room.Name).emit("update-score", this.parseToIPlayers(room.Players));
                         this.sendGrid(room);
                     });
                 } else {
@@ -104,8 +105,8 @@ export class MessageHandler {
     private completeAWord(word: IGridWord): void {
         const room: Room = this.roomManagerService.getRoom(this.socket.id);
         room.setWordFound(word, this.socket.id);
-        SocketService.Instance.socketIo.in(room.Name).emit("update-score", this.parseToIPlayers(room.Players));
-        SocketService.Instance.socketIo.in(room.Name).emit("selected-word", room.Players.map((player: Player) => player.selectedWord));
+        this.socketServer.in(room.Name).emit("update-score", this.parseToIPlayers(room.Players));
+        this.socketServer.in(room.Name).emit("selected-word", room.Players.map((player: Player) => player.selectedWord));
         this.sendGrid(room);
         this.checkEndGame(room);
     }
@@ -113,9 +114,9 @@ export class MessageHandler {
     private checkEndGame(room: Room): void {
         if (room.isGridCompleted()) {
             if (room.Players.length === 1) {
-                SocketService.Instance.socketIo.in(room.Name).emit("grid-completed",
-                                                                   { Winner: this.parseToIPlayer(room.Players[0]),
-                                                                     Outcome: GameOutcome.Win });
+                this.socketServer.in(room.Name).emit("grid-completed",
+                                                     { Winner: this.parseToIPlayer(room.Players[0]),
+                                                       Outcome: GameOutcome.Win });
             } else {
                 this.handleMultiplayerEndGame(room);
             }
@@ -132,7 +133,7 @@ export class MessageHandler {
                 this.emitEndGame(room, 0);
                 break;
             case GameOutcome.Tie:
-                SocketService.Instance.socketIo.to(room.Name).emit("grid-completed", { Outcome: GameOutcome.Tie });
+                this.socketServer.to(room.Name).emit("grid-completed", { Outcome: GameOutcome.Tie });
                 break;
             default: break;
         }
@@ -145,15 +146,15 @@ export class MessageHandler {
             Loser: this.parseToIPlayer(room.Players[indexLoser]),
             Outcome: GameOutcome.Win
         };
-        SocketService.Instance.socketIo.to(room.Players[indexWinner].socketID).emit("grid-completed", endgame);
+        this.socketServer.to(room.Players[indexWinner].socketID).emit("grid-completed", endgame);
         endgame.Outcome = GameOutcome.Lose;
-        SocketService.Instance.socketIo.to(room.Players[indexLoser].socketID).emit("grid-completed", endgame);
+        this.socketServer.to(room.Players[indexLoser].socketID).emit("grid-completed", endgame);
     }
 
     private selectAWord(word: Array<IGridWord>): void {
         const room: Room = this.roomManagerService.getRoom(this.socket.id);
         room.selectWord(word[0], this.socket.id);
-        SocketService.Instance.socketIo.in(room.Name).emit("selected-word", room.Players.map((player: Player) => player.selectedWord));
+        this.socketServer.in(room.Name).emit("selected-word", room.Players.map((player: Player) => player.selectedWord));
     }
     private getGameOutcome(playerReceiver: Player, otherPlayer: Player): GameOutcome {
         const scoreDifference: number = playerReceiver.score - otherPlayer.score;
@@ -170,15 +171,15 @@ export class MessageHandler {
         console.warn("Disconnect: ", this.socket.id);
         const room: Room = this.roomManagerService.getRoom(this.socket.id);
         if (room) {
-            SocketService.Instance.socketIo.in(room.Name).emit("disconnected-player",
-                                                               room.Players.map((player: Player) => player.selectedWord));
+            this.socketServer.in(room.Name).emit("disconnected-player",
+                                                 room.Players.map((player: Player) => player.selectedWord));
             this.roomManagerService.deleteRoom(this.socket.id);
         }
     }
 
     private sendGrid(room: Room): void {
-        SocketService.Instance.socketIo.in(room.Name).emit("grid-cells", room.Cells);
-        SocketService.Instance.socketIo.in(room.Name).emit("grid-words", room.Words);
+        this.socketServer.in(room.Name).emit("grid-cells", room.Cells);
+        this.socketServer.in(room.Name).emit("grid-words", room.Words);
     }
 
     private async createNewRoom(game: INewGame): Promise<void> {
