@@ -4,7 +4,6 @@ import { RoomState, GameOutcome } from "../../../../common/constants";
 import { Room } from "./room";
 import { IGridWord } from "../../../../common/interfaces/IGridWord";
 import { Player } from "../../player";
-import { IPlayer } from "../../../../common/interfaces/IPlayer";
 import { IEndGame } from "../../../../common/interfaces/IEndGame";
 import { IRestartGame } from "../../../../common/interfaces/IRestartGame";
 import { Observer } from "rxjs/Observer";
@@ -80,7 +79,7 @@ export class MessageHandler {
                     room.initializeGrid().then(() => {
                         room.state = RoomState.Playing;
                         this.socket.to(room.Name).emit("restart-game", {requestSent: false, requestAccepted: true});
-                        this.socketServer.in(room.Name).emit("update-score", this.parseToIPlayers(room.Players));
+                        this.socketServer.in(room.Name).emit("update-score", room.IPlayers);
                         this.sendGrid(room);
                     });
                 } else {
@@ -105,17 +104,45 @@ export class MessageHandler {
     private completeAWord(word: IGridWord): void {
         const room: Room = this.roomManagerService.getRoom(this.socket.id);
         room.setWordFound(word, this.socket.id);
-        this.socketServer.in(room.Name).emit("update-score", this.parseToIPlayers(room.Players));
+        this.socketServer.in(room.Name).emit("update-score", room.IPlayers);
         this.socketServer.in(room.Name).emit("selected-word", room.Players.map((player: Player) => player.selectedWord));
         this.sendGrid(room);
         this.checkEndGame(room);
+    }
+
+    private selectAWord(word: Array<IGridWord>): void {
+        const room: Room = this.roomManagerService.getRoom(this.socket.id);
+        room.selectWord(word[0], this.socket.id);
+        this.socketServer.in(room.Name).emit("selected-word", room.Players.map((player: Player) => player.selectedWord));
+    }
+
+    private disconnect(): void {
+        console.warn("Disconnect: ", this.socket.id);
+        const room: Room = this.roomManagerService.getRoom(this.socket.id);
+        if (room) {
+            this.socketServer.in(room.Name).emit("disconnected-player",
+                                                 room.Players.map((player: Player) => player.selectedWord));
+            this.roomManagerService.deleteRoom(this.socket.id);
+        }
+    }
+
+    private async createNewRoom(game: INewGame): Promise<void> {
+        const player: Player = new Player(game.userCreator, this.socket.id);
+        const room: Room = new Room(player, game.difficulty, game.userCreatorID);
+        this.roomManagerService.push(room);
+        await room.initializeGrid();
+    }
+
+    private sendGrid(room: Room): void {
+        this.socketServer.in(room.Name).emit("grid-cells", room.Cells);
+        this.socketServer.in(room.Name).emit("grid-words", room.Words);
     }
 
     private checkEndGame(room: Room): void {
         if (room.isGridCompleted()) {
             if (room.Players.length === 1) {
                 this.socketServer.in(room.Name).emit("grid-completed",
-                                                     { Winner: this.parseToIPlayer(room.Players[0]),
+                                                     { Winner: room.Players[0].toIPlayer(),
                                                        Outcome: GameOutcome.Win });
             } else {
                 this.handleMultiplayerEndGame(room);
@@ -125,7 +152,7 @@ export class MessageHandler {
     }
 
     private handleMultiplayerEndGame(room: Room): void {
-        switch (this.getGameOutcome(room.Players[0], room.Players[1])) {
+        switch (room.getGameOutcome()) {
             case GameOutcome.Lose:
                 this.emitEndGame(room, 1);
                 break;
@@ -142,63 +169,12 @@ export class MessageHandler {
     private emitEndGame(room: Room, indexWinner: number): void {
         const indexLoser: number = indexWinner === 0 ? 1 : 0;
         const endgame: IEndGame = {
-            Winner: this.parseToIPlayer(room.Players[indexWinner]),
-            Loser: this.parseToIPlayer(room.Players[indexLoser]),
+            Winner: room.Players[indexWinner].toIPlayer(),
+            Loser: room.Players[indexLoser].toIPlayer(),
             Outcome: GameOutcome.Win
         };
         this.socketServer.to(room.Players[indexWinner].socketID).emit("grid-completed", endgame);
         endgame.Outcome = GameOutcome.Lose;
         this.socketServer.to(room.Players[indexLoser].socketID).emit("grid-completed", endgame);
-    }
-
-    private selectAWord(word: Array<IGridWord>): void {
-        const room: Room = this.roomManagerService.getRoom(this.socket.id);
-        room.selectWord(word[0], this.socket.id);
-        this.socketServer.in(room.Name).emit("selected-word", room.Players.map((player: Player) => player.selectedWord));
-    }
-    private getGameOutcome(playerReceiver: Player, otherPlayer: Player): GameOutcome {
-        const scoreDifference: number = playerReceiver.score - otherPlayer.score;
-        if (scoreDifference === 0) {
-            return GameOutcome.Tie;
-        } else if (scoreDifference < 0) {
-            return GameOutcome.Lose;
-        } else {
-            return GameOutcome.Win;
-        }
-    }
-
-    private disconnect(): void {
-        console.warn("Disconnect: ", this.socket.id);
-        const room: Room = this.roomManagerService.getRoom(this.socket.id);
-        if (room) {
-            this.socketServer.in(room.Name).emit("disconnected-player",
-                                                 room.Players.map((player: Player) => player.selectedWord));
-            this.roomManagerService.deleteRoom(this.socket.id);
-        }
-    }
-
-    private sendGrid(room: Room): void {
-        this.socketServer.in(room.Name).emit("grid-cells", room.Cells);
-        this.socketServer.in(room.Name).emit("grid-words", room.Words);
-    }
-
-    private async createNewRoom(game: INewGame): Promise<void> {
-        const player: Player = new Player(game.userCreator, this.socket.id);
-        const room: Room = new Room(player, game.difficulty, game.userCreatorID);
-        this.roomManagerService.push(room);
-        await room.initializeGrid();
-    }
-
-    private parseToIPlayers(players: Array<Player>): Array<IPlayer> {
-        const iPlayers: Array<IPlayer> = new Array<IPlayer>();
-        players.forEach((player: Player) => {
-            iPlayers.push(this.parseToIPlayer(player));
-        });
-
-        return iPlayers;
-    }
-
-    private parseToIPlayer(player: Player): IPlayer {
-        return { username: player.username, score: player.score };
     }
 }
