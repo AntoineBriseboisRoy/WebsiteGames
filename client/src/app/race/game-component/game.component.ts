@@ -11,6 +11,7 @@ import { TimerService } from "../timer-service/timer.service";
 import { Subscription } from "rxjs/Subscription";
 import { DayPeriodContext } from "../dayToggle-context";
 import { LAP_NUMBER } from "../../constants";
+import { RankingService } from "./ranking.service";
 
 const MAX_GEAR_BAR_WIDTH: number = 27;
 
@@ -21,7 +22,8 @@ const MAX_GEAR_BAR_WIDTH: number = 27;
     styleUrls: ["./game.component.css"],
     providers: [
         RenderService,
-        TimerService
+        TimerService,
+        RankingService
     ]
 })
 
@@ -34,7 +36,8 @@ export class GameComponent implements AfterViewInit {
     public lapNumber: number;
 
     public constructor(private renderService: RenderService, private inputManagerService: InputManagerService,
-                       private mongoQueryService: MongoQueryService , private route: ActivatedRoute, private timer: TimerService) {
+                       private mongoQueryService: MongoQueryService , private route: ActivatedRoute, private timer: TimerService,
+                       private rankingService: RankingService) {
         this.containerRef = undefined;
         this.startingText = "";
         this.bestTime = new Date(0, 0, 0, 0, 0, 0, 0);
@@ -63,6 +66,7 @@ export class GameComponent implements AfterViewInit {
                 .initialize(this.containerRef.nativeElement, track)
                 .then((data) => {
                     this.startingSequence();
+                    this.rankingService.initializeRanking(this.renderService.Cars);
                 })
                 .catch((err) => console.error(err));
             }).catch((error: Error) => {
@@ -120,62 +124,5 @@ export class GameComponent implements AfterViewInit {
 
     public rpmRatio(): number {
         return (this.player.rpm / DEFAULT_SHIFT_RPM) * MAX_GEAR_BAR_WIDTH;
-    }
-
-    public playerRanking(): number {
-        const ranking: Array<Car> = this.renderService.Cars.slice();
-        const player: Car = ranking[0];
-        ranking.sort((a, b) => this.sortRanking(a, b) );
-
-        return this.playerIndexInRanking(player, ranking);
-    }
-
-    private sortRanking( a: Car, b: Car): number {
-        if (a.Information.HasEndRace && !b.Information.HasEndRace) {
-            return -1;
-        } else if (!a.Information.HasEndRace && b.Information.HasEndRace) {
-            return 1;
-        } else if (a.Information.HasEndRace && b.Information.HasEndRace) {
-            return this.sortByTotalTime(a, b);
-        }
-
-        return this.sortByTraveledDistance(a, b);
-    }
-
-    private sortByTotalTime(a: Car, b: Car): number {
-        return a.Information.totalTime.getTime() - b.Information.totalTime.getTime();
-    }
-
-    private sortByTraveledDistance(a: Car, b: Car): number {
-        if (a.Information.Lap === b.Information.Lap) {
-            if (a.Information.nextCheckpoint === b.Information.nextCheckpoint) {
-                return this.sortByDistanceToNextCheckpoint(a, b);
-            } else {
-                return this.sortByCheckpoint(a, b);
-            }
-        }
-
-        return this.sortByLap(a, b);
-    }
-
-    private sortByDistanceToNextCheckpoint(a: Car, b: Car): number {
-        return a.Information.DistanceToNextCheckpoint - b.Information.DistanceToNextCheckpoint;
-    }
-
-    private sortByCheckpoint(a: Car, b: Car): number {
-        return b.Information.CheckpointCounter - a.Information.CheckpointCounter;
-    }
-
-    private sortByLap(a: Car, b: Car): number {
-        return b.Information.Lap - a.Information.Lap;
-    }
-    private playerIndexInRanking( player: Car, ranking: Array<Car> ): number {
-        for (let i: number = 0; i < ranking.length; i++) {
-            if (player === ranking[i]) {
-                return i + 1;
-            }
-        }
-
-        return -1;
     }
 }

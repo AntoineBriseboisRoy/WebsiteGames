@@ -7,7 +7,7 @@
     <span id="lap" class="text">Lap: {{this.player.Information.Lap}} / {{lapNumber}}</span>
   </span>
   <span id="rank-background">
-    <span id="rank" class="text">{{playerRanking()}} / {{this.renderService.Cars.length}}</span>
+    <span id="rank" class="text">{{this.rankingService.playerRanking()}} / {{this.renderService.Cars.length}}</span>
   </span>
   <span id="time-background">
     <span id="time" class="text">Total time: {{this.player.Information.totalTime.getTime() | date: 'mm:ss:SS'}}</span>
