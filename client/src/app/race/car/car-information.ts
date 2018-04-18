@@ -89,7 +89,6 @@ export class CarInformation {
             if (!this.hasCrossedStartLineBackward) {
                 if (this.hasStartedAFirstLap) {
                     if (!this.hasEndRace) {
-                        console.log(this.hasCrossedStartLineBackward);
                         this.incrementLap();
                     }
                 } else {
@@ -131,7 +130,10 @@ export class CarInformation {
     }
 
     private verifyWay(): void {
-        const deltaDistance: number  = this.checkpointInformation.precedentDistanceToNextCheckpoint - this.DistanceToNextCheckpoint;
-        this.checkpointInformation.isGoingForward = deltaDistance >= 0;
+        this.checkpointInformation.isGoingForward = this.deltaDistance() >= 0;
+    }
+
+    private deltaDistance(): number {
+        return this.checkpointInformation.precedentDistanceToNextCheckpoint - this.DistanceToNextCheckpoint;
     }
 }
