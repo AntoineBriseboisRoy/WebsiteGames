@@ -10,7 +10,7 @@ const N_BEST_TIMES: number = 5;
 const PLAYER_INDEX: number = 0;
 const PLAYER_NAME_PLACEHOLDER: string = "";
 const ANONYMOUS_PLAYER_NAME: string = "[Anonymous Player]";
-
+const CARS_NAME: string[] = ["You", "Zuckerberg", "Musk", "Bengio", "Gagnon", "Tremblay"];
 @Component({
     selector: "app-race-results",
     templateUrl: "./race-results.component.html",
@@ -51,6 +51,8 @@ export class RaceResultsComponent implements OnInit {
     public ngOnInit(): void {
         this.sortCarInformations();
         this.getTrackBestTimes();
+        this.sortRaceTimes();
+
     }
 
     public replay(): void {
@@ -79,8 +81,12 @@ export class RaceResultsComponent implements OnInit {
     }
 
     private sortCarInformations(): void {
-        this.renderService.Cars.forEach((car: Car) => this.carInformations.push(car.Information));
-        this.sortRaceTimes();
+        let i: number = 0;
+        this.renderService.Cars.forEach((car: Car) => {
+            this.carInformations.push(car.Information);
+            this.carInformations[i].playerName = CARS_NAME[i];
+            ++i;
+        });
     }
 
     private sortRaceTimes(): void {
@@ -96,7 +102,7 @@ export class RaceResultsComponent implements OnInit {
     }
 
     private verifyBestTime(): void {
-        if (this.carInformations[PLAYER_INDEX].Ranking === 1) {
+        if (this.carInformations[0].playerName === CARS_NAME[0]) {
             this.trackBestTimes.push({playerName: PLAYER_NAME_PLACEHOLDER, time: this.carInformations[PLAYER_INDEX].totalTime});
             this.trackBestTimes.sort((a: IBestTime, b: IBestTime) => {
                 if (a.time < b.time) {

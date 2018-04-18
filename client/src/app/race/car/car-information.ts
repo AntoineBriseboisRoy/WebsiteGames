@@ -18,7 +18,7 @@ export class CarInformation {
     private distanceToNextCheckpoint: Vector2;
     // -----
     private ranking: number;
-    private playerName: string;
+    public playerName: string;
 
     public constructor() {
         this.lap = 1;
@@ -34,10 +34,6 @@ export class CarInformation {
         this.nextCheckpoint = new Vector2();
         this.ranking = 1;
         this.playerName = "PLAYER";
-    }
-
-    public get PlayerName(): string {
-        return this.playerName;
     }
 
     public get Lap(): number {

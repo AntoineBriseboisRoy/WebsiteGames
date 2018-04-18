@@ -1,6 +1,5 @@
 <div id="track-view-page" class="container-fluid">
-  <div class="row title-box">
-    <!-- *ngIf="isInBestTimes" -->
+  <div class="row title-box" *ngIf="isInBestTimes">
     <h1 id="main-title">Congratulations!</h1>
     <h2>You finished first and classed yourself among the best!</h2>
     <div *ngIf="!HasSavedName;then showSaveName else showSaveMessage"></div>
@@ -33,7 +32,7 @@
       <div *ngFor="let carInformation of CarInformations; index as i">
         <li class="board row">
           <div class="general-info">
-            <h3>{{i+1}}. {{carInformation.PlayerName}}</h3>
+            <h3>{{i+1}}. {{carInformation.playerName}}</h3>
             <h4>Total time: {{getFormattedTime(carInformation.totalTime)}}</h4>
           </div>
           <div class="laps-info">

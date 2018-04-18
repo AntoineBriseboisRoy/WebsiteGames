@@ -77,7 +77,7 @@ describe("RaceResultsComponent", () => {
         if (component["inBestTimes"]() && component.CarInformations[0].Ranking === 1) {
             component.CarInformations[0]["playerName"] = wantedName;
         }
-        expect(wantedName).toEqual(component.CarInformations[0].PlayerName);
+        expect(wantedName).toEqual(component.CarInformations[0].playerName);
     });
 
     it("should not let the user enter his name if he has not won but has a good time", () => {
@@ -87,7 +87,7 @@ describe("RaceResultsComponent", () => {
         if (component["inBestTimes"]() && component.CarInformations[0].Ranking === 1) {
             component.CarInformations[0]["playerName"] = wantedName;
         }
-        expect(wantedName).not.toEqual(component.CarInformations[0].PlayerName);
+        expect(wantedName).not.toEqual(component.CarInformations[0].playerName);
     });
 
     it("should not let the user enter his name if he has won and but a bad time", () => {
@@ -97,7 +97,7 @@ describe("RaceResultsComponent", () => {
         if (component["inBestTimes"]() && component.CarInformations[0].Ranking === 1) {
             component.CarInformations[0]["playerName"] = wantedName;
         }
-        expect(wantedName).not.toEqual(component.CarInformations[0].PlayerName);
+        expect(wantedName).not.toEqual(component.CarInformations[0].playerName);
     });
     // -------
 
@@ -116,9 +116,9 @@ describe("RaceResultsComponent", () => {
 
         component["sortRaceTimes"]();
 
-        expect(component.CarInformations[0].PlayerName).toEqual("Bob");
-        expect(component.CarInformations[1].PlayerName).toEqual("John");
-        expect(component.CarInformations[2].PlayerName).toEqual("Alice");
+        expect(component.CarInformations[0].playerName).toEqual("Bob");
+        expect(component.CarInformations[1].playerName).toEqual("John");
+        expect(component.CarInformations[2].playerName).toEqual("Alice");
 
     });
     // -------
