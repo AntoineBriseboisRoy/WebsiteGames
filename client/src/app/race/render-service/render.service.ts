@@ -121,9 +121,6 @@ export class RenderService {
         this.collisionManager.update();
         this.cars.forEach((car) => {
             car.Information.updateDistanceToNextCheckpoint(new Vector2(car.getPosition().x, car.getPosition().z));
-            if (car.Information.HasEndRace) {
-                console.log(car);
-            }
         });
     }
 

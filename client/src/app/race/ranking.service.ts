@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { Car } from "../car/car";
+import { Car } from "./car/car";
 
 @Injectable()
 export class RankingService {

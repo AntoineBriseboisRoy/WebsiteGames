@@ -11,7 +11,7 @@ import { TimerService } from "../timer-service/timer.service";
 import { Subscription } from "rxjs/Subscription";
 import { DayPeriodContext } from "../dayToggle-context";
 import { LAP_NUMBER } from "../../constants";
-import { RankingService } from "./ranking.service";
+import { RankingService } from "../ranking.service";
 
 const MAX_GEAR_BAR_WIDTH: number = 27;
 
