@@ -10,6 +10,6 @@ export interface RequestOptions {
         sp: string, // -> uri + "?sp=word"
         md: string
     };
-    json: boolean;  // automatically parse data to JSON format
-    simple: boolean; // should request promise for status code other than 2xx
+    json: boolean;
+    simple: boolean;
 }

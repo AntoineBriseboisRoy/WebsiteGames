@@ -1,6 +1,7 @@
 import * as requestPromise from "request-promise-native";
 import { RequestOptions, WordAndDefinition } from "./Interfaces";
 import { Difficulty } from "../../../../common/constants";
+import { InvalidDifficultyError, RequestedWordError } from "../../../app/CustomErrors";
 
 export class LexicalService {
     private difficulty: number;
@@ -28,11 +29,11 @@ export class LexicalService {
             .then( (data: JSON) => {
                 this.requestResult = data;
                 if (Object.keys(data).length === 0) {
-                    throw new Error("Datamuse returns nothing for that request");
+                    throw new RequestedWordError("Datamuse returns nothing for that request");
                 }
 
                 return data;
-            },     (reject: Error) => {
+            },     (reject: HttpErrorResponse) => {
                 throw reject;
             })
             .catch((error: Error) => {
@@ -54,7 +55,7 @@ export class LexicalService {
             case Difficulty.Hard:
                 return (wordFrequency < Difficulty.Easy) && (wordFrequency >= Difficulty.Hard);
             default:
-                throw new Error("Invalid difficulty");
+                throw new InvalidDifficultyError("Invalid difficulty");
         }
     }
 
@@ -84,7 +85,7 @@ export class LexicalService {
             case Difficulty.Hard:
                 return {word: this.requestResult[index].word, definition: this.requestResult[index].defs[randomDefinition]};
             default:
-                throw new Error("Invalid Difficulty");
+                throw new InvalidDifficultyError("Invalid Difficulty");
         }
     }
 
@@ -97,7 +98,7 @@ export class LexicalService {
                     filteredWords.push(this.getWordAndDefinition(i));
                 }
             }
-        } catch (err) { console.error(err); }
+        } catch (error) { console.error(error); }
 
         return filteredWords;
     }
