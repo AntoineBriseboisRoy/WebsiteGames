@@ -14,9 +14,9 @@ const MIDDLE_SECTION: number = 0.5;
 const BACK_SECTION: number = -1.55;
 const FRONT_SECTION: number = 1.79;
 const COLLISION_DISTANCE: number = 10;
-
 const TIME_THRESHHOLD: number = 100; // Milliseconds
 const SLOW_DOWN_FACTOR: number = 0.3;
+const MODAL_PADDING: number = 2;
 
 enum CollisionSide {
     RIGHT = 0,
@@ -183,7 +183,7 @@ export class CollisionManager {
                 const intersections: Intersection[] = car.Raycasters[0].intersectObject(checkpoint);
                 if (intersections.length > 0) {
                     if (!this.areCarsCollidingWithCheckpoints[indexCar][indexCheckpoint]) {
-                        car.Information.setNextCheckpoint((indexCheckpoint + 1) % this.checkpoints.length);
+                        this.checkpointCollision(car, indexCheckpoint);
                         this.areCarsCollidingWithCheckpoints[indexCar][indexCheckpoint] = true;
                     }
                 } else {
@@ -191,6 +191,10 @@ export class CollisionManager {
                 }
             });
         });
+    }
+
+    private checkpointCollision(car: Car, indexCheckpoint: number): void {
+        car.Information.setNextCheckpoint((indexCheckpoint + 1) % this.checkpoints.length);
     }
 
     private getWorldCoordinatesSpeed(car: Car): Vector3 {
@@ -229,23 +233,24 @@ export class CollisionManager {
     }
 
     private endRace(): void  {
-        const PADDING: number = 2;
         this.inputManagerService.deactivate();
+        this.openEndRaceModal();
+    }
+
+    private openEndRaceModal(): void {
         if (!this.modalService.IsOpen) {
             this.modalService.open({
                 title: "Race Over!", message: "Your time is " +
-                this.cars[0].Information.totalTime.getMinutes().toString().padStart(PADDING, "0") + ":" +
-                this.cars[0].Information.totalTime.getSeconds().toString().padStart(PADDING, "0") + ":"  +
-                this.cars[0].Information.totalTime.getMilliseconds().toString().padEnd(PADDING, "0").substr(0, PADDING) +
-                "! You can choose to replay or go back to home page",
+                    this.cars[0].Information.totalTime.getMinutes().toString().padStart(MODAL_PADDING, "0") + ":" +
+                    this.cars[0].Information.totalTime.getSeconds().toString().padStart(MODAL_PADDING, "0") + ":" +
+                    this.cars[0].Information.totalTime.getMilliseconds().toString().padEnd(MODAL_PADDING, "0").substr(0, MODAL_PADDING) +
+                    "! You can choose to replay or go back to home page",
                 firstButton: "Race again!", secondButton: "Home", showPreview: true
             })
-            .then(() => window.location.reload(),
-                  () => {
-                    this.router.navigate([""]);
-                    window.location.reload();
-                  }
-            );
+            .then(() => window.location.reload(), () => {
+                this.router.navigate([""]);
+                window.location.reload();
+            });
         }
     }
 }

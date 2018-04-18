@@ -62,15 +62,15 @@ export class RenderService {
     public constructor(private collisionManager: CollisionManager, private roadCreator: RoadCreator,
                        private startLineGeneratorService: StartLineGeneratorService, private soundManager: SoundManagerService) {
         this.isInitialized = false;
-        this.cars = new Array<Car>();
-        this.cars.push(new Car());
-        for (let i: number = 1; i < NUMBER_OF_CARS; i++) {
-            this.cars.push(new CarAI());
-        }
-        this.floorTextures = new Map<TrackType, Texture>();
-        this.scene = new Scene();
         this.cameraContext = new CameraContext();
         this.dayPeriodContext = new DayPeriodContext(this);
+        this.createCars();
+        this.renderer = new WebGLRenderer();
+        this.stats = new Stats();
+        this.lastDate = 0;
+        this.activeTrack = {} as ITrack;
+        this.floorTextures = new Map<TrackType, Texture>();
+        this.scene = new Scene();
     }
 
     public get IsInitialized(): boolean {
@@ -100,9 +100,15 @@ export class RenderService {
         this.cameraContext.onResize(this.container.clientWidth, this.container.clientHeight);
         this.renderer.setSize(this.container.clientWidth, this.container.clientHeight);
     }
+    private createCars(): void {
+        this.cars = new Array<Car>();
+        this.cars.push(new Car());
+        for (let i: number = 1; i < NUMBER_OF_CARS; i++) {
+            this.cars.push(new CarAI());
+        }
+    }
 
     private initStats(): void {
-        this.stats = new Stats();
         this.stats.dom.style.position = "absolute";
         this.container.appendChild(this.stats.dom);
     }
@@ -137,7 +143,7 @@ export class RenderService {
                                                       -this.container.clientHeight / FRUSTUM_RATIO,
                                                       1, INITIAL_CAMERA_POSITION_Y + 1)); // Add 1 to see the floor
 
-        await this.createCars();
+        await this.initializeCars();
 
         this.cameraContext.initStates(this.cars[PLAYER].getPosition());
         this.cameraContext.setInitialState();
@@ -163,7 +169,7 @@ export class RenderService {
         this.scene.background = this.dayPeriodContext.CurrentState["0"].SkyboxCube;
     }
 
-    private async createCars(): Promise<void> {
+    private async initializeCars(): Promise<void> {
         for (const car of this.cars) {
             await car.init();
             this.collisionManager.addCar(car);
@@ -230,7 +236,6 @@ export class RenderService {
     }
 
     private startRenderingLoop(): void {
-        this.renderer = new WebGLRenderer();
         this.renderer.setPixelRatio(devicePixelRatio);
         this.renderer.setSize(this.container.clientWidth, this.container.clientHeight);
 
