@@ -8,15 +8,15 @@ const BACKWARD_DISTANCE: number = 10;
 
 export class CarAI extends Car {
     public isInitialized: boolean;
-    public isStuck: boolean;
-    private positionAtStuckPoint: Vector3;
+    public hasCollidedWithWall: boolean;
+    private positionAtCollisionPoint: Vector3;
     private isMovingAwayFromEdges: boolean;
 
     public constructor() {
         super();
         this.isInitialized = false;
-        this.isStuck = false;
-        this.positionAtStuckPoint = undefined;
+        this.hasCollidedWithWall = false;
+        this.positionAtCollisionPoint = undefined;
         this.isMovingAwayFromEdges = false;
     }
 
@@ -71,14 +71,15 @@ export class CarAI extends Car {
     }
 
     private shortestDistanceFromCarToMiddleOfRoad(): number {
-        const intersections: Array<Vector2> = this.Information.IntersectionPositions;
         const previousCheckpoint: number = this.Information.NextCheckpoint - 1 < 0 ? this.Information.Checkpoints.length - 1 :
                                                                                      this.Information.NextCheckpoint - 1;
 
         return Math.abs(this.trackDirection().y * this.getPosition().x -
                         this.trackDirection().x * this.getPosition().z +
-                        intersections[this.Information.NextCheckpoint].x * intersections[previousCheckpoint].y -
-                        intersections[this.Information.NextCheckpoint].y * intersections[previousCheckpoint].x) /
+                        this.Information.IntersectionPositions[this.Information.NextCheckpoint].x *
+                        this.Information.IntersectionPositions[previousCheckpoint].y -
+                        this.Information.IntersectionPositions[this.Information.NextCheckpoint].y *
+                        this.Information.IntersectionPositions[previousCheckpoint].x) /
                         this.trackDirection().length();
     }
 
@@ -95,24 +96,24 @@ export class CarAI extends Car {
         return this.speed.length() * BRAKING_DISTANCE;
     }
 
-    private stuckRoutine(): void {
-        if (this.positionAtStuckPoint === undefined) {
-            this.positionAtStuckPoint = this.getPosition().clone();
+    private collisionRoutine(): void {
+        if (this.positionAtCollisionPoint === undefined) {
+            this.positionAtCollisionPoint = this.getPosition().clone();
         }
         if (!this.shouldMoveForward()) {
             this.driveBackward();
         } else {
-            this.isStuck = false;
+            this.hasCollidedWithWall = false;
         }
     }
 
     private driveBackward(): void {
         this.isAcceleratorPressed = false;
         this.brake();
-        if (this.getPosition().clone().sub(this.positionAtStuckPoint).length() >= BACKWARD_DISTANCE) {
+        if (this.getPosition().clone().sub(this.positionAtCollisionPoint).length() >= BACKWARD_DISTANCE) {
             this.releaseBrakes();
-            this.isStuck = false;
-            this.positionAtStuckPoint = undefined;
+            this.hasCollidedWithWall = false;
+            this.positionAtCollisionPoint = undefined;
         }
     }
 
@@ -170,8 +171,8 @@ export class CarAI extends Car {
         if (!this.isInitialized) {
             return;
         }
-        if (this.isStuck) {
-            this.stuckRoutine();
+        if (this.hasCollidedWithWall) {
+            this.collisionRoutine();
         } else {
             this.drive();
         }

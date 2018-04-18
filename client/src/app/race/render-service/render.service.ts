@@ -27,7 +27,7 @@ const TEXTURE_TILE_REPETIONS: number = 200;
 const WORLD_SIZE: number = 1000;
 const FLOOR_SIZE: number = WORLD_SIZE / HALF;
 const PLAYER: number = 0;
-const NUMBER_OF_CARS: number = 1;
+const NUMBER_OF_CARS: number = 4;
 const BASE_RPM: number = 3500;
 
 @Injectable()
@@ -197,17 +197,23 @@ export class RenderService {
     }
 
     private addCheckpoints(): void {
+        const checkpoints: Array<[Vector2, Vector2]> = new Array<[Vector2, Vector2]>();
         this.roadCreator.CheckpointMeshes.forEach((mesh, index) => {
             this.collisionManager.addCheckpoint(mesh);
-            this.cars.forEach((car: Car) => {
-                if (index - 1 < 0) {
-                    car.Information.addCheckpoint(this.roadCreator.CheckpointsSegments[this.roadCreator.CheckpointMeshes.length - 1]);
-                } else {
-                    car.Information.addCheckpoint(this.roadCreator.CheckpointsSegments[index - 1]);
-                }
-            });
+            this.pushCheckpoint(index, checkpoints);
             this.scene.add(mesh);
         });
+        this.cars.forEach((car: Car) => {
+            car.Information.Checkpoints = checkpoints;
+        });
+    }
+
+    private pushCheckpoint(index: number, checkpoints: Array<[Vector2, Vector2]>): void {
+        if (index - 1 < 0) {
+            checkpoints.push(this.roadCreator.CheckpointsSegments[this.roadCreator.CheckpointMeshes.length - 1]);
+        } else {
+            checkpoints.push(this.roadCreator.CheckpointsSegments[index - 1]);
+        }
     }
 
     private createStartLine(): void {

@@ -124,7 +124,7 @@ export class CollisionManager {
         this.soundManager.play(WALL_SOUND_NAME);
         this.bounce(car);
         car.speed = car.speed.multiplyScalar(SLOW_DOWN_FACTOR);
-        (car as CarAI).isStuck =  true;
+        (car as CarAI).hasCollidedWithWall =  true;
     }
 
     private bounce(car: Car): void {

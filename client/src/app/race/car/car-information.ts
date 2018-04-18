@@ -42,6 +42,10 @@ export class CarInformation {
         return this.checkpointInformation.checkpoints;
     }
 
+    public set Checkpoints( checkpoints: Array<[Vector2, Vector2]>) {
+        this.checkpointInformation.checkpoints = checkpoints;
+    }
+
     public get IntersectionPositions(): Array<Vector2> {
         return this.intersectionPositions;
     }
@@ -60,10 +64,6 @@ export class CarInformation {
 
     public addIntersectionPosition ( intersection: Vector2 ): void {
         this.intersectionPositions.push(intersection);
-    }
-
-    public addCheckpoint( checkpoint: [Vector2, Vector2]): void {
-        this.Checkpoints.push(checkpoint);
     }
 
     public setNextCheckpoint( checkpoint: number ): void {
