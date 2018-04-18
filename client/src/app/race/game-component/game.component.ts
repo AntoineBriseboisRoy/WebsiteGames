@@ -11,6 +11,8 @@ import { TimerService } from "../timer-service/timer.service";
 import { Subscription } from "rxjs/Subscription";
 import { DayPeriodContext } from "../dayToggle-context";
 import { DateFormatter } from "../date-formatter";
+import { LAP_NUMBER } from "../../constants";
+import { RankingService } from "../ranking.service";
 
 const MAX_GEAR_BAR_WIDTH: number = 27;
 
@@ -20,7 +22,9 @@ const MAX_GEAR_BAR_WIDTH: number = 27;
     templateUrl: "./game.component.html",
     styleUrls: ["./game.component.css"],
     providers: [
-        TimerService
+        RenderService,
+        TimerService,
+        RankingService
     ]
 })
 
@@ -29,13 +33,16 @@ export class GameComponent implements AfterViewInit {
     @ViewChild("container")
     private containerRef: ElementRef;
     public startingText: string;
-    private bestTime: Date;
+    public bestTime: Date;
+    public lapNumber: number;
 
     public constructor(private renderService: RenderService, private inputManagerService: InputManagerService,
-                       private mongoQueryService: MongoQueryService , private route: ActivatedRoute, private timer: TimerService) {
+                       private mongoQueryService: MongoQueryService , private route: ActivatedRoute, private timer: TimerService,
+                       private rankingService: RankingService) {
         this.containerRef = undefined;
         this.startingText = "";
         this.bestTime = new Date(0, 0, 0, 0, 0, 0, 0);
+        this.lapNumber = LAP_NUMBER;
     }
 
     @HostListener("window:resize", ["$event"])
@@ -59,6 +66,7 @@ export class GameComponent implements AfterViewInit {
                 this.renderService.initialize(this.containerRef.nativeElement, track)
                 .then((data) => {
                     this.startingSequence();
+                    this.rankingService.initializeRanking(this.renderService.Cars);
                 })
                 .catch((err) => console.error(err));
                 this.bestTime = new Date(track.bestTimes[0].time);
@@ -103,6 +111,7 @@ export class GameComponent implements AfterViewInit {
             } else if (countdown > -1) {
                 this.inputManagerService.init(this.player, this.CameraContext, this.DayPeriodContext);
                 this.timer.initialize();
+                this.renderService.initializeAI();
                 this.startTimers();
                 this.startingText = "Start!";
             }
@@ -117,7 +126,7 @@ export class GameComponent implements AfterViewInit {
         for (const car of this.renderService.Cars) {
             const subscription: Subscription = this.timer.Time.subscribe((time: number) => {
                 car.Information.startTimer(subscription);
-                car.Information.totalTime.setTime(time);
+                car.Information.TotalTime.setTime(time);
             });
         }
     }

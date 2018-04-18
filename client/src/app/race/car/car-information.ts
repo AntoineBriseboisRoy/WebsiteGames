@@ -1,65 +1,104 @@
 import { Subscription } from "rxjs/Subscription";
 import { LAP_NUMBER } from "../../constants";
 import { Vector2 } from "three";
+import { ILapInformation, ICheckpointInformation } from "../../interfaces";
 
 export class CarInformation {
-    private lap: number;
-    public totalTime: Date;
-    private isGoingForward: boolean;
-    private hasStartedAFirstLap: boolean;
-    private hasCrossedStartLineBackward: boolean;
-    private lapTimes: Array<Date>;
-    private subscription: Subscription;
-
-    // For AI :
-    private checkpoints: Array<Vector2>;
-    public nextCheckpoint: Vector2;
-    private precedentDistanceToNextCheckpoint: Vector2;
-    private distanceToNextCheckpoint: Vector2;
-    // -----
-    private ranking: number;
     public playerName: string;
 
+    private lapInformation: ILapInformation;
+    private checkpointInformation: ICheckpointInformation;
+    private hasStartedAFirstLap: boolean;
+    private hasCrossedStartLineBackward: boolean;
+    private hasEndRace: boolean;
+    private timerSubscription: Subscription;
+    private intersectionPositions: Array<Vector2>;
+
     public constructor() {
-        this.lap = 1;
-        this.totalTime = new Date(0);
+        this.lapInformation = {lap: 1, lapTimes: new Array<Date>(), totalTime: new Date(0)} as ILapInformation;
+        this.checkpointInformation = {checkpoints: new Array<[Vector2, Vector2]>(), nextCheckpoint: 1, precedentDistanceToNextCheckpoint: 0,
+                                      distanceToNextCheckpoint: 0, isGoingForward: true, checkpointCounter: 0} as ICheckpointInformation;
         this.hasStartedAFirstLap = false;
         this.hasCrossedStartLineBackward = false;
-        this.lapTimes = new Array<Date>();
-        this.subscription = new Subscription();
-        this.isGoingForward = true;
-        this.checkpoints = new Array<Vector2>();
-        this.precedentDistanceToNextCheckpoint = new Vector2(0);
-        this.distanceToNextCheckpoint = new Vector2();
-        this.nextCheckpoint = new Vector2();
-        this.ranking = 1;
         this.playerName = "PLAYER";
+        this.hasEndRace = false;
+        this.timerSubscription = new Subscription();
+        this.intersectionPositions = new Array<Vector2>();
     }
 
     public get Lap(): number {
-        return this.lap;
+        return this.lapInformation.lap;
     }
 
-    public get Ranking(): number {
-        return this.ranking;
+    public get CurrentLapTime(): number {
+        return this.lapInformation.totalTime.getTime() - this.lapInformation.lapTimes.reduce((a, b) => a + b.getTime(), 0);
     }
 
     public get LapTimes(): Array<Date> {
-        return this.lapTimes;
-    }
-    public get CurrentLapTime(): number {
-        return this.totalTime.getTime() - this.lapTimes.reduce((a, b) => a + b.getTime(), 0);
+        return this.lapInformation.lapTimes;
     }
 
-    public addCheckpoint( checkpoint: Vector2): void {
-        this.checkpoints.push(checkpoint);
+    public get TotalTime(): Date {
+        return this.lapInformation.totalTime;
+    }
+
+    public get DistanceToNextCheckpoint(): number {
+        return this.checkpointInformation.distanceToNextCheckpoint;
+    }
+
+    public get Checkpoints(): Array<[Vector2, Vector2]> {
+        return this.checkpointInformation.checkpoints;
+    }
+
+    public set Checkpoints( checkpoints: Array<[Vector2, Vector2]>) {
+        this.checkpointInformation.checkpoints = checkpoints;
+    }
+
+    public get IntersectionPositions(): Array<Vector2> {
+        return this.intersectionPositions;
+    }
+
+    public get HasEndRace(): boolean {
+        return this.hasEndRace;
+    }
+
+    public get CheckpointCounter(): number {
+        return this.checkpointInformation.checkpointCounter;
+    }
+
+    public get NextCheckpoint(): number {
+        return this.checkpointInformation.nextCheckpoint;
+    }
+
+    public addIntersectionPosition ( intersection: Vector2 ): void {
+        this.intersectionPositions.push(intersection);
+    }
+
+    public setNextCheckpoint( checkpoint: number ): void {
+        if (this.NextCheckpoint === checkpoint) {
+            this.checkpointInformation.nextCheckpoint = (checkpoint + 1) % this.Checkpoints.length;
+            this.checkpointInformation.checkpointCounter++;
+        } else {
+            this.checkpointInformation.nextCheckpoint = checkpoint;
+            this.checkpointInformation.checkpointCounter--;
+        }
+    }
+
+    public startTimer(subscription: Subscription): void {
+        this.timerSubscription = subscription;
+    }
+
+    public stopTimer(): void {
+        this.timerSubscription.unsubscribe();
     }
 
     public completeALap(): void {
-        if (this.isGoingForward) {
+        if (this.checkpointInformation.isGoingForward) {
             if (!this.hasCrossedStartLineBackward) {
                 if (this.hasStartedAFirstLap) {
-                    this.incrementLap();
+                    if (!this.hasEndRace) {
+                        this.incrementLap();
+                    }
                 } else {
                     this.hasStartedAFirstLap = true;
                 }
@@ -71,37 +110,42 @@ export class CarInformation {
         }
     }
 
-    private incrementLap(): void {
-        this.lapTimes.push(new Date(this.CurrentLapTime));
-        if (this.lap !== LAP_NUMBER) {
-            this.lap++;
-        }
+    public updateDistanceToNextCheckpoint(carMeshPosition: Vector2): void {
+        this.checkpointInformation.distanceToNextCheckpoint = this.shortestDistanceFromCarToCheckpoint(carMeshPosition);
+        this.verifyWay();
+        this.checkpointInformation.precedentDistanceToNextCheckpoint = this.DistanceToNextCheckpoint;
     }
 
     public addFinalLap(): void {
-        this.lapTimes.push(new Date(this.CurrentLapTime));
+        this.lapInformation.lapTimes.push(new Date(this.CurrentLapTime));
     }
 
-    public startTimer(subscription: Subscription): void {
-        this.subscription = subscription;
+    private incrementLap(): void {
+        this.lapInformation.lapTimes.push(new Date(this.CurrentLapTime));
+        if (this.lapInformation.lap === LAP_NUMBER) {
+            this.hasEndRace = true;
+        } else {
+            this.lapInformation.lap++;
+        }
     }
 
-    public stopTimer(): void {
-        this.subscription.unsubscribe();
-    }
+    private shortestDistanceFromCarToCheckpoint(carMeshPosition: Vector2): number {
+        const checkpointVector: Vector2 = new Vector2().subVectors(this.checkpointInformation.checkpoints[
+                                                                    this.NextCheckpoint][1],
+                                                                   this.checkpointInformation.checkpoints[
+                                                                       this.NextCheckpoint][0]);
 
-    public setNextCheckpoint( checkpoint: number ): void {
-        this.nextCheckpoint = this.checkpoints[checkpoint];
+        return Math.abs((checkpointVector.y) * carMeshPosition.x - (checkpointVector.x) * carMeshPosition.y +
+                        this.Checkpoints[this.NextCheckpoint][1].x * this.Checkpoints[this.NextCheckpoint][0].y -
+                        this.Checkpoints[this.NextCheckpoint][1].y * this.Checkpoints[this.NextCheckpoint][0].x) /
+                             checkpointVector.length();
     }
 
     private verifyWay(): void {
-        const deltaDistance: number  = this.precedentDistanceToNextCheckpoint.length() - this.distanceToNextCheckpoint.length();
-        this.isGoingForward = deltaDistance >= 0;
+        this.checkpointInformation.isGoingForward = this.deltaDistance() >= 0;
     }
 
-    public updateDistanceToNextCheckpoint(meshPosition: Vector2): void {
-        this.distanceToNextCheckpoint.subVectors(this.nextCheckpoint, meshPosition);
-        this.verifyWay();
-        this.precedentDistanceToNextCheckpoint = this.distanceToNextCheckpoint.clone();
+    private deltaDistance(): number {
+        return this.checkpointInformation.precedentDistanceToNextCheckpoint - this.DistanceToNextCheckpoint;
     }
 }

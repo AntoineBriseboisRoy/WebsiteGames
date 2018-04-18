@@ -27,6 +27,7 @@ export class Engine {
     private minimumRPM: number;
     private shiftRPM: number;
     private transmissionEfficiency: number;
+    private isGoingForward: boolean;
 
     public get currentGear(): number {
         return this._currentGear;
@@ -71,9 +72,11 @@ export class Engine {
 
         this._currentGear = 0;
         this._rpm = this.minimumRPM;
+        this.isGoingForward = true;
     }
 
-    public update(speed: number, wheelRadius: number): void {
+    public update(speed: number, wheelRadius: number, isGoingForward: boolean): void {
+        this.isGoingForward = isGoingForward;
         this._rpm = this.getRPM(speed, wheelRadius);
         this.handleTransmission(speed, wheelRadius);
     }
@@ -83,12 +86,14 @@ export class Engine {
     }
 
     private handleTransmission(speed: number, wheelRadius: number): void {
-        if (this.shouldShift()) {
-            this._currentGear++;
-            this._rpm = this.getRPM(speed, wheelRadius);
-        } else if (this.shouldDownshift()) {
-            this._currentGear--;
-            this._rpm = this.getRPM(speed, wheelRadius);
+        if (this.isGoingForward) {
+            if (this.shouldShift()) {
+                this._currentGear++;
+                this._rpm = this.getRPM(speed, wheelRadius);
+            } else if (this.shouldDownshift()) {
+                this._currentGear--;
+                this._rpm = this.getRPM(speed, wheelRadius);
+            }
         }
     }
 
@@ -106,8 +111,11 @@ export class Engine {
         // tslint:disable-next-line: no-magic-numbers
         let rpm: number = (wheelAngularVelocity / (Math.PI * 2)) * MIN_TO_SEC * this.driveRatio * this.gearRatios[this._currentGear];
         rpm = rpm < this.minimumRPM ? this.minimumRPM : rpm;
-
-        return rpm > DEFAULT_MAX_RPM ? DEFAULT_MAX_RPM : rpm;
+        if (this.isGoingForward) {
+            return rpm > DEFAULT_MAX_RPM ? DEFAULT_MAX_RPM : rpm;
+        } else {
+            return rpm > DEFAULT_SHIFT_RPM ? DEFAULT_SHIFT_RPM : rpm;
+        }
 
     }
 

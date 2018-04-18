@@ -14,6 +14,7 @@ export class RoadCreator {
     private points: Point[];
     private trackMeshes: Mesh[];
     private checkpointMeshes: Mesh[];
+    private checkpointsSegments: Array<[Vector2, Vector2]>;
     private superposition: number;
 
     public get Meshes(): Mesh[] {
@@ -24,10 +25,15 @@ export class RoadCreator {
         return this.checkpointMeshes;
     }
 
+    public get CheckpointsSegments(): Array<[Vector2, Vector2]> {
+        return this.checkpointsSegments;
+    }
+
     public constructor() {
         this.points = new Array<Point>();
         this.trackMeshes = new Array<Mesh>();
         this.checkpointMeshes = new Array<Mesh>();
+        this.checkpointsSegments = new Array<[Vector2, Vector2]>();
         this.superposition = 0;
     }
 
@@ -86,13 +92,14 @@ export class RoadCreator {
         intersectionMesh.position.z = -(this.points[index].x) * WORLD_SIZE + WORLD_SIZE * HALF;
         intersectionMesh.rotation.x = PI_OVER_2;
         this.superpose(intersectionMesh);
+        intersectionMesh.name = "Intersection";
         this.trackMeshes.push(intersectionMesh);
     }
 
     private createCheckpoint(index: number, trackDirection: Vector3): void {
         const angle: number = this.calculateAngle(index, trackDirection);
 
-        const checkpointMesh: Mesh = new Mesh(new PlaneBufferGeometry(1, ROAD_WIDTH),
+        const checkpointMesh: Mesh = new Mesh(new PlaneBufferGeometry(2, ROAD_WIDTH),
                                               new MeshBasicMaterial({ wireframe: true, opacity: 0, transparent: false, side: DoubleSide }));
         checkpointMesh.position.x = -(this.points[index].y) * WORLD_SIZE + WORLD_SIZE * HALF + (1 / angle) * CHECKPOINT_OFFSET *
                                     trackDirection.normalize().z;
@@ -102,6 +109,18 @@ export class RoadCreator {
         checkpointMesh.rotation.z = (trackDirection.z === 0) ? PI_OVER_2 : Math.atan(trackDirection.x / trackDirection.z);
         this.superpose(checkpointMesh);
         this.checkpointMeshes.push(checkpointMesh);
+        this.createCheckpointSegment(checkpointMesh, trackDirection);
+    }
+
+    private createCheckpointSegment(checkpointMesh: Mesh, trackDirection: Vector3): void {
+        const perpendicularToTrackDirection: Vector2 = new Vector2(-trackDirection.x, trackDirection.z);
+        const leftPoint: Vector2 = new Vector2(checkpointMesh.position.x + ROAD_WIDTH * HALF * perpendicularToTrackDirection.normalize().x,
+                                               checkpointMesh.position.z + ROAD_WIDTH * HALF * perpendicularToTrackDirection.normalize().y
+                                              );
+        const rightPoint: Vector2 = new Vector2(checkpointMesh.position.x - ROAD_WIDTH * HALF * perpendicularToTrackDirection.normalize().x,
+                                                checkpointMesh.position.z - ROAD_WIDTH * HALF * perpendicularToTrackDirection.normalize().y
+                                               );
+        this.checkpointsSegments.push([leftPoint, rightPoint]);
     }
 
     private calculateAngle(index: number, trackDirection: Vector3): number {

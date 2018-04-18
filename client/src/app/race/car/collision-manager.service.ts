@@ -7,6 +7,7 @@ import { ModalService } from "../../modal/modal.service";
 import { Router } from "@angular/router";
 import { InputManagerService } from "../input-manager-service/input-manager.service";
 import { DateFormatter } from "../date-formatter";
+import { CarAI } from "./car-ai";
 
 const CAR_A_MOMENTUM_FACTOR: number = 2.1;
 const CAR_B_MOMENTUM_FACTOR: number = 1.9;
@@ -14,9 +15,9 @@ const MIDDLE_SECTION: number = 0.5;
 const BACK_SECTION: number = -1.55;
 const FRONT_SECTION: number = 1.79;
 const COLLISION_DISTANCE: number = 10;
-
 const TIME_THRESHHOLD: number = 100; // Milliseconds
 const SLOW_DOWN_FACTOR: number = 0.3;
+const MODAL_PADDING: number = 2;
 
 enum CollisionSide {
     RIGHT = 0,
@@ -126,6 +127,7 @@ export class CollisionManager {
         this.soundManager.play(WALL_SOUND_NAME);
         this.bounce(car);
         car.speed = car.speed.multiplyScalar(SLOW_DOWN_FACTOR);
+        (car as CarAI).hasCollidedWithWall =  true;
     }
 
     private bounce(car: Car): void {
@@ -169,32 +171,34 @@ export class CollisionManager {
     }
 
     private startLineCollision(car: Car): void {
-        if (car.Information.Lap === LAP_NUMBER) {
+        car.Information.completeALap();
+        if (car.Information.HasEndRace) {
             car.Information.stopTimer();
             car.Information.addFinalLap();
             if (car === this.cars[0]) {
                 this.endRace();
             }
-        } else {
-            car.Information.completeALap();
         }
     }
 
     private verifyCheckpointCollision(): void {
         this.cars.forEach((car: Car, indexCar: number) => {
-            this.checkpoints.forEach((checkpoint, indexRoad: number) => {
+            this.checkpoints.forEach((checkpoint, indexCheckpoint: number) => {
                 const intersections: Intersection[] = car.Raycasters[0].intersectObject(checkpoint);
                 if (intersections.length > 0) {
-                    if (!this.areCarsCollidingWithCheckpoints[indexCar][indexRoad]) {
-                        const nextCheckpoint: number = (indexRoad + 1) % this.checkpoints.length;
-                        car.Information.setNextCheckpoint(nextCheckpoint);
-                        this.areCarsCollidingWithCheckpoints[indexCar][indexRoad] = true;
+                    if (!this.areCarsCollidingWithCheckpoints[indexCar][indexCheckpoint]) {
+                        this.checkpointCollision(car, indexCheckpoint);
+                        this.areCarsCollidingWithCheckpoints[indexCar][indexCheckpoint] = true;
                     }
                 } else {
-                    this.areCarsCollidingWithCheckpoints[indexCar][indexRoad] = false;
+                    this.areCarsCollidingWithCheckpoints[indexCar][indexCheckpoint] = false;
                 }
             });
         });
+    }
+
+    private checkpointCollision(car: Car, indexCheckpoint: number): void {
+        car.Information.setNextCheckpoint((indexCheckpoint + 1) % this.checkpoints.length);
     }
 
     private getWorldCoordinatesSpeed(car: Car): Vector3 {
@@ -234,10 +238,14 @@ export class CollisionManager {
 
     private endRace(): void  {
         this.inputManagerService.deactivate();
+        this.openEndRaceModal();
+    }
+
+    private openEndRaceModal(): void {
         if (!this.modalService.IsOpen) {
             this.modalService.open({
                 title: "Race Over!", message: "Your time is " +
-                DateFormatter.DateToMinSecMillisec(this.cars[0].Information.totalTime) +
+                DateFormatter.DateToMinSecMillisec(this.cars[0].Information.TotalTime) +
                 "! Let's go see your results... You have two magnificient buttons to do so.",
                 firstButton: "See race results!", secondButton: "See race results again!", showPreview: true
             })

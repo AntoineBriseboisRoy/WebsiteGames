@@ -14,6 +14,7 @@ import { RoadCreator } from "./road-creator.service";
 import { StartLineGeneratorService } from "../start-line-generator.service";
 import { DayPeriodContext } from "../dayToggle-context";
 import { SoundManagerService } from "../sound-manager.service";
+import { CarAI } from "../car/car-ai";
 
 export const FAR_CLIPPING_PLANE: number = 1000;
 export const NEAR_CLIPPING_PLANE: number = 1;
@@ -26,11 +27,12 @@ const TEXTURE_TILE_REPETIONS: number = 200;
 const WORLD_SIZE: number = 1000;
 const FLOOR_SIZE: number = WORLD_SIZE / HALF;
 const PLAYER: number = 0;
-const NUMBER_OF_CARS: number = 3;
+const NUMBER_OF_CARS: number = 4;
 const BASE_RPM: number = 3500;
 
 @Injectable()
 export class RenderService {
+    private isInitialized: boolean;
     private cameraContext: CameraContext;
     private dayPeriodContext: DayPeriodContext;
     private container: HTMLDivElement;
@@ -63,14 +65,20 @@ export class RenderService {
 
     public constructor(private collisionManager: CollisionManager, private roadCreator: RoadCreator,
                        private startLineGeneratorService: StartLineGeneratorService, private soundManager: SoundManagerService) {
-        this.cars = new Array<Car>();
-        for (let i: number = 0; i < NUMBER_OF_CARS; i++) {
-            this.cars.push(new Car());
-        }
-        this.floorTextures = new Map<TrackType, Texture>();
-        this.scene = new Scene();
+        this.isInitialized = false;
         this.cameraContext = new CameraContext();
         this.dayPeriodContext = new DayPeriodContext(this);
+        this.createCars();
+        this.renderer = new WebGLRenderer();
+        this.stats = new Stats();
+        this.lastDate = 0;
+        this.activeTrack = {} as ITrack;
+        this.floorTextures = new Map<TrackType, Texture>();
+        this.scene = new Scene();
+    }
+
+    public get IsInitialized(): boolean {
+        return this.isInitialized;
     }
 
     public async initialize(container: HTMLDivElement, track: ITrack): Promise<void> {
@@ -82,16 +90,29 @@ export class RenderService {
 
         await this.createScene();
         this.initStats();
+        this.isInitialized = true;
         this.startRenderingLoop();
+    }
+
+    public initializeAI(): void {
+        for (const car of this.cars) {
+            (car as CarAI).isInitialized = true;
+        }
     }
 
     public onResize(): void {
         this.cameraContext.onResize(this.container.clientWidth, this.container.clientHeight);
         this.renderer.setSize(this.container.clientWidth, this.container.clientHeight);
     }
+    private createCars(): void {
+        this.cars = new Array<Car>();
+        this.cars.push(new Car());
+        for (let i: number = 1; i < NUMBER_OF_CARS; i++) {
+            this.cars.push(new CarAI());
+        }
+    }
 
     private initStats(): void {
-        this.stats = new Stats();
         this.stats.dom.style.position = "absolute";
         this.container.appendChild(this.stats.dom);
     }
@@ -126,7 +147,7 @@ export class RenderService {
                                                       -this.container.clientHeight / FRUSTUM_RATIO,
                                                       1, INITIAL_CAMERA_POSITION_Y + 1)); // Add 1 to see the floor
 
-        await this.createCars();
+        await this.initializeCars();
 
         this.cameraContext.initStates(this.cars[PLAYER].getPosition());
         this.cameraContext.setInitialState();
@@ -152,7 +173,7 @@ export class RenderService {
         this.scene.background = this.dayPeriodContext.CurrentState["0"].SkyboxCube;
     }
 
-    private async createCars(): Promise<void> {
+    private async initializeCars(): Promise<void> {
         for (const car of this.cars) {
             await car.init();
             this.collisionManager.addCar(car);
@@ -162,21 +183,40 @@ export class RenderService {
 
     private generateTrack(): void {
         this.roadCreator.createTrack(this.activeTrack.points);
-        this.roadCreator.Meshes.forEach((mesh: Mesh) => {
-            this.scene.add(mesh);
-            this.collisionManager.addRoadSegment(mesh);
-        });
+        this.addTrack();
         this.addCheckpoints();
         this.createStartLine();
     }
 
-    private addCheckpoints(): void {
-        for (const mesh of this.roadCreator.CheckpointMeshes) {
-            this.collisionManager.addCheckpoint(mesh);
-            this.cars.forEach((car: Car) => {
-                car.Information.addCheckpoint(new Vector2(mesh.getWorldPosition().x, mesh.getWorldPosition().z));
-            });
+    private addTrack(): void {
+        this.roadCreator.Meshes.forEach((mesh: Mesh) => {
             this.scene.add(mesh);
+            this.collisionManager.addRoadSegment(mesh);
+            if ( mesh.name === "Intersection" ) {
+                for (const car of this.cars) {
+                    car.Information.addIntersectionPosition(new Vector2(mesh.position.x, mesh.position.z));
+                }
+            }
+        });
+    }
+
+    private addCheckpoints(): void {
+        const checkpoints: Array<[Vector2, Vector2]> = new Array<[Vector2, Vector2]>();
+        this.roadCreator.CheckpointMeshes.forEach((mesh, index) => {
+            this.collisionManager.addCheckpoint(mesh);
+            this.pushCheckpoint(index, checkpoints);
+            this.scene.add(mesh);
+        });
+        this.cars.forEach((car: Car) => {
+            car.Information.Checkpoints = checkpoints;
+        });
+    }
+
+    private pushCheckpoint(index: number, checkpoints: Array<[Vector2, Vector2]>): void {
+        if (index - 1 < 0) {
+            checkpoints.push(this.roadCreator.CheckpointsSegments[this.roadCreator.CheckpointMeshes.length - 1]);
+        } else {
+            checkpoints.push(this.roadCreator.CheckpointsSegments[index - 1]);
         }
     }
 
@@ -206,7 +246,6 @@ export class RenderService {
     }
 
     private startRenderingLoop(): void {
-        this.renderer = new WebGLRenderer();
         this.renderer.setPixelRatio(devicePixelRatio);
         this.renderer.setSize(this.container.clientWidth, this.container.clientHeight);
 
