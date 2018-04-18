@@ -9,12 +9,14 @@ export class CarInformation {
     private isGoingForward: boolean;
     private hasStartedAFirstLap: boolean;
     private hasCrossedStartLineBackward: boolean;
+    private hasEndRace: boolean;
     private subscription: Subscription;
     private checkpoints: Array<[Vector2, Vector2]>;
     private intersectionPositions: Array<Vector2>;
     public nextCheckpoint: number;
     private precedentDistanceToNextCheckpoint: number;
     private distanceToNextCheckpoint: number;
+    private checkpointCounter: number;
     public constructor() {
         this.lap = 1;
         this.lapTimes = new Array<Date>();
@@ -22,12 +24,14 @@ export class CarInformation {
         this.isGoingForward = true;
         this.hasStartedAFirstLap = false;
         this.hasCrossedStartLineBackward = false;
+        this.hasEndRace = false;
         this.subscription = new Subscription();
         this.checkpoints = new Array<[Vector2, Vector2]>();
         this.intersectionPositions = new Array<Vector2>();
         this.precedentDistanceToNextCheckpoint = 0;
         this.distanceToNextCheckpoint = 0;
         this.nextCheckpoint = 1;
+        this.checkpointCounter = 0;
     }
 
     public get Lap(): number {
@@ -50,6 +54,14 @@ export class CarInformation {
         return this.intersectionPositions;
     }
 
+    public get HasEndRace(): boolean {
+        return this.hasEndRace;
+    }
+
+    public get CheckpointCounter(): number {
+        return this.checkpointCounter;
+    }
+
     public addIntersectionPosition ( intersection: Vector2 ): void {
         this.intersectionPositions.push(intersection);
     }
@@ -62,7 +74,9 @@ export class CarInformation {
         if (this.isGoingForward) {
             if (!this.hasCrossedStartLineBackward) {
                 if (this.hasStartedAFirstLap) {
-                    this.incrementLap();
+                    if (!this.hasEndRace) {
+                        this.incrementLap();
+                    }
                 } else {
                     this.hasStartedAFirstLap = true;
                 }
@@ -76,7 +90,9 @@ export class CarInformation {
 
     private incrementLap(): void {
         this.lapTimes.push(new Date(this.CurrentLapTime));
-        if (this.lap !== LAP_NUMBER) {
+        if (this.lap === LAP_NUMBER) {
+            this.hasEndRace = true;
+        } else {
             this.lap++;
         }
     }
@@ -90,8 +106,13 @@ export class CarInformation {
     }
 
     public setNextCheckpoint( checkpoint: number ): void {
-        this.nextCheckpoint = this.nextCheckpoint === checkpoint ?
-                              (checkpoint + 1) % this.checkpoints.length : checkpoint;
+        if (this.nextCheckpoint === checkpoint) {
+            this.nextCheckpoint = (checkpoint + 1) % this.checkpoints.length;
+            this.checkpointCounter++;
+        } else {
+            this.nextCheckpoint = checkpoint;
+            this.checkpointCounter--;
+        }
     }
 
     private verifyWay(): void {

@@ -63,7 +63,7 @@ export class RenderService {
                        private startLineGeneratorService: StartLineGeneratorService, private soundManager: SoundManagerService) {
         this.isInitialized = false;
         this.cars = new Array<Car>();
-        this.cars.push(new CarAI());
+        this.cars.push(new Car());
         for (let i: number = 1; i < NUMBER_OF_CARS; i++) {
             this.cars.push(new CarAI());
         }
@@ -121,6 +121,9 @@ export class RenderService {
         this.collisionManager.update();
         this.cars.forEach((car) => {
             car.Information.updateDistanceToNextCheckpoint(new Vector2(car.getPosition().x, car.getPosition().z));
+            if (car.Information.HasEndRace) {
+                console.log(car);
+            }
         });
     }
 

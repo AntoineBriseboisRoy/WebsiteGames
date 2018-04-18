@@ -173,9 +173,8 @@ export class CollisionManager {
             if (car === this.cars[0]) {
                 this.endRace();
             }
-        } else {
-            car.Information.completeALap();
         }
+        car.Information.completeALap();
     }
 
     private verifyCheckpointCollision(): void {

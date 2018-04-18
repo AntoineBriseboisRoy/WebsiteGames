@@ -31,7 +31,7 @@ export class GameComponent implements AfterViewInit {
     private containerRef: ElementRef;
     public startingText: string;
     public bestTime: Date;
-    private lapNumber: number;
+    public lapNumber: number;
 
     public constructor(private renderService: RenderService, private inputManagerService: InputManagerService,
                        private mongoQueryService: MongoQueryService , private route: ActivatedRoute, private timer: TimerService) {
@@ -101,6 +101,7 @@ export class GameComponent implements AfterViewInit {
                 this.renderService.initializeAI();
                 this.startTimers();
                 this.startingText = "Start!";
+                // calculate start line pos
             }
             if (countdown-- < -1) {
                 this.startingText = "";
@@ -120,5 +121,40 @@ export class GameComponent implements AfterViewInit {
 
     public rpmRatio(): number {
         return (this.player.rpm / DEFAULT_SHIFT_RPM) * MAX_GEAR_BAR_WIDTH;
+    }
+
+    // tslint:disable-next-line:max-func-body-length
+    public playerRanking(): number {
+        const ranking: Array<Car> = this.renderService.Cars.slice();
+        const player: Car = ranking[0];
+        ranking.sort((a, b) => {
+            if (a.Information.HasEndRace && !b.Information.HasEndRace) {
+                return -1;
+            } else if (!a.Information.HasEndRace && b.Information.HasEndRace) {
+                return 1;
+            } else if (a.Information.HasEndRace && b.Information.HasEndRace) {
+                return 0;
+            }
+            if (a.Information.Lap === b.Information.Lap) {
+                if (a.Information.nextCheckpoint === b.Information.nextCheckpoint) {
+                    return a.Information.DistanceToNextCheckpoint - b.Information.DistanceToNextCheckpoint;
+                } else {
+                    return b.Information.CheckpointCounter - a.Information.CheckpointCounter;
+                }
+            } else {
+                return b.Information.Lap - a.Information.Lap;
+            }
+        });
+        for (let i: number = 0; i < ranking.length; i++) {
+            if (player === ranking[i]) {
+                return i + 1;
+            }
+        }
+
+        return -1;
+    }
+
+    private changeOrderCheckpoints(nextCheckpoint: number): number {
+        return (nextCheckpoint + this.player.Information.Checkpoints.length - 1) % this.player.Information.Checkpoints.length;
     }
 }
