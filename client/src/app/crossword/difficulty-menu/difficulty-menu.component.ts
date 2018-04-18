@@ -27,8 +27,8 @@ export class DifficultyMenuComponent {
         }
     }
 
-    public activateDifficulty(eventTarget: EventTarget): void {
-        switch ((eventTarget as HTMLButtonElement).value) {
+    public activateDifficulty(value: string): void {
+        switch (value) {
             case "Easy": {
                 this.gameManagerService.difficulty = Difficulty.Easy;
                 break;

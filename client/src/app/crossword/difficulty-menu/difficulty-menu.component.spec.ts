@@ -1,10 +1,9 @@
 import { async, ComponentFixture, TestBed } from "@angular/core/testing";
-
 import { DifficultyMenuComponent } from "./difficulty-menu.component";
-import { Difficulty } from "../../../../../common/constants";
 import { RouterTestingModule } from "@angular/router/testing";
 import { GameManagerService } from "../game-manager.service";
 import { SocketIoService } from "../socket-io.service";
+import { DifficultyView } from "../../constants";
 
 describe("DifficultyMenuComponent", () => {
     let component: DifficultyMenuComponent;
@@ -28,23 +27,21 @@ describe("DifficultyMenuComponent", () => {
     });
 
     it("should create", () => {
-        expect(component).toBeTruthy().catch((error: Error) => {
-            console.error(error);
-        });
+        expect(component).toBeTruthy();
     });
 
     it("should have an active difficulty", () => {
-        component.activateDifficulty(Difficulty.Easy);
+        component.activateDifficulty(DifficultyView.Easy);
         expect(component.isActiveDifficulty).toBe(true);
     });
 
     it("should have an active difficulty", () => {
-        component.activateDifficulty(Difficulty.Medium);
+        component.activateDifficulty(DifficultyView.Medium);
         expect(component.isActiveDifficulty).toBe(true);
     });
 
     it("should have an active difficulty", () => {
-        component.activateDifficulty(Difficulty.Hard);
+        component.activateDifficulty(DifficultyView.Hard);
         expect(component.isActiveDifficulty).toBe(true);
     });
 });
