@@ -15,15 +15,22 @@ const RIGHT_ARROW_KEYCODE: number = 39;
 const DOWN_ARROW_KEYCODE: number = 40;
 const LETTER_A_KEYCODE: number = 65;
 const LETTER_Z_KEYCODE: number = 90;
-
 @Injectable()
 export class KeyboardInputManagerService {
     private keyDownCommands: Map<number, AbsCommand>;
 
     public constructor(cells: Array<ICell>) {
+        this.preventBackspaceBinding();
         this.setKeyDownBindings(cells);
     }
 
+    private preventBackspaceBinding(): void {
+        window.onkeydown = (e: KeyboardEvent) => {
+            if (e.keyCode === BACKSPACE_KEYCODE && e.target === document.body) {
+              e.preventDefault();
+            }
+        };
+    }
     private setKeyDownBindings(cells: Array<ICell>): void {
         this.keyDownCommands = new Map<number, AbsCommand>();
         this.keyDownCommands.set(BACKSPACE_KEYCODE, new ClearLetterCommand(cells));
@@ -36,7 +43,6 @@ export class KeyboardInputManagerService {
             this.keyDownCommands.set(i, new LetterCommand(cells, i));
         }
     }
-
     public handleKeyDown(keyCode: number): void {
         const command: AbsCommand = this.keyDownCommands.get(keyCode);
         if (command) {
