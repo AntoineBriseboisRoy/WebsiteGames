@@ -82,6 +82,15 @@ export class EndGameService {
         }
     }
 
+    private subscribeToRestartRequest(): void {
+        this.socketIO.RestartedGameSubject.subscribe((game: IRestartGame) => {
+            if (game.requestSent) {
+                this.hasReceivedRestartRequest = true;
+                this.modalService.closeWithFirstButton();
+            }
+        });
+    }
+
     private restartGame(): void {
         if (this.gameManagerService.isMultiplayer && !this.hasReceivedRestartRequest) {
             this.sendRestartRequestMultiplayer();
@@ -100,19 +109,6 @@ export class EndGameService {
         this.router.navigate(["crossword/waiting"]);
     }
 
-    private subscribeToRestartRequest(): void {
-        this.socketIO.RestartedGameSubject.subscribe((game: IRestartGame) => {
-            if (game.requestSent) {
-                this.hasReceivedRestartRequest = true;
-                this.modalService.closeWithFirstButton();
-            }
-        });
-    }
-
-    private sendRestartGame(): void {
-        this.socketIO.RestartedGameSubject.next({ requestSent: false, requestAccepted: true });
-    }
-
     private restartGameModal(): void {
         this.modalService.open({
             title: "Your opponent would like to play again", message: "Do you want to play with the same configuration?",
@@ -121,6 +117,10 @@ export class EndGameService {
             .then(() => this.restartGameMultiplayer(),
                   () => this.refuseRestartGameMultiplayer()
             );
+    }
+
+    private sendRestartGame(): void {
+        this.socketIO.RestartedGameSubject.next({ requestSent: false, requestAccepted: true });
     }
 
     private restartGameMultiplayer(): void {
