@@ -91,9 +91,9 @@ export class RaceResultsComponent implements OnInit {
 
     private sortRaceTimes(): void {
         this.carInformations = this.carInformations.sort((a: CarInformation, b: CarInformation) => {
-            if (a.totalTime < b.totalTime) {
+            if (a.TotalTime < b.TotalTime) {
                 return -1;
-            } else if (b.totalTime < a.totalTime) {
+            } else if (b.TotalTime < a.TotalTime) {
                 return 1;
             } else {
                 return 1;
@@ -103,7 +103,7 @@ export class RaceResultsComponent implements OnInit {
 
     private verifyBestTime(): void {
         if (this.carInformations[0].playerName === CARS_NAME[0]) {
-            this.trackBestTimes.push({playerName: PLAYER_NAME_PLACEHOLDER, time: this.carInformations[PLAYER_INDEX].totalTime});
+            this.trackBestTimes.push({playerName: PLAYER_NAME_PLACEHOLDER, time: this.carInformations[PLAYER_INDEX].TotalTime});
             this.trackBestTimes.sort((a: IBestTime, b: IBestTime) => {
                 if (a.time < b.time) {
                     return -1;
@@ -134,14 +134,14 @@ export class RaceResultsComponent implements OnInit {
     }
 
     private inBestTimes(): void {
-        this.isInBestTimes = this.carInformations[PLAYER_INDEX].totalTime <= this.trackBestTimes[this.trackBestTimes.length - 1].time;
+        this.isInBestTimes = this.carInformations[PLAYER_INDEX].TotalTime <= this.trackBestTimes[this.trackBestTimes.length - 1].time;
     }
 
     private findPlayerRank(): void {
         if (this.isInBestTimes) {
             this.bestTimeRanking = this.trackBestTimes.findIndex((bestTime: IBestTime) =>
                 bestTime.playerName === PLAYER_NAME_PLACEHOLDER
-                && bestTime.time === this.carInformations[PLAYER_INDEX].totalTime);
+                && bestTime.time === this.carInformations[PLAYER_INDEX].TotalTime);
         }
     }
 }

@@ -18,10 +18,9 @@ export const CHEAT_COLOR: string = "#FF3E04";
 export const COLLISION_SOUND_NAME: string = "collisionSound.ogg";
 export const ENGINE_SOUND_NAME: string = "engineSound.wav";
 export const WALL_SOUND_NAME: string = "wallSound.ogg";
-
-// Edit track
 export const DEFAULT_LINE_WIDTH: number = 5;
 export const TRACK_WIDTH: number = 20;
+export const TWICE_TRACK_WIDTH: number = TRACK_WIDTH * 2;
 export const MINIMUM_TRACK_LENGTH: number = TRACK_WIDTH * 3;
 export const DEFAULT_CIRCLE_RADIUS: number = 10;
 export const TWICE_DEFAULT_CIRCLE_RADIUS: number = DEFAULT_CIRCLE_RADIUS * 2;

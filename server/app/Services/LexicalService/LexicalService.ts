@@ -33,7 +33,7 @@ export class LexicalService {
                 }
 
                 return data;
-            },     (reject: HttpErrorResponse) => {
+            },     (reject: Error) => {
                 throw reject;
             })
             .catch((error: Error) => {

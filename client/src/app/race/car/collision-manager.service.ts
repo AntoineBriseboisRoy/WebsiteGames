@@ -2,7 +2,7 @@ import { Car } from "./car";
 import { Vector3, Matrix4, Quaternion, Box3, Mesh, Raycaster, Intersection } from "three";
 import { Injectable } from "@angular/core";
 import { SoundManagerService } from "../sound-manager.service";
-import { COLLISION_SOUND_NAME, WALL_SOUND_NAME, LAP_NUMBER } from "../../constants";
+import { COLLISION_SOUND_NAME, WALL_SOUND_NAME } from "../../constants";
 import { ModalService } from "../../modal/modal.service";
 import { Router } from "@angular/router";
 import { InputManagerService } from "../input-manager-service/input-manager.service";
@@ -17,7 +17,6 @@ const FRONT_SECTION: number = 1.79;
 const COLLISION_DISTANCE: number = 10;
 const TIME_THRESHHOLD: number = 100; // Milliseconds
 const SLOW_DOWN_FACTOR: number = 0.3;
-const MODAL_PADDING: number = 2;
 
 enum CollisionSide {
     RIGHT = 0,
