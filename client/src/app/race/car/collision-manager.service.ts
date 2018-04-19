@@ -244,7 +244,7 @@ export class CollisionManager {
         if (!this.modalService.IsOpen) {
             this.modalService.open({
                 title: "Race Over!", message: "Your time is " +
-                DateFormatter.DateToMinSecMillisec(this.cars[0].Information.TotalTime) +
+                DateFormatter.DateToMinSecMillisec(new Date(this.cars[0].Information.TotalTime)) +
                 "! Let's go see your results... You have two magnificient buttons to do so.",
                 firstButton: "See race results!", secondButton: "See race results again!", showPreview: true
             })

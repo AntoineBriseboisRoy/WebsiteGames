@@ -22,7 +22,6 @@ const MAX_GEAR_BAR_WIDTH: number = 27;
     templateUrl: "./game.component.html",
     styleUrls: ["./game.component.css"],
     providers: [
-        RenderService,
         TimerService,
         RankingService
     ]
@@ -89,7 +88,7 @@ export class GameComponent implements AfterViewInit {
     }
 
     public get BestTime(): string {
-        return DateFormatter.DateToMinSecMillisec(this.bestTime);
+        return DateFormatter.DateToMinSecMillisec(new Date(this.bestTime));
     }
 
     public rpmRatio(): number {

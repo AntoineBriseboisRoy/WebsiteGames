@@ -41,7 +41,7 @@ export class TrackViewComponent implements OnInit {
     }
 
     public getFormattedTime(time: Date): string {
-        return DateFormatter.DateToMinSecMillisec(time);
+        return DateFormatter.DateToMinSecMillisec(new Date(time));
     }
 
     public callModal(): void {

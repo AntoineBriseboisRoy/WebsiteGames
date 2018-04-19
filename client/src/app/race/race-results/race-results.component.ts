@@ -21,7 +21,6 @@ export class RaceResultsComponent implements OnInit {
     private trackBestTimes: IBestTime[];
     private bestTimeRanking: number;
     private hasSavedName: boolean;
-
     private isInBestTimes: boolean;
 
     public get CarInformations(): CarInformation[] {
@@ -68,7 +67,7 @@ export class RaceResultsComponent implements OnInit {
     }
 
     public getFormattedTime(time: Date): string {
-        return DateFormatter.DateToMinSecMillisec(time);
+        return DateFormatter.DateToMinSecMillisec(new Date(time));
     }
 
     public editTrackBestTimesDB(): void {

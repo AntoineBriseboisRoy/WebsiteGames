@@ -9,6 +9,7 @@ const WORLD_SIZE: number = 1000;
 const SUPERPOSITION: number = 0.001;
 const ROAD_TEXTURE_PATH: string = "/assets/uniformRoad.jpg";
 const CHECKPOINT_OFFSET: number = 19;
+const CHECKPOINT_LENGTH: number = 2;
 @Injectable()
 export class RoadCreator {
     private points: Point[];
@@ -99,8 +100,8 @@ export class RoadCreator {
     private createCheckpoint(index: number, trackDirection: Vector3): void {
         const angle: number = this.calculateAngle(index, trackDirection);
 
-        const checkpointMesh: Mesh = new Mesh(new PlaneBufferGeometry(2, ROAD_WIDTH),
-                                              new MeshBasicMaterial({ wireframe: true, opacity: 0, transparent: false, side: DoubleSide }));
+        const checkpointMesh: Mesh = new Mesh(new PlaneBufferGeometry(CHECKPOINT_LENGTH, ROAD_WIDTH),
+                                              new MeshBasicMaterial({ opacity: 0, transparent: true, side: DoubleSide }));
         checkpointMesh.position.x = -(this.points[index].y) * WORLD_SIZE + WORLD_SIZE * HALF + (1 / angle) * CHECKPOINT_OFFSET *
                                     trackDirection.normalize().z;
         checkpointMesh.position.z = -(this.points[index].x) * WORLD_SIZE + WORLD_SIZE * HALF + (1 / angle) * CHECKPOINT_OFFSET *
