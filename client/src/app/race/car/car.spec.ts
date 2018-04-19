@@ -1,6 +1,5 @@
-import { Car, DEFAULT_WHEELBASE, DEFAULT_MASS, DEFAULT_DRAG_COEFFICIENT } from "./car";
+import { Car } from "./car";
 import { Engine } from "./engine";
-import { Wheel } from "./wheel";
 import { Vector3 } from "three";
 
 const MS_BETWEEN_FRAMES: number = 16.6667;
