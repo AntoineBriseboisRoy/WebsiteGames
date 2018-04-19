@@ -1,10 +1,9 @@
 import { IGridWord } from "../../../../common/interfaces/IGridWord";
 import { ICell, CellColor, Finder } from "../../../../common/interfaces/ICell";
-import { IWord, Orientation } from "../../../../common/interfaces/IWord";
-
+import { IWord } from "../../../../common/interfaces/IWord";
+import { Orientation, Difficulty } from "../../../../common/constants";
 import { GridGeneratorService } from "../../Grid/GridGeneratorService";
 import { STANDARD_SIDE_SIZE, BLACKSQUARE_CHARACTER } from "../../Grid/Constants";
-import { Difficulty } from "../../../../common/constants";
 
 export class WordTransmitterService {
     private indexPosition: number[];

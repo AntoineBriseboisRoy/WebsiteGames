@@ -2,7 +2,7 @@ import { TestBed, inject } from "@angular/core/testing";
 import { KeyboardInputManagerService } from "./keyboard-input-manager.service";
 import { FocusCell } from "../focusCell";
 import { ICell, CellColor, Finder } from "../../../../../../common/interfaces/ICell";
-import { Orientation } from "../../../../../../common/interfaces/IWord";
+import { Orientation } from "../../../../../../common/constants";
 
 describe("KeyboardInputManagerService", () => {
     const BACKSPACE_KEYCODE: number = 8;

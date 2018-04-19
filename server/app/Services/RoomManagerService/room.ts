@@ -1,8 +1,9 @@
 import { GridInPlay } from "./gridInPlay";
 import { Player } from "../../player";
-import { RoomState, Difficulty } from "../../../../common/constants";
+import { RoomState, Difficulty, GameOutcome } from "../../../../common/constants";
 import { IGridWord } from "../../../../common/interfaces/IGridWord";
 import { ICell, Finder } from "../../../../common/interfaces/ICell";
+import { IPlayer } from "../../../../common/interfaces/IPlayer";
 
 const ROOM_NAME_OFFSET: string = "a";
 
@@ -22,6 +23,15 @@ export class Room {
 
     public get Players(): Array<Player> {
         return this.players;
+    }
+
+    public get IPlayers(): Array<IPlayer> {
+        const iPlayers: Array<IPlayer> = new Array<IPlayer>();
+        this.players.forEach((player: Player) => {
+            iPlayers.push(player.toIPlayer());
+        });
+
+        return iPlayers;
     }
 
     public get Difficulty(): Difficulty {
@@ -60,10 +70,10 @@ export class Room {
         this.grid.clear();
         this.players.forEach((player: Player) => player.score = 0);
     }
-    public getOtherPlayer(socketId: string): Player {
+    public getOtherPlayerId(socketId: string): string {
         const foundPlayer: Player = this.players.find((player: Player) => player.socketID === socketId);
         if (foundPlayer) {
-            return this.players.find((currentPlayer: Player) => currentPlayer !== foundPlayer);
+            return this.players.find((currentPlayer: Player) => currentPlayer !== foundPlayer).socketID;
         }
 
         return undefined;
@@ -81,6 +91,17 @@ export class Room {
         const foundPlayer: Player = this.players.find((player: Player) => player.socketID === socketId);
         if (foundPlayer) {
             foundPlayer.selectedWord = word;
+        }
+    }
+
+    public getGameOutcome(): GameOutcome {
+        const scoreDifference: number = this.players[0].score - this.players[1].score;
+        if (scoreDifference === 0) {
+            return GameOutcome.Tie;
+        } else if (scoreDifference < 0) {
+            return GameOutcome.Lose;
+        } else {
+            return GameOutcome.Win;
         }
     }
     private deselectWord(socketId: string): void {

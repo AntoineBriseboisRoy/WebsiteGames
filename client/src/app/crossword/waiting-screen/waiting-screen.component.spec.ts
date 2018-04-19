@@ -10,7 +10,9 @@ describe("WaitingScreenComponent", () => {
         TestBed.configureTestingModule({
             declarations: [WaitingScreenComponent]
         })
-            .compileComponents();
+            .compileComponents().catch((error: Error) => {
+                console.error(error);
+            });
     }));
 
     beforeEach(() => {

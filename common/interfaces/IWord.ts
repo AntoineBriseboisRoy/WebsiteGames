@@ -1,9 +1,5 @@
 import { ICoordXY } from "./ICoordXY";
-
-export enum Orientation {
-    Vertical = 0,
-    Horizontal
-}
+import { Orientation } from "../constants";
 
 export interface IWord {
     position: ICoordXY;

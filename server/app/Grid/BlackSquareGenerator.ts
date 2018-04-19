@@ -1,5 +1,6 @@
 import { ICoordXY } from "../../../common/interfaces/ICoordXY";
-import { Orientation, IWord } from "../../../common/interfaces/IWord";
+import { IWord } from "../../../common/interfaces/IWord";
+import { Orientation } from "../../../common/constants";
 import { StringService } from "./StringService";
 import { EMPTY_SQUARE, BLACKSQUARE_CHARACTER, MIN_LETTERS_FOR_WORD, MIN_WORDS_PER_LINE,
          MAX_WORDS_PER_LINE } from "./Constants";

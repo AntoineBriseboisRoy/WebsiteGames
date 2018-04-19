@@ -1,9 +1,9 @@
 import { ICoordXY } from "../../../common/interfaces/ICoordXY";
-import { IWord, Orientation } from "../../../common/interfaces/IWord";
+import { IWord } from "../../../common/interfaces/IWord";
 import { EMPTY_SQUARE, BLACKSQUARE_CHARACTER, WORD_CACHE, WORD_CACHE_OFFSET, WORD_CUTOFF, MAX_TRIES_BEFORE_FAIL,
          EMPTY_CHAR_FOR_QUERY } from "./Constants";
 import { LexicalService } from "../Services/LexicalService/LexicalService";
-import { Difficulty } from "../../../common/constants";
+import { Difficulty, Orientation } from "../../../common/constants";
 import { WordAndDefinition } from "../Services/LexicalService/Interfaces";
 
 const lexicalService: LexicalService = new LexicalService();

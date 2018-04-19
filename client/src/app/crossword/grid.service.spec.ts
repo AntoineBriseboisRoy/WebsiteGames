@@ -45,19 +45,6 @@ describe("GridService", () => {
         });
     })));
 
-    it("should open a modal when grid is completed", async(inject([GridService, ModalService],
-                                                                  (gridService: GridService, modalService: ModalService) => {
-        gridService.fetchGrid().subscribe(() => {
-            for (const cell of gridService.gridCells) {
-                cell.content = cell.content;
-            }
-            for (const word of gridService.gridWords) {
-                word.isFound = true;
-            }
-            expect(modalService.IsOpen).toEqual(true);
-        });
-    })));
-
     it("should restart the grid with the same configuration", async(inject([GridService, ModalService, GameManagerService],
                                                                            (gridService: GridService, modalService: ModalService,
                                                                             gameManager: GameManagerService) => {

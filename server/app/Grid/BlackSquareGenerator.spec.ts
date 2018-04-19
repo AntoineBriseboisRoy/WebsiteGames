@@ -1,7 +1,8 @@
 import { expect } from "chai";
 import { BlackSquareGenerator } from "./BlackSquareGenerator";
 import { STANDARD_SIDE_SIZE, PERCENTAGE_BLACK_SQUARES, BLACKSQUARE_CHARACTER } from "./Constants";
-import { IWord, Orientation } from "../../../common/interfaces/IWord";
+import { IWord } from "../../../common/interfaces/IWord";
+import { Orientation } from "../../../common/constants";
 
 const EXTENDED_TIMEOUT: number = 5000;
 

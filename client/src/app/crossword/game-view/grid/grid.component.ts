@@ -58,9 +58,8 @@ export class GridComponent implements OnInit {
 
     private invertOrientation(): void {
         if (this.clickedWords.length > 1) {
-            this.focusCell.cell = this.isFocusCellinCells(this.clickedWords[0].cells) ?
-                this.clickedWords[1].cells[this.firstUnknownCell(this.clickedWords[1].cells)] :
-                this.clickedWords[0].cells[this.firstUnknownCell(this.clickedWords[0].cells)];
+            const index: number = this.isFocusCellinCells(this.clickedWords[0].cells) ? 1 : 0;
+            this.focusCell.cell = this.clickedWords[index].cells[this.firstUnknownCell(this.clickedWords[index].cells)];
             const selectedWord: IGridWord =  this.focusCell.cells === this.clickedWords[0].cells ?
                                 this.clickedWords[1] : this.clickedWords[0];
             this.focusCell.cells = selectedWord.cells;
@@ -80,9 +79,11 @@ export class GridComponent implements OnInit {
         }
     }
     private isFocusCellinCells(cells: Array<ICell>): boolean {
-        for (const cell of cells) {
-            if (this.focusCell.cell === cell && this.focusCell.cells === cells) {
-                return true;
+        if (this.focusCell.cells === cells) {
+            for (const cell of cells) {
+                if (this.focusCell.cell === cell) {
+                    return true;
+                }
             }
         }
 
