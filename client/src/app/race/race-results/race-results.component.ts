@@ -161,8 +161,7 @@ export class RaceResultsComponent implements OnInit {
     }
 
     private simulateLapTime(car: CarInformation): void {
-        const lapsLeft: number = LAP_NUMBER - car.LapTimes.length;
-        const averageTimePerLapLeft: number = this.averageTimePerLapLeft(car, lapsLeft);
+        const averageTimePerLapLeft: number = this.averageTimePerLapLeft(car, LAP_NUMBER - car.LapTimes.length);
         while ( car.LapTimes.length < LAP_NUMBER ) {
             const offset: number =  this.plusOrMinus() * (Math.random() * MAXIMUM_OFFSET_RANDOMIZATION) + 1;
             car.LapTimes.push(new Date(averageTimePerLapLeft * offset));
@@ -175,7 +174,6 @@ export class RaceResultsComponent implements OnInit {
                                                   car.TotalTime.getTime();
 
         return (totalTimeEstimation - timeByCompletedLaps) / lapsLeft;
-
     }
 
     private averageCheckpointTime(car: CarInformation): number {
