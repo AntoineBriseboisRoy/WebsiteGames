@@ -78,13 +78,6 @@ export class GridService {
         });
     }
 
-    private fetchSelectedWords(): void {
-        this.socketIO.SelectedWordsSubject.subscribe((selectedWords: Array<IGridWord>) => {
-            this.selectedWords = selectedWords;
-            this.setWordReferencesToCells(this.selectedWords);
-        });
-    }
-
     private setWordReferencesToCells(words: Array<IGridWord>): void {
         for (const word of words) {
             if (word) {
@@ -104,6 +97,13 @@ export class GridService {
             } else {
                 this.gridWordsVertical.push(word);
             }
+        });
+    }
+
+    private fetchSelectedWords(): void {
+        this.socketIO.SelectedWordsSubject.subscribe((selectedWords: Array<IGridWord>) => {
+            this.selectedWords = selectedWords;
+            this.setWordReferencesToCells(this.selectedWords);
         });
     }
 }

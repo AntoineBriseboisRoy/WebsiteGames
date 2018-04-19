@@ -1,6 +1,6 @@
 import { Grid } from "./Grid";
-import { IWord, Orientation } from "../../../common/interfaces/IWord";
-import { Difficulty } from "../../../common/constants";
+import { IWord } from "../../../common/interfaces/IWord";
+import { Difficulty, Orientation } from "../../../common/constants";
 
 export class GridGeneratorService {
 

@@ -9,10 +9,11 @@ import { Router } from "@angular/router";
     styleUrls: ["./difficulty-menu.component.css", "../game-view/crossword-view.component.css"]
 })
 export class DifficultyMenuComponent {
-    public readonly title: string = "Choose wisely your difficulty, smarty!";
+    public readonly title: string;
     public isActiveDifficulty: boolean;
 
     public constructor(private router: Router, private gameManagerService: GameManagerService) {
+        this.title = "Choose wisely your difficulty, smarty!";
         this.isActiveDifficulty = false;
     }
 

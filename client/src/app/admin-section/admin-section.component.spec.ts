@@ -29,10 +29,6 @@ describe("AdminSectionComponent", () => {
         fixture.detectChanges();
     });
 
-    it("should create", () => {
-        expect(component).toBeTruthy();
-    });
-
     it("should delete from MongoDB properly", inject([MongoQueryService], (mongoQueryService: MongoQueryService)  => {
         const createdTrack: ITrack = { _id: "123",
                                        name: "test",
@@ -46,7 +42,7 @@ describe("AdminSectionComponent", () => {
             component.deleteTrack("test");
             component["getITracksFromServer"]();
             component.tracks.forEach((track: ITrack) => {
-                expect(track).not.toEqual(createdTrack);
+                expect(track).not.equal(createdTrack);
             });
         }).catch((error: Error) => console.error(error));
     }));
@@ -54,6 +50,6 @@ describe("AdminSectionComponent", () => {
     it("should correctly get tracks from the server", inject([MongoQueryService], (mongoQueryService: MongoQueryService) => {
         component["getITracksFromServer"]();
 
-        expect(component.tracks.length).not.toEqual(0);
+        expect(component.tracks.length).not.equal(0);
     }));
 });

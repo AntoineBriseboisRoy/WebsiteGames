@@ -1,26 +1,27 @@
+import { injectable } from "inversify";
 import { Room } from "./room";
 import { INewGame } from "../../../../common/interfaces/INewGame";
 import { RoomState } from "../../../../common/constants";
+import { Player } from "../../player";
 
 const ID_NOT_FOUND: number = -1;
 
+@injectable()
 export class RoomManagerService {
-    public static get Instance(): RoomManagerService {
-        if (!this.instance) {
-            this.instance = new RoomManagerService();
-        }
-
-        return this.instance;
-    }
-    private static instance: RoomManagerService;
     private rooms: Array<Room>;
 
-    private constructor() {
+    public constructor() {
         this.rooms = new Array<Room>();
     }
 
     public push(room: Room): void {
         this.rooms.push(room);
+    }
+    public async createNewRoom(game: INewGame): Promise<void> {
+        const player: Player = new Player(game.userCreator, game.userCreatorID);
+        const room: Room = new Room(player, game.difficulty, game.userCreatorID);
+        this.push(room);
+        await room.initializeGrid();
     }
     public deleteRoom(socketId: string): void {
         const index: number = this.findRoom(socketId);

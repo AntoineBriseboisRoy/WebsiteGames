@@ -1,4 +1,5 @@
 import { IGridWord } from "../../common/interfaces/IGridWord";
+import { IPlayer } from "../../common/interfaces/IPlayer";
 
 export class Player {
     public selectedWord: IGridWord;
@@ -14,5 +15,9 @@ export class Player {
     public clear(): void {
         this.username = "";
         this.score = 0;
+    }
+
+    public toIPlayer(): IPlayer {
+        return { username: this.username, score: this.score };
     }
 }

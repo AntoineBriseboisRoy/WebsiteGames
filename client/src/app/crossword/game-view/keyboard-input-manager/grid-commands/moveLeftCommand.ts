@@ -1,8 +1,7 @@
 import { AbsGridCommand } from "./AbsGridCommand";
 import { ICell } from "../../../../../../../common/interfaces/ICell";
 import { FocusCell } from "../../focusCell";
-import { Orientation } from "../../../../../../../common/interfaces/IWord";
-
+import { Orientation } from "../../../../../../../common/constants";
 export class MoveLeftCommand extends AbsGridCommand {
     public constructor(cells: Array<ICell>) {
         super(cells);
