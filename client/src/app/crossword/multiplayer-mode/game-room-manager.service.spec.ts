@@ -62,10 +62,10 @@ describe("MultiplayerGameRoom", () => {
         });
     })));
 
-    fit("should be able to play when joining a waiting game", (inject([GameRoomManagerService, SocketIoService, GameManagerService],
-                                                                      (gameRoomManagerService: GameRoomManagerService,
-                                                                       gameManagerService: GameManagerService,
-                                                                       socketService: SocketIoService) => {
+    it("should be able to play when joining a waiting game", (inject([GameRoomManagerService, SocketIoService, GameManagerService],
+                                                                     (gameRoomManagerService: GameRoomManagerService,
+                                                                      gameManagerService: GameManagerService,
+                                                                      socketService: SocketIoService) => {
         socketService = new SocketIoService();
         const windowLocation: string = window.location.href;
         const newGame: INewGame = { userCreator: "p1", difficulty: Difficulty.Easy, userCreatorID: "", userJoiner: "" };

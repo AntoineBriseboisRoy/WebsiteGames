@@ -72,7 +72,7 @@ describe("CollisionManagerService", () => {
     );
 
     // tslint:disable-next-line:max-func-body-length
-    fit("should detect collisions", inject([CollisionManager], async (service: CollisionManager) => {
+    it("should detect collisions", inject([CollisionManager], async (service: CollisionManager) => {
             const carA: Car = new Car();
             const carB: Car = new Car();
 

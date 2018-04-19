@@ -12,7 +12,7 @@ import { NgbModalStack } from "@ng-bootstrap/ng-bootstrap/modal/modal-stack";
 import { NgbModal } from "@ng-bootstrap/ng-bootstrap";
 import { ModalStateService } from "../modal/modal-state.service";
 
-fdescribe("EndGameService", () => {
+describe("EndGameService", () => {
     beforeEach(() => {
         TestBed.configureTestingModule({
             providers: [GridService, GameManagerService, SocketIoService, ModalService,
