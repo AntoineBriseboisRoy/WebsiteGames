@@ -3,7 +3,7 @@ import { GridService } from "../../grid.service";
 import { ICell } from "../../../../../../common/interfaces/ICell";
 import { Orientation } from "../../../../../../common/constants";
 
-export const enum Player {
+const enum Player {
     player1 = 0,
     player2 = 1
 }
@@ -27,47 +27,6 @@ export class SelectionHandlerService {
         }
 
         return "";
-    }
-    private applyStyleForBoth(): string {
-        // return this.isSameSelection() ?
-        if (this.isSameSelection()) {
-            return (this.isVerticalOrientation(Player.player1) ?
-                "border-both left-border-both right-border-both" : "border-both top-border-both bottom-border-both");
-        }
-
-        return "border-both top-border-both bottom-border-both left-border-both right-border-both";
-    }
-    private isSelectedByOne(player: Player, cell: ICell): boolean {
-        if (player === Player.player1) {
-            return this.isSelectedByPlayer(Player.player1, cell) && !this.isSelectedByPlayer(Player.player2, cell);
-        }
-
-        return this.isSelectedByPlayer(Player.player2, cell) && !this.isSelectedByPlayer(Player.player1, cell);
-    }
-
-    private isCaseSelectedByOne(player: Player, cell: ICell, index: number): boolean {
-        if (index >= 0) {
-            if (player === Player.player1) {
-                return this.isCaseSelectedByPlayer(Player.player1, cell, index) &&
-                !this.isCaseSelectedByPlayer(Player.player2, cell, index);
-            }
-
-            return this.isCaseSelectedByPlayer(Player.player2, cell, index) && !this.isCaseSelectedByPlayer(Player.player1, cell, index);
-        }
-
-        return false;
-    }
-
-    private isSameSelection(): boolean {
-        if (this.isSelectedWordDefined(Player.player1) && this.isSelectedWordDefined(Player.player2)) {
-            return this.gridService.selectedWords[Player.player1].correctAnswer
-                === this.gridService.selectedWords[Player.player2].correctAnswer;
-        }
-
-        return false;
-    }
-    private isVerticalOrientation(player: Player): boolean {
-        return this.gridService.selectedWords[player].orientation === Orientation.Vertical;
     }
 
     public addFirstCellBorder(cell: ICell): string {
@@ -104,18 +63,59 @@ export class SelectionHandlerService {
         return "";
     }
 
-    private isSelectedByPlayer(player: Player, cell: ICell): boolean {
-        return this.isSelectedWordDefined(player) &&
-            this.gridService.selectedWords[player].cells.includes(cell);
+    private applyStyleForBoth(): string {
+        if (this.isSameSelection()) {
+            return (this.isVerticalOrientation(Player.player1) ?
+                "border-both left-border-both right-border-both" : "border-both top-border-both bottom-border-both");
+        }
+
+        return "border-both top-border-both bottom-border-both left-border-both right-border-both";
+    }
+
+    private isVerticalOrientation(player: Player): boolean {
+        return this.gridService.selectedWords[player].orientation === Orientation.Vertical;
+    }
+    private isSameSelection(): boolean {
+        if (this.isSelectedWordDefined(Player.player1) && this.isSelectedWordDefined(Player.player2)) {
+            return this.gridService.selectedWords[Player.player1].correctAnswer
+                === this.gridService.selectedWords[Player.player2].correctAnswer;
+        }
+
+        return false;
+    }
+    private isSelectedWordDefined(player: Player): boolean {
+        return this.gridService.selectedWords[player] !== undefined &&
+            this.gridService.selectedWords[player] !== null &&
+            this.gridService.selectedWords[player].cells !== undefined;
+    }
+    private isSelectedByOne(player: Player, cell: ICell): boolean {
+        if (player === Player.player1) {
+            return this.isSelectedByPlayer(Player.player1, cell) && !this.isSelectedByPlayer(Player.player2, cell);
+        }
+
+        return this.isSelectedByPlayer(Player.player2, cell) && !this.isSelectedByPlayer(Player.player1, cell);
     }
 
     private isSelectedByBoth(cell: ICell): boolean {
         return this.isSelectedByPlayer(Player.player1, cell) && this.isSelectedByPlayer(Player.player2, cell);
     }
 
-    private isCaseSelectedByPlayer(player: Player, cell: ICell, index: number): boolean {
+    private isSelectedByPlayer(player: Player, cell: ICell): boolean {
         return this.isSelectedWordDefined(player) &&
-            this.gridService.selectedWords[player].cells[index] === cell;
+            this.gridService.selectedWords[player].cells.includes(cell);
+    }
+
+    private isCaseSelectedByOne(player: Player, cell: ICell, index: number): boolean {
+        if (index >= 0) {
+            if (player === Player.player1) {
+                return this.isCaseSelectedByPlayer(Player.player1, cell, index) &&
+                !this.isCaseSelectedByPlayer(Player.player2, cell, index);
+            }
+
+            return this.isCaseSelectedByPlayer(Player.player2, cell, index) && !this.isCaseSelectedByPlayer(Player.player1, cell, index);
+        }
+
+        return false;
     }
 
     private isCaseSelectedByBoth(cell: ICell, index: number): boolean {
@@ -123,11 +123,11 @@ export class SelectionHandlerService {
             this.isCaseSelectedByPlayer(Player.player2, cell, index);
     }
 
-    private isSelectedWordDefined(player: Player): boolean {
-        return this.gridService.selectedWords[player] !== undefined &&
-            this.gridService.selectedWords[player] !== null &&
-            this.gridService.selectedWords[player].cells !== undefined;
+    private isCaseSelectedByPlayer(player: Player, cell: ICell, index: number): boolean {
+        return this.isSelectedWordDefined(player) &&
+            this.gridService.selectedWords[player].cells[index] === cell;
     }
+
     private selectedWordLength(player: Player): number {
         if (this.isSelectedWordDefined(player)) {
             return this.gridService.selectedWords[player].cells.length;
