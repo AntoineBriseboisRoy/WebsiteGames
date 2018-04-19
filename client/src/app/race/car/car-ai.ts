@@ -2,7 +2,7 @@ import { Car } from "./car";
 import { Vector2, Vector3, Matrix3 } from "three";
 
 const MINIMUM_ANGLE_FOR_STEERING: number = 0.1;
-const BRAKING_DISTANCE: number = 0.2;
+const BRAKING_DISTANCE: number = 0.5;
 const DISTANCE_FROM_CENTER: number = 7;
 const BACKWARD_DISTANCE: number = 10;
 

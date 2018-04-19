@@ -5,10 +5,11 @@ import { Car } from "../car/car";
 import { MongoQueryService } from "../../mongo-query.service";
 import { ITrack, IBestTime } from "../../../../../common/interfaces/ITrack";
 import { DateFormatter } from "../date-formatter";
-import { LAP_NUMBER } from "../../constants";
+import { LAP_NUMBER, HALF } from "../../constants";
 
 const N_BEST_TIMES: number = 5;
 const PLAYER_INDEX: number = 0;
+const MAXIMUM_OFFSET_RANDOMIZATION: number = 0.2;
 const PLAYER_NAME_PLACEHOLDER: string = "";
 const ANONYMOUS_PLAYER_NAME: string = "[Anonymous Player]";
 const CARS_NAME: string[] = ["You", "Zuckerberg", "Musk", "Bengio", "Gagnon", "Tremblay"];
@@ -50,6 +51,7 @@ export class RaceResultsComponent implements OnInit {
 
     public ngOnInit(): void {
         this.sortCarInformations();
+        this.simulateTimes();
         this.getTrackBestTimes();
         this.sortRaceTimes();
 
@@ -147,5 +149,44 @@ export class RaceResultsComponent implements OnInit {
                 bestTime.playerName === PLAYER_NAME_PLACEHOLDER
                 && bestTime.time === this.carInformations[PLAYER_INDEX].TotalTime);
         }
+    }
+
+    private simulateTimes(): void {
+        for (const car of this.carInformations) {
+            if (!car.HasEndRace) {
+                this.simulateLapTime(car);
+                car.TotalTime.setTime(car.LapTimes.reduce((a, b) => a + b.getTime(), 0));
+            }
+        }
+    }
+
+    private simulateLapTime(car: CarInformation): void {
+        const lapsLeft: number = LAP_NUMBER - car.LapTimes.length;
+        const averageTimePerLapLeft: number = this.averageTimePerLapLeft(car, lapsLeft);
+        while ( car.LapTimes.length < LAP_NUMBER ) {
+            const offset: number =  this.plusOrMinus() * (Math.random() * MAXIMUM_OFFSET_RANDOMIZATION) + 1;
+            car.LapTimes.push(new Date(averageTimePerLapLeft * offset));
+        }
+    }
+
+    private averageTimePerLapLeft(car: CarInformation, lapsLeft: number): number {
+        const timeByCompletedLaps: number = car.LapTimes.reduce((a, b) => a + b.getTime(), 0);
+        const totalTimeEstimation: number =  this.averageCheckpointTime(car) * this.remainingCheckpoints(car) +
+                                                  car.TotalTime.getTime();
+
+        return (totalTimeEstimation - timeByCompletedLaps) / lapsLeft;
+
+    }
+
+    private averageCheckpointTime(car: CarInformation): number {
+        return car.TotalTime.getTime() / car.CheckpointCounter;
+    }
+
+    private remainingCheckpoints(car: CarInformation): number {
+        return car.Checkpoints.length * LAP_NUMBER - car.CheckpointCounter;
+    }
+
+    private plusOrMinus(): number {
+        return Math.random() < HALF ? 1 : -1;
     }
 }
