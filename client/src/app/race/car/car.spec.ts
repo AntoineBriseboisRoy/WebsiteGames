@@ -97,19 +97,4 @@ describe("Car", () => {
         car = new Car(undefined);
         expect(car["engine"]).toBeDefined();
     });
-
-    it("should check validity of wheelbase parameter", () => {
-        car = new Car(new MockEngine(), new Wheel(), 0);
-        expect(car["wheelbase"]).toBe(DEFAULT_WHEELBASE);
-    });
-
-    it("should check validity of mass parameter", () => {
-        car = new Car(new MockEngine(), new Wheel(), DEFAULT_WHEELBASE, 0);
-        expect(car["mass"]).toBe(DEFAULT_MASS);
-    });
-
-    it("should check validity of dragCoefficient parameter", () => {
-        car = new Car(new MockEngine(), new Wheel(), DEFAULT_WHEELBASE, DEFAULT_MASS, -10);
-        expect(car["dragCoefficient"]).toBe(DEFAULT_DRAG_COEFFICIENT);
-    });
 });
