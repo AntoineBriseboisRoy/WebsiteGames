@@ -7,6 +7,8 @@ import * as spy from "chai-spies";
 import { Player } from "../../player";
 import { container } from "../../inversify.config";
 import Types from "../../types";
+import { IGridWord } from "../../../../common/interfaces/IGridWord";
+import { ICell, Finder } from "../../../../common/interfaces/ICell";
 
 const ID_NOT_FOUND: number = -1;
 
@@ -19,6 +21,53 @@ const roomManagerService: RoomManagerService = container.get<RoomManagerService>
 // tslint:disable:no-any
 chai.use(spy);
 describe("RoomManagerService", () => {
+    it("should return the same grid for the players in the same room", () => {
+        const game: INewGame = { userCreator: "p1", difficulty: Difficulty.Easy, userCreatorID: "abc", userJoiner: ""};
+        roomManagerService.createNewRoom(game).then(() => {
+            roomManagerService.addPlayerToRoom("p2", "defg", "abc");
+            const gridWordsP1: Array<IGridWord> = roomManagerService.getRoom("abc").Words;
+            const gridWordsP2: Array<IGridWord> = roomManagerService.getRoom("defg").Words;
+            chai.expect(gridWordsP1).to.be.equal(gridWordsP2);
+        }).catch();
+    });
+    it("should return to player 2 the word found by player 1", () => {
+        const game2: INewGame = { userCreator: "p3", difficulty: Difficulty.Easy, userCreatorID: "hijk", userJoiner: ""};
+        roomManagerService.createNewRoom(game2).then(() => {
+            roomManagerService.addPlayerToRoom("p4", "lmnop", "hijk");
+            const gridWordsP1: Array<IGridWord> = roomManagerService.getRoom("hijk").Words;
+            gridWordsP1[0].isFound = true;
+            gridWordsP1[0].cells.forEach((cell: ICell) => {
+                cell.isFound = true;
+                cell.finder = Finder.player1;
+            });
+            roomManagerService.getRoom("hijk").setWordFound(gridWordsP1[0], "hijk");
+            chai.expect(roomManagerService.getRoom("lmnop").Words[0].isFound).to.be.equal(true);
+        }).catch();
+    });
+    it("should be able to see who found the word", () => {
+        const game3: INewGame = { userCreator: "p3", difficulty: Difficulty.Easy, userCreatorID: "hijk", userJoiner: ""};
+        roomManagerService.createNewRoom(game3).then(() => {
+            roomManagerService.addPlayerToRoom("p4", "lmnop", "hijk");
+            const gridWordsP1: Array<IGridWord> = roomManagerService.getRoom("hijk").Words;
+            gridWordsP1[0].isFound = true;
+            gridWordsP1[0].cells.forEach((cell: ICell) => {
+                cell.isFound = true;
+                cell.finder = Finder.player1;
+            });
+            roomManagerService.getRoom("hijk").setWordFound(gridWordsP1[0], "hijk");
+            chai.expect(roomManagerService.getRoom("lmnop").Words[0].cells[0].finder).to.be.equal(Finder.player1);
+        }).catch();
+    });
+    it("should return to player 2 the word selected by player 1", () => {
+        const game3: INewGame = { userCreator: "p7", difficulty: Difficulty.Easy, userCreatorID: "123", userJoiner: ""};
+        roomManagerService.createNewRoom(game3).then(() => {
+            roomManagerService.addPlayerToRoom("p8", "456", "123");
+            const gridWordsP1: Array<IGridWord> = roomManagerService.getRoom("123").Words;
+            roomManagerService.getRoom("123").selectWord(gridWordsP1[0], "123");
+            chai.expect(roomManagerService.getRoom("456").Players[0].selectedWord).to.be.equal(gridWordsP1[0]);
+            chai.expect(roomManagerService.getRoom("456").Players[1].selectedWord).to.be.equal(undefined);
+        }).catch();
+    });
     it("should push a room in Array of Room", () => {
         const spyRooms: any = chai.spy.on(RoomManagerService, "push");
         roomManagerService.push(mockRoom1);
