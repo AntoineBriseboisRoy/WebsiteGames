@@ -19,6 +19,8 @@ import { RouterTestingModule } from "@angular/router/testing";
 import { Routes } from "@angular/router";
 import { IBestTime } from "../../../../../common/interfaces/ITrack";
 import { HttpClientTestingModule } from "@angular/common/http/testing";
+import { Vector2 } from "three";
+import { LAP_NUMBER } from "../../constants";
 
 const routes: Routes = [
     {path: "", redirectTo: "home", pathMatch: "full"}
@@ -34,7 +36,7 @@ class FakeMongoService {
     }
 }
 // tslint:disable:no-magic-numbers
-describe("RaceResultsComponent", () => {
+fdescribe("RaceResultsComponent", () => {
     const wantedName: string = "NYAN";
     let component: RaceResultsComponent;
     let fixture: ComponentFixture<RaceResultsComponent>;
@@ -122,4 +124,109 @@ describe("RaceResultsComponent", () => {
 
     });
     // -------
+
+    // tslint:disable-next-line:max-func-body-length
+    fit("should simulates a lap time for every incompleted lap", () => {
+        for (let i: number = 0; i < 1; i++) {
+            component.CarInformations.push(new CarInformation());
+        }
+
+        const commonTime: Date = new Date("1970-01-01T00:00:17.783Z");
+
+        component.CarInformations[0]["playerName"] = "John";
+        component.CarInformations[0].TotalTime = commonTime;
+        component.CarInformations[0].LapTimes.push(new Date("1970-01-01T00:00:6.927Z"));
+        component.CarInformations[0].LapTimes.push(new Date("1970-01-01T00:00:4.927Z"));
+        component.CarInformations[0].LapTimes.push(new Date("1970-01-01T00:00:5.927Z"));
+        component.CarInformations[0]["hasEndRace"] = true;
+        component.CarInformations[0]["checkpointInformation"]["checkpointCounter"] = 14;
+        for (let i: number = 0; i < 20; i++ ) {
+            component.CarInformations[0]["checkpointInformation"]["checkpoints"].push([new Vector2(), new Vector2()]);
+        }
+
+        component.CarInformations[1]["playerName"] = "Bob";
+        component.CarInformations[1].TotalTime = commonTime;
+        component.CarInformations[1].LapTimes.push(new Date("1970-01-01T00:00:6.927Z"));
+        component.CarInformations[1]["hasEndRace"] = false;
+        component.CarInformations[0]["checkpointInformation"]["checkpointCounter"] = 14;
+        for (let i: number = 0; i < 20; i++ ) {
+            component.CarInformations[0]["checkpointInformation"]["checkpoints"].push([new Vector2(), new Vector2()]);
+        }
+
+        component["simulateTimes"]();
+
+        expect(component.CarInformations[0].LapTimes.length).toEqual(LAP_NUMBER);
+        expect(component.CarInformations[1].LapTimes.length).toEqual(LAP_NUMBER);
+        expect(component.CarInformations[1].LapTimes[1].getTime()).not.toEqual(0);
+        expect(component.CarInformations[1].LapTimes[2].getTime()).not.toEqual(0);
+    });
+
+    // tslint:disable-next-line:max-func-body-length
+    fit("should simulates random but realistic lap times", () => {
+        for (let i: number = 0; i < 1; i++) {
+            component.CarInformations.push(new CarInformation());
+        }
+
+        const commonTime: Date = new Date("1970-01-01T00:00:17.783Z");
+
+        component.CarInformations[0]["playerName"] = "John";
+        component.CarInformations[0].TotalTime = commonTime;
+        component.CarInformations[0].LapTimes.push(new Date("1970-01-01T00:00:6.927Z"));
+        component.CarInformations[0].LapTimes.push(new Date("1970-01-01T00:00:4.927Z"));
+        component.CarInformations[0].LapTimes.push(new Date("1970-01-01T00:00:5.927Z"));
+        component.CarInformations[0]["hasEndRace"] = true;
+        component.CarInformations[0]["checkpointInformation"]["checkpointCounter"] = 14;
+        for (let i: number = 0; i < 20; i++ ) {
+            component.CarInformations[0]["checkpointInformation"]["checkpoints"].push([new Vector2(), new Vector2()]);
+        }
+
+        component.CarInformations[1]["playerName"] = "Bob";
+        component.CarInformations[1].TotalTime = commonTime;
+        component.CarInformations[1].LapTimes.push(new Date("1970-01-01T00:00:6.927Z"));
+        component.CarInformations[1]["hasEndRace"] = false;
+        component.CarInformations[0]["checkpointInformation"]["checkpointCounter"] = 14;
+        for (let i: number = 0; i < 20; i++ ) {
+            component.CarInformations[0]["checkpointInformation"]["checkpoints"].push([new Vector2(), new Vector2()]);
+        }
+
+        component["simulateTimes"]();
+
+        expect(component.CarInformations[1].LapTimes[1].getTime()).not.toEqual(component.CarInformations[1].LapTimes[2].getTime());
+        expect(component.CarInformations[1].LapTimes[1].getTime() < component.CarInformations[1].LapTimes[2].getTime() * 1.21 ||
+               component.CarInformations[1].LapTimes[1].getTime() > component.CarInformations[1].LapTimes[2].getTime() * -1.21);
+    });
+
+    // tslint:disable-next-line:max-func-body-length
+    fit("should simulates total time properly", () => {
+        for (let i: number = 0; i < 1; i++) {
+            component.CarInformations.push(new CarInformation());
+        }
+
+        const commonTime: Date = new Date("1970-01-01T00:00:17.783Z");
+
+        component.CarInformations[0]["playerName"] = "John";
+        component.CarInformations[0].TotalTime = commonTime;
+        component.CarInformations[0].LapTimes.push(new Date("1970-01-01T00:00:6.927Z"));
+        component.CarInformations[0].LapTimes.push(new Date("1970-01-01T00:00:4.927Z"));
+        component.CarInformations[0].LapTimes.push(new Date("1970-01-01T00:00:5.927Z"));
+        component.CarInformations[0]["hasEndRace"] = true;
+        component.CarInformations[0]["checkpointInformation"]["checkpointCounter"] = 14;
+        for (let i: number = 0; i < 20; i++ ) {
+            component.CarInformations[0]["checkpointInformation"]["checkpoints"].push([new Vector2(), new Vector2()]);
+        }
+
+        component.CarInformations[1]["playerName"] = "Bob";
+        component.CarInformations[1].TotalTime = commonTime;
+        component.CarInformations[1].LapTimes.push(new Date("1970-01-01T00:00:6.927Z"));
+        component.CarInformations[1]["hasEndRace"] = false;
+        component.CarInformations[0]["checkpointInformation"]["checkpointCounter"] = 14;
+        for (let i: number = 0; i < 20; i++ ) {
+            component.CarInformations[0]["checkpointInformation"]["checkpoints"].push([new Vector2(), new Vector2()]);
+        }
+
+        component["simulateTimes"]();
+
+        expect(component.CarInformations[0].TotalTime).toEqual(component.CarInformations[0].LapTimes.reduce((a, b) => a + b.getTime(), 0));
+        expect(component.CarInformations[1].TotalTime).toEqual(component.CarInformations[1].LapTimes.reduce((a, b) => a + b.getTime(), 0));
+    });
 });
