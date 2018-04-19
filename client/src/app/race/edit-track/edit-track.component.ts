@@ -1,5 +1,5 @@
 import { Component, OnInit, HostListener, ElementRef, ViewChild } from "@angular/core";
-import { ActivatedRoute } from "@angular/router";
+import { ActivatedRoute, Router } from "@angular/router";
 import { Point, Segment } from "./Geometry";
 import { TRACK_WIDTH, DEFAULT_LINE_WIDTH, FULL_CIRCLE_RAD,
          DEFAULT_CIRCLE_RADIUS, RIGHT_MOUSE_BUTTON } from "../../constants";
@@ -34,7 +34,7 @@ export class EditTrackComponent implements OnInit {
     }
 
     public constructor(public mouseManagerService: MouseManagerService, private mongoQueryService: MongoQueryService,
-                       private route: ActivatedRoute) {
+                       private route: ActivatedRoute, private router: Router) {
         this.constraints = new Constraints();
         this.track = { _id: "",
                        name: "",
@@ -157,7 +157,11 @@ export class EditTrackComponent implements OnInit {
     }
 
     public saveTrack(): void {
-        this.mongoQueryService.putTrack(this.track.name, this.track).catch((error: Error) => {
+        this.mongoQueryService.putTrack(this.track.name, this.track).then(() => {
+            this.router.navigate(["/admin"]);
+            window.location.reload();
+        })
+        .catch((error: Error) => {
             console.error(error);
         });
     }
