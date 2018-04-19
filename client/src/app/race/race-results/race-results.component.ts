@@ -5,6 +5,7 @@ import { Car } from "../car/car";
 import { MongoQueryService } from "../../mongo-query.service";
 import { ITrack, IBestTime } from "../../../../../common/interfaces/ITrack";
 import { DateFormatter } from "../date-formatter";
+import { LAP_NUMBER } from "../../constants";
 
 const N_BEST_TIMES: number = 5;
 const PLAYER_INDEX: number = 0;
@@ -52,6 +53,10 @@ export class RaceResultsComponent implements OnInit {
         this.getTrackBestTimes();
         this.sortRaceTimes();
 
+    }
+
+    public filterLapTimes(index: number): Array<Date> {
+        return this.CarInformations[index].LapTimes.slice(0, LAP_NUMBER);
     }
 
     public replay(): void {

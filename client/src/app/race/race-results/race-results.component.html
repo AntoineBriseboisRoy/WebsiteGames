@@ -42,7 +42,7 @@
               <h5>No laps yet.</h5>
             </ng-template>
             <ng-template #laps>
-              <div *ngFor="let lap of carInformation.LapTimes; index as j">
+              <div *ngFor="let lap of filterLapTimes(i); index as j">
                 <h5>Lap {{j+1}}: {{getFormattedTime(lap)}}</h5>
               </div>
             </ng-template>
