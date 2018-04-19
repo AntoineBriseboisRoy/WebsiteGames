@@ -12,6 +12,7 @@ export class CarInformation {
     private hasEndRace: boolean;
     private timerSubscription: Subscription;
     private intersectionPositions: Array<Vector2>;
+    private ranking: number;
 
     public constructor() {
         this.lapInformation = {lap: 1, lapTimes: new Array<Date>(), totalTime: new Date(0)} as ILapInformation;
@@ -23,6 +24,7 @@ export class CarInformation {
         this.hasEndRace = false;
         this.timerSubscription = new Subscription();
         this.intersectionPositions = new Array<Vector2>();
+        this.ranking = 1;
     }
 
     public get Lap(): number {
@@ -71,6 +73,10 @@ export class CarInformation {
 
     public get NextCheckpoint(): number {
         return this.checkpointInformation.nextCheckpoint;
+    }
+
+    public get Ranking(): number {
+        return this.ranking;
     }
 
     public addIntersectionPosition ( intersection: Vector2 ): void {
