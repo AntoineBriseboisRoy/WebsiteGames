@@ -3,7 +3,8 @@ import { TestBed, inject } from "@angular/core/testing";
 import { CollisionManager } from "./collision-manager.service";
 import { Car } from "./car";
 import { Vector3 } from "three";
-import {} from "jasmine";
+import { } from "jasmine";
+import { LAP_NUMBER } from "../../constants";
 
 // tslint:disable:no-magic-numbers
 describe("CollisionManagerService", () => {
@@ -22,7 +23,7 @@ describe("CollisionManagerService", () => {
 
     it(
         "should have elastic collisions",
-        inject([CollisionManager], async(service: CollisionManager) => {
+        inject([CollisionManager], async (service: CollisionManager) => {
             const carA: Car = new Car();
             const carB: Car = new Car();
 
@@ -48,7 +49,7 @@ describe("CollisionManagerService", () => {
 
     it(
         "should detect collisions",
-        inject([CollisionManager], async(service: CollisionManager) => {
+        inject([CollisionManager], async (service: CollisionManager) => {
             const carA: Car = new Car();
             const carB: Car = new Car();
 
@@ -67,6 +68,41 @@ describe("CollisionManagerService", () => {
 
             expect(carA.speed).not.toEqual(initialSpeedA);
             expect(carB.speed).not.toEqual(initialSpeedB);
+        })
+    );
+
+    // tslint:disable-next-line:max-func-body-length
+    fit("should detect collisions", inject([CollisionManager], async (service: CollisionManager) => {
+            const carA: Car = new Car();
+            const carB: Car = new Car();
+
+            await carA.init();
+            await carB.init();
+
+            service.addCar(carA);
+            service.addCar(carB);
+
+            service.update();
+
+            carA.Information["checkpointInformation"]["isGoingForward"] = true;
+            carA.Information["hasCrossedStartLineBackward"] = false;
+            carA.Information["hasStartedAFirstLap"] = true;
+            carA.Information["hasEndRace"] = false;
+
+            carB.Information["checkpointInformation"]["isGoingForward"] = false;
+            carB.Information["hasCrossedStartLineBackward"] = false;
+            carB.Information["hasStartedAFirstLap"] = true;
+            carB.Information["hasEndRace"] = false;
+
+            carA.Information.completeALap();
+            carA.Information.completeALap();
+            carA.Information.completeALap();
+
+            expect(carA.Information.Lap).toEqual(LAP_NUMBER);
+            expect(carA.Information.HasEndRace).toBeTruthy();
+
+            expect(carA.Information.Lap).toEqual(0);
+            expect(carA.Information.HasEndRace).toBeFalsy();
         })
     );
 });

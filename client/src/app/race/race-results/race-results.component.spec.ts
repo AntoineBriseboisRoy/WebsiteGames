@@ -36,7 +36,7 @@ class FakeMongoService {
     }
 }
 // tslint:disable:no-magic-numbers
-fdescribe("RaceResultsComponent", () => {
+describe("RaceResultsComponent", () => {
     const wantedName: string = "NYAN";
     let component: RaceResultsComponent;
     let fixture: ComponentFixture<RaceResultsComponent>;
@@ -126,7 +126,7 @@ fdescribe("RaceResultsComponent", () => {
     // -------
 
     // tslint:disable-next-line:max-func-body-length
-    fit("should simulates a lap time for every incompleted lap", () => {
+    it("should simulates a lap time for every incompleted lap", () => {
         for (let i: number = 0; i < 1; i++) {
             component.CarInformations.push(new CarInformation());
         }
@@ -162,7 +162,7 @@ fdescribe("RaceResultsComponent", () => {
     });
 
     // tslint:disable-next-line:max-func-body-length
-    fit("should simulates random but realistic lap times", () => {
+    it("should simulates random but realistic lap times", () => {
         for (let i: number = 0; i < 1; i++) {
             component.CarInformations.push(new CarInformation());
         }
@@ -197,7 +197,7 @@ fdescribe("RaceResultsComponent", () => {
     });
 
     // tslint:disable-next-line:max-func-body-length
-    fit("should simulates total time properly", () => {
+    it("should simulates total time properly", () => {
         for (let i: number = 0; i < 1; i++) {
             component.CarInformations.push(new CarInformation());
         }
