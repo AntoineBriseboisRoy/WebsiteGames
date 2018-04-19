@@ -98,11 +98,6 @@ describe("Car", () => {
         expect(car["engine"]).toBeDefined();
     });
 
-    it("should use default Wheel parameter when none is provided", () => {
-        car = new Car(new MockEngine(), undefined);
-        expect(car["rearWheel"]).toBeDefined();
-    });
-
     it("should check validity of wheelbase parameter", () => {
         car = new Car(new MockEngine(), new Wheel(), 0);
         expect(car["wheelbase"]).toBe(DEFAULT_WHEELBASE);
