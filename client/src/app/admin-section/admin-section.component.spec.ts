@@ -6,6 +6,7 @@ import { MongoQueryService } from "../mongo-query.service";
 import { HttpClient, HttpClientModule } from "@angular/common/http";
 import { ITrack, TrackType, IBestTime } from "../../../../common/interfaces/ITrack";
 import { Point } from "../race/edit-track/Geometry";
+import { expect } from "chai";
 
 describe("AdminSectionComponent", () => {
     let component: AdminSectionComponent;
@@ -48,5 +49,11 @@ describe("AdminSectionComponent", () => {
                 expect(track).not.toEqual(createdTrack);
             });
         }).catch((error: Error) => console.error(error));
+    }));
+
+    it("should correctly get tracks from the server", inject([MongoQueryService], (mongoQueryService: MongoQueryService) => {
+        component["getITracksFromServer"]();
+
+        expect(component.tracks.length).not.toEqual(0);
     }));
 });
