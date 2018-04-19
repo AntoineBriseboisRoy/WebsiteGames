@@ -165,13 +165,13 @@ export class MessageHandler {
                 .emit("restart-game", { requestSent: false, requestAccepted: false });
         }
     }
-
+    // TODO: custom error
     private reinitializeGrid(room: Room): void {
         room.initializeGrid().then(() => {
             room.state = RoomState.Playing;
             this.socket.to(room.Name).emit("restart-game", { requestSent: false, requestAccepted: true });
             this.socketServer.in(room.Name).emit("update-score", room.IPlayers);
             this.sendGrid(room);
-        });
+        }).catch((error: Error) => console.error(error));
     }
 }

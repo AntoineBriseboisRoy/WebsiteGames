@@ -39,15 +39,16 @@ describe("RoomManagerService", () => {
         chai.expect(room).to.be.equal(mockRoom1);
     });
     it("should call the delete method", () => {
-        const spy: any = chai.spy.on(roomManagerService, "deleteRoom");
+        const spy1: any = chai.spy.on(roomManagerService, "deleteRoom");
         roomManagerService.deleteRoom(mockPlayer.socketID);
-        chai.expect(spy).to.have.been.called();
+        chai.expect(spy1).to.have.been.called();
     });
     it("should create an array of size 2", () => {
         let waitingGames: Array<INewGame> = new Array<INewGame>();
         roomManagerService.push(mockRoom1);
         roomManagerService.push(mockRoom2);
         waitingGames = roomManagerService.getWaitingGames();
+        // tslint:disable-next-line:no-magic-numbers
         chai.expect(waitingGames.length).to.be.equal(2);
         roomManagerService.deleteRoom(mockPlayer.socketID);
         roomManagerService.deleteRoom(mockPlayer2.socketID);
@@ -67,9 +68,9 @@ describe("RoomManagerService", () => {
         chai.expect(waitingGames.length).to.be.equal(0);
     });
     it("should call the addPlayer method", () => {
-        const spy: any = chai.spy.on(roomManagerService, "addPlayerToRoom");
+        const spy2: any = chai.spy.on(roomManagerService, "addPlayerToRoom");
         roomManagerService.addPlayerToRoom("aa", "bb", "");
-        chai.expect(spy).to.have.been.called();
+        chai.expect(spy2).to.have.been.called();
     });
 
 });
