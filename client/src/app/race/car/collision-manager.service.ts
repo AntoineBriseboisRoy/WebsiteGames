@@ -176,6 +176,9 @@ export class CollisionManager {
             car.Information.addFinalLap();
             if (car === this.cars[0]) {
                 this.endRace();
+                for (car of this.cars) {
+                    car.Information.stopTimer();
+                }
             }
         }
     }

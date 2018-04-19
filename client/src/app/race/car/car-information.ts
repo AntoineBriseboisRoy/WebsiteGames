@@ -5,7 +5,6 @@ import { ILapInformation, ICheckpointInformation } from "../../interfaces";
 
 export class CarInformation {
     public playerName: string;
-
     private lapInformation: ILapInformation;
     private checkpointInformation: ICheckpointInformation;
     private hasStartedAFirstLap: boolean;
@@ -40,6 +39,10 @@ export class CarInformation {
 
     public get TotalTime(): Date {
         return this.lapInformation.totalTime;
+    }
+
+    public set TotalTime(time: Date) {
+        this.lapInformation.totalTime = time;
     }
 
     public get DistanceToNextCheckpoint(): number {
