@@ -32,7 +32,7 @@ describe("Verifying letter validity.", () => {
             });
         });
         expect(emptySpaceFound).to.equal(false);
-    });
+    }).timeout(EXTENDED_TIMEOUT);
 });
 
 const testGridDifficulty: Function =  async (grid: Grid, difficulty: Difficulty): Promise<boolean> => {
@@ -55,10 +55,10 @@ describe("Verifying generation of an EASY grid", () => {
     it("Should be created", async () => {
         await grid.fillGrid();
         expect(grid).to.not.equal(undefined);
-    });
+    }).timeout(EXTENDED_TIMEOUT);
     it("Should have all valid words for difficulty.", async () => {
         expect(await testGridDifficulty(grid, Difficulty.Easy)).to.equal(true);
-    });
+    }).timeout(EXTENDED_TIMEOUT);
 });
 
 describe("Verifying generation of a MEDIUM grid", () => {
@@ -66,10 +66,10 @@ describe("Verifying generation of a MEDIUM grid", () => {
     it("Should be created", async () => {
         await grid.fillGrid();
         expect(grid).to.not.equal(undefined);
-    });
+    }).timeout(EXTENDED_TIMEOUT);
     it("Should have all valid words for difficulty.", async () => {
         expect(await testGridDifficulty(grid, Difficulty.Medium)).to.equal(true);
-    });
+    }).timeout(EXTENDED_TIMEOUT);
 });
 
 describe("Verifying generation of an HARD grid", () => {
@@ -77,8 +77,8 @@ describe("Verifying generation of an HARD grid", () => {
     it("Should be created", async () => {
         await grid.fillGrid();
         expect(grid).to.not.equal(undefined);
-    });
+    }).timeout(EXTENDED_TIMEOUT);
     it("Should have all valid words for difficulty.", async () => {
         expect(await testGridDifficulty(grid, Difficulty.Hard)).to.equal(true);
-    });
+    }).timeout(EXTENDED_TIMEOUT);
 });
