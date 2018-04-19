@@ -10,6 +10,7 @@ import { Observer } from "rxjs/Observer";
 import { Observable } from "rxjs/Observable";
 import { inject, injectable } from "inversify";
 import Types from "../../types";
+import { InexistantRoomError } from "./InexistantRoomError";
 
 @injectable()
 export class MessageHandler {
@@ -54,7 +55,6 @@ export class MessageHandler {
         this.socket.in("waiting-room").broadcast.emit("delete-game", game);
     }
 
-    // TODO: Ajouter type d'erreur pour le .catch
     private startGame(game: INewGame): void {
         game.userCreatorID = this.socket.id;
         this.roomManagerService.createNewRoom(game).then(() => {
@@ -74,17 +74,21 @@ export class MessageHandler {
                 this.handleRestartRequestResponse(game, room);
             }
         } else {
-            console.error("Error");
+            throw new InexistantRoomError("Socket " + this.socket.id + " doesn't belong to any room.");
         }
     }
 
     private playAMultiplayerGame(game: INewGame): void {
         const room: Room = this.roomManagerService.getRoom(game.userCreatorID);
-        this.roomManagerService.addPlayerToRoom(game.userJoiner, this.socket.id, game.userCreatorID);
-        room.state = RoomState.Playing;
-        this.socket.join(room.Name);
-        this.socket.to(game.userCreatorID).emit("play-multiplayer-game", game);
-        this.sendGrid(room);
+        if (room) {
+            this.roomManagerService.addPlayerToRoom(game.userJoiner, this.socket.id, game.userCreatorID);
+            room.state = RoomState.Playing;
+            this.socket.join(room.Name);
+            this.socket.to(game.userCreatorID).emit("play-multiplayer-game", game);
+            this.sendGrid(room);
+        } else {
+            throw new InexistantRoomError("Socket " + game.userCreatorID + " doesn't belong to any room on the server.");
+        }
     }
 
     private completeAWord(word: IGridWord): void {
@@ -165,7 +169,6 @@ export class MessageHandler {
                 .emit("restart-game", { requestSent: false, requestAccepted: false });
         }
     }
-    // TODO: custom error
     private reinitializeGrid(room: Room): void {
         room.initializeGrid().then(() => {
             room.state = RoomState.Playing;
