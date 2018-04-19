@@ -72,7 +72,7 @@ describe("RaceResultsComponent", () => {
     // Tableau des meilleurs temps
     it("should let the user enter his name if he has won and has a good time", () => {
         component.CarInformations[0]["ranking"] = 1;
-        component.CarInformations[0].totalTime = new Date();
+        component.CarInformations[0].TotalTime = new Date();
 
         if (component["inBestTimes"]() && component.CarInformations[0].Ranking === 1) {
             component.CarInformations[0]["playerName"] = wantedName;
@@ -82,7 +82,7 @@ describe("RaceResultsComponent", () => {
 
     it("should not let the user enter his name if he has not won but has a good time", () => {
         component.CarInformations[0]["ranking"] = 2;
-        component.CarInformations[0].totalTime = new Date();
+        component.CarInformations[0].TotalTime = new Date();
 
         if (component["inBestTimes"]() && component.CarInformations[0].Ranking === 1) {
             component.CarInformations[0]["playerName"] = wantedName;
@@ -92,7 +92,7 @@ describe("RaceResultsComponent", () => {
 
     it("should not let the user enter his name if he has won and but a bad time", () => {
         component.CarInformations[0]["ranking"] = 1;
-        component.CarInformations[0].totalTime = new Date("1970-01-01T00:00:17.783Z"); // Ten seconds more than fifth best time
+        component.CarInformations[0].TotalTime = new Date("1970-01-01T00:00:17.783Z"); // Ten seconds more than fifth best time
 
         if (component["inBestTimes"]() && component.CarInformations[0].Ranking === 1) {
             component.CarInformations[0]["playerName"] = wantedName;
@@ -108,11 +108,11 @@ describe("RaceResultsComponent", () => {
         }
 
         component.CarInformations[0]["playerName"] = "John";
-        component.CarInformations[0].totalTime = new Date("1970-01-01T00:00:17.783Z");
+        component.CarInformations[0].TotalTime = new Date("1970-01-01T00:00:17.783Z");
         component.CarInformations[1]["playerName"] = "Bob";
-        component.CarInformations[1].totalTime = new Date("1970-01-01T00:00:07.783Z");
+        component.CarInformations[1].TotalTime = new Date("1970-01-01T00:00:07.783Z");
         component.CarInformations[2]["playerName"] = "Alice";
-        component.CarInformations[2].totalTime = new Date("1970-01-01T00:00:27.783Z");
+        component.CarInformations[2].TotalTime = new Date("1970-01-01T00:00:27.783Z");
 
         component["sortRaceTimes"]();
 
